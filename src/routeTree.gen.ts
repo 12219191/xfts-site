@@ -15,6 +15,7 @@ import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
@@ -50,6 +51,11 @@ const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BlogRoute,
+} as any)
 const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
   id: '/gestao-esteticas',
   path: '/gestao-esteticas',
@@ -82,17 +88,18 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/blog': typeof BlogRouteWithChildren
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
 }
 export interface FileRoutesById {
@@ -106,6 +113,7 @@ export interface FileRoutesById {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
 }
 export interface FileRouteTypes {
@@ -120,17 +128,18 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/blog/'
     | '/produtos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/blog'
     | '/contato'
     | '/login'
     | '/blog/$articleId'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/blog'
     | '/produtos'
   id:
     | '__root__'
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/blog/'
     | '/produtos/'
   fileRoutesById: FileRoutesById
 }
@@ -198,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosIndexRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/blog/': {
+      id: '/blog/'
+      path: '/'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof BlogRoute
+    }
     '/produtos/gestao-esteticas': {
       id: '/produtos/gestao-esteticas'
       path: '/gestao-esteticas'
@@ -231,10 +248,12 @@ declare module '@tanstack/react-router' {
 
 interface BlogRouteChildren {
   BlogArticleIdRoute: typeof BlogArticleIdRoute
+  BlogIndexRoute: typeof BlogIndexRoute
 }
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogArticleIdRoute: BlogArticleIdRoute,
+  BlogIndexRoute: BlogIndexRoute,
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
