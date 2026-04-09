@@ -9,38 +9,171 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
+import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
+import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
+import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
+  id: '/gestao-esteticas',
+  path: '/gestao-esteticas',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const ProdutosGestaoClinicaRoute = ProdutosGestaoClinicaRouteImport.update({
+  id: '/gestao-clinica',
+  path: '/gestao-clinica',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const ProdutosGestaoBarbeariasRoute =
+  ProdutosGestaoBarbeariasRouteImport.update({
+    id: '/gestao-barbearias',
+    path: '/gestao-barbearias',
+    getParentRoute: () => ProdutosRoute,
+  } as any)
+const BlogArticleIdRoute = BlogArticleIdRouteImport.update({
+  id: '/$articleId',
+  path: '/$articleId',
+  getParentRoute: () => BlogRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/blog/$articleId': typeof BlogArticleIdRoute
+  '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
+  '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
+  '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/blog/$articleId': typeof BlogArticleIdRoute
+  '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
+  '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
+  '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/contato': typeof ContatoRoute
+  '/login': typeof LoginRoute
+  '/produtos': typeof ProdutosRouteWithChildren
+  '/blog/$articleId': typeof BlogArticleIdRoute
+  '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
+  '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
+  '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/blog'
+    | '/contato'
+    | '/login'
+    | '/produtos'
+    | '/blog/$articleId'
+    | '/produtos/gestao-barbearias'
+    | '/produtos/gestao-clinica'
+    | '/produtos/gestao-esteticas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/blog'
+    | '/contato'
+    | '/login'
+    | '/produtos'
+    | '/blog/$articleId'
+    | '/produtos/gestao-barbearias'
+    | '/produtos/gestao-clinica'
+    | '/produtos/gestao-esteticas'
+  id:
+    | '__root__'
+    | '/'
+    | '/blog'
+    | '/contato'
+    | '/login'
+    | '/produtos'
+    | '/blog/$articleId'
+    | '/produtos/gestao-barbearias'
+    | '/produtos/gestao-clinica'
+    | '/produtos/gestao-esteticas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BlogRoute: typeof BlogRouteWithChildren
+  ContatoRoute: typeof ContatoRoute
+  LoginRoute: typeof LoginRoute
+  ProdutosRoute: typeof ProdutosRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +181,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produtos/gestao-esteticas': {
+      id: '/produtos/gestao-esteticas'
+      path: '/gestao-esteticas'
+      fullPath: '/produtos/gestao-esteticas'
+      preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/gestao-clinica': {
+      id: '/produtos/gestao-clinica'
+      path: '/gestao-clinica'
+      fullPath: '/produtos/gestao-clinica'
+      preLoaderRoute: typeof ProdutosGestaoClinicaRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/gestao-barbearias': {
+      id: '/produtos/gestao-barbearias'
+      path: '/gestao-barbearias'
+      fullPath: '/produtos/gestao-barbearias'
+      preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/blog/$articleId': {
+      id: '/blog/$articleId'
+      path: '/$articleId'
+      fullPath: '/blog/$articleId'
+      preLoaderRoute: typeof BlogArticleIdRouteImport
+      parentRoute: typeof BlogRoute
+    }
   }
 }
 
+interface BlogRouteChildren {
+  BlogArticleIdRoute: typeof BlogArticleIdRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogArticleIdRoute: BlogArticleIdRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface ProdutosRouteChildren {
+  ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
+  ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
+  ProdutosGestaoEsteticasRoute: typeof ProdutosGestaoEsteticasRoute
+}
+
+const ProdutosRouteChildren: ProdutosRouteChildren = {
+  ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
+  ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,
+  ProdutosGestaoEsteticasRoute: ProdutosGestaoEsteticasRoute,
+}
+
+const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
+  ProdutosRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BlogRoute: BlogRouteWithChildren,
+  ContatoRoute: ContatoRoute,
+  LoginRoute: LoginRoute,
+  ProdutosRoute: ProdutosRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
