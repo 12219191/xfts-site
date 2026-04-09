@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Scissors, Sparkles, ArrowRight } from "lucide-react";
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/produtos")({
       { name: "description", content: "Conheça nossos sistemas SaaS para gestão de clínicas, barbearias e estéticas." },
     ],
   }),
-  component: ProdutosPage,
+  component: ProdutosLayout,
 });
 
 const products = [
@@ -40,7 +40,11 @@ const products = [
   },
 ];
 
-function ProdutosPage() {
+function ProdutosLayout() {
+  return <Outlet />;
+}
+
+export function ProdutosIndex() {
   return (
     <>
       <section className="gradient-primary section-padding text-center">

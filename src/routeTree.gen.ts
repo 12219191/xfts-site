@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
@@ -43,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProdutosRoute,
 } as any)
 const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
   id: '/gestao-esteticas',
@@ -76,17 +82,18 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/produtos/': typeof ProdutosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/blog': typeof BlogRouteWithChildren
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
-  '/produtos': typeof ProdutosRouteWithChildren
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/produtos': typeof ProdutosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,6 +106,7 @@ export interface FileRoutesById {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/produtos/': typeof ProdutosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,17 +120,18 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/produtos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/blog'
     | '/contato'
     | '/login'
-    | '/produtos'
     | '/blog/$articleId'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/produtos'
   id:
     | '__root__'
     | '/'
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/produtos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -181,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produtos/': {
+      id: '/produtos/'
+      path: '/'
+      fullPath: '/produtos/'
+      preLoaderRoute: typeof ProdutosIndexRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/produtos/gestao-esteticas': {
       id: '/produtos/gestao-esteticas'
       path: '/gestao-esteticas'
@@ -226,12 +243,14 @@ interface ProdutosRouteChildren {
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
   ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
   ProdutosGestaoEsteticasRoute: typeof ProdutosGestaoEsteticasRoute
+  ProdutosIndexRoute: typeof ProdutosIndexRoute
 }
 
 const ProdutosRouteChildren: ProdutosRouteChildren = {
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
   ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,
   ProdutosGestaoEsteticasRoute: ProdutosGestaoEsteticasRoute,
+  ProdutosIndexRoute: ProdutosIndexRoute,
 }
 
 const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
