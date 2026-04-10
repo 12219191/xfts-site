@@ -1,10 +1,12 @@
 const ZAPIER_WEBHOOK_URL_KEY = "xfts_zapier_webhook_url";
 
 export function getZapierWebhookUrl(): string {
+  if (typeof window === "undefined") return "";
   return localStorage.getItem(ZAPIER_WEBHOOK_URL_KEY) || "";
 }
 
 export function setZapierWebhookUrl(url: string) {
+  if (typeof window === "undefined") return;
   localStorage.setItem(ZAPIER_WEBHOOK_URL_KEY, url);
 }
 

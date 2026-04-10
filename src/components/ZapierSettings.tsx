@@ -6,7 +6,7 @@ import { Settings } from "lucide-react";
 import { getZapierWebhookUrl, setZapierWebhookUrl } from "@/lib/zapier";
 
 export function ZapierSettings() {
-  const [url, setUrl] = useState(getZapierWebhookUrl);
+  const [url, setUrl] = useState("");
   const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState(false);
 
