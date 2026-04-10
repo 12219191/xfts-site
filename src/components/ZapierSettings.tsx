@@ -10,6 +10,10 @@ export function ZapierSettings() {
   const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    if (open) setUrl(getZapierWebhookUrl());
+  }, [open]);
+
   const handleSave = () => {
     setZapierWebhookUrl(url);
     setSaved(true);
