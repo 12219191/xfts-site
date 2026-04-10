@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { sendToZapier } from "@/lib/zapier";
+import { ZapierSettings } from "@/components/ZapierSettings";
 import heroMain from "@/assets/hero-main.jpg";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
@@ -21,6 +23,16 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
+  const [sending, setSending] = useState(false);
+
+  const handleDemoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    const result = await sendToZapier(formData, "demo");
+    alert(result.message);
+    if (result.success) setFormData({ nome: "", email: "", telefone: "", segmento: "" });
+    setSending(false);
+  };
 
   const products = [
     {
@@ -134,9 +146,12 @@ function HomePage() {
       <section className="section-padding gradient-primary">
         <div className="container-wide">
           <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">Comece Agora</h2>
+            <div className="flex items-center justify-center gap-2">
+              <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">Comece Agora</h2>
+              <ZapierSettings />
+            </div>
             <p className="mt-4 text-primary-foreground/70">Preencha o formulário e nossa equipe entrará em contato.</p>
-            <form className="mt-8 grid gap-4" onSubmit={(e) => { e.preventDefault(); alert("Obrigado! Entraremos em contato."); }}>
+            <form className="mt-8 grid gap-4" onSubmit={handleDemoSubmit}>
               <Input placeholder="Nome" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 border-primary-foreground/20"
                 value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
               <Input placeholder="Email" type="email" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 border-primary-foreground/20"
@@ -151,8 +166,8 @@ function HomePage() {
                 <option value="estetica" className="text-foreground">Estética / Salão</option>
                 <option value="outro" className="text-foreground">Outro</option>
               </select>
-              <Button type="submit" size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
-                Solicitar Demonstração
+              <Button type="submit" size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
+                {sending ? "Enviando..." : "Solicitar Demonstração"}
               </Button>
             </form>
           </div>

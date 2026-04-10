@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
+import { sendToZapier } from "@/lib/zapier";
+import { ZapierSettings } from "@/components/ZapierSettings";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
@@ -19,10 +21,15 @@ export const Route = createFileRoute("/contato")({
 function ContatoPage() {
   const [form, setForm] = useState({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Mensagem enviada com sucesso! Entraremos em contato em breve.");
-    setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+    setSending(true);
+    const result = await sendToZapier(form, "contato");
+    alert(result.message);
+    if (result.success) setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+    setSending(false);
   };
 
   return (
@@ -37,7 +44,10 @@ function ContatoPage() {
       <section className="section-padding">
         <div className="container-wide grid gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Envie uma mensagem</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-foreground">Envie uma mensagem</h2>
+              <ZapierSettings />
+            </div>
             <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
               <Input placeholder="Nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required />
               <Input placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
@@ -50,7 +60,9 @@ function ContatoPage() {
                 <option value="outro">Outro</option>
               </select>
               <Textarea placeholder="Sua mensagem" rows={5} value={form.mensagem} onChange={(e) => setForm({ ...form, mensagem: e.target.value })} required />
-              <Button type="submit" className="bg-cta text-cta-foreground hover:bg-cta/90">Enviar Mensagem</Button>
+              <Button type="submit" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
+                {sending ? "Enviando..." : "Enviar Mensagem"}
+              </Button>
             </form>
           </div>
 
