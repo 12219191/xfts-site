@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -6,9 +6,13 @@ import { Settings } from "lucide-react";
 import { getZapierWebhookUrl, setZapierWebhookUrl } from "@/lib/zapier";
 
 export function ZapierSettings() {
-  const [url, setUrl] = useState(getZapierWebhookUrl);
+  const [url, setUrl] = useState("");
   const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (open) setUrl(getZapierWebhookUrl());
+  }, [open]);
 
   const handleSave = () => {
     setZapierWebhookUrl(url);
