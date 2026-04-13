@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
+import { trackFormSubmit } from "@/lib/tracking";
 import { ZapierSettings } from "@/components/ZapierSettings";
 
 export const Route = createFileRoute("/contato")({
@@ -27,8 +28,11 @@ function ContatoPage() {
     e.preventDefault();
     setSending(true);
     const result = await sendToZapier(form, "contato");
+    if (result.success) {
+      trackFormSubmit("contato", form.segmento);
+      setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+    }
     alert(result.message);
-    if (result.success) setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
     setSending(false);
   };
 
