@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
+import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
 import { ZapierSettings } from "@/components/ZapierSettings";
 import heroMain from "@/assets/hero-main.jpg";
 import heroClinic from "@/assets/hero-clinic.jpg";
@@ -29,8 +30,11 @@ function HomePage() {
     e.preventDefault();
     setSending(true);
     const result = await sendToZapier(formData, "demo");
+    if (result.success) {
+      trackFormSubmit("demo", formData.segmento);
+      setFormData({ nome: "", email: "", telefone: "", segmento: "" });
+    }
     alert(result.message);
-    if (result.success) setFormData({ nome: "", email: "", telefone: "", segmento: "" });
     setSending(false);
   };
 
@@ -72,12 +76,12 @@ function HomePage() {
             Gestão Clínica, Barbearias e Estéticas com Inteligência Analítica
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato">
+            <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>
               <Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
                 Solicite Demo Grátis <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/contato">
+            <Link to="/contato" onClick={() => trackCTAClick("Fale Conosco", "hero")}>
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                 Fale Conosco
               </Button>
@@ -132,7 +136,7 @@ function HomePage() {
                     <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
-                  <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline">
+                  <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline" onClick={() => trackProductClick(p.title)}>
                     Saiba Mais <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </CardContent>
