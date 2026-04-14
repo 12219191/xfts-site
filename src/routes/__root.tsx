@@ -118,6 +118,7 @@ function RootComponent() {
   usePageTracking();
   return (
     <div className="flex min-h-screen flex-col">
+      <PaymentTestModeBanner />
       <Header />
       <main className="flex-1">
         <Outlet />
