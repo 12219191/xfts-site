@@ -108,6 +108,9 @@ function GestaoBarbeariasPage() {
                 <Link to="/contato"><Button className="mt-4 w-full bg-amber-600 text-white hover:bg-amber-700" onClick={() => trackCTAClick("Começar Agora - Enterprise", "gestao-barbearias-pricing")}>Falar com Consultor</Button></Link>
               </CardContent></Card>
             </div>
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              <Link to="/produtos/comparar-planos" className="text-cta underline underline-offset-4 hover:text-cta/80">Comparar todos os planos →</Link>
+            </p>
           </div>
         </div>
       </section>
