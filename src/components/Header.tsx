@@ -9,6 +9,7 @@ export function Header() {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/produtos", label: "Produtos" },
+    { to: "/produtos/comparar-planos", label: "Planos" },
     { to: "/blog", label: "Blog" },
     { to: "/login", label: "Login" },
     { to: "/contato", label: "Contato" },
