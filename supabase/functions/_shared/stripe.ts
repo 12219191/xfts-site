@@ -19,18 +19,24 @@ export function createStripeClient(env: StripeEnv): Stripe {
   const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
   if (!lovableApiKey) throw new Error('LOVABLE_API_KEY is not configured');
 
+  const fetchWithGateway = (url: string | URL | Request, init?: RequestInit): Promise<Response> => {
+    const urlStr = typeof url === 'string' ? url : url instanceof URL ? url.toString() : url.url;
+    const gatewayUrl = urlStr.replace('https://api.stripe.com', GATEWAY_STRIPE_BASE);
+    const existingHeaders = init?.headers
+      ? Object.fromEntries(new Headers(init.headers).entries())
+      : {};
+    return fetch(gatewayUrl, {
+      ...init,
+      headers: {
+        ...existingHeaders,
+        'X-Connection-Api-Key': connectionApiKey,
+        'Lovable-API-Key': lovableApiKey,
+      },
+    });
+  };
+
   return new Stripe(connectionApiKey, {
-    httpClient: Stripe.createFetchHttpClient((url: string | URL, init?: RequestInit) => {
-      const gatewayUrl = url.toString().replace('https://api.stripe.com', GATEWAY_STRIPE_BASE);
-      return fetch(gatewayUrl, {
-        ...init,
-        headers: {
-          ...Object.fromEntries(new Headers(init?.headers).entries()),
-          'X-Connection-Api-Key': connectionApiKey,
-          'Lovable-API-Key': lovableApiKey,
-        },
-      });
-    }),
+    httpClient: Stripe.createFetchHttpClient(fetchWithGateway),
   });
 }
 
