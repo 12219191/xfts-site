@@ -76,6 +76,15 @@ function GestaoBarbeariasPage() {
                 <p className="mt-2 text-sm text-muted-foreground">Para redes e múltiplas unidades</p>
                 <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Agora - Pro", "gestao-barbearias-pricing")}>Começar Agora</Button></Link>
               </CardContent></Card>
+              <Card className="border-2 border-amber-500/50 bg-gradient-to-br from-card to-amber-500/5"><CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-card-foreground">Enterprise</h3>
+                  <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">Premium</span>
+                </div>
+                <p className="mt-1 text-3xl font-bold text-primary">R$ 349<span className="text-base font-normal text-muted-foreground">/mês</span></p>
+                <p className="mt-2 text-sm text-muted-foreground">Para redes e grandes operações</p>
+                <Link to="/contato"><Button className="mt-4 w-full bg-amber-600 text-white hover:bg-amber-700" onClick={() => trackCTAClick("Começar Agora - Enterprise", "gestao-barbearias-pricing")}>Falar com Consultor</Button></Link>
+              </CardContent></Card>
             </div>
           </div>
         </div>
