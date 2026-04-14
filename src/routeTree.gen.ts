@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as LoginRouteImport } from './routes/login'
@@ -30,6 +31,11 @@ import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutosRoute = ProdutosRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
   '/produtos': typeof ProdutosRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
   '/produtos': typeof ProdutosRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/minha-conta'
     | '/produtos'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/login'
     | '/minha-conta'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/minha-conta'
     | '/produtos'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MinhaContaRoute: typeof MinhaContaRoute
   ProdutosRoute: typeof ProdutosRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produtos': {
@@ -417,6 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MinhaContaRoute: MinhaContaRoute,
   ProdutosRoute: ProdutosRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
