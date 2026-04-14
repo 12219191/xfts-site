@@ -67,8 +67,3 @@ export function trackFormSubmit(formType: "demo" | "contato", segmento: string) 
   pushGA4("generate_lead", { currency: "BRL", value: 0, ...params });
   pushMeta("CompleteRegistration", { content_name: formType, status: segmento });
 }
-  const params = { form_type: formType, segmento };
-  pushGTM("form_submit", params);
-  pushGA4("generate_lead", { currency: "BRL", value: 0, ...params });
-  pushMeta("CompleteRegistration", { content_name: formType, status: segmento });
-}
