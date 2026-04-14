@@ -19,9 +19,12 @@ serve(async (req) => {
     const env = (environment || 'sandbox') as StripeEnv;
     const stripe = createStripeClient(env);
 
+    console.log("Looking up price with lookup_key:", priceId);
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
-    if (!prices.data.length) {
-      return new Response(JSON.stringify({ error: "Price not found" }), {
+    console.log("Prices response:", JSON.stringify(prices));
+
+    if (!prices?.data?.length) {
+      return new Response(JSON.stringify({ error: "Price not found", debug: typeof prices }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -31,6 +34,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
