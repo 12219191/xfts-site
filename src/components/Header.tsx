@@ -1,19 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
 
-  const navLinks = [
+  const publicLinks = [
     { to: "/", label: "Home" },
     { to: "/produtos", label: "Produtos" },
     { to: "/produtos/comparar-planos", label: "Planos" },
     { to: "/blog", label: "Blog" },
-    { to: "/minha-conta", label: "Minha Conta" },
     { to: "/contato", label: "Contato" },
   ] as const;
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm">
@@ -24,7 +31,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
+          {publicLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -34,6 +41,29 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+
+          {!loading && user ? (
+            <>
+              <Link
+                to="/minha-conta"
+                className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+                activeProps={{ className: "text-sm font-medium text-primary" }}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <User className="h-4 w-4" />
+                  Minha Conta
+                </span>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
+          ) : !loading ? (
+            <Link to="/login">
+              <Button variant="outline" size="sm">Login</Button>
+            </Link>
+          ) : null}
+
           <Link to="/contato">
             <Button className="bg-cta text-cta-foreground hover:bg-cta/90">Solicite Demo</Button>
           </Link>
@@ -47,7 +77,7 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-border bg-card px-4 py-4 md:hidden">
           <nav className="flex flex-col gap-3">
-            {navLinks.map((link) => (
+            {publicLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -58,6 +88,30 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+
+            {!loading && user ? (
+              <>
+                <Link
+                  to="/minha-conta"
+                  className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
+                  activeProps={{ className: "text-sm font-medium text-primary" }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Minha Conta
+                </Link>
+                <button
+                  className="text-left text-sm font-medium text-muted-foreground hover:text-destructive"
+                  onClick={() => { handleLogout(); setMobileOpen(false); }}
+                >
+                  Sair
+                </button>
+              </>
+            ) : !loading ? (
+              <Link to="/login" onClick={() => setMobileOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full">Login</Button>
+              </Link>
+            ) : null}
+
             <Link to="/contato" onClick={() => setMobileOpen(false)}>
               <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90">Solicite Demo</Button>
             </Link>
