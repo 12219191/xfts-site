@@ -11,7 +11,7 @@ export function Header() {
     { to: "/produtos", label: "Produtos" },
     { to: "/produtos/comparar-planos", label: "Planos" },
     { to: "/blog", label: "Blog" },
-    { to: "/login", label: "Login" },
+    { to: "/minha-conta", label: "Minha Conta" },
     { to: "/contato", label: "Contato" },
   ] as const;
 
