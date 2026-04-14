@@ -5,6 +5,7 @@ import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { PricingCards } from "@/components/PricingCards";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
@@ -31,6 +32,24 @@ const testimonials = [
   { name: "Lucas Ferreira", role: "Barbearia Premium", text: "O controle de estoque e PDV mudaram nosso jogo. Não perdemos mais produtos e o caixa fecha certinho." },
   { name: "Rafael Santos", role: "Salão Masculino", text: "O CRM nos ajudou a fidelizar clientes. Taxa de retorno aumentou 50% em 3 meses." },
   { name: "André Oliveira", role: "Rede de Barbearias", text: "Gerenciar 5 unidades ficou simples com os dashboards analíticos. Recomendo demais." },
+];
+
+const plans = [
+  {
+    name: "Básico", price: "R$ 89", description: "Para barbearias individuais", tier: "basico" as const,
+    features: ["PDV integrado", "Controle de estoque", "Agendamento online", "CRM de clientes", "1 profissional"],
+    priceId: "gestao_barbearias_basico_mensal", ctaLabel: "Começar Agora",
+  },
+  {
+    name: "Pro", price: "R$ 169", description: "Para redes e múltiplas unidades", tier: "pro" as const,
+    features: ["Tudo do Básico", "Gestão de comissões", "Notificações WhatsApp", "Fidelização de clientes", "Até 10 profissionais"],
+    priceId: "gestao_barbearias_pro_mensal", ctaLabel: "Começar Agora",
+  },
+  {
+    name: "Enterprise", price: "R$ 349", description: "Para redes e grandes operações", tier: "enterprise" as const,
+    features: ["Tudo do Pro", "Multi-unidades", "Relatórios completos", "Suporte dedicado 24/7", "Profissionais ilimitados"],
+    ctaLabel: "Falar com Consultor",
+  },
 ];
 
 function GestaoBarbeariasPage() {
@@ -71,51 +90,34 @@ function GestaoBarbeariasPage() {
       </section>
 
       <section className="section-padding">
-        <div className="container-wide grid gap-12 lg:grid-cols-2">
-          <div>
+        <div className="container-wide">
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-foreground">Funcionalidades</h2>
-            <ul className="mt-6 grid gap-3">
-              {features.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-foreground"><Check className="h-5 w-5 shrink-0 text-cta" /><span>{f}</span></li>
-              ))}
-            </ul>
+            <p className="mt-3 text-muted-foreground">Tudo para gerenciar sua barbearia com eficiência e praticidade.</p>
           </div>
-          <div>
-            <h2 className="text-3xl font-bold text-foreground">Planos e Preços</h2>
-            <div className="mt-6 grid gap-4">
-              <Card className="border-border bg-card"><CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 89<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Para barbearias individuais</p>
-                <Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => handleCheckout("gestao_barbearias_basico_mensal", "Começar Agora - Básico")}>Começar Agora</Button>
-              </CardContent></Card>
-              <Card className="border-2 border-cta bg-card"><CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-card-foreground">Pro</h3>
-                  <span className="rounded-full bg-cta/10 px-3 py-1 text-xs font-medium text-cta">Popular</span>
-                </div>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 169<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Para redes e múltiplas unidades</p>
-                <Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => handleCheckout("gestao_barbearias_pro_mensal", "Começar Agora - Pro")}>Começar Agora</Button>
-              </CardContent></Card>
-              <Card className="border-2 border-amber-500/50 bg-gradient-to-br from-card to-amber-500/5"><CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-card-foreground">Enterprise</h3>
-                  <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">Premium</span>
-                </div>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 349<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Para redes e grandes operações</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-amber-600 text-white hover:bg-amber-700" onClick={() => trackCTAClick("Começar Agora - Enterprise", "gestao-barbearias-pricing")}>Falar com Consultor</Button></Link>
-              </CardContent></Card>
-            </div>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              <Link to="/produtos/comparar-planos" className="text-cta underline underline-offset-4 hover:text-cta/80">Comparar todos os planos →</Link>
-            </p>
-          </div>
+          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((f) => (
+              <li key={f} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground">
+                <Check className="h-5 w-5 shrink-0 text-cta" />{f}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section className="section-padding bg-surface">
+        <div className="container-wide">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-foreground">Planos e Preços</h2>
+            <p className="mt-3 text-muted-foreground">Escolha o plano ideal para sua barbearia ou rede.</p>
+          </div>
+          <div className="mt-12">
+            <PricingCards plans={plans} trackingSection="gestao-barbearias-pricing" onCheckout={handleCheckout} />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding">
         <div className="container-wide">
           <h2 className="text-center text-3xl font-bold text-foreground">O que dizem nossos clientes</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">

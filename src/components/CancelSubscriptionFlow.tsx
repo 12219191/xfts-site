@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AlertTriangle, Gift, Pause, ArrowDown, X, Heart } from "lucide-react";
+import { AlertTriangle, Gift, Pause, ArrowDown, Heart } from "lucide-react";
 
 interface CancelSubscriptionFlowProps {
   open: boolean;
