@@ -20,8 +20,10 @@ serve(async (req) => {
     const stripe = createStripeClient(env);
 
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
-    if (!prices.data.length) {
-      return new Response(JSON.stringify({ error: "Price not found" }), {
+    console.log("prices response:", JSON.stringify(prices));
+    const priceData = prices?.data;
+    if (!priceData || !priceData.length) {
+      return new Response(JSON.stringify({ error: "Price not found", debug: typeof prices }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
