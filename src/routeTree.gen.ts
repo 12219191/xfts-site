@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContatoRouteImport } from './routes/contato'
@@ -22,6 +23,11 @@ import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.ges
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/produtos': typeof ProdutosRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/produtos': typeof ProdutosRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/login'
     | '/produtos'
+    | '/sitemap.xml'
     | '/blog/$articleId'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contato'
     | '/login'
+    | '/sitemap.xml'
     | '/blog/$articleId'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/contato'
     | '/login'
     | '/produtos'
+    | '/sitemap.xml'
     | '/blog/$articleId'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -175,10 +187,18 @@ export interface RootRouteChildren {
   ContatoRoute: typeof ContatoRoute
   LoginRoute: typeof LoginRoute
   ProdutosRoute: typeof ProdutosRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContatoRoute: ContatoRoute,
   LoginRoute: LoginRoute,
   ProdutosRoute: ProdutosRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
