@@ -10,7 +10,7 @@ export function getConnectionApiKey(env: StripeEnv): string {
   return key;
 }
 
-import Stripe from "https://esm.sh/stripe@18.5.0";
+import Stripe from "https://esm.sh/stripe@17.7.0?target=deno";
 
 const GATEWAY_STRIPE_BASE = 'https://connector-gateway.lovable.dev/stripe';
 
