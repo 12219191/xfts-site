@@ -18,7 +18,7 @@ interface Article {
 }
 
 const fetchArticleMeta = createServerFn({ method: "GET" })
-  .validator((input: string) => input)
+  .inputValidator((input: unknown) => input as string)
   .handler(async ({ data: slug }) => {
     const { supabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
