@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { Header } from "@/components/Header";
 import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -117,6 +118,7 @@ function RootComponent() {
   usePageTracking();
   return (
     <div className="flex min-h-screen flex-col">
+      <PaymentTestModeBanner />
       <Header />
       <main className="flex-1">
         <Outlet />

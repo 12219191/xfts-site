@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check, ArrowRight, Star } from "lucide-react";
+import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
-import { trackCTAClick, trackFormSubmit } from "@/lib/tracking";
+import { trackCTAClick } from "@/lib/tracking";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
@@ -33,8 +34,29 @@ const testimonials = [
 ];
 
 function GestaoBarbeariasPage() {
+  const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
+
+  const handleCheckout = (priceId: string, label: string) => {
+    trackCTAClick(label, "gestao-barbearias-pricing");
+    openCheckout({
+      priceId,
+      returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
+
   return (
     <>
+      {isOpen && CheckoutForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-2xl">
+            <button onClick={closeCheckout} className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted">
+              <X className="h-5 w-5" />
+            </button>
+            <CheckoutForm />
+          </div>
+        </div>
+      )}
+
       <section className="relative overflow-hidden">
         <img src={heroBarbershop} alt="Barbearia moderna" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
@@ -65,7 +87,7 @@ function GestaoBarbeariasPage() {
                 <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 89<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para barbearias individuais</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => trackCTAClick("Começar Agora - Básico", "gestao-barbearias-pricing")}>Começar Agora</Button></Link>
+                <Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => handleCheckout("gestao_barbearias_basico_mensal", "Começar Agora - Básico")}>Começar Agora</Button>
               </CardContent></Card>
               <Card className="border-2 border-cta bg-card"><CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -74,7 +96,7 @@ function GestaoBarbeariasPage() {
                 </div>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 169<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para redes e múltiplas unidades</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Agora - Pro", "gestao-barbearias-pricing")}>Começar Agora</Button></Link>
+                <Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => handleCheckout("gestao_barbearias_pro_mensal", "Começar Agora - Pro")}>Começar Agora</Button>
               </CardContent></Card>
               <Card className="border-2 border-amber-500/50 bg-gradient-to-br from-card to-amber-500/5"><CardContent className="p-6">
                 <div className="flex items-center justify-between">
