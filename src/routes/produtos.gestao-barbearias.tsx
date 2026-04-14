@@ -42,8 +42,8 @@ function GestaoBarbeariasPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">Gestão para Barbearias e Salões</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Estoque, vendas, PDV e CRM em uma única plataforma inteligente.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">Acessar Sistema</Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-barbearias-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => trackCTAClick("Acessar Sistema", "gestao-barbearias-hero")}>Acessar Sistema</Button></Link>
           </div>
         </div>
       </section>
@@ -65,7 +65,7 @@ function GestaoBarbeariasPage() {
                 <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 89<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para barbearias individuais</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90">Começar Agora</Button></Link>
+                <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => trackCTAClick("Começar Agora - Básico", "gestao-barbearias-pricing")}>Começar Agora</Button></Link>
               </CardContent></Card>
               <Card className="border-2 border-cta bg-card"><CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -74,7 +74,7 @@ function GestaoBarbeariasPage() {
                 </div>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 169<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para redes e múltiplas unidades</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90">Começar Agora</Button></Link>
+                <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Agora - Pro", "gestao-barbearias-pricing")}>Começar Agora</Button></Link>
               </CardContent></Card>
             </div>
           </div>
