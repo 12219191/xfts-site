@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
+import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
 import appCss from "../styles.css?url";
 
@@ -113,6 +114,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  usePageTracking();
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
