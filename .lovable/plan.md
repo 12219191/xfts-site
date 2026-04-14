@@ -1,43 +1,38 @@
 
 
-## Rastreamento de Scroll Depth e Tempo na Pagina
+## Adicionar Plano Enterprise a Cada Página de Produto
 
-### O que sera feito
+### Resumo
 
-Adicionar dois novos trackers automaticos que disparam eventos para GTM/GA4/Meta Pixel:
+Adicionar um terceiro card de plano "Enterprise" em cada uma das 3 páginas de produto, e criar os produtos correspondentes no sistema de pagamentos.
 
-1. **Scroll Depth** -- dispara eventos quando o usuario atinge 25%, 50%, 75% e 100% da pagina, usando `IntersectionObserver` para performance.
+### Preços
 
-2. **Tempo na Pagina** -- dispara eventos em marcos de 15s, 30s, 60s, 120s e 300s de permanencia, pausando quando a aba perde foco (`visibilitychange`).
+| Produto | Básico (atual) | Pro (atual) | Enterprise (novo) |
+|---------|---------------|-------------|-------------------|
+| Gestão Clínica | R$ 99/mês | R$ 199/mês | R$ 399/mês |
+| Gestão Barbearias | R$ 89/mês | R$ 169/mês | R$ 349/mês |
+| Gestão Estéticas | R$ 99/mês | R$ 189/mês | R$ 379/mês |
 
-### Implementacao
+### Alteracoes
 
-**Arquivo 1: `src/lib/tracking.ts`** -- adicionar duas novas funcoes exportadas:
+**1. Criar 3 produtos Enterprise no sistema de pagamentos** via `batch_create_product`:
+- `gestao_clinica_enterprise` - R$ 399/mês
+- `gestao_barbearias_enterprise` - R$ 349/mês
+- `gestao_esteticas_enterprise` - R$ 379/mês
 
-- `trackScrollDepth(threshold: number, page: string)` -- envia evento `scroll_depth` com o percentual e pagina atual para GTM, GA4 e Meta.
-- `trackTimeOnPage(seconds: number, page: string)` -- envia evento `time_on_page` com duracao e pagina para as 3 plataformas.
+**2. Adicionar card Enterprise em cada pagina de produto** (3 arquivos):
+- `src/routes/produtos.gestao-clinica.tsx`
+- `src/routes/produtos.gestao-barbearias.tsx`
+- `src/routes/produtos.gestao-esteticas.tsx`
 
-**Arquivo 2: `src/hooks/use-page-tracking.ts`** (novo) -- hook React que:
+Cada card Enterprise tera visual diferenciado (borda dourada ou destaque premium), com descricao "Para redes e grandes operacoes" e botao CTA apontando para `/contato`.
 
-- Usa `useEffect` para registrar listeners de scroll e timer ao montar.
-- **Scroll**: cria 4 elementos sentinela (divs invisíveis) em 25/50/75/100% da pagina via `IntersectionObserver`, ou usa `scroll` event com throttle calculando `scrollTop / scrollHeight`.
-- **Tempo**: inicia `setInterval` de 1s, incrementa contador, dispara nos marcos definidos. Pausa/retoma com `document.visibilityState`.
-- Reseta ambos ao mudar de rota (cleanup do useEffect).
-- Cada marco dispara apenas uma vez por sessao de pagina.
+**3. Tambem criar os produtos Basico e Pro** no sistema de pagamentos (6 produtos adicionais), para que todos os planos estejam registrados e prontos para checkout futuro.
 
-**Arquivo 3: `src/routes/__root.tsx`** -- chamar `usePageTracking()` dentro de `RootComponent` para ativar automaticamente em todas as paginas.
+### Detalhes Tecnicos
 
-### Eventos disparados
-
-| Evento | Parametros | Marcos |
-|--------|-----------|--------|
-| `scroll_depth` | `percent`, `page_path` | 25, 50, 75, 100 |
-| `time_on_page` | `seconds`, `page_path` | 15, 30, 60, 120, 300 |
-
-### Detalhes tecnicos
-
-- SSR-safe: todas as chamadas protegidas com `typeof window !== "undefined"`.
-- Usa `useLocation` do TanStack Router para obter o path atual e resetar ao navegar.
-- Scroll tracking via `scroll` event com `requestAnimationFrame` throttle (mais simples e confiavel que sentinelas).
-- Sem dependencias externas.
+- Total de 9 produtos criados via `batch_create_product` (3 tiers x 3 produtos)
+- Cards seguem o mesmo padrao visual existente (Card + CardContent)
+- Enterprise usa estilo premium diferenciado dos demais
 
