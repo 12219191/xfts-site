@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
-import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -9,28 +8,45 @@ serve(async (req) => {
 
   try {
     const { priceId, environment } = await req.json();
-    if (!priceId || typeof priceId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(priceId)) {
-      return new Response(JSON.stringify({ error: "Invalid priceId" }), {
-        status: 400,
+    
+    const env = environment || 'sandbox';
+    const connectionApiKey = env === 'sandbox'
+      ? Deno.env.get('STRIPE_SANDBOX_API_KEY')
+      : Deno.env.get('STRIPE_LIVE_API_KEY');
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!connectionApiKey || !lovableApiKey) {
+      return new Response(JSON.stringify({ error: "Missing API keys" }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const env = (environment || 'sandbox') as StripeEnv;
-    const stripe = createStripeClient(env);
+    // Direct gateway call to list prices by lookup_key
+    const params = new URLSearchParams();
+    params.append('lookup_keys[]', priceId);
+    
+    const res = await fetch(`https://connector-gateway.lovable.dev/stripe/v1/prices?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${connectionApiKey}`,
+        'X-Connection-Api-Key': connectionApiKey,
+        'Lovable-API-Key': lovableApiKey,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
 
-    console.log("Looking up price with lookup_key:", priceId);
-    const prices = await stripe.prices.list({ lookup_keys: [priceId] });
-    console.log("Prices response:", JSON.stringify(prices));
+    const data = await res.json();
+    console.log("Gateway response status:", res.status, "data:", JSON.stringify(data));
 
-    if (!prices?.data?.length) {
-      return new Response(JSON.stringify({ error: "Price not found", debug: typeof prices }), {
+    if (!data?.data?.length) {
+      return new Response(JSON.stringify({ error: "Price not found", gatewayResponse: data }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ stripeId: prices.data[0].id }), {
+    return new Response(JSON.stringify({ stripeId: data.data[0].id }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
