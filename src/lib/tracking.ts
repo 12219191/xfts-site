@@ -44,8 +44,29 @@ export function trackProductClick(productName: string) {
   pushMeta("ViewContent", { content_name: productName, content_type: "product" });
 }
 
+/** Track scroll depth milestone */
+export function trackScrollDepth(percent: number, pagePath: string) {
+  const params = { percent, page_path: pagePath };
+  pushGTM("scroll_depth", params);
+  pushGA4("scroll_depth", params);
+  pushMeta("CustomEvent", { content_name: "scroll_depth", value: percent, content_category: pagePath });
+}
+
+/** Track time on page milestone */
+export function trackTimeOnPage(seconds: number, pagePath: string) {
+  const params = { seconds, page_path: pagePath };
+  pushGTM("time_on_page", params);
+  pushGA4("time_on_page", params);
+  pushMeta("CustomEvent", { content_name: "time_on_page", value: seconds, content_category: pagePath });
+}
+
 /** Track a form submission (demo request or contact) */
 export function trackFormSubmit(formType: "demo" | "contato", segmento: string) {
+  const params = { form_type: formType, segmento };
+  pushGTM("form_submit", params);
+  pushGA4("generate_lead", { currency: "BRL", value: 0, ...params });
+  pushMeta("CompleteRegistration", { content_name: formType, status: segmento });
+}
   const params = { form_type: formType, segmento };
   pushGTM("form_submit", params);
   pushGA4("generate_lead", { currency: "BRL", value: 0, ...params });
