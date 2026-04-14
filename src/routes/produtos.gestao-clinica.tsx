@@ -5,6 +5,7 @@ import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { PricingCards } from "@/components/PricingCards";
 
 export const Route = createFileRoute("/produtos/gestao-clinica")({
   head: () => ({
@@ -31,6 +32,24 @@ const testimonials = [
   { name: "Dra. Ana Silva", role: "Clínica Odontológica", text: "O sistema transformou a gestão da nossa clínica. Reduzimos faltas em 40% com os lembretes automáticos." },
   { name: "Dr. Carlos Mendes", role: "Consultório Médico", text: "Finalmente um sistema que entende as necessidades de uma clínica. Prontuário eletrônico excelente." },
   { name: "Dra. Patrícia Lima", role: "Clínica de Harmonização", text: "A inteligência analítica nos ajudou a identificar os melhores horários e serviços. Faturamento cresceu 30%." },
+];
+
+const plans = [
+  {
+    name: "Básico", price: "R$ 99", description: "Ideal para consultórios individuais", tier: "basico" as const,
+    features: ["Agendamento online", "Prontuário eletrônico", "Controle financeiro", "Emissão de recibos", "1 profissional"],
+    priceId: "gestao_clinica_basico_mensal", ctaLabel: "Começar Agora",
+  },
+  {
+    name: "Pro", price: "R$ 199", description: "Para clínicas com múltiplos profissionais", tier: "pro" as const,
+    features: ["Tudo do Básico", "Notificações automáticas", "Relatórios avançados", "Gestão de equipe", "Até 10 profissionais"],
+    priceId: "gestao_clinica_pro_mensal", ctaLabel: "Começar Agora",
+  },
+  {
+    name: "Enterprise", price: "R$ 399", description: "Para redes e grandes operações", tier: "enterprise" as const,
+    features: ["Tudo do Pro", "Multi-unidades", "Integração com convênios", "API e integrações", "Profissionais ilimitados"],
+    ctaLabel: "Falar com Consultor",
+  },
 ];
 
 function GestaoClinicaPage() {
@@ -71,51 +90,34 @@ function GestaoClinicaPage() {
       </section>
 
       <section className="section-padding">
-        <div className="container-wide grid gap-12 lg:grid-cols-2">
-          <div>
+        <div className="container-wide">
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-foreground">Funcionalidades</h2>
-            <ul className="mt-6 grid gap-3">
-              {features.map((f) => (
-                <li key={f} className="flex items-center gap-3 text-foreground"><Check className="h-5 w-5 shrink-0 text-cta" /><span>{f}</span></li>
-              ))}
-            </ul>
+            <p className="mt-3 text-muted-foreground">Tudo que você precisa para gerenciar sua clínica com excelência.</p>
           </div>
-          <div>
-            <h2 className="text-3xl font-bold text-foreground">Planos e Preços</h2>
-            <div className="mt-6 grid gap-4">
-              <Card className="border-border bg-card"><CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 99<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Ideal para consultórios individuais</p>
-                <Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => handleCheckout("gestao_clinica_basico_mensal", "Começar Agora - Básico")}>Começar Agora</Button>
-              </CardContent></Card>
-              <Card className="border-2 border-cta bg-card"><CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-card-foreground">Pro</h3>
-                  <span className="rounded-full bg-cta/10 px-3 py-1 text-xs font-medium text-cta">Popular</span>
-                </div>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 199<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Para clínicas com múltiplos profissionais</p>
-                <Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => handleCheckout("gestao_clinica_pro_mensal", "Começar Agora - Pro")}>Começar Agora</Button>
-              </CardContent></Card>
-              <Card className="border-2 border-amber-500/50 bg-gradient-to-br from-card to-amber-500/5"><CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-card-foreground">Enterprise</h3>
-                  <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">Premium</span>
-                </div>
-                <p className="mt-1 text-3xl font-bold text-primary">R$ 399<span className="text-base font-normal text-muted-foreground">/mês</span></p>
-                <p className="mt-2 text-sm text-muted-foreground">Para redes e grandes operações</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-amber-600 text-white hover:bg-amber-700" onClick={() => trackCTAClick("Começar Agora - Enterprise", "gestao-clinica-pricing")}>Falar com Consultor</Button></Link>
-              </CardContent></Card>
-            </div>
-            <p className="mt-4 text-center text-sm text-muted-foreground">
-              <Link to="/produtos/comparar-planos" className="text-cta underline underline-offset-4 hover:text-cta/80">Comparar todos os planos →</Link>
-            </p>
-          </div>
+          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((f) => (
+              <li key={f} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground">
+                <Check className="h-5 w-5 shrink-0 text-cta" />{f}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section className="section-padding bg-surface">
+        <div className="container-wide">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-foreground">Planos e Preços</h2>
+            <p className="mt-3 text-muted-foreground">Escolha o plano ideal para o seu consultório ou clínica.</p>
+          </div>
+          <div className="mt-12">
+            <PricingCards plans={plans} trackingSection="gestao-clinica-pricing" onCheckout={handleCheckout} />
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding">
         <div className="container-wide">
           <h2 className="text-center text-3xl font-bold text-foreground">O que dizem nossos clientes</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
