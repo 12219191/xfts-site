@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star } from "lucide-react";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
+import { trackCTAClick, trackFormSubmit } from "@/lib/tracking";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
