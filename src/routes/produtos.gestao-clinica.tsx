@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star } from "lucide-react";
 import heroClinic from "@/assets/hero-clinic.jpg";
+import { trackCTAClick, trackFormSubmit } from "@/lib/tracking";
 
 export const Route = createFileRoute("/produtos/gestao-clinica")({
   head: () => ({
@@ -43,8 +44,8 @@ function GestaoClinicaPage() {
             Sistema SaaS para otimizar agendamentos, prontuários e finanças da sua clínica.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">Acessar Sistema</Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-clinica-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => trackCTAClick("Acessar Sistema", "gestao-clinica-hero")}>Acessar Sistema</Button></Link>
           </div>
         </div>
       </section>
@@ -70,7 +71,7 @@ function GestaoClinicaPage() {
                   <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
                   <p className="mt-1 text-3xl font-bold text-primary">R$ 99<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                   <p className="mt-2 text-sm text-muted-foreground">Ideal para consultórios individuais</p>
-                  <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90">Começar Agora</Button></Link>
+                  <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => trackCTAClick("Começar Agora - Básico", "gestao-clinica-pricing")}>Começar Agora</Button></Link>
                 </CardContent>
               </Card>
               <Card className="border-2 border-cta bg-card">
@@ -81,7 +82,7 @@ function GestaoClinicaPage() {
                   </div>
                   <p className="mt-1 text-3xl font-bold text-primary">R$ 199<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                   <p className="mt-2 text-sm text-muted-foreground">Para clínicas com múltiplos profissionais</p>
-                  <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90">Começar Agora</Button></Link>
+                  <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Agora - Pro", "gestao-clinica-pricing")}>Começar Agora</Button></Link>
                 </CardContent>
               </Card>
             </div>

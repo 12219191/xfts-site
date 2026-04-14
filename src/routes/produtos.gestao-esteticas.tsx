@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star } from "lucide-react";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import { trackCTAClick, trackFormSubmit } from "@/lib/tracking";
 
 export const Route = createFileRoute("/produtos/gestao-esteticas")({
   head: () => ({
@@ -41,8 +42,8 @@ function GestaoEsteticasPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">Estoque, Vendas e CRM para Estéticas</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Gestão completa para clínicas de estética e salões de beleza.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">Acessar Sistema</Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-esteticas-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => trackCTAClick("Acessar Sistema", "gestao-esteticas-hero")}>Acessar Sistema</Button></Link>
           </div>
         </div>
       </section>
@@ -64,7 +65,7 @@ function GestaoEsteticasPage() {
                 <h3 className="text-lg font-semibold text-card-foreground">Básico</h3>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 99<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para studios individuais</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90">Começar Agora</Button></Link>
+                <Link to="/contato"><Button className="mt-4 w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => trackCTAClick("Começar Agora - Básico", "gestao-esteticas-pricing")}>Começar Agora</Button></Link>
               </CardContent></Card>
               <Card className="border-2 border-cta bg-card"><CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -73,7 +74,7 @@ function GestaoEsteticasPage() {
                 </div>
                 <p className="mt-1 text-3xl font-bold text-primary">R$ 189<span className="text-base font-normal text-muted-foreground">/mês</span></p>
                 <p className="mt-2 text-sm text-muted-foreground">Para clínicas com equipe</p>
-                <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90">Começar Agora</Button></Link>
+                <Link to="/contato"><Button className="mt-4 w-full bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Agora - Pro", "gestao-esteticas-pricing")}>Começar Agora</Button></Link>
               </CardContent></Card>
             </div>
           </div>
