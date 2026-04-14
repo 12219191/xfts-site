@@ -22,6 +22,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
+import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 
@@ -91,6 +92,11 @@ const ProdutosGestaoBarbeariasRoute =
     path: '/gestao-barbearias',
     getParentRoute: () => ProdutosRoute,
   } as any)
+const ProdutosCompararPlanosRoute = ProdutosCompararPlanosRouteImport.update({
+  id: '/comparar-planos',
+  path: '/comparar-planos',
+  getParentRoute: () => ProdutosRoute,
+} as any)
 const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
   id: '/retorno',
   path: '/retorno',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/produtos/comparar-planos'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/produtos/comparar-planos'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/produtos/comparar-planos'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -308,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/produtos/comparar-planos': {
+      id: '/produtos/comparar-planos'
+      path: '/comparar-planos'
+      fullPath: '/produtos/comparar-planos'
+      preLoaderRoute: typeof ProdutosCompararPlanosRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/checkout/retorno': {
       id: '/checkout/retorno'
       path: '/retorno'
@@ -350,6 +369,7 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
 )
 
 interface ProdutosRouteChildren {
+  ProdutosCompararPlanosRoute: typeof ProdutosCompararPlanosRoute
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
   ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
   ProdutosGestaoEsteticasRoute: typeof ProdutosGestaoEsteticasRoute
@@ -357,6 +377,7 @@ interface ProdutosRouteChildren {
 }
 
 const ProdutosRouteChildren: ProdutosRouteChildren = {
+  ProdutosCompararPlanosRoute: ProdutosCompararPlanosRoute,
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
   ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,
   ProdutosGestaoEsteticasRoute: ProdutosGestaoEsteticasRoute,
