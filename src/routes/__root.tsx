@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { Header } from "@/components/Header";
 import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {

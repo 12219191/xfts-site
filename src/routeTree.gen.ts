@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,6 +22,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
+import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -41,6 +43,11 @@ const LoginRoute = LoginRouteImport.update({
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -84,6 +91,11 @@ const ProdutosGestaoBarbeariasRoute =
     path: '/gestao-barbearias',
     getParentRoute: () => ProdutosRoute,
   } as any)
+const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
+  id: '/retorno',
+  path: '/retorno',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 const BlogArticleIdRoute = BlogArticleIdRouteImport.update({
   id: '/$articleId',
   path: '/$articleId',
@@ -94,11 +106,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/produtos': typeof ProdutosRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
+  '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -108,10 +122,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
+  '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -123,11 +139,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
   '/login': typeof LoginRoute
   '/produtos': typeof ProdutosRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
+  '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -140,11 +158,13 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/blog'
+    | '/checkout'
     | '/contato'
     | '/login'
     | '/produtos'
     | '/sitemap.xml'
     | '/blog/$articleId'
+    | '/checkout/retorno'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -154,10 +174,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/checkout'
     | '/contato'
     | '/login'
     | '/sitemap.xml'
     | '/blog/$articleId'
+    | '/checkout/retorno'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -168,11 +190,13 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/blog'
+    | '/checkout'
     | '/contato'
     | '/login'
     | '/produtos'
     | '/sitemap.xml'
     | '/blog/$articleId'
+    | '/checkout/retorno'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -184,6 +208,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   ContatoRoute: typeof ContatoRoute
   LoginRoute: typeof LoginRoute
   ProdutosRoute: typeof ProdutosRouteWithChildren
@@ -218,6 +243,13 @@ declare module '@tanstack/react-router' {
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -276,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/checkout/retorno': {
+      id: '/checkout/retorno'
+      path: '/retorno'
+      fullPath: '/checkout/retorno'
+      preLoaderRoute: typeof CheckoutRetornoRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
     '/blog/$articleId': {
       id: '/blog/$articleId'
       path: '/$articleId'
@@ -297,6 +336,18 @@ const BlogRouteChildren: BlogRouteChildren = {
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface CheckoutRouteChildren {
+  CheckoutRetornoRoute: typeof CheckoutRetornoRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutRetornoRoute: CheckoutRetornoRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
 
 interface ProdutosRouteChildren {
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
@@ -320,6 +371,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BlogRoute: BlogRouteWithChildren,
+  CheckoutRoute: CheckoutRouteWithChildren,
   ContatoRoute: ContatoRoute,
   LoginRoute: LoginRoute,
   ProdutosRoute: ProdutosRouteWithChildren,
