@@ -28,7 +28,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "description", content: "XFTS Inteligência Analítica - Sistemas SaaS de gestão e inteligência analítica para clínicas, barbearias e salões de beleza." },
+      { name: "description", content: "XFTS Inteligência Analítica - Sistemas SaaS FLEXUS para gestão e inteligência analítica para clínicas, barbearias e salões de beleza." },
       { name: "author", content: "XFTS Inteligência Analítica" },
       { property: "og:title", content: "XFTS Inteligência Analítica" },
       { property: "og:description", content: "Soluções SaaS de Gestão Inteligente para Seu Negócio" },
