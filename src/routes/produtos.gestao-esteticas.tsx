@@ -10,7 +10,7 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/gestao-esteticas")({
   head: () => ({
     meta: [
-      { title: "Gestão de Estéticas e Salões - XFTS Inteligência Analítica" },
+      { title: "FLEXUS | Estéticas e Salões - XFTS Inteligência Analítica" },
       { name: "description", content: "Sistema SaaS para clínicas de estética e salões de beleza. Estoque, vendas e CRM." },
     ],
   }),
