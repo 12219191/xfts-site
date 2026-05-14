@@ -1,10 +1,12 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Scissors, Sparkles, ArrowRight } from "lucide-react";
+import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, ArrowRight } from "lucide-react";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import heroAba from "@/assets/hero-aba.jpg";
+import heroCrm from "@/assets/hero-crm.jpg";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
