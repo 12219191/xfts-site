@@ -40,6 +40,20 @@ const products = [
     image: heroAesthetics,
     link: "/produtos/gestao-esteticas" as const,
   },
+  {
+    icon: Brain,
+    title: "FLEXUS | ABA",
+    desc: "Sistema para clínicas de Análise do Comportamento Aplicada (ABA / TEA): coleta de dados, evolução e relatórios.",
+    image: heroAba,
+    link: "/produtos/flexus-aba" as const,
+  },
+  {
+    icon: TrendingUp,
+    title: "FLEXUS | CRM",
+    desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão.",
+    image: heroCrm,
+    link: "/produtos/flexus-crm" as const,
+  },
 ];
 
 function ProdutosLayout() {
