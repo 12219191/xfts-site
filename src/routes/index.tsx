@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "description", content: "FLEXUS | Clínica, Barbearias e Estéticas com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "description", content: "FLEXUS | Clínicas, Barbearias e Estéticas com Inteligência Analítica. Solicite uma demo grátis." },
     ],
   }),
   component: HomePage,
@@ -41,7 +41,7 @@ function HomePage() {
   const products = [
     {
       icon: Stethoscope,
-      title: "FLEXUS | Clínica",
+      title: "FLEXUS | Clínicas",
       desc: "Sistema completo para gestão de consultórios e clínicas, otimizando agendamentos, prontuários e finanças.",
       image: heroClinic,
       link: "/produtos/gestao-clinica" as const,
@@ -73,7 +73,7 @@ function HomePage() {
             Soluções SaaS de Gestão Inteligente para Seu Negócio
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            FLEXUS | Clínica, Barbearias e Estéticas com Inteligência Analítica
+            FLEXUS | Clínicas, Barbearias e Estéticas com Inteligência Analítica
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>

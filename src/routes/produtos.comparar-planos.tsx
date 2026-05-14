@@ -37,7 +37,7 @@ interface ProductPlan {
 
 const products: ProductPlan[] = [
   {
-    product: "FLEXUS | Clínica",
+    product: "FLEXUS | Clínicas",
     slug: "/produtos/gestao-clinica",
     prices: { basico: 99, pro: 199, enterprise: 399 },
     features: [
