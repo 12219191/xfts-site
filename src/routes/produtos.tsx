@@ -19,7 +19,7 @@ export const Route = createFileRoute("/produtos")({
 const products = [
   {
     icon: Stethoscope,
-    title: "FLEXUS | Clínica",
+    title: "FLEXUS | Clínicas",
     desc: "Sistema completo para consultórios e clínicas. Agendamentos, prontuários eletrônicos e controle financeiro.",
     image: heroClinic,
     link: "/produtos/gestao-clinica" as const,

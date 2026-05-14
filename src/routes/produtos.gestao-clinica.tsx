@@ -10,7 +10,7 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/gestao-clinica")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | Clínica - XFTS Inteligência Analítica" },
+      { title: "FLEXUS | Clínicas - XFTS Inteligência Analítica" },
       { name: "description", content: "Sistema SaaS completo para gestão de consultórios e clínicas. Agendamentos, prontuários e finanças." },
     ],
   }),
@@ -80,7 +80,7 @@ function GestaoClinicaPage() {
         <img src={heroClinic} alt="Clínica moderna com tecnologia" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
         <div className="container-wide relative z-10 flex min-h-[500px] flex-col items-start justify-center px-4 py-24">
-          <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Clínica Completa</h1>
+          <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Clínicas Completo</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Sistema SaaS para otimizar agendamentos, prontuários e finanças da sua clínica.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-clinica-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
