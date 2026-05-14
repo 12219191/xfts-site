@@ -12,7 +12,7 @@ export const Route = createFileRoute("/produtos")({
   head: () => ({
     meta: [
       { title: "Produtos - XFTS Inteligência Analítica" },
-      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias e estéticas." },
+      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias, estéticas, terapias ABA e CRM de vendas." },
     ],
   }),
   component: ProdutosLayout,
