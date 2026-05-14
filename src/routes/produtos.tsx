@@ -72,7 +72,7 @@ export function ProdutosIndex() {
         </div>
       </section>
       <section className="section-padding">
-        <div className="container-wide grid gap-8 md:grid-cols-3">
+        <div className="container-wide grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => (
             <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
               <div className="aspect-video overflow-hidden">
