@@ -1,16 +1,18 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Scissors, Sparkles, ArrowRight } from "lucide-react";
+import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, ArrowRight } from "lucide-react";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import heroAba from "@/assets/hero-aba.jpg";
+import heroCrm from "@/assets/hero-crm.jpg";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
     meta: [
       { title: "Produtos - XFTS Inteligência Analítica" },
-      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias e estéticas." },
+      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias, estéticas, terapias ABA e CRM de vendas." },
     ],
   }),
   component: ProdutosLayout,
@@ -38,6 +40,20 @@ const products = [
     image: heroAesthetics,
     link: "/produtos/gestao-esteticas" as const,
   },
+  {
+    icon: Brain,
+    title: "FLEXUS | ABA",
+    desc: "Sistema para clínicas de Análise do Comportamento Aplicada (ABA / TEA): coleta de dados, evolução e relatórios.",
+    image: heroAba,
+    link: "/produtos/flexus-aba" as const,
+  },
+  {
+    icon: TrendingUp,
+    title: "FLEXUS | CRM",
+    desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão.",
+    image: heroCrm,
+    link: "/produtos/flexus-crm" as const,
+  },
 ];
 
 function ProdutosLayout() {
@@ -56,7 +72,7 @@ export function ProdutosIndex() {
         </div>
       </section>
       <section className="section-padding">
-        <div className="container-wide grid gap-8 md:grid-cols-3">
+        <div className="container-wide grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => (
             <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
               <div className="aspect-video overflow-hidden">

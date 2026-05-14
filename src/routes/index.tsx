@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
@@ -11,12 +11,14 @@ import heroMain from "@/assets/hero-main.jpg";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import heroAba from "@/assets/hero-aba.jpg";
+import heroCrm from "@/assets/hero-crm.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "description", content: "FLEXUS | Clínicas, Barbearias e Estéticas com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "description", content: "FLEXUS | Clínicas, Barbearias, Estéticas, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
     ],
   }),
   component: HomePage,
@@ -60,6 +62,20 @@ function HomePage() {
       image: heroAesthetics,
       link: "/produtos/gestao-esteticas" as const,
     },
+    {
+      icon: Brain,
+      title: "FLEXUS | ABA",
+      desc: "Sistema completo para clínicas de Análise do Comportamento Aplicada (ABA / TEA): coleta de dados, evolução e relatórios.",
+      image: heroAba,
+      link: "/produtos/flexus-aba" as const,
+    },
+    {
+      icon: TrendingUp,
+      title: "FLEXUS | CRM",
+      desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão em tempo real.",
+      image: heroCrm,
+      link: "/produtos/flexus-crm" as const,
+    },
   ];
 
   return (
@@ -73,7 +89,7 @@ function HomePage() {
             Soluções SaaS de Gestão Inteligente para Seu Negócio
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            FLEXUS | Clínicas, Barbearias e Estéticas com Inteligência Analítica
+            FLEXUS | Clínicas, Barbearias, Estéticas, ABA e CRM com Inteligência Analítica
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>
@@ -124,7 +140,7 @@ function HomePage() {
           <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
             Conheça nossas soluções SaaS especializadas para diferentes segmentos.
           </p>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((p) => (
               <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
                 <div className="aspect-video overflow-hidden">

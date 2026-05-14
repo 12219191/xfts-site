@@ -24,6 +24,8 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
+import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
+import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
 import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
@@ -104,6 +106,16 @@ const ProdutosGestaoBarbeariasRoute =
     path: '/gestao-barbearias',
     getParentRoute: () => ProdutosRoute,
   } as any)
+const ProdutosFlexusCrmRoute = ProdutosFlexusCrmRouteImport.update({
+  id: '/flexus-crm',
+  path: '/flexus-crm',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const ProdutosFlexusAbaRoute = ProdutosFlexusAbaRouteImport.update({
+  id: '/flexus-aba',
+  path: '/flexus-aba',
+  getParentRoute: () => ProdutosRoute,
+} as any)
 const ProdutosCompararPlanosRoute = ProdutosCompararPlanosRouteImport.update({
   id: '/comparar-planos',
   path: '/comparar-planos',
@@ -134,6 +146,8 @@ export interface FileRoutesByFullPath {
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
+  '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -152,6 +166,8 @@ export interface FileRoutesByTo {
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
+  '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -173,6 +189,8 @@ export interface FileRoutesById {
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
+  '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -195,6 +213,8 @@ export interface FileRouteTypes {
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
+    | '/produtos/flexus-aba'
+    | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -213,6 +233,8 @@ export interface FileRouteTypes {
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
+    | '/produtos/flexus-aba'
+    | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -233,6 +255,8 @@ export interface FileRouteTypes {
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
+    | '/produtos/flexus-aba'
+    | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -360,6 +384,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/produtos/flexus-crm': {
+      id: '/produtos/flexus-crm'
+      path: '/flexus-crm'
+      fullPath: '/produtos/flexus-crm'
+      preLoaderRoute: typeof ProdutosFlexusCrmRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/flexus-aba': {
+      id: '/produtos/flexus-aba'
+      path: '/flexus-aba'
+      fullPath: '/produtos/flexus-aba'
+      preLoaderRoute: typeof ProdutosFlexusAbaRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/produtos/comparar-planos': {
       id: '/produtos/comparar-planos'
       path: '/comparar-planos'
@@ -410,6 +448,8 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
 
 interface ProdutosRouteChildren {
   ProdutosCompararPlanosRoute: typeof ProdutosCompararPlanosRoute
+  ProdutosFlexusAbaRoute: typeof ProdutosFlexusAbaRoute
+  ProdutosFlexusCrmRoute: typeof ProdutosFlexusCrmRoute
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
   ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
   ProdutosGestaoEsteticasRoute: typeof ProdutosGestaoEsteticasRoute
@@ -418,6 +458,8 @@ interface ProdutosRouteChildren {
 
 const ProdutosRouteChildren: ProdutosRouteChildren = {
   ProdutosCompararPlanosRoute: ProdutosCompararPlanosRoute,
+  ProdutosFlexusAbaRoute: ProdutosFlexusAbaRoute,
+  ProdutosFlexusCrmRoute: ProdutosFlexusCrmRoute,
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
   ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,
   ProdutosGestaoEsteticasRoute: ProdutosGestaoEsteticasRoute,
