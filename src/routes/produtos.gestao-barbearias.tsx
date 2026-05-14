@@ -10,7 +10,7 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
     meta: [
-      { title: "Gestão de Barbearias - XFTS Inteligência Analítica" },
+      { title: "FLEXUS | Barbearias - XFTS Inteligência Analítica" },
       { name: "description", content: "Sistema SaaS para barbearias e salões. Controle estoque, vendas, PDV e CRM." },
     ],
   }),
