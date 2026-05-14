@@ -15,7 +15,7 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Login - XFTS Inteligência Analítica" },
-      { name: "description", content: "Acesse seu sistema SaaS XFTS. Gestão Clínica, Barbearias ou Estéticas." },
+      { name: "description", content: "Acesse seu sistema SaaS FLEXUS. Clínica, Barbearias ou Estéticas." },
     ],
   }),
   component: LoginPage,
