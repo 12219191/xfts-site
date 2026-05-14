@@ -10,7 +10,7 @@ export const Route = createFileRoute("/produtos")({
   head: () => ({
     meta: [
       { title: "Produtos - XFTS Inteligência Analítica" },
-      { name: "description", content: "Conheça nossos sistemas SaaS para gestão de clínicas, barbearias e estéticas." },
+      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias e estéticas." },
     ],
   }),
   component: ProdutosLayout,
@@ -19,21 +19,21 @@ export const Route = createFileRoute("/produtos")({
 const products = [
   {
     icon: Stethoscope,
-    title: "Gestão Clínica",
+    title: "FLEXUS | Clínica",
     desc: "Sistema completo para consultórios e clínicas. Agendamentos, prontuários eletrônicos e controle financeiro.",
     image: heroClinic,
     link: "/produtos/gestao-clinica" as const,
   },
   {
     icon: Scissors,
-    title: "Gestão de Barbearias",
+    title: "FLEXUS | Barbearias",
     desc: "Controle de estoque, vendas, PDV e CRM para barbearias e salões masculinos.",
     image: heroBarbershop,
     link: "/produtos/gestao-barbearias" as const,
   },
   {
     icon: Sparkles,
-    title: "Gestão de Estéticas",
+    title: "FLEXUS | Estéticas",
     desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza.",
     image: heroAesthetics,
     link: "/produtos/gestao-esteticas" as const,

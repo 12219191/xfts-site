@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "description", content: "Gestão Clínica, Barbearias e Estéticas com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "description", content: "FLEXUS | Clínica, Barbearias e Estéticas com Inteligência Analítica. Solicite uma demo grátis." },
     ],
   }),
   component: HomePage,
@@ -41,21 +41,21 @@ function HomePage() {
   const products = [
     {
       icon: Stethoscope,
-      title: "Gestão Clínica",
+      title: "FLEXUS | Clínica",
       desc: "Sistema completo para gestão de consultórios e clínicas, otimizando agendamentos, prontuários e finanças.",
       image: heroClinic,
       link: "/produtos/gestao-clinica" as const,
     },
     {
       icon: Scissors,
-      title: "Gestão de Barbearias",
+      title: "FLEXUS | Barbearias",
       desc: "Solução para controle de estoque, vendas, PDV e relacionamento com cliente para barbearias e salões.",
       image: heroBarbershop,
       link: "/produtos/gestao-barbearias" as const,
     },
     {
       icon: Sparkles,
-      title: "Gestão de Estéticas",
+      title: "FLEXUS | Estéticas",
       desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza com inteligência analítica.",
       image: heroAesthetics,
       link: "/produtos/gestao-esteticas" as const,
@@ -73,7 +73,7 @@ function HomePage() {
             Soluções SaaS de Gestão Inteligente para Seu Negócio
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            Gestão Clínica, Barbearias e Estéticas com Inteligência Analítica
+            FLEXUS | Clínica, Barbearias e Estéticas com Inteligência Analítica
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>

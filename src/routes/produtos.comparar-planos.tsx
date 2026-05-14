@@ -37,7 +37,7 @@ interface ProductPlan {
 
 const products: ProductPlan[] = [
   {
-    product: "Gestão Clínica",
+    product: "FLEXUS | Clínica",
     slug: "/produtos/gestao-clinica",
     prices: { basico: 99, pro: 199, enterprise: 399 },
     features: [
@@ -56,7 +56,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
-    product: "Gestão de Barbearias",
+    product: "FLEXUS | Barbearias",
     slug: "/produtos/gestao-barbearias",
     prices: { basico: 89, pro: 169, enterprise: 349 },
     features: [
@@ -75,7 +75,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
-    product: "Gestão de Estéticas",
+    product: "FLEXUS | Estéticas",
     slug: "/produtos/gestao-esteticas",
     prices: { basico: 99, pro: 189, enterprise: 379 },
     features: [

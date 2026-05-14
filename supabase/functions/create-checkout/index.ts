@@ -20,15 +20,13 @@ serve(async (req) => {
     const stripe = createStripeClient(env);
 
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
-    console.log("prices response:", JSON.stringify(prices));
-    const priceData = prices?.data;
-    if (!priceData || !priceData.length) {
-      return new Response(JSON.stringify({ error: "Price not found", debug: typeof prices }), {
+    const stripePrice = prices?.data?.[0];
+    if (!stripePrice) {
+      return new Response(JSON.stringify({ error: "Price not found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const stripePrice = prices.data[0];
     const isRecurring = stripePrice.type === "recurring";
 
     const session = await stripe.checkout.sessions.create({
