@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
@@ -11,6 +11,8 @@ import heroMain from "@/assets/hero-main.jpg";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import heroAba from "@/assets/hero-aba.jpg";
+import heroCrm from "@/assets/hero-crm.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
