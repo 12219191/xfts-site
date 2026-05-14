@@ -1,93 +1,55 @@
+## Objetivo
 
+Adicionar dois novos produtos à linha FLEXUS — **FLEXUS | ABA** (clínicas de Análise do Comportamento Aplicada / autismo) e **FLEXUS | CRM** (CRM genérico de vendas multi-segmento) — replicando a estrutura das landing pages existentes.
 
-## Upgrade Premium da Experiencia XFTS/FLEXUS
+## Entregáveis
 
-Este plano cobre 7 frentes de melhoria para elevar o visual e UX ao nivel de um SaaS global.
+1. **Duas novas landing pages** (mesmo template das atuais):
+   - `/produtos/flexus-aba` → `src/routes/produtos.flexus-aba.tsx`
+   - `/produtos/flexus-crm` → `src/routes/produtos.flexus-crm.tsx`
 
-### 1. Pagina de Comparacao de Planos - Redesign Premium
+   Cada uma com hero, lista de funcionalidades, depoimentos e bloco de planos (Básico / Pro / Enterprise).
 
-**Arquivo**: `src/routes/produtos.comparar-planos.tsx`
+2. **Conteúdo dedicado por produto**
 
-- Layout horizontal com 3 colunas lado a lado (nao tabela HTML), cada plano como Card independente
-- Coluna Pro com escala maior (transform scale ou padding extra), borda `cta`, badge "Mais Popular"
-- Coluna Enterprise com gradiente dourado sutil e badge "Premium"
-- Toggle mensal/anual no topo com desconto visual (e.g. "Economize 20%")
-- Feature rows com icones Check (verde) e tracos (cinza), nao X vermelho
-- Sticky header com nome do plano + preco visivel ao scrollar
-- CTA buttons com hierarquia visual clara (outline / solid cta / solid amber)
-- Tooltip ou hover info em features complexas
-- FAQ colapsavel abaixo da tabela ("Posso trocar de plano?", "Como funciona o trial?")
+   **FLEXUS | ABA** (clínicas ABA / TEA):
+   - Funcionalidades: registro de tentativas (DTT), programas de intervenção, gráficos de evolução por objetivo, planos terapêuticos individualizados, agenda de sessões, prontuário multidisciplinar, relatórios para responsáveis e convênios, gestão de equipe (BCBA, terapeutas), checklist de comportamentos, controle de horas autorizadas.
+   - Depoimentos de clínicas ABA fictícias (BCBA, supervisora clínica).
 
-### 2. Cards de Pricing nas Paginas de Produto - Upgrade Visual
+   **FLEXUS | CRM** (vendas multi-segmento):
+   - Funcionalidades: pipeline kanban, gestão de leads e oportunidades, automações de follow-up, e-mail e WhatsApp integrados, funil customizável, relatórios de conversão, metas por vendedor, importação de contatos, integração com formulários, app mobile.
+   - Depoimentos de gestores comerciais fictícios.
 
-**Arquivos**: `produtos.gestao-clinica.tsx`, `produtos.gestao-barbearias.tsx`, `produtos.gestao-esteticas.tsx`
+3. **Imagens hero novas** (geradas via imagegen, padrão `1920x1080`, estilo coerente com as atuais):
+   - `src/assets/hero-aba.jpg` — sala de terapia infantil moderna, materiais lúdicos, tablet com gráficos
+   - `src/assets/hero-crm.jpg` — equipe de vendas com dashboards/pipeline em telas
 
-- Pricing em grid horizontal (3 colunas em desktop) em vez de lista vertical
-- Cada card com lista de features incluidas (3-5 bullet points)
-- Pro card elevado com `shadow-xl`, borda `cta`, ribbon "Mais Popular"
-- Enterprise card com gradiente premium e icone de coroa/shield
-- Basico com texto "Ideal para comecar" e features basicas listadas
-- Garantia de 7 dias abaixo dos cards
+4. **Pontos de integração atualizados**:
+   - `src/routes/produtos.tsx` → adicionar 2 cards no array `products` (grid passa a ter 5 produtos, ajustando layout para `md:grid-cols-2 lg:grid-cols-3`).
+   - `src/routes/index.tsx` → adicionar os 2 produtos no destaque da home + atualizar meta description para mencionar ABA e CRM.
+   - `src/routes/produtos.comparar-planos.tsx` → adicionar blocos de comparação para ABA e CRM (mesma estrutura de planos mensal/anual).
+   - `src/routes/sitemap[.]xml.tsx` → adicionar duas novas entradas.
+   - `src/components/Header.tsx` → se houver dropdown de produtos, adicionar links para ABA e CRM (a verificar ao implementar).
 
-### 3. Dashboard Admin Executivo
+5. **Preços no Stripe** (mesma faixa dos atuais — R$ 99 / 199 / 399):
+   Via `payments--batch_create_product`, criar 2 produtos com 3 preços mensais cada:
+   - `flexus_aba_basico_mensal` = R$ 99,00
+   - `flexus_aba_pro_mensal` = R$ 199,00
+   - `flexus_aba_enterprise_mensal` = R$ 399,00 (Enterprise mantém CTA "Falar com Consultor", sem priceId — igual aos outros)
+   - `flexus_crm_basico_mensal` = R$ 99,00
+   - `flexus_crm_pro_mensal` = R$ 199,00
+   - `flexus_crm_enterprise_mensal` = R$ 399,00
 
-**Arquivo**: `src/routes/admin.tsx`
+   Tax code Stripe: `txcd_10103001` (SaaS). Cobrança em BRL, recorrência mensal, `quantity_min/max = 1`.
 
-- Sidebar lateral com navegacao (Blog, Assinaturas, Configuracoes)
-- Header com avatar do admin, nome e botao de logout
-- Cards de metricas no topo: Total de artigos, Publicados, Rascunhos, Assinaturas ativas
-- Tabela de artigos com colunas (Titulo, Status, Categoria, Data, Acoes) em vez de cards empilhados
-- Status badges coloridos (verde = publicado, amarelo = rascunho)
-- Modal para edicao em vez de formulario inline
-- Secao de assinaturas com lista de subscribers, status, plano, datas
+## Notas técnicas
 
-### 4. Estados de Assinatura Claros - Componente de Status
+- O `routeTree.gen.ts` é regenerado automaticamente pelo plugin do TanStack Router ao salvar os novos arquivos de rota — não tocar manualmente.
+- Os priceIds usados nos arrays `plans` das novas páginas devem bater exatamente com os IDs criados no Stripe.
+- Reaproveitar `PricingCards`, `useStripeCheckout` e `trackCTAClick` exatamente como nas páginas existentes.
+- Ícones sugeridos: `Brain` (lucide) para ABA, `Users` ou `TrendingUp` para CRM.
 
-**Novo arquivo**: `src/components/SubscriptionStatus.tsx`
+## Fora de escopo
 
-- Componente reutilizavel que mostra estado visual da assinatura
-- Estados: Ativa (verde com icone check), Trial (azul com timer), Vencida (vermelho), Cancelada (cinza), Pendente (amarelo)
-- Barra de progresso para trial days remaining
-- Data de renovacao/expiracao formatada
-- Usado no admin dashboard e futura area do cliente
-
-### 5. Fluxo de Upgrade/Downgrade Convincente
-
-**Novo arquivo**: `src/components/PlanUpgradeCard.tsx`
-
-- Card de comparacao lado-a-lado: plano atual vs plano desejado
-- Highlight visual do que o usuario ganha ao fazer upgrade (features novas em verde)
-- Calculo pro-rata visivel ("Voce paga apenas R$ X pelo restante do mes")
-- CTA forte: "Fazer Upgrade Agora" com icone de seta
-- Para downgrade: aviso amigavel do que sera perdido (features em vermelho claro)
-
-### 6. Retencao em Cancelamento - UX de Offboarding
-
-**Novo arquivo**: `src/components/CancelSubscriptionFlow.tsx`
-
-- Flow multi-step em modal:
-  - Step 1: "Sentiremos sua falta" + motivo do cancelamento (radio options)
-  - Step 2: Oferta de retencao baseada no motivo (desconto, pause, downgrade)
-  - Step 3: Confirmacao final com resumo do que sera perdido
-- Opcao de pausar assinatura em vez de cancelar
-- Countdown visual "Acesso ate DD/MM/AAAA"
-- Botao "Manter Meu Plano" sempre visivel e destacado
-
-### 7. Clareza Visual de Acesso - Feature Gating
-
-**Novo arquivo**: `src/components/FeatureGate.tsx`
-
-- Componente wrapper que mostra/bloqueia features baseado no plano
-- Visual de lock com overlay blur para features bloqueadas
-- Badge "PRO" ou "ENTERPRISE" indicando qual plano libera
-- Tooltip explicativo ao hover: "Disponivel no plano Pro. Faca upgrade para desbloquear."
-- Aplicavel em qualquer secao do sistema
-
-### Detalhes Tecnicos
-
-- **Sem mudancas de banco de dados** - usa tabela `subscriptions` existente
-- **Sem novas dependencias** - apenas Tailwind CSS + componentes shadcn existentes
-- **8 arquivos editados, 4 arquivos novos**
-- Queries na tabela `subscriptions` para dados reais de assinatura no admin
-- Componentes exportados para reuso futuro na area do cliente
-
+- Mudanças no fluxo de checkout/edge function `create-checkout` (já corrigido em interação anterior).
+- Comparativos Enterprise com priceId real (mantém "Falar com Consultor" como nos demais).
