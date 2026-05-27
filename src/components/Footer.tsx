@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Linkedin, Phone } from "lucide-react";
+import { Instagram, Linkedin, Facebook } from "lucide-react";
 
 export function Footer() {
   return (
@@ -37,8 +37,8 @@ export function Footer() {
             <a href="https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <Linkedin className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
-            <a href="https://wa.me/5517997943349" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-              <Phone className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
+            <a href="https://www.facebook.com/XFTSolucoes" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <Facebook className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
           </div>
         </div>
