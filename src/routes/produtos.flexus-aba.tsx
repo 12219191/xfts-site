@@ -10,8 +10,18 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/flexus-aba")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | ABA - XFTS Inteligência Analítica" },
-      { name: "description", content: "Sistema SaaS completo para clínicas de Análise do Comportamento Aplicada (ABA / TEA). Registro de tentativas, programas de intervenção e evolução de pacientes." },
+      { title: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
+      { name: "description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios." },
+      { property: "og:title", content: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
+      { property: "og:description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios." },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: "/produtos/flexus-aba" },
+      { property: "og:image", content: heroAba },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: heroAba },
+    ],
+    links: [
+      { rel: "canonical", href: "/produtos/flexus-aba" },
     ],
   }),
   component: FlexusAbaPage,
