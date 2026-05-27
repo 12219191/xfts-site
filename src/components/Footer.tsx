@@ -24,7 +24,7 @@ export function Footer() {
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Contato</h4>
           <div className="flex flex-col gap-2 text-sm text-primary-foreground/80">
             <span>(11) 99999-9999</span>
-            <span>contato@xfts.com.br</span>
+            <span>xfts@xfts.com.br</span>
             <span>São Paulo, SP - Brasil</span>
           </div>
         </div>
