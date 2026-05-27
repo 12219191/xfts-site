@@ -75,7 +75,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
-    product: "FLEXUS | Estéticas",
+    product: "FLEXUS | Estética",
     slug: "/produtos/gestao-esteticas",
     prices: { basico: 99, pro: 189, enterprise: 379 },
     features: [

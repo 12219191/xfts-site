@@ -35,7 +35,7 @@ const products = [
   },
   {
     icon: Sparkles,
-    title: "FLEXUS | Estéticas",
+    title: "FLEXUS | Estética",
     desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza.",
     image: heroAesthetics,
     link: "/produtos/gestao-esteticas" as const,
