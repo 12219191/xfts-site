@@ -10,7 +10,7 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | Barbearias - XFTS Inteligência Analítica" },
+      { title: "FLEXUS | Barbearia - XFTS Inteligência Analítica" },
       { name: "description", content: "Sistema SaaS para barbearias e salões. Controle estoque, vendas, PDV e CRM." },
     ],
   }),
@@ -80,7 +80,7 @@ function GestaoBarbeariasPage() {
         <img src={heroBarbershop} alt="Barbearia moderna" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
         <div className="container-wide relative z-10 flex min-h-[500px] flex-col items-start justify-center px-4 py-24">
-          <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Barbearias e Salões</h1>
+          <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Barbearia e Salões</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Estoque, vendas, PDV e CRM em uma única plataforma inteligente.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-barbearias-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>

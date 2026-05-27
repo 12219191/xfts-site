@@ -28,7 +28,7 @@ const products = [
   },
   {
     icon: Scissors,
-    title: "FLEXUS | Barbearias",
+    title: "FLEXUS | Barbearia",
     desc: "Controle de estoque, vendas, PDV e CRM para barbearias e salões masculinos.",
     image: heroBarbershop,
     link: "/produtos/gestao-barbearias" as const,
