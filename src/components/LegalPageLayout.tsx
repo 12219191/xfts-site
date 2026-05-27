@@ -141,7 +141,7 @@ export function LegalPageLayout({
             <article className="min-w-0">
               {/* Intro card */}
               <div className="mb-10 rounded-2xl border border-primary/20 bg-card p-6 shadow-sm md:p-8">
-                <div className="prose prose-slate max-w-none text-foreground/80 leading-relaxed">
+                <div className="max-w-none space-y-4 text-base md:text-lg leading-relaxed text-foreground/80">
                   {intro}
                 </div>
               </div>
