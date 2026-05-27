@@ -79,7 +79,7 @@ function ContatoPage() {
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Mail className="h-5 w-5 text-primary" /></div>
-                <div><p className="text-sm font-medium text-card-foreground">Email</p><p className="text-sm text-muted-foreground">contato@xfts.com.br</p></div>
+                <div><p className="text-sm font-medium text-card-foreground">Email</p><p className="text-sm text-muted-foreground">xfts@xfts.com.br</p></div>
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><MapPin className="h-5 w-5 text-primary" /></div>
