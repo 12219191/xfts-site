@@ -10,8 +10,18 @@ import { PricingCards } from "@/components/PricingCards";
 export const Route = createFileRoute("/produtos/flexus-crm")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | CRM - XFTS Inteligência Analítica" },
-      { name: "description", content: "CRM SaaS de vendas multi-segmento. Pipeline kanban, gestão de leads, automações e relatórios de conversão para qualquer empresa." },
+      { title: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
+      { name: "description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão em tempo real." },
+      { property: "og:title", content: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
+      { property: "og:description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão em tempo real." },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: "/produtos/flexus-crm" },
+      { property: "og:image", content: heroCrm },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: heroCrm },
+    ],
+    links: [
+      { rel: "canonical", href: "/produtos/flexus-crm" },
     ],
   }),
   component: FlexusCrmPage,
