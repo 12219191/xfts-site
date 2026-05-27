@@ -89,7 +89,7 @@ export function LegalPageLayout({
               {title}
             </h1>
 
-            <p className="max-w-2xl text-lg text-primary-foreground/80">{subtitle}</p>
+            <p className="max-w-2xl text-lg md:text-xl text-primary-foreground/80">{subtitle}</p>
 
             <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
               <Calendar className="h-4 w-4" />
