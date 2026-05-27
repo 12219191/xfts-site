@@ -48,7 +48,7 @@ export function Footer() {
           <span>© 2026 XFTS Inteligência Analítica. Todos os direitos reservados.</span>
           <span>Hospedado na Hostinger</span>
           <Link to="/" className="hover:text-primary-foreground">Política de Privacidade</Link>
-          <Link to="/" className="hover:text-primary-foreground">Termos de Uso</Link>
+          <Link to="/termos-de-uso" className="hover:text-primary-foreground">Termos de Uso</Link>
         </div>
       </div>
     </footer>
