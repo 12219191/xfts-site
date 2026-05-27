@@ -1,15 +1,12 @@
-Criar página dedicada para os Termos de Uso.
+Criar página de Política de Privacidade no mesmo padrão dos Termos de Uso.
 
-**1. Nova rota `src/routes/termos-de-uso.tsx`**
-- `createFileRoute('/termos-de-uso')` com `head()` contendo title, meta description (<160 chars) e canonical.
-- H1 "Termos de Uso" + data de última atualização (27 de maio de 2026).
-- 15 seções H2 com o conteúdo integral fornecido pelo usuário, usando `<ul>` para listas de obrigações/responsabilidades.
-- Layout consistente com o restante do site (container, tipografia legível usando tokens do design system).
+**1. `src/routes/politica-de-privacidade.tsx`**
+- `createFileRoute('/politica-de-privacidade')` com `head()` (title, meta description <160 chars, og tags, canonical relativo).
+- Hero com H1 "Política de Privacidade" + data de atualização.
+- 13 seções H2 com o conteúdo integral, listas em `<ul>` onde aplicável, card de contato no final.
 
 **2. `src/components/Footer.tsx`**
-- Trocar o link "Termos de Uso" (atualmente `to="/"`) por `to="/termos-de-uso"`.
+- Trocar `<Link to="/">Política de Privacidade</Link>` por `to="/politica-de-privacidade"`.
 
 **3. `src/routes/sitemap[.]xml.tsx`**
-- Adicionar entrada para `/termos-de-uso` (priority 0.3, changefreq yearly).
-
-O conteúdo dos termos será inserido integralmente, preservando CNPJ, e-mail (xfts@xfts.com.br) e foro (São José do Rio Preto/SP).
+- Adicionar `/politica-de-privacidade` (priority 0.3, changefreq yearly).

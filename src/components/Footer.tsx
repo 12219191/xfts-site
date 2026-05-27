@@ -47,7 +47,7 @@ export function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span>© 2026 XFTS Inteligência Analítica. Todos os direitos reservados.</span>
           <span>Hospedado na Hostinger</span>
-          <Link to="/" className="hover:text-primary-foreground">Política de Privacidade</Link>
+          <Link to="/politica-de-privacidade" className="hover:text-primary-foreground">Política de Privacidade</Link>
           <Link to="/termos-de-uso" className="hover:text-primary-foreground">Termos de Uso</Link>
         </div>
       </div>
