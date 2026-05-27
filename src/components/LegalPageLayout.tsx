@@ -160,7 +160,7 @@ export function LegalPageLayout({
                       </span>
                       <h2 className="text-2xl font-bold text-foreground md:text-3xl">{s.title}</h2>
                     </div>
-                    <div className="space-y-4 text-foreground/80 leading-relaxed">{s.content}</div>
+                    <div className="space-y-4 text-base md:text-[17px] leading-relaxed text-foreground/80">{s.content}</div>
                   </section>
                 ))}
               </div>
