@@ -23,7 +23,7 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Contato</h4>
           <div className="flex flex-col gap-2 text-sm text-primary-foreground/80">
-            <span>(11) 99999-9999</span>
+            <span>(17) 99794-3349</span>
             <span>xfts@xfts.com.br</span>
             <span>São José do Rio Preto, SP - Brasil</span>
           </div>
@@ -37,7 +37,7 @@ export function Footer() {
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <Linkedin className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
-            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <a href="https://wa.me/5517997943349" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
               <Phone className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
           </div>

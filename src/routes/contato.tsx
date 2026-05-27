@@ -75,7 +75,7 @@ function ContatoPage() {
             <div className="mt-6 grid gap-6">
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Phone className="h-5 w-5 text-primary" /></div>
-                <div><p className="text-sm font-medium text-card-foreground">Telefone</p><p className="text-sm text-muted-foreground">(11) 99999-9999</p></div>
+                <div><p className="text-sm font-medium text-card-foreground">Telefone</p><p className="text-sm text-muted-foreground">(17) 99794-3349</p></div>
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Mail className="h-5 w-5 text-primary" /></div>
