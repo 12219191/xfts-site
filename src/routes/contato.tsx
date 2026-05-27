@@ -83,7 +83,7 @@ function ContatoPage() {
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><MapPin className="h-5 w-5 text-primary" /></div>
-                <div><p className="text-sm font-medium text-card-foreground">Endereço</p><p className="text-sm text-muted-foreground">Av. Paulista, 1000 - São Paulo, SP</p></div>
+                <div><p className="text-sm font-medium text-card-foreground">Endereço</p><p className="text-sm text-muted-foreground">São José do Rio Preto, SP - Brasil</p></div>
               </CardContent></Card>
             </div>
 

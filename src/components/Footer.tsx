@@ -25,7 +25,7 @@ export function Footer() {
           <div className="flex flex-col gap-2 text-sm text-primary-foreground/80">
             <span>(11) 99999-9999</span>
             <span>xfts@xfts.com.br</span>
-            <span>São Paulo, SP - Brasil</span>
+            <span>São José do Rio Preto, SP - Brasil</span>
           </div>
         </div>
         <div>
