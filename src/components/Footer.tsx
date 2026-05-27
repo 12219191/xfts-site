@@ -34,7 +34,7 @@ export function Footer() {
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <Instagram className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <a href="https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <Linkedin className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
             <a href="https://wa.me/5517997943349" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
