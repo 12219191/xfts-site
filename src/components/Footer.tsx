@@ -31,7 +31,7 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Redes</h4>
           <div className="flex gap-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a href="https://www.instagram.com/xftsolucoes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <Instagram className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
             <a href="https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
