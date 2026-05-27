@@ -167,8 +167,8 @@ export function LegalPageLayout({
 
               {/* Contact card */}
               <div className="mt-12 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary to-primary/80 p-8 text-primary-foreground shadow-lg">
-                <h3 className="mb-2 text-xl font-bold">Ficou com alguma dúvida?</h3>
-                <p className="mb-6 text-primary-foreground/80">
+                <h3 className="mb-2 text-2xl font-bold">Ficou com alguma dúvida?</h3>
+                <p className="mb-6 text-base text-primary-foreground/80">
                   Nossa equipe está à disposição para esclarecer questões sobre este documento.
                 </p>
                 <div className="grid gap-4 sm:grid-cols-3">
