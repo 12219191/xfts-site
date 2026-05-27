@@ -89,7 +89,7 @@ export function LegalPageLayout({
               {title}
             </h1>
 
-            <p className="max-w-2xl text-lg text-primary-foreground/80">{subtitle}</p>
+            <p className="max-w-2xl text-lg md:text-xl text-primary-foreground/80">{subtitle}</p>
 
             <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
               <Calendar className="h-4 w-4" />
@@ -141,7 +141,7 @@ export function LegalPageLayout({
             <article className="min-w-0">
               {/* Intro card */}
               <div className="mb-10 rounded-2xl border border-primary/20 bg-card p-6 shadow-sm md:p-8">
-                <div className="prose prose-slate max-w-none text-foreground/80 leading-relaxed">
+                <div className="max-w-none space-y-4 text-base md:text-lg leading-relaxed text-foreground/80">
                   {intro}
                 </div>
               </div>
@@ -160,15 +160,15 @@ export function LegalPageLayout({
                       </span>
                       <h2 className="text-2xl font-bold text-foreground md:text-3xl">{s.title}</h2>
                     </div>
-                    <div className="space-y-4 text-foreground/80 leading-relaxed">{s.content}</div>
+                    <div className="space-y-4 text-base md:text-[17px] leading-relaxed text-foreground/80">{s.content}</div>
                   </section>
                 ))}
               </div>
 
               {/* Contact card */}
               <div className="mt-12 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary to-primary/80 p-8 text-primary-foreground shadow-lg">
-                <h3 className="mb-2 text-xl font-bold">Ficou com alguma dúvida?</h3>
-                <p className="mb-6 text-primary-foreground/80">
+                <h3 className="mb-2 text-2xl font-bold">Ficou com alguma dúvida?</h3>
+                <p className="mb-6 text-base text-primary-foreground/80">
                   Nossa equipe está à disposição para esclarecer questões sobre este documento.
                 </p>
                 <div className="grid gap-4 sm:grid-cols-3">
