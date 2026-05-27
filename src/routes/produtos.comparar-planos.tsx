@@ -56,7 +56,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
-    product: "FLEXUS | Barbearias",
+    product: "FLEXUS | Barbearia",
     slug: "/produtos/gestao-barbearias",
     prices: { basico: 89, pro: 169, enterprise: 349 },
     features: [
