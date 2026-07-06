@@ -1,11 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { LegalPageLayout, type LegalSection } from "@/components/LegalPageLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { sendToZapier } from "@/lib/zapier";
+import { ZapierSettings } from "@/components/ZapierSettings";
 
 export const Route = createFileRoute("/exclusao-de-dados")({
   head: () => ({
     meta: [
       { title: "Exclusão de Dados do Usuário - XFTS Inteligência Analítica" },
-      { name: "description", content: "Instruções para solicitar a exclusão de dados pessoais nos sistemas da XFTS, incluindo o FLEXUS CRM." },
+      { name: "description", content: "Instruções e formulário para solicitar a exclusão de dados pessoais nos sistemas da XFTS, incluindo o FLEXUS CRM." },
       { property: "og:title", content: "Exclusão de Dados do Usuário - XFTS Inteligência Analítica" },
       { property: "og:description", content: "Como solicitar a exclusão de seus dados pessoais armazenados nos sistemas da XFTS." },
       { property: "og:url", content: "https://xfts-site.lovable.app/exclusao-de-dados" },
@@ -15,6 +21,71 @@ export const Route = createFileRoute("/exclusao-de-dados")({
   }),
   component: ExclusaoDeDadosPage,
 });
+
+function SolicitacaoExclusaoForm() {
+  const [form, setForm] = useState({ nome: "", email: "", empresa: "", motivo: "" });
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    setStatus(null);
+    const result = await sendToZapier(
+      {
+        nome: form.nome,
+        email: form.email,
+        empresa: form.empresa,
+        motivo: form.motivo,
+        assunto: "Solicitação de Exclusão de Dados",
+      },
+      "contato"
+    );
+    if (result.success) {
+      setForm({ nome: "", email: "", empresa: "", motivo: "" });
+    }
+    setStatus({ ok: result.success, msg: result.message });
+    setSending(false);
+  };
+
+  return (
+    <div className="rounded-lg border border-border bg-card p-5">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <p className="text-sm text-foreground/80">
+          Preencha o formulário abaixo para enviar sua solicitação diretamente ao time responsável.
+        </p>
+        <ZapierSettings />
+      </div>
+      <form onSubmit={handleSubmit} className="grid gap-3">
+        <div className="grid gap-1.5">
+          <label htmlFor="excl-nome" className="text-xs font-medium text-foreground">Nome completo *</label>
+          <Input id="excl-nome" required maxLength={120} value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+        </div>
+        <div className="grid gap-1.5">
+          <label htmlFor="excl-email" className="text-xs font-medium text-foreground">E-mail cadastrado *</label>
+          <Input id="excl-email" type="email" required maxLength={255} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        </div>
+        <div className="grid gap-1.5">
+          <label htmlFor="excl-empresa" className="text-xs font-medium text-foreground">Empresa (quando aplicável)</label>
+          <Input id="excl-empresa" maxLength={120} value={form.empresa} onChange={(e) => setForm({ ...form, empresa: e.target.value })} />
+        </div>
+        <div className="grid gap-1.5">
+          <label htmlFor="excl-motivo" className="text-xs font-medium text-foreground">Motivo da solicitação (opcional)</label>
+          <Textarea id="excl-motivo" rows={4} maxLength={1000} value={form.motivo} onChange={(e) => setForm({ ...form, motivo: e.target.value })} />
+        </div>
+        <Button type="submit" disabled={sending} className="bg-cta text-cta-foreground hover:bg-cta/90">
+          {sending ? "Enviando..." : "Enviar solicitação"}
+        </Button>
+        {status && (
+          <p className={`text-xs ${status.ok ? "text-green-600" : "text-destructive"}`}>{status.msg}</p>
+        )}
+        <p className="text-[11px] text-muted-foreground">
+          Ao enviar, você concorda que utilizaremos os dados informados apenas para processar sua solicitação de exclusão.
+        </p>
+      </form>
+    </div>
+  );
+}
 
 const sections: LegalSection[] = [
   {
@@ -26,15 +97,12 @@ const sections: LegalSection[] = [
         <p>O titular dos dados poderá solicitar a exclusão de suas informações por qualquer um dos seguintes meios:</p>
         <ul className="list-disc space-y-2 pl-6 marker:text-primary">
           <li>
+            Formulário nesta página (seção 06);
+          </li>
+          <li>
             E-mail:{" "}
             <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">
               xfts@xfts.com.br
-            </a>
-          </li>
-          <li>
-            Formulário de contato disponível em:{" "}
-            <a href="https://xfts.com.br" className="text-primary underline-offset-4 hover:underline">
-              xfts.com.br
             </a>
           </li>
           <li>Pelo próprio sistema, quando essa funcionalidade estiver disponível.</li>
@@ -101,6 +169,12 @@ const sections: LegalSection[] = [
         rodapé desta página.
       </p>
     ),
+  },
+  {
+    id: "formulario",
+    number: "06",
+    title: "Formulário de solicitação",
+    content: <SolicitacaoExclusaoForm />,
   },
 ];
 
