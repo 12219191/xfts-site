@@ -15,6 +15,7 @@ const staticRoutes = [
   { path: "/contato", priority: "0.7", changefreq: "monthly" },
   { path: "/termos-de-uso", priority: "0.3", changefreq: "yearly" },
   { path: "/politica-de-privacidade", priority: "0.3", changefreq: "yearly" },
+  { path: "/exclusao-de-dados", priority: "0.3", changefreq: "yearly" },
 ];
 
 export const Route = createFileRoute("/sitemap.xml")({
