@@ -49,6 +49,7 @@ export function Footer() {
           <span>Hospedado na Hostinger</span>
           <Link to="/politica-de-privacidade" className="hover:text-primary-foreground">Política de Privacidade</Link>
           <Link to="/termos-de-uso" className="hover:text-primary-foreground">Termos de Uso</Link>
+          <Link to="/exclusao-de-dados" className="hover:text-primary-foreground">Exclusão de Dados</Link>
         </div>
       </div>
     </footer>

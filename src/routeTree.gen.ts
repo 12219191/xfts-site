@@ -16,6 +16,7 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ExclusaoDeDadosRouteImport } from './routes/exclusao-de-dados'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BlogRouteImport } from './routes/blog'
@@ -65,6 +66,11 @@ const MinhaContaRoute = MinhaContaRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExclusaoDeDadosRoute = ExclusaoDeDadosRouteImport.update({
+  id: '/exclusao-de-dados',
+  path: '/exclusao-de-dados',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatoRoute = ContatoRouteImport.update({
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/exclusao-de-dados': typeof ExclusaoDeDadosRoute
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/exclusao-de-dados': typeof ExclusaoDeDadosRoute
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/exclusao-de-dados': typeof ExclusaoDeDadosRoute
   '/login': typeof LoginRoute
   '/minha-conta': typeof MinhaContaRoute
   '/politica-de-privacidade': typeof PoliticaDePrivacidadeRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/checkout'
     | '/contato'
+    | '/exclusao-de-dados'
     | '/login'
     | '/minha-conta'
     | '/politica-de-privacidade'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout'
     | '/contato'
+    | '/exclusao-de-dados'
     | '/login'
     | '/minha-conta'
     | '/politica-de-privacidade'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/checkout'
     | '/contato'
+    | '/exclusao-de-dados'
     | '/login'
     | '/minha-conta'
     | '/politica-de-privacidade'
@@ -294,6 +306,7 @@ export interface RootRouteChildren {
   BlogRoute: typeof BlogRouteWithChildren
   CheckoutRoute: typeof CheckoutRouteWithChildren
   ContatoRoute: typeof ContatoRoute
+  ExclusaoDeDadosRoute: typeof ExclusaoDeDadosRoute
   LoginRoute: typeof LoginRoute
   MinhaContaRoute: typeof MinhaContaRoute
   PoliticaDePrivacidadeRoute: typeof PoliticaDePrivacidadeRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exclusao-de-dados': {
+      id: '/exclusao-de-dados'
+      path: '/exclusao-de-dados'
+      fullPath: '/exclusao-de-dados'
+      preLoaderRoute: typeof ExclusaoDeDadosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contato': {
@@ -516,6 +536,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogRoute: BlogRouteWithChildren,
   CheckoutRoute: CheckoutRouteWithChildren,
   ContatoRoute: ContatoRoute,
+  ExclusaoDeDadosRoute: ExclusaoDeDadosRoute,
   LoginRoute: LoginRoute,
   MinhaContaRoute: MinhaContaRoute,
   PoliticaDePrivacidadeRoute: PoliticaDePrivacidadeRoute,
