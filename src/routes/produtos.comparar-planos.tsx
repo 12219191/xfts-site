@@ -6,13 +6,20 @@ import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
+const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm"] as const;
+type ProductKey = (typeof PRODUCT_KEYS)[number];
+
 export const Route = createFileRoute("/produtos/comparar-planos")({
+  validateSearch: (search: Record<string, unknown>): { produto: ProductKey } => {
+    const produto = search.produto as ProductKey;
+    return { produto: PRODUCT_KEYS.includes(produto) ? produto : "clinica" };
+  },
   head: () => ({
     meta: [
       { title: "Comparar Planos - XFTS Inteligência Analítica" },
-      { name: "description", content: "Compare os planos Básico, Pro e Enterprise de todos os produtos XFTS. Escolha o ideal para o seu negócio." },
+      { name: "description", content: "Compare os planos Básico, Pro e Enterprise de cada sistema FLEXUS. Escolha o ideal para o seu negócio." },
       { property: "og:title", content: "Comparar Planos - XFTS Inteligência Analítica" },
-      { property: "og:description", content: "Compare os planos Básico, Pro e Enterprise de todos os produtos XFTS." },
+      { property: "og:description", content: "Compare os planos Básico, Pro e Enterprise de cada sistema FLEXUS." },
     ],
   }),
   component: CompararPlanosPage,
