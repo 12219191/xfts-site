@@ -9,7 +9,8 @@ import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/trackin
 import { ZapierSettings } from "@/components/ZapierSettings";
 import heroMain from "@/assets/hero-main.jpg";
 import heroClinic from "@/assets/hero-clinic.jpg";
-import heroBarbershop from "@/assets/hero-barbershop.jpg";
+import heroBarbershopAsset from "@/assets/hero-barbershop.webp.asset.json";
+const heroBarbershop = heroBarbershopAsset.url;
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
 import heroCrm from "@/assets/hero-crm.jpg";
