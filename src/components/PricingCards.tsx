@@ -14,13 +14,17 @@ interface PricingPlan {
   ctaLabel: string;
 }
 
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm";
+
 interface PricingCardsProps {
   plans: PricingPlan[];
   trackingSection: string;
   onCheckout?: (priceId: string, label: string) => void;
+  compareProduct?: CompareProduct;
+  productName?: string;
 }
 
-export function PricingCards({ plans, trackingSection, onCheckout }: PricingCardsProps) {
+export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
   return (
     <div>
       <div className="grid gap-6 lg:grid-cols-3">
@@ -113,8 +117,12 @@ export function PricingCards({ plans, trackingSection, onCheckout }: PricingCard
           <Shield className="h-4 w-4 text-cta" />
           <span>7 dias grátis • Sem compromisso • Cancele quando quiser</span>
         </div>
-        <Link to="/produtos/comparar-planos" className="text-sm text-cta underline underline-offset-4 hover:text-cta/80">
-          Comparar todos os planos em detalhe →
+        <Link
+          to="/produtos/comparar-planos"
+          search={{ produto: compareProduct }}
+          className="text-sm text-cta underline underline-offset-4 hover:text-cta/80"
+        >
+          {productName ? `Comparar os planos do ${productName} em detalhe` : "Comparar todos os planos em detalhe"} →
         </Link>
       </div>
     </div>

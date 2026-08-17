@@ -112,7 +112,7 @@ function GestaoBarbeariasPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para sua barbearia ou rede.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="gestao-barbearias-pricing" onCheckout={handleCheckout} />
+            <PricingCards plans={plans} trackingSection="gestao-barbearias-pricing" onCheckout={handleCheckout} compareProduct="barbearia" productName="FLEXUS | Barbearia" />
           </div>
         </div>
       </section>
