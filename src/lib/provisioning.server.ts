@@ -50,9 +50,15 @@ export async function provisionApp(
         "x-flexus-signature": signature,
       },
       body,
+      signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
       return { ok: false, app: appKey, error: `HTTP ${res.status}` };
+    }
+    // Um SPA devolve o HTML da página para qualquer rota: isso não é sucesso.
+    const contentType = res.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
+      return { ok: false, app: appKey, error: "endpoint /api/provision não implementado no sistema" };
     }
     return { ok: true, app: appKey };
   } catch (e) {
