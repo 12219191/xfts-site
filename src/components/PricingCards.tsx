@@ -14,13 +14,17 @@ interface PricingPlan {
   ctaLabel: string;
 }
 
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm";
+
 interface PricingCardsProps {
   plans: PricingPlan[];
   trackingSection: string;
   onCheckout?: (priceId: string, label: string) => void;
+  compareProduct?: CompareProduct;
+  productName?: string;
 }
 
-export function PricingCards({ plans, trackingSection, onCheckout }: PricingCardsProps) {
+export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
   return (
     <div>
       <div className="grid gap-6 lg:grid-cols-3">
