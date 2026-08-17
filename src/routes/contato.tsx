@@ -8,6 +8,7 @@ import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackFormSubmit } from "@/lib/tracking";
 import { ZapierSettings } from "@/components/ZapierSettings";
+import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
@@ -85,7 +86,9 @@ function ContatoPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><MapPin className="h-5 w-5 text-primary" /></div>
                 <div><p className="text-sm font-medium text-card-foreground">Endereço</p><p className="text-sm text-muted-foreground">São José do Rio Preto, SP - Brasil</p></div>
               </CardContent></Card>
+              <WhatsAppInlineButton />
             </div>
+
 
             <div className="mt-8 aspect-video overflow-hidden rounded-lg border border-border">
               <iframe

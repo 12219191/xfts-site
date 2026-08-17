@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { WhatsAppFloatingButton } from "@/components/WhatsAppButton";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -128,6 +129,7 @@ function RootComponent() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppFloatingButton />
     </div>
   );
 }
