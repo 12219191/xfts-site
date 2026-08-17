@@ -106,7 +106,7 @@ function HomePage() {
             Soluções SaaS de Gestão Inteligente para Seu Negócio
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica
+            Tecnologia, dados e gestão em uma só direção
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>
