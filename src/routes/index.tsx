@@ -14,6 +14,8 @@ import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
 import heroCrm from "@/assets/hero-crm.jpg";
 import heroCasa360 from "@/assets/hero-casa360.jpg";
+import { LOGO_URL } from "@/components/Logo";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
