@@ -36,6 +36,7 @@ interface PlanFeature {
 }
 
 interface ProductPlan {
+  key: ProductKey;
   product: string;
   slug: string;
   prices: { basico: number; pro: number; enterprise: number };
@@ -44,6 +45,7 @@ interface ProductPlan {
 
 const products: ProductPlan[] = [
   {
+    key: "clinica",
     product: "FLEXUS | Clínica",
     slug: "/produtos/gestao-clinica",
     prices: { basico: 99, pro: 199, enterprise: 399 },
@@ -63,6 +65,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
+    key: "barbearia",
     product: "FLEXUS | Barbearia",
     slug: "/produtos/gestao-barbearias",
     prices: { basico: 89, pro: 169, enterprise: 349 },
@@ -82,6 +85,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
+    key: "estetica",
     product: "FLEXUS | Estética",
     slug: "/produtos/gestao-esteticas",
     prices: { basico: 99, pro: 189, enterprise: 379 },
@@ -101,6 +105,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
+    key: "aba",
     product: "FLEXUS | ABA",
     slug: "/produtos/flexus-aba",
     prices: { basico: 99, pro: 199, enterprise: 399 },
@@ -120,6 +125,7 @@ const products: ProductPlan[] = [
     ],
   },
   {
+    key: "crm",
     product: "FLEXUS | CRM",
     slug: "/produtos/flexus-crm",
     prices: { basico: 99, pro: 199, enterprise: 399 },
@@ -155,6 +161,9 @@ function FeatureCell({ value }: { value: FeatureValue }) {
 }
 
 function CompararPlanosPage() {
+  const { produto } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const selected = products.find((p) => p.key === produto) ?? products[0];
   const [annual, setAnnual] = useState(false);
   const discount = 0.8;
 
@@ -174,8 +183,25 @@ function CompararPlanosPage() {
               Escolha o plano ideal
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Todos os planos incluem 7 dias grátis, sem compromisso. Cancele quando quiser.
+              Compare os planos de cada sistema FLEXUS. Todos incluem 7 dias grátis, sem compromisso.
             </p>
+
+            {/* Seletor de sistema */}
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
+              {products.map((p) => (
+                <button
+                  key={p.key}
+                  onClick={() => navigate({ search: { produto: p.key } })}
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                    selected.key === p.key
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {p.product}
+                </button>
+              ))}
+            </div>
 
             {/* Toggle Mensal / Anual */}
             <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-border bg-card p-1.5 shadow-sm">
@@ -195,9 +221,9 @@ function CompararPlanosPage() {
             </div>
           </div>
 
-          {/* Product Sections */}
-          {products.map((product) => (
-            <div key={product.product} className="mt-20">
+          {/* Produto selecionado */}
+          {[selected].map((product) => (
+            <div key={product.key} className="mt-16">
               <div className="mb-8 flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-bold text-foreground">{product.product}</h2>
