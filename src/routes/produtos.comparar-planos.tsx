@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm"] as const;
+const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360"] as const;
 type ProductKey = (typeof PRODUCT_KEYS)[number];
 
 export const Route = createFileRoute("/produtos/comparar-planos")({
@@ -141,6 +141,26 @@ const products: ProductPlan[] = [
       { name: "Múltiplas equipes", basico: false, pro: false, enterprise: true },
       { name: "Usuários inclusos", basico: "Até 3", pro: "Até 15", enterprise: "Ilimitado" },
       { name: "API e integrações", basico: false, pro: false, enterprise: true },
+      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
+    ],
+  },
+  {
+    key: "casa360",
+    product: "FLEXUS | Casa360°",
+    slug: "/produtos/flexus-casa360",
+    prices: { basico: 99, pro: 199, enterprise: 399 },
+    features: [
+      { name: "Estoque da casa", tooltip: "Despensa, geladeira e armário sempre atualizados", basico: true, pro: true, enterprise: true },
+      { name: "Lista de compras automática", tooltip: "Itens com estoque baixo entram sozinhos na lista", basico: true, pro: true, enterprise: true },
+      { name: "Controle de validade", basico: true, pro: true, enterprise: true },
+      { name: "Finanças da casa", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
+      { name: "Painel Visão da Casa", basico: true, pro: true, enterprise: true },
+      { name: "Contas recorrentes e lembretes", basico: false, pro: true, enterprise: true },
+      { name: "Histórico e comparação de preços", basico: false, pro: true, enterprise: true },
+      { name: "Relatórios mensais", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
+      { name: "App mobile", basico: true, pro: true, enterprise: true },
+      { name: "Múltiplas residências", basico: false, pro: false, enterprise: true },
+      { name: "Moradores inclusos", basico: "1", pro: "Até 6", enterprise: "Ilimitado" },
       { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
     ],
   },

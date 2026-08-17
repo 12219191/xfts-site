@@ -11,6 +11,7 @@ const staticRoutes = [
   { path: "/produtos/gestao-esteticas", priority: "0.8", changefreq: "monthly" },
   { path: "/produtos/flexus-aba", priority: "0.8", changefreq: "monthly" },
   { path: "/produtos/flexus-crm", priority: "0.8", changefreq: "monthly" },
+  { path: "/produtos/flexus-casa360", priority: "0.8", changefreq: "monthly" },
   { path: "/blog", priority: "0.8", changefreq: "daily" },
   { path: "/contato", priority: "0.7", changefreq: "monthly" },
   { path: "/termos-de-uso", priority: "0.3", changefreq: "yearly" },
