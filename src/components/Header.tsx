@@ -4,6 +4,8 @@ import { Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Logo } from "@/components/Logo";
+
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
