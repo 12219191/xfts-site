@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoAsset from "@/assets/logo-xfts.png.asset.json";
-
-export const LOGO_URL = logoAsset.url;
+import { LogoMark } from "@/components/LogoMark";
 
 type LogoProps = {
   /** Altura do símbolo em px */
@@ -23,18 +21,15 @@ export function Logo({
   className,
 }: LogoProps) {
   const mark = (
-    <img
-      src={LOGO_URL}
-      alt="XFTS Inteligência Analítica"
-      width={size}
-      height={size}
-      className="shrink-0 object-contain"
-      style={{ height: size, width: size }}
-    />
+    <LogoMark size={size} className={inverted ? "text-primary-foreground" : "text-primary"} />
   );
 
   if (variant === "mark") {
-    return <span className={cn("inline-flex", className)}>{mark}</span>;
+    return (
+      <span className={cn("inline-flex", className)} aria-label="XFTS Inteligência Analítica">
+        {mark}
+      </span>
+    );
   }
 
   return (
@@ -51,7 +46,7 @@ export function Logo({
         </span>
         <span
           className={cn(
-            "text-[11px] font-medium",
+            "text-[11px] font-medium tracking-wide",
             inverted ? "text-primary-foreground/70" : "text-muted-foreground",
             compactSubtitle && "hidden sm:inline",
           )}
