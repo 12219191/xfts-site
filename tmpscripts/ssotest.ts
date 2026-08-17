@@ -8,7 +8,7 @@ const userId = subs?.[0]?.user_id ?? "00000000-0000-0000-0000-000000000001";
 const jti = crypto.randomUUID();
 const now = Math.floor(Date.now() / 1000);
 const token = await signSsoToken({ sub: userId, email: "teste@xfts.com.br", app, plan: subs?.[0]?.price_id ?? null, jti, iat: now, exp: now + 120 });
-const { error } = await supabaseAdmin.from("sso_tokens").insert({ jti, user_id: userId, app, expires_at: new Date((now + 120) * 1000).toISOString() } as never);
+const { error } = await supabaseAdmin.from("sso_tokens").insert({ jti, user_id: userId, app_key: app, expires_at: new Date((now + 120) * 1000).toISOString() } as never);
 console.log("insert erro:", error?.message ?? "ok");
 const key = appApiKey(app)!;
 for (const attempt of [1, 2]) {
