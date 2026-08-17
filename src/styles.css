@@ -78,6 +78,9 @@
   --ring: oklch(0.332 0.12 264);
   --cta: oklch(0.62 0.17 160);
   --cta-foreground: oklch(1 0 0);
+  --brand: oklch(0.55 0.09 210);
+  --brand-foreground: oklch(1 0 0);
+
   --surface: oklch(0.97 0.005 250);
   --surface-foreground: oklch(0.3 0.04 265);
 
