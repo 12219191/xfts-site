@@ -9,83 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
-import { Route as MinhaContaRouteImport } from './routes/minha-conta'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as ExclusaoDeDadosRouteImport } from './routes/exclusao-de-dados'
-import { Route as ContatoRouteImport } from './routes/contato'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as BlogRouteImport } from './routes/blog'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as ExclusaoDeDadosRouteImport } from './routes/exclusao-de-dados'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MinhaContaRouteImport } from './routes/minha-conta'
+import { Route as PoliticaDePrivacidadeRouteImport } from './routes/politica-de-privacidade'
+import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
-import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
-import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
-import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
-import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
-import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
-import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
+import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
+import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
+import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
+import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
+import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
+import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
+import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
+import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 
-const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
-  id: '/termos-de-uso',
-  path: '/termos-de-uso',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProdutosRoute = ProdutosRouteImport.update({
-  id: '/produtos',
-  path: '/produtos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PoliticaDePrivacidadeRoute = PoliticaDePrivacidadeRouteImport.update({
-  id: '/politica-de-privacidade',
-  path: '/politica-de-privacidade',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinhaContaRoute = MinhaContaRouteImport.update({
-  id: '/minha-conta',
-  path: '/minha-conta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExclusaoDeDadosRoute = ExclusaoDeDadosRouteImport.update({
-  id: '/exclusao-de-dados',
-  path: '/exclusao-de-dados',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContatoRoute = ContatoRouteImport.update({
-  id: '/contato',
-  path: '/contato',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -93,29 +43,94 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ProdutosRoute,
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExclusaoDeDadosRoute = ExclusaoDeDadosRouteImport.update({
+  id: '/exclusao-de-dados',
+  path: '/exclusao-de-dados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhaContaRoute = MinhaContaRouteImport.update({
+  id: '/minha-conta',
+  path: '/minha-conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoliticaDePrivacidadeRoute = PoliticaDePrivacidadeRouteImport.update({
+  id: '/politica-de-privacidade',
+  path: '/politica-de-privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
+  id: '/termos-de-uso',
+  path: '/termos-de-uso',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BlogRoute,
 } as any)
-const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
-  id: '/gestao-esteticas',
-  path: '/gestao-esteticas',
+const BlogArticleIdRoute = BlogArticleIdRouteImport.update({
+  id: '/$articleId',
+  path: '/$articleId',
+  getParentRoute: () => BlogRoute,
+} as any)
+const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
+  id: '/retorno',
+  path: '/retorno',
+  getParentRoute: () => CheckoutRoute,
+} as any)
+const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => ProdutosRoute,
 } as any)
-const ProdutosGestaoClinicaRoute = ProdutosGestaoClinicaRouteImport.update({
-  id: '/gestao-clinica',
-  path: '/gestao-clinica',
+const ProdutosCompararPlanosRoute = ProdutosCompararPlanosRouteImport.update({
+  id: '/comparar-planos',
+  path: '/comparar-planos',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const ProdutosFlexusAbaRoute = ProdutosFlexusAbaRouteImport.update({
+  id: '/flexus-aba',
+  path: '/flexus-aba',
+  getParentRoute: () => ProdutosRoute,
+} as any)
+const ProdutosFlexusCrmRoute = ProdutosFlexusCrmRouteImport.update({
+  id: '/flexus-crm',
+  path: '/flexus-crm',
   getParentRoute: () => ProdutosRoute,
 } as any)
 const ProdutosGestaoBarbeariasRoute =
@@ -124,30 +139,15 @@ const ProdutosGestaoBarbeariasRoute =
     path: '/gestao-barbearias',
     getParentRoute: () => ProdutosRoute,
   } as any)
-const ProdutosFlexusCrmRoute = ProdutosFlexusCrmRouteImport.update({
-  id: '/flexus-crm',
-  path: '/flexus-crm',
+const ProdutosGestaoClinicaRoute = ProdutosGestaoClinicaRouteImport.update({
+  id: '/gestao-clinica',
+  path: '/gestao-clinica',
   getParentRoute: () => ProdutosRoute,
 } as any)
-const ProdutosFlexusAbaRoute = ProdutosFlexusAbaRouteImport.update({
-  id: '/flexus-aba',
-  path: '/flexus-aba',
+const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
+  id: '/gestao-esteticas',
+  path: '/gestao-esteticas',
   getParentRoute: () => ProdutosRoute,
-} as any)
-const ProdutosCompararPlanosRoute = ProdutosCompararPlanosRouteImport.update({
-  id: '/comparar-planos',
-  path: '/comparar-planos',
-  getParentRoute: () => ProdutosRoute,
-} as any)
-const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
-  id: '/retorno',
-  path: '/retorno',
-  getParentRoute: () => CheckoutRoute,
-} as any)
-const BlogArticleIdRoute = BlogArticleIdRouteImport.update({
-  id: '/$articleId',
-  path: '/$articleId',
-  getParentRoute: () => BlogRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -318,81 +318,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/termos-de-uso': {
-      id: '/termos-de-uso'
-      path: '/termos-de-uso'
-      fullPath: '/termos-de-uso'
-      preLoaderRoute: typeof TermosDeUsoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/produtos': {
-      id: '/produtos'
-      path: '/produtos'
-      fullPath: '/produtos'
-      preLoaderRoute: typeof ProdutosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/politica-de-privacidade': {
-      id: '/politica-de-privacidade'
-      path: '/politica-de-privacidade'
-      fullPath: '/politica-de-privacidade'
-      preLoaderRoute: typeof PoliticaDePrivacidadeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/minha-conta': {
-      id: '/minha-conta'
-      path: '/minha-conta'
-      fullPath: '/minha-conta'
-      preLoaderRoute: typeof MinhaContaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/exclusao-de-dados': {
-      id: '/exclusao-de-dados'
-      path: '/exclusao-de-dados'
-      fullPath: '/exclusao-de-dados'
-      preLoaderRoute: typeof ExclusaoDeDadosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contato': {
-      id: '/contato'
-      path: '/contato'
-      fullPath: '/contato'
-      preLoaderRoute: typeof ContatoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -402,19 +332,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/produtos/': {
-      id: '/produtos/'
-      path: '/'
-      fullPath: '/produtos/'
-      preLoaderRoute: typeof ProdutosIndexRouteImport
-      parentRoute: typeof ProdutosRoute
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exclusao-de-dados': {
+      id: '/exclusao-de-dados'
+      path: '/exclusao-de-dados'
+      fullPath: '/exclusao-de-dados'
+      preLoaderRoute: typeof ExclusaoDeDadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minha-conta': {
+      id: '/minha-conta'
+      path: '/minha-conta'
+      fullPath: '/minha-conta'
+      preLoaderRoute: typeof MinhaContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/politica-de-privacidade': {
+      id: '/politica-de-privacidade'
+      path: '/politica-de-privacidade'
+      fullPath: '/politica-de-privacidade'
+      preLoaderRoute: typeof PoliticaDePrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos-de-uso': {
+      id: '/termos-de-uso'
+      path: '/termos-de-uso'
+      fullPath: '/termos-de-uso'
+      preLoaderRoute: typeof TermosDeUsoRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/blog/': {
       id: '/blog/'
@@ -423,39 +416,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof BlogRoute
     }
-    '/produtos/gestao-esteticas': {
-      id: '/produtos/gestao-esteticas'
-      path: '/gestao-esteticas'
-      fullPath: '/produtos/gestao-esteticas'
-      preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
-      parentRoute: typeof ProdutosRoute
+    '/blog/$articleId': {
+      id: '/blog/$articleId'
+      path: '/$articleId'
+      fullPath: '/blog/$articleId'
+      preLoaderRoute: typeof BlogArticleIdRouteImport
+      parentRoute: typeof BlogRoute
     }
-    '/produtos/gestao-clinica': {
-      id: '/produtos/gestao-clinica'
-      path: '/gestao-clinica'
-      fullPath: '/produtos/gestao-clinica'
-      preLoaderRoute: typeof ProdutosGestaoClinicaRouteImport
-      parentRoute: typeof ProdutosRoute
+    '/checkout/retorno': {
+      id: '/checkout/retorno'
+      path: '/retorno'
+      fullPath: '/checkout/retorno'
+      preLoaderRoute: typeof CheckoutRetornoRouteImport
+      parentRoute: typeof CheckoutRoute
     }
-    '/produtos/gestao-barbearias': {
-      id: '/produtos/gestao-barbearias'
-      path: '/gestao-barbearias'
-      fullPath: '/produtos/gestao-barbearias'
-      preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
-      parentRoute: typeof ProdutosRoute
-    }
-    '/produtos/flexus-crm': {
-      id: '/produtos/flexus-crm'
-      path: '/flexus-crm'
-      fullPath: '/produtos/flexus-crm'
-      preLoaderRoute: typeof ProdutosFlexusCrmRouteImport
-      parentRoute: typeof ProdutosRoute
-    }
-    '/produtos/flexus-aba': {
-      id: '/produtos/flexus-aba'
-      path: '/flexus-aba'
-      fullPath: '/produtos/flexus-aba'
-      preLoaderRoute: typeof ProdutosFlexusAbaRouteImport
+    '/produtos/': {
+      id: '/produtos/'
+      path: '/'
+      fullPath: '/produtos/'
+      preLoaderRoute: typeof ProdutosIndexRouteImport
       parentRoute: typeof ProdutosRoute
     }
     '/produtos/comparar-planos': {
@@ -465,19 +444,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosCompararPlanosRouteImport
       parentRoute: typeof ProdutosRoute
     }
-    '/checkout/retorno': {
-      id: '/checkout/retorno'
-      path: '/retorno'
-      fullPath: '/checkout/retorno'
-      preLoaderRoute: typeof CheckoutRetornoRouteImport
-      parentRoute: typeof CheckoutRoute
+    '/produtos/flexus-aba': {
+      id: '/produtos/flexus-aba'
+      path: '/flexus-aba'
+      fullPath: '/produtos/flexus-aba'
+      preLoaderRoute: typeof ProdutosFlexusAbaRouteImport
+      parentRoute: typeof ProdutosRoute
     }
-    '/blog/$articleId': {
-      id: '/blog/$articleId'
-      path: '/$articleId'
-      fullPath: '/blog/$articleId'
-      preLoaderRoute: typeof BlogArticleIdRouteImport
-      parentRoute: typeof BlogRoute
+    '/produtos/flexus-crm': {
+      id: '/produtos/flexus-crm'
+      path: '/flexus-crm'
+      fullPath: '/produtos/flexus-crm'
+      preLoaderRoute: typeof ProdutosFlexusCrmRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/gestao-barbearias': {
+      id: '/produtos/gestao-barbearias'
+      path: '/gestao-barbearias'
+      fullPath: '/produtos/gestao-barbearias'
+      preLoaderRoute: typeof ProdutosGestaoBarbeariasRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/gestao-clinica': {
+      id: '/produtos/gestao-clinica'
+      path: '/gestao-clinica'
+      fullPath: '/produtos/gestao-clinica'
+      preLoaderRoute: typeof ProdutosGestaoClinicaRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
+    '/produtos/gestao-esteticas': {
+      id: '/produtos/gestao-esteticas'
+      path: '/gestao-esteticas'
+      fullPath: '/produtos/gestao-esteticas'
+      preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
+      parentRoute: typeof ProdutosRoute
     }
   }
 }
