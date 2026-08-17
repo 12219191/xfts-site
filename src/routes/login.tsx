@@ -166,7 +166,9 @@ function LoginPage() {
     <>
       <section className="gradient-primary py-12 text-center">
         <div className="container-wide">
+          <Logo size={56} variant="mark" className="mx-auto mb-4" />
           <h1 className="text-3xl font-extrabold text-primary-foreground md:text-4xl">
+
             {mode === "login" && "Acesse sua conta"}
             {mode === "signup" && "Crie sua conta"}
             {mode === "forgot" && "Recuperar senha"}
