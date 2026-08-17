@@ -70,12 +70,21 @@ function GoogleButton() {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const goAfterAuth = () => {
+    if (redirect) {
+      navigate({ to: redirect });
+    } else {
+      navigate({ to: "/minha-conta" });
+    }
+  };
 
   // Redirect if already logged in
   if (authLoading) {
@@ -87,7 +96,7 @@ function LoginPage() {
   }
 
   if (user) {
-    navigate({ to: "/minha-conta" });
+    goAfterAuth();
     return null;
   }
 
@@ -102,9 +111,10 @@ function LoginPage() {
         : error.message);
     } else {
       toast.success("Login realizado com sucesso!");
-      navigate({ to: "/minha-conta" });
+      goAfterAuth();
     }
   };
+
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
