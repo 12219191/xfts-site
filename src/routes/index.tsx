@@ -94,11 +94,9 @@ function HomePage() {
       <section className="relative overflow-hidden">
         <img src={heroMain} alt="Equipe analisando dados em dashboards" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
-        <img
-          src={LOGO_URL}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-16 top-1/2 hidden h-[420px] w-[420px] -translate-y-1/2 object-contain opacity-[0.08] lg:block"
+        <LogoMark
+          size={420}
+          className="pointer-events-none absolute -right-16 top-1/2 hidden -translate-y-1/2 text-primary-foreground opacity-[0.08] lg:block"
         />
         <div className="container-wide relative z-10 flex min-h-[600px] flex-col items-center justify-center px-4 py-24 text-center">
 
