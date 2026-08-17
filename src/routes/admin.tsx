@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { SubscriptionStatus } from "@/components/SubscriptionStatus";
+import { AdminSubscriptionsPanel } from "@/components/AdminSubscriptionsPanel";
 import {
   Plus, Edit, Trash2, LogOut, Eye, EyeOff, FileText, CreditCard, Settings,
   BarChart3, Users, BookOpen,
