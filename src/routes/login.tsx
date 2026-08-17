@@ -12,6 +12,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    const value = search["redirect"];
+    // Apenas caminhos internos (mesma origem) são aceitos.
+    return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
+      ? { redirect: value }
+      : {};
+  },
   head: () => ({
     meta: [
       { title: "Login - XFTS Inteligência Analítica" },
@@ -21,13 +28,16 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-function GoogleButton() {
+
+function GoogleButton({ redirect }: { redirect?: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirect
+        ? `${window.location.origin}/login?redirect=${encodeURIComponent(redirect)}`
+        : window.location.origin,
     });
     if (result.error) {
       toast.error("Erro ao conectar com Google.");
@@ -62,12 +72,21 @@ function GoogleButton() {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const goAfterAuth = () => {
+    if (redirect) {
+      navigate({ to: redirect });
+    } else {
+      navigate({ to: "/minha-conta" });
+    }
+  };
 
   // Redirect if already logged in
   if (authLoading) {
@@ -79,7 +98,7 @@ function LoginPage() {
   }
 
   if (user) {
-    navigate({ to: "/minha-conta" });
+    goAfterAuth();
     return null;
   }
 
@@ -94,9 +113,10 @@ function LoginPage() {
         : error.message);
     } else {
       toast.success("Login realizado com sucesso!");
-      navigate({ to: "/minha-conta" });
+      goAfterAuth();
     }
   };
+
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,7 +226,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton />
+                  <GoogleButton redirect={redirect} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Não tem conta?{" "}
@@ -268,7 +288,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton />
+                  <GoogleButton redirect={redirect} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Já tem conta?{" "}
