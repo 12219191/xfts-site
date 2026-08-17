@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -201,8 +201,8 @@ export function AdminSubscriptionsPanel() {
           </thead>
           <tbody>
             {filtered.map((sub) => (
-              <>
-                <tr key={sub.id} className="border-b border-border/50 transition-colors hover:bg-muted/20">
+              <Fragment key={sub.id}>
+                <tr className="border-b border-border/50 transition-colors hover:bg-muted/20">
                   <td className="px-5 py-3">
                     <p className="font-medium text-foreground">{sub.email ?? "Cliente sem e-mail"}</p>
                     <p className="text-xs text-muted-foreground">{sub.stripe_customer_id}</p>
@@ -234,7 +234,7 @@ export function AdminSubscriptionsPanel() {
                   </td>
                 </tr>
                 {expanded === sub.id && (
-                  <tr key={`${sub.id}-events`} className="border-b border-border/50 bg-muted/10">
+                  <tr className="border-b border-border/50 bg-muted/10">
                     <td colSpan={6} className="px-5 py-4">
                       {sub.events.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
@@ -265,7 +265,7 @@ export function AdminSubscriptionsPanel() {
                     </td>
                   </tr>
                 )}
-              </>
+              </Fragment>
             ))}
             {!loading && filtered.length === 0 && (
               <tr>
