@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
 import { CancelSubscriptionFlow } from "@/components/CancelSubscriptionFlow";
+import { MeusSistemas, type SistemaSubscription } from "@/components/MeusSistemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -108,6 +109,7 @@ function detectPlanFromProductId(productId: string): string {
 function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
+  const [allSubscriptions, setAllSubscriptions] = useState<SistemaSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -122,10 +124,17 @@ function MinhaContaPage() {
       .select("*")
       .eq("user_id", userId)
       .eq("environment", env)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    setSubscription((data as SubscriptionRow) ?? null);
+      .order("created_at", { ascending: false });
+    const rows = (data as SubscriptionRow[]) ?? [];
+    setSubscription(rows[0] ?? null);
+    setAllSubscriptions(
+      rows.map((r) => ({
+        price_id: r.price_id,
+        status: r.status,
+        current_period_end: r.current_period_end,
+        cancel_at_period_end: r.cancel_at_period_end,
+      })),
+    );
   }, [env]);
 
   useEffect(() => {
@@ -260,6 +269,10 @@ function MinhaContaPage() {
 
       <section className="section-padding">
         <div className="container-wide mx-auto max-w-4xl space-y-8 px-4 md:px-8">
+          <MeusSistemas subscriptions={allSubscriptions} />
+
+          <Separator />
+
           {/* Subscription status */}
           <div>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
