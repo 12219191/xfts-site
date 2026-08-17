@@ -29,13 +29,15 @@ export const Route = createFileRoute("/login")({
 });
 
 
-function GoogleButton() {
+function GoogleButton({ redirect }: { redirect?: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: redirect
+        ? `${window.location.origin}/login?redirect=${encodeURIComponent(redirect)}`
+        : window.location.origin,
     });
     if (result.error) {
       toast.error("Erro ao conectar com Google.");
@@ -224,7 +226,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton />
+                  <GoogleButton redirect={redirect} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Não tem conta?{" "}
@@ -286,7 +288,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton />
+                  <GoogleButton redirect={redirect} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Já tem conta?{" "}
