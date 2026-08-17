@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { StripeEnv } from "@/lib/stripe.server";
+type StripeEnv = "sandbox" | "live";
 import {
   cancelSubscription,
   reactivateSubscription,
