@@ -53,7 +53,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
               )}
               {isEnterprise && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-gold to-gold-deep px-4 py-1 text-xs font-bold text-white uppercase tracking-wide shadow-md shadow-gold-deep/30">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-gold to-gold-deep px-4 py-1 text-xs font-bold text-gold-foreground uppercase tracking-wide shadow-md shadow-gold-deep/30">
                     <Crown className="h-3 w-3" /> Premium
                   </span>
                 </div>
@@ -83,7 +83,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                 {isEnterprise ? (
                   <Link to="/contato">
                     <Button
-                      className="w-full bg-gradient-to-r from-gold to-gold-deep text-white hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
+                      className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
                       onClick={() => trackCTAClick(plan.ctaLabel, trackingSection)}
                     >
                       Falar com Consultor

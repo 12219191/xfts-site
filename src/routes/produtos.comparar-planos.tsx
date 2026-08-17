@@ -279,7 +279,7 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-sm font-semibold text-foreground">Enterprise</span>
-                          <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">Premium</span>
+                          <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-gold-foreground uppercase tracking-wide">Premium</span>
                         </div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(product.prices.enterprise)}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {product.prices.enterprise}/mês</div>}
@@ -340,7 +340,7 @@ function CompararPlanosPage() {
                       </td>
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
-                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-white hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick("Falar com Consultor", `comparar-${product.product}`)}>
+                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick("Falar com Consultor", `comparar-${product.product}`)}>
                             Falar com Consultor
                           </Button>
                         </Link>
