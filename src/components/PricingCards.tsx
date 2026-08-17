@@ -119,7 +119,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
         </div>
         <Link
           to="/produtos/comparar-planos"
-          search={compareProduct ? { produto: compareProduct } : undefined}
+          search={{ produto: compareProduct }}
           className="text-sm text-cta underline underline-offset-4 hover:text-cta/80"
         >
           {productName ? `Comparar os planos do ${productName} em detalhe` : "Comparar todos os planos em detalhe"} →

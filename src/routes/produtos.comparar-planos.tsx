@@ -10,9 +10,9 @@ const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm"] as const
 type ProductKey = (typeof PRODUCT_KEYS)[number];
 
 export const Route = createFileRoute("/produtos/comparar-planos")({
-  validateSearch: (search: Record<string, unknown>): { produto: ProductKey } => {
+  validateSearch: (search: Record<string, unknown>): { produto?: ProductKey } => {
     const produto = search.produto as ProductKey;
-    return { produto: PRODUCT_KEYS.includes(produto) ? produto : "clinica" };
+    return PRODUCT_KEYS.includes(produto) ? { produto } : {};
   },
   head: () => ({
     meta: [
