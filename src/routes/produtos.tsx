@@ -1,12 +1,13 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, ArrowRight } from "lucide-react";
+import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
 import heroClinic from "@/assets/hero-clinic.jpg";
 import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
 import heroCrm from "@/assets/hero-crm.jpg";
+import heroCasa360 from "@/assets/hero-casa360.jpg";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
@@ -53,6 +54,13 @@ const products = [
     desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão.",
     image: heroCrm,
     link: "/produtos/flexus-crm" as const,
+  },
+  {
+    icon: House,
+    title: "FLEXUS | Casa360°",
+    desc: "ERP doméstico: estoque da despensa, lista de compras automática e finanças da casa em um só painel.",
+    image: heroCasa360,
+    link: "/produtos/flexus-casa360" as const,
   },
 ];
 
