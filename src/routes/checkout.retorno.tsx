@@ -24,8 +24,8 @@ function CheckoutReturnPage() {
     <div className="flex min-h-[70vh] flex-col items-center justify-center bg-surface px-4 py-20">
       <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-10 text-center shadow-xl shadow-primary/5">
         <Logo size={40} variant="mark" className="mx-auto mb-6" />
-        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-cta/10">
-          <Check className="h-10 w-10 text-cta" />
+        <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+          <Check className="h-10 w-10 text-primary" />
         </div>
 
         
@@ -53,7 +53,7 @@ function CheckoutReturnPage() {
         </div>
         
         <div className="mt-12 flex items-center justify-center gap-2 border-t border-border pt-8 text-sm text-muted-foreground">
-          <Shield className="h-4 w-4 text-cta" />
+          <Shield className="h-4 w-4 text-primary" />
           <span>Ambiente seguro e processado por Stripe</span>
         </div>
       </div>

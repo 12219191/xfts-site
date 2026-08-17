@@ -43,10 +43,10 @@ export function PlanUpgradeCard({
           <p className="mt-1 text-sm text-muted-foreground">{currentPlan.price}/mês</p>
         </div>
 
-        <ArrowRight className="h-5 w-5 text-cta" />
+        <ArrowRight className="h-5 w-5 text-primary" />
 
         {/* Target */}
-        <div className={`rounded-xl border-2 p-4 text-center ${isUpgrade ? "border-cta bg-cta/5" : "border-amber-500/40 bg-amber-500/5"}`}>
+        <div className={`rounded-xl border-2 p-4 text-center ${isUpgrade ? "border-cta bg-primary/5" : "border-gold-deep/40 bg-gold/5"}`}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Novo</p>
           <p className="mt-1 text-lg font-bold text-foreground">{targetPlan.name}</p>
           <p className="mt-1 text-sm text-muted-foreground">{targetPlan.price}/mês</p>
@@ -56,11 +56,11 @@ export function PlanUpgradeCard({
       {/* What you gain */}
       {isUpgrade && newFeatures.length > 0 && (
         <div className="mt-6">
-          <p className="text-sm font-medium text-cta">O que você ganha:</p>
+          <p className="text-sm font-medium text-primary">O que você ganha:</p>
           <ul className="mt-2 space-y-2">
             {newFeatures.map((f) => (
               <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-                <Check className="h-4 w-4 text-cta" /> {f}
+                <Check className="h-4 w-4 text-primary" /> {f}
               </li>
             ))}
           </ul>
@@ -83,7 +83,7 @@ export function PlanUpgradeCard({
 
       {/* Pro-rata */}
       {prorataMessage && (
-        <div className="mt-5 rounded-lg bg-cta/5 border border-cta/20 px-4 py-3 text-sm text-foreground">
+        <div className="mt-5 rounded-lg bg-primary/5 border border-cta/20 px-4 py-3 text-sm text-foreground">
           {prorataMessage}
         </div>
       )}

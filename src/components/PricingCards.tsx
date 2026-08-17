@@ -39,7 +39,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                 isPro
                   ? "border-cta bg-card shadow-xl shadow-cta/10 lg:scale-105 lg:z-10"
                   : isEnterprise
-                  ? "border-amber-500/40 bg-gradient-to-br from-card to-amber-500/[0.03] shadow-lg"
+                  ? "border-gold-deep/40 bg-gradient-to-br from-card to-gold/[0.05] shadow-lg"
                   : "border-border bg-card shadow-sm"
               }`}
             >
@@ -53,7 +53,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
               )}
               {isEnterprise && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-1 text-xs font-bold text-white uppercase tracking-wide shadow-md shadow-amber-500/30">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-gold to-gold-deep px-4 py-1 text-xs font-bold text-white uppercase tracking-wide shadow-md shadow-gold-deep/30">
                     <Crown className="h-3 w-3" /> Premium
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
               <ul className="mt-6 flex-1 space-y-3">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
-                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${isPro ? "text-cta" : isEnterprise ? "text-amber-500" : "text-primary"}`} />
+                    <Check className={`mt-0.5 h-4 w-4 shrink-0 ${isPro ? "text-primary" : isEnterprise ? "text-gold-deep" : "text-primary"}`} />
                     {f}
                   </li>
                 ))}
@@ -83,7 +83,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                 {isEnterprise ? (
                   <Link to="/contato">
                     <Button
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-md shadow-amber-500/20"
+                      className="w-full bg-gradient-to-r from-gold to-gold-deep text-white hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
                       onClick={() => trackCTAClick(plan.ctaLabel, trackingSection)}
                     >
                       Falar com Consultor
@@ -114,13 +114,13 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
       {/* Guarantee + Compare link */}
       <div className="mt-8 flex flex-col items-center gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Shield className="h-4 w-4 text-cta" />
+          <Shield className="h-4 w-4 text-primary" />
           <span>7 dias grátis • Sem compromisso • Cancele quando quiser</span>
         </div>
         <Link
           to="/produtos/comparar-planos"
           search={{ produto: compareProduct }}
-          className="text-sm text-cta underline underline-offset-4 hover:text-cta/80"
+          className="text-sm text-primary underline underline-offset-4 hover:text-primary/80"
         >
           {productName ? `Comparar os planos do ${productName} em detalhe` : "Comparar todos os planos em detalhe"} →
         </Link>

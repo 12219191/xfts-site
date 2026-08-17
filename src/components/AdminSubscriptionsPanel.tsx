@@ -65,7 +65,7 @@ function StatusBadge({ sub }: { sub: AdminSubscriptionRow }) {
   const bucket = bucketOf(sub);
   const styles =
     bucket === "active"
-      ? "bg-cta/10 text-cta"
+      ? "bg-primary/10 text-primary"
       : bucket === "failed"
         ? "bg-destructive/10 text-destructive"
         : "bg-muted text-muted-foreground";
@@ -77,7 +77,7 @@ function StatusBadge({ sub }: { sub: AdminSubscriptionRow }) {
         {STATUS_LABEL[sub.status] ?? sub.status}
       </span>
       {sub.cancel_at_period_end && sub.status !== "canceled" && (
-        <span className="text-[11px] text-amber-600">
+        <span className="text-[11px] text-gold-deep">
           Cancela em {fmtDate(sub.current_period_end)}
         </span>
       )}
@@ -135,7 +135,7 @@ export function AdminSubscriptionsPanel() {
 
   const tabs: { id: Bucket; label: string; color: string }[] = [
     { id: "all", label: "Todas", color: "text-foreground" },
-    { id: "active", label: "Ativas", color: "text-cta" },
+    { id: "active", label: "Ativas", color: "text-primary" },
     { id: "canceled", label: "Canceladas", color: "text-muted-foreground" },
     { id: "failed", label: "Com falha", color: "text-destructive" },
   ];
@@ -144,7 +144,7 @@ export function AdminSubscriptionsPanel() {
     <div>
       <div className="grid gap-4 sm:grid-cols-4">
         <MetricCard icon={CreditCard} label="Total" value={counts.all} />
-        <MetricCard icon={CheckCircle2} label="Ativas" value={counts.active} color="text-cta" />
+        <MetricCard icon={CheckCircle2} label="Ativas" value={counts.active} color="text-primary" />
         <MetricCard icon={XCircle} label="Canceladas" value={counts.canceled} color="text-muted-foreground" />
         <MetricCard icon={AlertTriangle} label="Com falha" value={counts.failed} color="text-destructive" />
       </div>

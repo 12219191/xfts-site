@@ -176,7 +176,7 @@ const faqs = [
 ];
 
 function FeatureCell({ value }: { value: FeatureValue }) {
-  if (value === true) return <Check className="mx-auto h-5 w-5 text-cta" />;
+  if (value === true) return <Check className="mx-auto h-5 w-5 text-primary" />;
   if (value === false) return <Minus className="mx-auto h-5 w-5 text-muted-foreground/30" />;
   return <span className="text-sm font-medium text-foreground">{value}</span>;
 }
@@ -199,7 +199,7 @@ function CompararPlanosPage() {
         <div className="container-wide px-4">
           {/* Header */}
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-block rounded-full bg-cta/10 px-4 py-1.5 text-sm font-medium text-cta">Planos & Preços</span>
+            <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">Planos & Preços</span>
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
               Escolha o plano ideal
             </h1>
@@ -237,7 +237,7 @@ function CompararPlanosPage() {
                 className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${annual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Anual
-                <span className="ml-2 rounded-full bg-cta/15 px-2 py-0.5 text-[11px] font-semibold text-cta">-20%</span>
+                <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">-20%</span>
               </button>
             </div>
           </div>
@@ -279,7 +279,7 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-sm font-semibold text-foreground">Enterprise</span>
-                          <span className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">Premium</span>
+                          <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">Premium</span>
                         </div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(product.prices.enterprise)}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {product.prices.enterprise}/mês</div>}
@@ -340,7 +340,7 @@ function CompararPlanosPage() {
                       </td>
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
-                          <Button className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/20" onClick={() => trackCTAClick("Falar com Consultor", `comparar-${product.product}`)}>
+                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-white hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick("Falar com Consultor", `comparar-${product.product}`)}>
                             Falar com Consultor
                           </Button>
                         </Link>
@@ -353,8 +353,8 @@ function CompararPlanosPage() {
           ))}
 
           {/* Guarantee */}
-          <div className="mx-auto mt-16 flex max-w-md items-center gap-4 rounded-2xl border border-cta/20 bg-cta/5 p-6">
-            <Shield className="h-10 w-10 shrink-0 text-cta" />
+          <div className="mx-auto mt-16 flex max-w-md items-center gap-4 rounded-2xl border border-cta/20 bg-primary/5 p-6">
+            <Shield className="h-10 w-10 shrink-0 text-primary" />
             <div>
               <p className="font-semibold text-foreground">Garantia de 7 dias</p>
               <p className="mt-1 text-sm text-muted-foreground">Teste gratuitamente por 7 dias. Se não gostar, cancele sem custo algum.</p>

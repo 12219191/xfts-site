@@ -68,9 +68,9 @@ export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscrip
                     variant="outline"
                     className={
                       info.tone === "ok"
-                        ? "border-cta/40 text-cta"
+                        ? "border-cta/40 text-primary"
                         : info.tone === "warn"
-                        ? "border-amber-500/40 text-amber-600"
+                        ? "border-gold-deep/40 text-gold-deep"
                         : "text-muted-foreground"
                     }
                   >
