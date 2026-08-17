@@ -135,6 +135,13 @@ async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
     status: subscription.status,
     stripe_subscription_id: subscription.id,
   });
+  await provision("created", {
+    userId,
+    priceId,
+    status: subscription.status,
+    accessUntil: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    env,
+  });
 }
 
 async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
@@ -217,6 +224,14 @@ async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
       plano: priceId,
     });
   }
+
+  await provision("updated", {
+    userId: prev.user_id,
+    priceId,
+    status: subscription.status,
+    accessUntil: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+    env,
+  });
 }
 
 async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
@@ -246,6 +261,12 @@ async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
     user_id: existing?.user_id ?? null,
     plano: existing?.price_id ?? null,
   });
+  await provision("canceled", {
+    userId: existing?.user_id,
+    priceId: existing?.price_id,
+    status: "canceled",
+    env,
+  });
 }
 
 async function handlePaymentFailed(invoice: any, env: StripeEnv) {
@@ -274,6 +295,12 @@ async function handlePaymentFailed(invoice: any, env: StripeEnv) {
     plano: existing?.price_id ?? null,
     carencia_dias: 3,
     valor: invoice.amount_due ? invoice.amount_due / 100 : null,
+  });
+  await provision("payment_failed", {
+    userId: existing?.user_id,
+    priceId: existing?.price_id,
+    status: "past_due",
+    env,
   });
 }
 
