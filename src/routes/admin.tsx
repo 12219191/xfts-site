@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AdminSubscriptionsPanel } from "@/components/AdminSubscriptionsPanel";
 import {
   Plus, Edit, Trash2, LogOut, Eye, EyeOff, FileText, CreditCard, Settings,
-  BarChart3, Users, BookOpen,
+  Users, BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
