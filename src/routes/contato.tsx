@@ -8,6 +8,7 @@ import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackFormSubmit } from "@/lib/tracking";
 import { ZapierSettings } from "@/components/ZapierSettings";
+import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
