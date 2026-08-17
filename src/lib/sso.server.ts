@@ -9,6 +9,10 @@ export interface SsoPayload {
   email: string;
   app: FlexusAppKey;
   plan: string | null;
+  /** Papel do portador do token. Hoje só o titular usa SSO. */
+  role?: "owner";
+  /** Assentos de equipe liberados pelo plano (null = ilimitado). */
+  seats?: number | null;
   jti: string;
   iat: number;
   exp: number;

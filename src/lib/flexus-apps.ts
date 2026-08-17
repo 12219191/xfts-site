@@ -97,3 +97,25 @@ export function planTierFromPriceId(priceId: string | null | undefined): string 
 
 /** Status que ainda liberam o uso do sistema (inclui carência de 3 dias). */
 export const ACTIVE_STATUSES = ["active", "trialing", "past_due"];
+
+/**
+ * Assentos (usuários da equipe) inclusos por plano.
+ * O titular vive no hub; a equipe é convidada dentro do próprio sistema,
+ * e o hub é a fonte de verdade do limite. `null` = ilimitado.
+ */
+export const SEATS_BY_TIER: Record<string, number | null> = {
+  "Básico": 2,
+  Pro: 6,
+  Enterprise: null,
+};
+
+/** Limite de usuários da equipe liberado pelo plano do price_id. */
+export function seatsFromPriceId(priceId: string | null | undefined): number | null {
+  const tier = planTierFromPriceId(priceId);
+  return tier in SEATS_BY_TIER ? SEATS_BY_TIER[tier]! : 2;
+}
+
+/** Texto amigável do limite de usuários. */
+export function seatsLabel(seats: number | null): string {
+  return seats === null ? "Usuários ilimitados" : `Até ${seats} usuários`;
+}

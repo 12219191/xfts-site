@@ -9,6 +9,8 @@ import {
   FLEXUS_APPS,
   appKeyFromPriceId,
   planTierFromPriceId,
+  seatsFromPriceId,
+  seatsLabel,
 } from "@/lib/flexus-apps";
 
 export interface SistemaSubscription {
@@ -79,6 +81,7 @@ export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscrip
                 {sub && (
                   <p className="text-xs text-muted-foreground">
                     Plano {planTierFromPriceId(sub.price_id)}
+                    {` • ${seatsLabel(seatsFromPriceId(sub.price_id))}`}
                     {sub.current_period_end &&
                       ` • até ${new Date(sub.current_period_end).toLocaleDateString("pt-BR")}`}
                   </p>

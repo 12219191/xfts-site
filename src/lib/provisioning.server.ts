@@ -2,7 +2,12 @@
  * Provisionamento: o hub avisa o sistema do produto (outro domínio) para
  * criar, liberar ou bloquear a conta do cliente.
  */
-import { appKeyFromPriceId, getFlexusApp, planTierFromPriceId } from "@/lib/flexus-apps";
+import {
+  appKeyFromPriceId,
+  getFlexusApp,
+  planTierFromPriceId,
+  seatsFromPriceId,
+} from "@/lib/flexus-apps";
 import { appApiKey, signBody } from "@/lib/sso.server";
 
 export type ProvisionEvent = "created" | "updated" | "canceled" | "payment_failed";
@@ -34,6 +39,8 @@ export async function provisionApp(
     user_id: input.userId,
     produto: appKey,
     plano: planTierFromPriceId(input.priceId),
+    limite_usuarios:
+      input.event === "canceled" ? 0 : seatsFromPriceId(input.priceId),
     price_id: input.priceId,
     status: input.status ?? null,
     acesso_ate: input.accessUntil ?? null,
