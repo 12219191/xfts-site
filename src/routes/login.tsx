@@ -12,6 +12,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    const value = search["redirect"];
+    // Apenas caminhos internos (mesma origem) são aceitos.
+    return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
+      ? { redirect: value }
+      : {};
+  },
   head: () => ({
     meta: [
       { title: "Login - XFTS Inteligência Analítica" },
@@ -20,6 +27,7 @@ export const Route = createFileRoute("/login")({
   }),
   component: LoginPage,
 });
+
 
 function GoogleButton() {
   const [loading, setLoading] = useState(false);
