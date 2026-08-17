@@ -302,31 +302,8 @@ function AdminPage() {
           )}
 
           {/* Subscriptions tab */}
-          {activeTab === "subscriptions" && (
-            <>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <MetricCard icon={CreditCard} label="Total" value={subscriptions.length} />
-                <MetricCard icon={BarChart3} label="Ativas" value={activeSubsCount} color="text-cta" />
-                <MetricCard icon={Users} label="Canceladas" value={subscriptions.filter((s) => s.status === "canceled").length} color="text-muted-foreground" />
-              </div>
-              <h3 className="mt-6 text-lg font-semibold text-foreground">Assinaturas</h3>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {subscriptions.map((sub) => (
-                  <SubscriptionStatus
-                    key={sub.id}
-                    status={sub.status as any}
-                    currentPeriodEnd={sub.current_period_end}
-                    cancelAtPeriodEnd={sub.cancel_at_period_end}
-                    productName={sub.product_id}
-                    planTier={sub.environment === "sandbox" ? "Teste" : "Produção"}
-                  />
-                ))}
-                {subscriptions.length === 0 && (
-                  <p className="col-span-full text-center text-muted-foreground py-10">Nenhuma assinatura encontrada.</p>
-                )}
-              </div>
-            </>
-          )}
+          {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
+
 
           {/* Settings tab */}
           {activeTab === "settings" && (
