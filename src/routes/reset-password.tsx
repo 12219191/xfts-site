@@ -7,6 +7,8 @@ import { Loader2, KeyRound } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Logo } from "@/components/Logo";
+
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
