@@ -253,8 +253,7 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {/* Upgrade options */}
-                  {currentPlanKey !== "pro" && (
+                  {currentPlanKey === "basico" && (
                     <Card
                       className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
                       onClick={() => {
@@ -269,7 +268,7 @@ function MinhaContaPage() {
                         <div>
                           <p className="font-semibold text-foreground">Upgrade para Pro</p>
                           <p className="text-xs text-muted-foreground">
-                            Desbloqueie financeiro, notificações e relatórios avançados.
+                            Imediato, com cobrança proporcional ao período restante.
                           </p>
                         </div>
                         <Badge className="ml-auto bg-cta/10 text-cta border-0">
@@ -279,52 +278,89 @@ function MinhaContaPage() {
                     </Card>
                   )}
 
-                  {currentPlanKey !== "enterprise" && (
+                  {currentPlanKey === "pro" && (
                     <Card
-                      className="cursor-pointer border-amber-500/30 transition-all hover:border-amber-500 hover:shadow-md"
+                      className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
                       onClick={() => {
-                        setUpgradeTo("enterprise");
+                        setUpgradeTo("basico");
                         setShowUpgrade(true);
                       }}
                     >
                       <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                          <Shield className="h-5 w-5 text-amber-600" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                          <Settings className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="font-semibold text-foreground">Upgrade para Enterprise</p>
+                          <p className="font-semibold text-foreground">Mudar para Básico</p>
                           <p className="text-xs text-muted-foreground">
-                            API, multi-unidades e suporte 24/7.
+                            Entra em vigor apenas na próxima renovação.
                           </p>
                         </div>
-                        <Badge className="ml-auto bg-amber-500/10 text-amber-600 border-0">
-                          Premium
-                        </Badge>
                       </CardContent>
                     </Card>
                   )}
-                </div>
 
-                {/* Cancel */}
-                {subscription.status !== "canceled" && (
-                  <div className="mt-6 rounded-xl border border-border bg-muted/20 p-5">
-                    <div className="flex items-center justify-between">
+                  <Card className="border-amber-500/30">
+                    <CardContent className="flex items-center gap-4 p-5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
+                        <Shield className="h-5 w-5 text-amber-600" />
+                      </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">Cancelar assinatura</p>
+                        <p className="font-semibold text-foreground">Plano Enterprise</p>
                         <p className="text-xs text-muted-foreground">
-                          Você pode cancelar a qualquer momento.
+                          API, multi-unidades e suporte 24/7 sob medida.
                         </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive/5 hover:text-destructive"
-                        onClick={() => setShowCancel(true)}
-                      >
-                        Cancelar plano
+                      <Button asChild size="sm" variant="outline" className="ml-auto">
+                        <Link to="/contato">Falar</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Cancel / reactivate */}
+                {subscription.cancel_at_period_end ? (
+                  <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/5 p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Cancelamento agendado
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Seu acesso continua ativo até{" "}
+                          {subscription.current_period_end
+                            ? new Date(subscription.current_period_end).toLocaleDateString("pt-BR")
+                            : "o fim do período pago"}
+                          .
+                        </p>
+                      </div>
+                      <Button size="sm" disabled={actionLoading} onClick={handleReactivate}>
+                        {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Reativar
                       </Button>
                     </div>
                   </div>
+                ) : (
+                  subscription.status !== "canceled" && (
+                    <div className="mt-6 rounded-xl border border-border bg-muted/20 p-5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Cancelar assinatura</p>
+                          <p className="text-xs text-muted-foreground">
+                            Você mantém o acesso até o fim do período já pago.
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:bg-destructive/5 hover:text-destructive"
+                          onClick={() => setShowCancel(true)}
+                        >
+                          Cancelar plano
+                        </Button>
+                      </div>
+                    </div>
+                  )
                 )}
               </div>
             </>
