@@ -4,7 +4,7 @@ import { supabaseAdmin } from "../src/integrations/supabase/client.server";
 const app = "barbearia" as const;
 const { data: subs } = await supabaseAdmin.from("subscriptions").select("user_id, price_id, status, environment").order("created_at", { ascending: false }).limit(5);
 console.log("assinaturas:", subs);
-const userId = subs?.[0]?.user_id ?? "00000000-0000-0000-0000-000000000001";
+const userId = subs?.[0]?.user_id ?? "2f04e8f3-bf7d-4d18-aa2a-2179d7dccce0";
 const jti = crypto.randomUUID();
 const now = Math.floor(Date.now() / 1000);
 const token = await signSsoToken({ sub: userId, email: "teste@xfts.com.br", app, plan: subs?.[0]?.price_id ?? null, jti, iat: now, exp: now + 120 });
