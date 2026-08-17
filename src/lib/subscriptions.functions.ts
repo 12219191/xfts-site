@@ -1,0 +1,181 @@
+import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import {
+  type StripeEnv,
+  createStripeClient,
+  getStripeErrorMessage,
+} from "@/lib/stripe.server";
+
+type ActionResult = { ok: true; message: string } | { error: string };
+
+const envInput = (data: { environment: StripeEnv }) => data;
+
+/**
+ * Cancelamento: o acesso permanece liberado até o fim do período já pago
+ * (cancel_at_period_end = true).
+ */
+export const cancelSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { environment: StripeEnv; reason?: string }) => data)
+  .handler(async ({ data, context }): Promise<ActionResult> => {
+    const { supabase, userId } = context;
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("stripe_subscription_id")
+      .eq("user_id", userId)
+      .eq("environment", data.environment)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+
+    try {
+      const stripe = createStripeClient(data.environment);
+      const updated = await stripe.subscriptions.update(sub.stripe_subscription_id, {
+        cancel_at_period_end: true,
+        ...(data.reason && {
+          cancellation_details: { comment: data.reason.slice(0, 400) },
+        }),
+      });
+      await supabase
+        .from("subscriptions")
+        .update({ cancel_at_period_end: true, updated_at: new Date().toISOString() })
+        .eq("stripe_subscription_id", updated.id);
+      return {
+        ok: true,
+        message: "Cancelamento agendado. Você mantém o acesso até o fim do período pago.",
+      };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Reativa uma assinatura que estava marcada para cancelar no fim do período. */
+export const reactivateSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(envInput)
+  .handler(async ({ data, context }): Promise<ActionResult> => {
+    const { supabase, userId } = context;
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("stripe_subscription_id")
+      .eq("user_id", userId)
+      .eq("environment", data.environment)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+
+    try {
+      const stripe = createStripeClient(data.environment);
+      await stripe.subscriptions.update(sub.stripe_subscription_id, {
+        cancel_at_period_end: false,
+      });
+      await supabase
+        .from("subscriptions")
+        .update({ cancel_at_period_end: false, updated_at: new Date().toISOString() })
+        .eq("stripe_subscription_id", sub.stripe_subscription_id);
+      return { ok: true, message: "Assinatura reativada com sucesso." };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/**
+ * Troca de plano:
+ * - Upgrade  -> imediato, com cobrança pró-rata da diferença.
+ * - Downgrade -> agendado para o próximo ciclo (sem crédito/estorno).
+ */
+export const changePlan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { environment: StripeEnv; targetPriceId: string }) => {
+    if (!/^[a-zA-Z0-9_-]+$/.test(data.targetPriceId)) throw new Error("Plano inválido");
+    return data;
+  })
+  .handler(
+    async ({
+      data,
+      context,
+    }): Promise<
+      { ok: true; message: string; applied: "immediate" | "scheduled" } | { error: string }
+    > => {
+      const { supabase, userId } = context;
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("stripe_subscription_id")
+        .eq("user_id", userId)
+        .eq("environment", data.environment)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+
+      try {
+        const stripe = createStripeClient(data.environment);
+
+        const prices = await stripe.prices.list({ lookup_keys: [data.targetPriceId] });
+        const targetPrice = prices.data[0];
+        if (!targetPrice) return { error: "Plano não encontrado" };
+
+        const subscription = await stripe.subscriptions.retrieve(sub.stripe_subscription_id);
+        const item = subscription.items.data[0];
+        if (!item) return { error: "Assinatura sem itens" };
+
+        if (item.price.id === targetPrice.id) {
+          return { error: "Você já está neste plano" };
+        }
+
+        const currentAmount = item.price.unit_amount ?? 0;
+        const targetAmount = targetPrice.unit_amount ?? 0;
+        const isUpgrade = targetAmount > currentAmount;
+
+        if (isUpgrade) {
+          await stripe.subscriptions.update(subscription.id, {
+            items: [{ id: item.id, price: targetPrice.id }],
+            proration_behavior: "always_invoice",
+            payment_behavior: "error_if_incomplete",
+          });
+          return {
+            ok: true,
+            applied: "immediate",
+            message: "Upgrade aplicado agora. A diferença foi cobrada de forma proporcional.",
+          };
+        }
+
+        // Downgrade: agenda a troca para o próximo ciclo.
+        const schedule = await stripe.subscriptionSchedules.create({
+          from_subscription: subscription.id,
+        });
+        const currentPhase = schedule.phases[0];
+        await stripe.subscriptionSchedules.update(schedule.id, {
+          end_behavior: "release",
+          phases: [
+            {
+              items: currentPhase.items.map((phaseItem) => ({
+                price: typeof phaseItem.price === "string" ? phaseItem.price : phaseItem.price.id,
+                quantity: phaseItem.quantity ?? 1,
+              })),
+              start_date: currentPhase.start_date,
+              end_date: currentPhase.end_date,
+            },
+            {
+              items: [{ price: targetPrice.id, quantity: 1 }],
+              proration_behavior: "none",
+            },
+          ],
+        });
+
+        return {
+          ok: true,
+          applied: "scheduled",
+          message:
+            "Downgrade agendado. Ele entra em vigor na próxima renovação, sem perda do período já pago.",
+        };
+      } catch (error) {
+        return { error: getStripeErrorMessage(error) };
+      }
+    },
+  );
