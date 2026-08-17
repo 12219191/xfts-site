@@ -6,6 +6,7 @@ import heroAba from "@/assets/hero-aba.jpg";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
+import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 
 export const Route = createFileRoute("/produtos/flexus-aba")({
   head: () => ({
@@ -94,7 +95,7 @@ function FlexusAbaPage() {
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Sistema SaaS para clínicas de Análise do Comportamento Aplicada. Coleta de dados, evolução e relatórios sem complicação.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "flexus-aba-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => trackCTAClick("Acessar Sistema", "flexus-aba-hero")}>Acessar Sistema</Button></Link>
+            <AcessarSistemaButton app="aba" size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" />
           </div>
         </div>
       </section>
