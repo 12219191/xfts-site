@@ -129,9 +129,11 @@ function ResetPasswordPage() {
   return (
     <section className="section-padding">
       <div className="container-wide mx-auto max-w-md">
+        <Logo size={56} variant="mark" className="mx-auto mb-6" />
         <Card>
           <CardContent className="p-6">
             <h1 className="text-xl font-bold text-foreground">Redefinir Senha</h1>
+
             <p className="mt-1 text-sm text-muted-foreground">Escolha uma nova senha.</p>
             <form onSubmit={handleReset} className="mt-6 space-y-4">
               <div className="space-y-2">
