@@ -1,5 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+type StripeEnv = "sandbox" | "live";
+import {
+  cancelSubscription,
+  reactivateSubscription,
+  changePlan,
+} from "@/lib/subscriptions.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
@@ -102,9 +109,24 @@ function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [upgradeTo, setUpgradeTo] = useState<"pro" | "enterprise">("pro");
+  const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
+
+  const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
+
+  const fetchSubscription = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("environment", env)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setSubscription((data as SubscriptionRow) ?? null);
+  }, [env]);
 
   useEffect(() => {
     async function load() {
@@ -116,27 +138,60 @@ function MinhaContaPage() {
         return;
       }
       setUser({ id: authUser.id, email: authUser.email || "" });
-
-      const env = getStripeEnvironment() === "live" ? "live" : "sandbox";
-      const { data } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", authUser.id)
-        .eq("environment", env)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data) setSubscription(data as SubscriptionRow);
+      await fetchSubscription(authUser.id);
       setLoading(false);
     }
     load();
-  }, []);
+  }, [fetchSubscription]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
+
+  /** Deriva o lookup key do plano de destino a partir do plano atual. */
+  const targetPriceId = (target: "basico" | "pro") => {
+    const current = subscription?.price_id ?? "";
+    return current.replace(/_(basico|pro)_/, `_${target}_`);
+  };
+
+  const runAction = async (fn: () => Promise<{ ok?: true; message?: string; error?: string }>) => {
+    setActionLoading(true);
+    try {
+      const result = await fn();
+      if (result.error) {
+        toast.error(result.error);
+        return false;
+      }
+      toast.success(result.message ?? "Tudo certo!");
+      if (user) await fetchSubscription(user.id);
+      return true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      return false;
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async (reason?: string) => {
+    setShowCancel(false);
+    await runAction(() => cancelSubscription({ data: { environment: env, reason } }));
+  };
+
+  const handleReactivate = async () => {
+    await runAction(() => reactivateSubscription({ data: { environment: env } }));
+  };
+
+  const handleChangePlan = async () => {
+    const target = targetPriceId(upgradeTo);
+    if (!target) return;
+    setShowUpgrade(false);
+    await runAction(() =>
+      changePlan({ data: { environment: env, targetPriceId: target } }),
+    );
+  };
+
 
   if (loading) {
     return (
@@ -253,8 +308,7 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {/* Upgrade options */}
-                  {currentPlanKey !== "pro" && (
+                  {currentPlanKey === "basico" && (
                     <Card
                       className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
                       onClick={() => {
@@ -269,7 +323,7 @@ function MinhaContaPage() {
                         <div>
                           <p className="font-semibold text-foreground">Upgrade para Pro</p>
                           <p className="text-xs text-muted-foreground">
-                            Desbloqueie financeiro, notificações e relatórios avançados.
+                            Imediato, com cobrança proporcional ao período restante.
                           </p>
                         </div>
                         <Badge className="ml-auto bg-cta/10 text-cta border-0">
@@ -279,52 +333,89 @@ function MinhaContaPage() {
                     </Card>
                   )}
 
-                  {currentPlanKey !== "enterprise" && (
+                  {currentPlanKey === "pro" && (
                     <Card
-                      className="cursor-pointer border-amber-500/30 transition-all hover:border-amber-500 hover:shadow-md"
+                      className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
                       onClick={() => {
-                        setUpgradeTo("enterprise");
+                        setUpgradeTo("basico");
                         setShowUpgrade(true);
                       }}
                     >
                       <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                          <Shield className="h-5 w-5 text-amber-600" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                          <Settings className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div>
-                          <p className="font-semibold text-foreground">Upgrade para Enterprise</p>
+                          <p className="font-semibold text-foreground">Mudar para Básico</p>
                           <p className="text-xs text-muted-foreground">
-                            API, multi-unidades e suporte 24/7.
+                            Entra em vigor apenas na próxima renovação.
                           </p>
                         </div>
-                        <Badge className="ml-auto bg-amber-500/10 text-amber-600 border-0">
-                          Premium
-                        </Badge>
                       </CardContent>
                     </Card>
                   )}
-                </div>
 
-                {/* Cancel */}
-                {subscription.status !== "canceled" && (
-                  <div className="mt-6 rounded-xl border border-border bg-muted/20 p-5">
-                    <div className="flex items-center justify-between">
+                  <Card className="border-amber-500/30">
+                    <CardContent className="flex items-center gap-4 p-5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
+                        <Shield className="h-5 w-5 text-amber-600" />
+                      </div>
                       <div>
-                        <p className="text-sm font-medium text-foreground">Cancelar assinatura</p>
+                        <p className="font-semibold text-foreground">Plano Enterprise</p>
                         <p className="text-xs text-muted-foreground">
-                          Você pode cancelar a qualquer momento.
+                          API, multi-unidades e suporte 24/7 sob medida.
                         </p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive/5 hover:text-destructive"
-                        onClick={() => setShowCancel(true)}
-                      >
-                        Cancelar plano
+                      <Button asChild size="sm" variant="outline" className="ml-auto">
+                        <Link to="/contato">Falar</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Cancel / reactivate */}
+                {subscription.cancel_at_period_end ? (
+                  <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/5 p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          Cancelamento agendado
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Seu acesso continua ativo até{" "}
+                          {subscription.current_period_end
+                            ? new Date(subscription.current_period_end).toLocaleDateString("pt-BR")
+                            : "o fim do período pago"}
+                          .
+                        </p>
+                      </div>
+                      <Button size="sm" disabled={actionLoading} onClick={handleReactivate}>
+                        {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Reativar
                       </Button>
                     </div>
                   </div>
+                ) : (
+                  subscription.status !== "canceled" && (
+                    <div className="mt-6 rounded-xl border border-border bg-muted/20 p-5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Cancelar assinatura</p>
+                          <p className="text-xs text-muted-foreground">
+                            Você mantém o acesso até o fim do período já pago.
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:bg-destructive/5 hover:text-destructive"
+                          onClick={() => setShowCancel(true)}
+                        >
+                          Cancelar plano
+                        </Button>
+                      </div>
+                    </div>
+                  )
                 )}
               </div>
             </>
@@ -367,19 +458,20 @@ function MinhaContaPage() {
         </div>
       </section>
 
-      {/* Upgrade modal */}
+      {/* Upgrade / downgrade modal */}
       {showUpgrade && currentPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg">
             <PlanUpgradeCard
               currentPlan={currentPlan}
               targetPlan={planMap[upgradeTo]}
-              isUpgrade={true}
-              prorataMessage="O valor será ajustado proporcionalmente ao período restante da sua assinatura atual."
-              onConfirm={() => {
-                setShowUpgrade(false);
-                window.location.href = `/checkout?plan=${upgradeTo}`;
-              }}
+              isUpgrade={upgradeTo === "pro"}
+              prorataMessage={
+                upgradeTo === "pro"
+                  ? "O upgrade é aplicado imediatamente e a diferença é cobrada de forma proporcional ao período restante."
+                  : "O downgrade entra em vigor apenas na próxima renovação. Você mantém o plano atual até lá."
+              }
+              onConfirm={handleChangePlan}
               onCancel={() => setShowUpgrade(false)}
             />
           </div>
@@ -390,10 +482,16 @@ function MinhaContaPage() {
       <CancelSubscriptionFlow
         open={showCancel}
         onClose={() => setShowCancel(false)}
-        onConfirmCancel={(reason) => {
-          setShowCancel(false);
-          console.log("Cancel reason:", reason);
-        }}
+        onConfirmCancel={handleCancel}
+        onDowngrade={
+          currentPlanKey === "pro"
+            ? () => {
+                setShowCancel(false);
+                setUpgradeTo("basico");
+                setShowUpgrade(true);
+              }
+            : undefined
+        }
         planName={currentPlan?.name}
         accessUntil={
           subscription?.current_period_end
@@ -401,6 +499,7 @@ function MinhaContaPage() {
             : undefined
         }
       />
+
     </>
   );
 }
