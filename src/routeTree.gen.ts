@@ -33,7 +33,9 @@ import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
+import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicSsoVerifyRouteImport } from './routes/api/public/sso/verify'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -156,12 +158,22 @@ const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
   path: '/gestao-esteticas',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ApiPublicEntitlementsRoute = ApiPublicEntitlementsRouteImport.update({
+  id: '/api/public/entitlements',
+  path: '/api/public/entitlements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicSsoVerifyRoute = ApiPublicSsoVerifyRouteImport.update({
+  id: '/api/public/sso/verify',
+  path: '/api/public/sso/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -188,7 +200,9 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -213,7 +227,9 @@ export interface FileRoutesByTo {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
+  '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -241,7 +257,9 @@ export interface FileRoutesById {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -270,7 +288,9 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/entitlements'
     | '/api/public/payments/webhook'
+    | '/api/public/sso/verify'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -295,7 +315,9 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog'
     | '/produtos'
+    | '/api/public/entitlements'
     | '/api/public/payments/webhook'
+    | '/api/public/sso/verify'
   id:
     | '__root__'
     | '/'
@@ -322,7 +344,9 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/entitlements'
     | '/api/public/payments/webhook'
+    | '/api/public/sso/verify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -339,7 +363,9 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  ApiPublicSsoVerifyRoute: typeof ApiPublicSsoVerifyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -512,11 +538,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/api/public/entitlements': {
+      id: '/api/public/entitlements'
+      path: '/api/public/entitlements'
+      fullPath: '/api/public/entitlements'
+      preLoaderRoute: typeof ApiPublicEntitlementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
       fullPath: '/api/public/payments/webhook'
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sso/verify': {
+      id: '/api/public/sso/verify'
+      path: '/api/public/sso/verify'
+      fullPath: '/api/public/sso/verify'
+      preLoaderRoute: typeof ApiPublicSsoVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -586,7 +626,9 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  ApiPublicSsoVerifyRoute: ApiPublicSsoVerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

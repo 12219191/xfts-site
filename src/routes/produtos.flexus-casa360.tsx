@@ -6,6 +6,7 @@ import heroCasa360 from "@/assets/hero-casa360.jpg";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
+import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 
 export const Route = createFileRoute("/produtos/flexus-casa360")({
   head: () => ({
@@ -102,7 +103,7 @@ function FlexusCasa360Page() {
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Grátis", "flexus-casa360-hero")}>Começar Grátis <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <Link to="/login"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" onClick={() => trackCTAClick("Já tenho conta", "flexus-casa360-hero")}>Já tenho conta</Button></Link>
+            <AcessarSistemaButton app="casa360" size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" />
           </div>
         </div>
       </section>
