@@ -237,8 +237,8 @@ function AdminPage() {
             <>
               <div className="grid gap-4 sm:grid-cols-4">
                 <MetricCard icon={FileText} label="Total de Artigos" value={articles.length} />
-                <MetricCard icon={Eye} label="Publicados" value={publishedCount} color="text-cta" />
-                <MetricCard icon={EyeOff} label="Rascunhos" value={draftCount} color="text-amber-500" />
+                <MetricCard icon={Eye} label="Publicados" value={publishedCount} color="text-primary" />
+                <MetricCard icon={EyeOff} label="Rascunhos" value={draftCount} color="text-gold-deep" />
                 <MetricCard icon={Users} label="Assinaturas Ativas" value={activeSubsCount} color="text-blue-500" />
               </div>
 
@@ -268,11 +268,11 @@ function AdminPage() {
                         <td className="hidden px-5 py-3 text-muted-foreground sm:table-cell">{article.category}</td>
                         <td className="px-5 py-3">
                           {article.published ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-cta/10 px-2.5 py-0.5 text-xs font-medium text-cta">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                               <Eye className="h-3 w-3" /> Publicado
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-600">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-gold/10 px-2.5 py-0.5 text-xs font-medium text-gold-deep">
                               <EyeOff className="h-3 w-3" /> Rascunho
                             </span>
                           )}

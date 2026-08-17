@@ -14,8 +14,8 @@ export function FeatureGate({ hasAccess, requiredPlan, children, className = "" 
   }
 
   const planColors = requiredPlan === "PRO"
-    ? { badge: "bg-cta/10 text-cta", border: "border-cta/20" }
-    : { badge: "bg-amber-500/10 text-amber-600", border: "border-amber-500/20" };
+    ? { badge: "bg-primary/10 text-primary", border: "border-cta/20" }
+    : { badge: "bg-gold/10 text-gold-deep", border: "border-gold-deep/20" };
 
   return (
     <TooltipProvider>

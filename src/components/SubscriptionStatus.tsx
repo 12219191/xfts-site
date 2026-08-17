@@ -13,11 +13,11 @@ interface SubscriptionStatusProps {
 }
 
 const statusConfig: Record<SubStatus, { label: string; color: string; bgColor: string; icon: typeof Check }> = {
-  active: { label: "Ativa", color: "text-cta", bgColor: "bg-cta/10", icon: Check },
+  active: { label: "Ativa", color: "text-primary", bgColor: "bg-primary/10", icon: Check },
   trialing: { label: "Período de teste", color: "text-blue-600", bgColor: "bg-blue-500/10", icon: Clock },
-  past_due: { label: "Pagamento pendente", color: "text-amber-600", bgColor: "bg-amber-500/10", icon: AlertTriangle },
+  past_due: { label: "Pagamento pendente", color: "text-gold-deep", bgColor: "bg-gold/10", icon: AlertTriangle },
   canceled: { label: "Cancelada", color: "text-muted-foreground", bgColor: "bg-muted", icon: XCircle },
-  incomplete: { label: "Incompleta", color: "text-amber-600", bgColor: "bg-amber-500/10", icon: Loader2 },
+  incomplete: { label: "Incompleta", color: "text-gold-deep", bgColor: "bg-gold/10", icon: Loader2 },
   unpaid: { label: "Não paga", color: "text-destructive", bgColor: "bg-destructive/10", icon: AlertTriangle },
   paused: { label: "Pausada", color: "text-blue-600", bgColor: "bg-blue-500/10", icon: Clock },
 };

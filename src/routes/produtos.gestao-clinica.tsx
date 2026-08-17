@@ -99,7 +99,7 @@ function GestaoClinicaPage() {
           <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
               <li key={f} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm text-foreground">
-                <Check className="h-5 w-5 shrink-0 text-cta" />{f}
+                <Check className="h-5 w-5 shrink-0 text-primary" />{f}
               </li>
             ))}
           </ul>
@@ -124,7 +124,7 @@ function GestaoClinicaPage() {
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {testimonials.map((t) => (
               <Card key={t.name} className="border-border bg-card"><CardContent className="p-6">
-                <div className="flex gap-1">{Array(5).fill(0).map((_, i) => <Star key={i} className="h-4 w-4 fill-cta text-cta" />)}</div>
+                <div className="flex gap-1">{Array(5).fill(0).map((_, i) => <Star key={i} className="h-4 w-4 fill-primary text-primary" />)}</div>
                 <p className="mt-4 text-sm text-muted-foreground italic">"{t.text}"</p>
                 <div className="mt-4"><p className="text-sm font-semibold text-card-foreground">{t.name}</p><p className="text-xs text-muted-foreground">{t.role}</p></div>
               </CardContent></Card>

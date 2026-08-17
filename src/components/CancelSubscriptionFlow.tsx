@@ -91,8 +91,8 @@ export function CancelSubscriptionFlow({
         {/* Step 2: Retention offer */}
         {step === 2 && retention && (
           <div className="space-y-5">
-            <div className="rounded-xl bg-cta/5 border border-cta/20 p-5 text-center">
-              <RetentionIcon className="mx-auto h-10 w-10 text-cta" />
+            <div className="rounded-xl bg-primary/5 border border-cta/20 p-5 text-center">
+              <RetentionIcon className="mx-auto h-10 w-10 text-primary" />
               <h4 className="mt-3 text-lg font-semibold text-foreground">{retention.title}</h4>
               <p className="mt-2 text-sm text-muted-foreground">{retention.description}</p>
               <Button
@@ -138,7 +138,7 @@ export function CancelSubscriptionFlow({
             <div className="flex flex-col gap-2">
               <Button
                 variant="outline"
-                className="w-full font-semibold border-cta text-cta hover:bg-cta/5"
+                className="w-full font-semibold border-cta text-primary hover:bg-primary/5"
                 onClick={() => { reset(); onClose(); }}
               >
                 Manter Meu Plano

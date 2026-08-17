@@ -330,8 +330,8 @@ function MinhaContaPage() {
                       }}
                     >
                       <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cta/10">
-                          <ArrowUpRight className="h-5 w-5 text-cta" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                          <ArrowUpRight className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <p className="font-semibold text-foreground">Upgrade para Pro</p>
@@ -339,7 +339,7 @@ function MinhaContaPage() {
                             Imediato, com cobrança proporcional ao período restante.
                           </p>
                         </div>
-                        <Badge className="ml-auto bg-cta/10 text-cta border-0">
+                        <Badge className="ml-auto bg-primary/10 text-primary border-0">
                           Popular
                         </Badge>
                       </CardContent>
@@ -368,10 +368,10 @@ function MinhaContaPage() {
                     </Card>
                   )}
 
-                  <Card className="border-amber-500/30">
+                  <Card className="border-gold-deep/30">
                     <CardContent className="flex items-center gap-4 p-5">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                        <Shield className="h-5 w-5 text-amber-600" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10">
+                        <Shield className="h-5 w-5 text-gold-deep" />
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">Plano Enterprise</p>
@@ -388,7 +388,7 @@ function MinhaContaPage() {
 
                 {/* Cancel / reactivate */}
                 {subscription.cancel_at_period_end ? (
-                  <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/5 p-5">
+                  <div className="mt-6 rounded-xl border border-gold-deep/40 bg-gold/5 p-5">
                     <div className="flex items-center justify-between gap-4">
                       <div>
                         <p className="text-sm font-medium text-foreground">
