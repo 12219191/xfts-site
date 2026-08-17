@@ -1,34 +1,25 @@
-## Objetivo
+# Botão de WhatsApp para contato direto
 
-Criar página `/exclusao-de-dados` no mesmo padrão visual de `/termos-de-uso` e `/politica-de-privacidade`, usando o componente `LegalPageLayout`.
+## O que será feito
 
-## Arquivos
+Um botão flutuante de WhatsApp, visível em todas as páginas do site, que abre uma conversa direta com o número (17) 99794-3349 já com uma mensagem inicial pronta.
 
-### Novo: `src/routes/exclusao-de-dados.tsx`
-- `createFileRoute("/exclusao-de-dados")` com `head()` (title, description, og:*, canonical).
-- Renderiza `LegalPageLayout` com:
-  - `title`: "Exclusão de Dados do Usuário"
-  - `subtitle`: frase curta sobre solicitar exclusão de dados pessoais.
-  - `breadcrumbLabel`: "Exclusão de Dados"
-  - `updatedAt`: "27 de maio de 2026" (mesmo padrão das outras)
-  - `intro`: parágrafo introdutório sobre respeito à privacidade e o processo simples de exclusão.
-  - `sections` (6 seções numeradas 01–06):
-    1. Como solicitar a exclusão — canais (e-mail, formulário, sistema) + dados a informar (lista).
-    2. Prazo de atendimento — até 15 dias úteis após confirmação de identidade.
-    3. Dados que poderão ser mantidos — retenção por obrigação legal/contratual.
-    4. Dados excluídos — lista (cadastrais, contato, histórico, conversas, demais).
-    5. Contato — CNPJ, site, e-mail.
-    6. (opcional) unificar contato no rodapé do layout, que já mostra CNPJ/e-mail/site — nesse caso 5 seções.
+## Comportamento
 
-Decisão: usar **5 seções** (remover seção "Contato" duplicada, pois o `LegalPageLayout` já renderiza rodapé com CNPJ/e-mail/site).
+- Círculo verde com o ícone do WhatsApp, fixo no canto inferior direito, acima do conteúdo.
+- Abre `https://wa.me/5517997943349?text=Olá! Gostaria de saber mais sobre as soluções FLEXUS da XFTS.` em nova aba.
+- Efeito de hover/pulse discreto e rótulo "Fale conosco" que aparece ao passar o mouse (desktop).
+- Acessível: `aria-label` descritivo, `rel="noopener noreferrer"`.
+- Registra o clique no tracking existente (`trackCTAClick`) para medir conversão.
 
-### Editar: `src/components/Footer.tsx`
-- Adicionar link "Exclusão de Dados" junto aos links de Termos e Política de Privacidade (verificar seção legal existente).
+## Onde aparece
 
-### Editar: `src/routes/sitemap[.]xml.tsx`
-- Adicionar `{ path: "/exclusao-de-dados", priority: "0.3", changefreq: "yearly" }` na lista `staticRoutes`.
+- Botão flutuante global (todas as páginas), incluindo mobile.
+- Botão adicional na seção "Informações de Contato" da página `/contato`, junto aos cards de telefone/e-mail.
 
-## Não muda
+## Detalhes técnicos
 
-- `LegalPageLayout.tsx` — reuso puro.
-- Design tokens, outras rotas legais.
+- Novo componente `src/components/WhatsAppButton.tsx` usando o ícone `MessageCircle` do lucide-react (o pacote não traz um ícone oficial do WhatsApp) ou um SVG inline da marca.
+- Renderizado uma única vez em `src/routes/__root.tsx`, ao lado do Footer.
+- Cores via tokens do design system (verde de CTA já existente), sem cores hardcoded.
+- Nenhuma alteração de backend.
