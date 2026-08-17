@@ -367,19 +367,20 @@ function MinhaContaPage() {
         </div>
       </section>
 
-      {/* Upgrade modal */}
+      {/* Upgrade / downgrade modal */}
       {showUpgrade && currentPlan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg">
             <PlanUpgradeCard
               currentPlan={currentPlan}
               targetPlan={planMap[upgradeTo]}
-              isUpgrade={true}
-              prorataMessage="O valor será ajustado proporcionalmente ao período restante da sua assinatura atual."
-              onConfirm={() => {
-                setShowUpgrade(false);
-                window.location.href = `/checkout?plan=${upgradeTo}`;
-              }}
+              isUpgrade={upgradeTo === "pro"}
+              prorataMessage={
+                upgradeTo === "pro"
+                  ? "O upgrade é aplicado imediatamente e a diferença é cobrada de forma proporcional ao período restante."
+                  : "O downgrade entra em vigor apenas na próxima renovação. Você mantém o plano atual até lá."
+              }
+              onConfirm={handleChangePlan}
               onCancel={() => setShowUpgrade(false)}
             />
           </div>
@@ -390,10 +391,16 @@ function MinhaContaPage() {
       <CancelSubscriptionFlow
         open={showCancel}
         onClose={() => setShowCancel(false)}
-        onConfirmCancel={(reason) => {
-          setShowCancel(false);
-          console.log("Cancel reason:", reason);
-        }}
+        onConfirmCancel={handleCancel}
+        onDowngrade={
+          currentPlanKey === "pro"
+            ? () => {
+                setShowCancel(false);
+                setUpgradeTo("basico");
+                setShowUpgrade(true);
+              }
+            : undefined
+        }
         planName={currentPlan?.name}
         accessUntil={
           subscription?.current_period_end
@@ -401,6 +408,7 @@ function MinhaContaPage() {
             : undefined
         }
       />
+
     </>
   );
 }
