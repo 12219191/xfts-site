@@ -2,7 +2,8 @@ import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router"
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
-import heroClinic from "@/assets/hero-clinic.jpg";
+import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
+const heroClinic = heroClinicAsset.url;
 import heroBarbershopAsset from "@/assets/hero-barbershop.webp.asset.json";
 const heroBarbershop = heroBarbershopAsset.url;
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
