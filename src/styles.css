@@ -48,6 +48,9 @@
   --color-cta-foreground: var(--cta-foreground);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+
   --font-heading: var(--font-family-heading);
   --font-body: var(--font-family-body);
 }
