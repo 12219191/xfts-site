@@ -24,13 +24,57 @@ function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setIsRecovery(true);
-    }
+    let active = true;
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if (event === "PASSWORD_RECOVERY" || session) {
+        setIsRecovery(true);
+        setChecking(false);
+      }
+    });
+
+    const verify = async () => {
+      const hash = window.location.hash;
+      const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(hash.replace(/^#/, ""));
+
+      // 1) Hash-based tokens (#access_token=...&type=recovery)
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      if (accessToken && refreshToken) {
+        await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+      }
+
+      // 2) PKCE code flow (?code=...)
+      const code = params.get("code");
+      if (code) {
+        await supabase.auth.exchangeCodeForSession(code);
+      }
+
+      // 3) token_hash flow (?token_hash=...&type=recovery)
+      const tokenHash = params.get("token_hash") ?? params.get("token");
+      const type = params.get("type") ?? hashParams.get("type");
+      if (tokenHash && type === "recovery") {
+        await supabase.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
+      }
+
+      const { data } = await supabase.auth.getSession();
+      if (!active) return;
+      setIsRecovery(Boolean(data.session) || hash.includes("type=recovery"));
+      setChecking(false);
+    };
+
+    verify();
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
+
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
