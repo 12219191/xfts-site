@@ -95,7 +95,7 @@ function FlexusAbaPage() {
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Sistema SaaS para clínicas de Análise do Comportamento Aplicada. Coleta de dados, evolução e relatórios sem complicação.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "flexus-aba-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <AcessarSistemaButton app="aba" size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" />
+            <AcessarSistemaButton app="aba" size="lg" variant="heroOutline" />
           </div>
         </div>
       </section>
