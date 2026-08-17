@@ -50,7 +50,9 @@ export async function provisionApp(
 
   try {
     const signature = await signBody(secret, body);
-    const res = await fetch(`${app.url}/api/provision`, {
+    const endpoint = app.provisionUrl ?? `${app.url}/api/provision`;
+    const res = await fetch(endpoint, {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
