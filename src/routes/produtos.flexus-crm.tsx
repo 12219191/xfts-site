@@ -95,7 +95,7 @@ function FlexusCrmPage() {
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">CRM completo para vender mais e melhor. Pipeline visual, automações e relatórios em tempo real.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "flexus-crm-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <AcessarSistemaButton app="crm" size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" />
+            <AcessarSistemaButton app="crm" size="lg" variant="heroOutline" />
           </div>
         </div>
       </section>

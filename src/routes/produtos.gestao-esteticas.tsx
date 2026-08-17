@@ -85,7 +85,7 @@ function GestaoEsteticasPage() {
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Gestão completa para clínicas de estética e salões de beleza.</p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-esteticas-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-            <AcessarSistemaButton app="estetica" size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10" />
+            <AcessarSistemaButton app="estetica" size="lg" variant="heroOutline" />
           </div>
         </div>
       </section>
