@@ -1,6 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
+import { provisionApp, type ProvisionEvent } from "@/lib/provisioning.server";
+
+/** Avisa o sistema do produto (outro domínio) e registra falhas para retry. */
+async function provision(
+  event: ProvisionEvent,
+  args: {
+    userId: string | null | undefined;
+    priceId: string | null | undefined;
+    status?: string | null;
+    accessUntil?: string | null;
+    env: StripeEnv;
+  },
+) {
+  const result = await provisionApp({
+    event,
+    userId: args.userId,
+    priceId: args.priceId,
+    status: args.status ?? null,
+    accessUntil: args.accessUntil ?? null,
+    environment: args.env,
+  });
+  if (!result.ok && result.app) {
+    console.error("Falha ao provisionar", result.app, result.error);
+    await logEvent({
+      user_id: args.userId ?? null,
+      event_type: "provisionamento_falhou",
+      price_id: args.priceId ?? null,
+      reason: `${result.app}: ${result.error}`,
+      environment: args.env,
+    });
+  }
+}
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
