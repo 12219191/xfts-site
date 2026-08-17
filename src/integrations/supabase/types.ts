@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      sso_tokens: {
+        Row: {
+          app_key: string
+          created_at: string
+          expires_at: string
+          id: string
+          jti: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          app_key: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          jti: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          app_key?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          jti?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscription_events: {
         Row: {
           created_at: string
