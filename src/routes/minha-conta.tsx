@@ -102,9 +102,24 @@ function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [upgradeTo, setUpgradeTo] = useState<"pro" | "enterprise">("pro");
+  const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
+
+  const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
+
+  const fetchSubscription = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("environment", env)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setSubscription((data as SubscriptionRow) ?? null);
+  }, [env]);
 
   useEffect(() => {
     async function load() {
@@ -116,27 +131,60 @@ function MinhaContaPage() {
         return;
       }
       setUser({ id: authUser.id, email: authUser.email || "" });
-
-      const env = getStripeEnvironment() === "live" ? "live" : "sandbox";
-      const { data } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", authUser.id)
-        .eq("environment", env)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data) setSubscription(data as SubscriptionRow);
+      await fetchSubscription(authUser.id);
       setLoading(false);
     }
     load();
-  }, []);
+  }, [fetchSubscription]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
+
+  /** Deriva o lookup key do plano de destino a partir do plano atual. */
+  const targetPriceId = (target: "basico" | "pro") => {
+    const current = subscription?.price_id ?? "";
+    return current.replace(/_(basico|pro)_/, `_${target}_`);
+  };
+
+  const runAction = async (fn: () => Promise<{ ok?: true; message?: string; error?: string }>) => {
+    setActionLoading(true);
+    try {
+      const result = await fn();
+      if (result.error) {
+        toast.error(result.error);
+        return false;
+      }
+      toast.success(result.message ?? "Tudo certo!");
+      if (user) await fetchSubscription(user.id);
+      return true;
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      return false;
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancel = async (reason?: string) => {
+    setShowCancel(false);
+    await runAction(() => cancelSubscription({ data: { environment: env, reason } }));
+  };
+
+  const handleReactivate = async () => {
+    await runAction(() => reactivateSubscription({ data: { environment: env } }));
+  };
+
+  const handleChangePlan = async () => {
+    const target = targetPriceId(upgradeTo);
+    if (!target) return;
+    setShowUpgrade(false);
+    await runAction(() =>
+      changePlan({ data: { environment: env, targetPriceId: target } }),
+    );
+  };
+
 
   if (loading) {
     return (
