@@ -97,7 +97,19 @@ function ResetPasswordPage() {
     }
   };
 
+  if (checking) {
+    return (
+      <section className="section-padding">
+        <div className="container-wide mx-auto max-w-md text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="mt-4 text-muted-foreground">Validando link de recuperação...</p>
+        </div>
+      </section>
+    );
+  }
+
   if (!isRecovery) {
+
     return (
       <section className="section-padding">
         <div className="container-wide mx-auto max-w-md text-center">
