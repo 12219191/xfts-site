@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield } from "lucide-react";
+import { SEATS_BY_TIER, seatsLabel } from "@/lib/flexus-apps";
 import { trackCTAClick } from "@/lib/tracking";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
