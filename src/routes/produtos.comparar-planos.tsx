@@ -286,7 +286,18 @@ function CompararPlanosPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {product.features.map((feature, idx) => (
+                    {[
+                      {
+                        name: "Usuários inclusos",
+                        tooltip:
+                          "Quantidade de pessoas da equipe que o titular pode convidar dentro do sistema. Clientes finais que acessam o portal por link não contam.",
+                        basico: seatsLabel(SEATS_BY_TIER["Básico"] ?? 2),
+                        pro: seatsLabel(SEATS_BY_TIER["Pro"] ?? 6),
+                        enterprise: seatsLabel(SEATS_BY_TIER["Enterprise"] ?? null),
+                      } as PlanFeature,
+                      ...product.features,
+                    ].map((feature, idx) => (
+
                       <tr key={feature.name} className={`border-b border-border/50 last:border-0 ${idx % 2 === 0 ? "" : "bg-muted/20"}`}>
                         <td className="px-6 py-3.5 text-sm text-foreground">
                           <span className="inline-flex items-center gap-1.5">
