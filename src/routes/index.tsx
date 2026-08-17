@@ -14,7 +14,7 @@ import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
 import heroCrm from "@/assets/hero-crm.jpg";
 import heroCasa360 from "@/assets/hero-casa360.jpg";
-import { LogoMark } from "@/components/LogoMark";
+import { Logo } from "@/components/Logo";
 
 
 export const Route = createFileRoute("/")({
@@ -94,9 +94,11 @@ function HomePage() {
       <section className="relative overflow-hidden">
         <img src={heroMain} alt="Equipe analisando dados em dashboards" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
-        <LogoMark
+        <Logo
           size={420}
-          className="pointer-events-none absolute -right-16 top-1/2 hidden -translate-y-1/2 text-primary-foreground opacity-[0.08] lg:block"
+          variant="mark"
+          inverted
+          className="pointer-events-none absolute -right-16 top-1/2 hidden -translate-y-1/2 opacity-[0.08] lg:block"
         />
         <div className="container-wide relative z-10 flex min-h-[600px] flex-col items-center justify-center px-4 py-24 text-center">
 

@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="gradient-primary text-primary-foreground">
       <div className="container-wide section-padding grid gap-8 md:grid-cols-4">
         <div>
-          <Logo size={40} variant="mark" />
+          <Logo size={40} variant="mark" inverted />
           <h3 className="mt-3 text-lg font-bold">XFTS Inteligência Analítica</h3>
           <p className="mt-2 text-sm text-primary-foreground/70">
             Transformamos dados em decisões inteligentes para o seu negócio.
