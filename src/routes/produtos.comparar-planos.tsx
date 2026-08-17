@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield } from "lucide-react";
 import { trackCTAClick } from "@/lib/tracking";
