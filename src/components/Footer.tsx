@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Facebook } from "lucide-react";
+import { Logo } from "@/components/Logo";
+
 
 export function Footer() {
   return (
     <footer className="gradient-primary text-primary-foreground">
       <div className="container-wide section-padding grid gap-8 md:grid-cols-4">
         <div>
-          <h3 className="text-lg font-bold">XFTS Inteligência Analítica</h3>
+          <Logo size={40} variant="mark" />
+          <h3 className="mt-3 text-lg font-bold">XFTS Inteligência Analítica</h3>
           <p className="mt-2 text-sm text-primary-foreground/70">
             Transformamos dados em decisões inteligentes para o seu negócio.
           </p>
         </div>
+
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Navegação</h4>
           <nav className="flex flex-col gap-2 text-sm">
