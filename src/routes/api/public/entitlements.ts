@@ -5,6 +5,7 @@ import {
   appKeyFromPriceId,
   getFlexusApp,
   planTierFromPriceId,
+  seatsFromPriceId,
   type FlexusAppKey,
 } from "@/lib/flexus-apps";
 
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
           .order("created_at", { ascending: false });
 
         const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
-        if (!sub) return json({ ativo: false, status: "none", plano: null });
+        if (!sub) return json({ ativo: false, status: "none", plano: null, papel: "owner", limite_usuarios: 0 });
 
         const periodOk =
           !sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
@@ -62,6 +63,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
           ativo,
           status: sub.status,
           plano: planTierFromPriceId(sub.price_id),
+          papel: "owner",
+          limite_usuarios: ativo ? seatsFromPriceId(sub.price_id) : 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
         });

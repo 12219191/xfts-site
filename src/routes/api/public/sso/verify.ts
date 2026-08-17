@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { appApiKey, safeEqual, verifySsoToken } from "@/lib/sso.server";
-import { ACTIVE_STATUSES, appKeyFromPriceId, getFlexusApp } from "@/lib/flexus-apps";
+import {
+  ACTIVE_STATUSES,
+  appKeyFromPriceId,
+  getFlexusApp,
+  seatsFromPriceId,
+} from "@/lib/flexus-apps";
 
 const bodySchema = z.object({
   token: z.string().min(20).max(4000),
@@ -76,6 +81,8 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           email: payload.email,
           produto: app.key,
           plano: payload.plan,
+          papel: payload.role ?? "owner",
+          limite_usuarios: payload.seats ?? seatsFromPriceId(sub?.price_id),
           status: sub?.status ?? "none",
           ativo: active,
           acesso_ate: sub?.current_period_end ?? null,

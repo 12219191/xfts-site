@@ -14,7 +14,7 @@ export const createSsoLink = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }): Promise<SsoResult> => {
-    const { getFlexusApp, appKeyFromPriceId, ACTIVE_STATUSES, planTierFromPriceId } =
+    const { getFlexusApp, appKeyFromPriceId, ACTIVE_STATUSES, planTierFromPriceId, seatsFromPriceId } =
       await import("@/lib/flexus-apps");
     const app = getFlexusApp(data.app);
     if (!app) return { error: "Sistema não encontrado" };
@@ -64,6 +64,8 @@ export const createSsoLink = createServerFn({ method: "POST" })
       email: (claims as { email?: string })?.email ?? "",
       app: app.key,
       plan: planTierFromPriceId(sub.price_id),
+      role: "owner",
+      seats: seatsFromPriceId(sub.price_id),
       jti,
       iat: now,
       exp,
