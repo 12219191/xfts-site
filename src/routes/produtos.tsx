@@ -7,7 +7,8 @@ import heroBarbershopAsset from "@/assets/hero-barbershop.webp.asset.json";
 const heroBarbershop = heroBarbershopAsset.url;
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
-import heroCrm from "@/assets/hero-crm.jpg";
+import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
+const heroCrm = heroCrmAsset.url;
 import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
 const heroCasa360 = heroCasa360Asset.url;
 
