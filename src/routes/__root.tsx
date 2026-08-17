@@ -5,6 +5,8 @@ import { Footer } from "@/components/Footer";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppButton";
 import appCss from "../styles.css?url";
+import { Logo } from "@/components/Logo";
+
 
 function NotFoundComponent() {
   return (
