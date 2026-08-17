@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
@@ -13,6 +13,7 @@ import heroBarbershop from "@/assets/hero-barbershop.jpg";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import heroAba from "@/assets/hero-aba.jpg";
 import heroCrm from "@/assets/hero-crm.jpg";
+import heroCasa360 from "@/assets/hero-casa360.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -75,6 +76,13 @@ function HomePage() {
       desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão em tempo real.",
       image: heroCrm,
       link: "/produtos/flexus-crm" as const,
+    },
+    {
+      icon: House,
+      title: "FLEXUS | Casa360°",
+      desc: "ERP doméstico: estoque da despensa, lista de compras automática, controle de validade e finanças da casa.",
+      image: heroCasa360,
+      link: "/produtos/flexus-casa360" as const,
     },
   ];
 

@@ -28,6 +28,7 @@ import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
 import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
 import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
+import { Route as ProdutosFlexusCasa360RouteImport } from './routes/produtos.flexus-casa360'
 import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
@@ -128,6 +129,11 @@ const ProdutosFlexusAbaRoute = ProdutosFlexusAbaRouteImport.update({
   path: '/flexus-aba',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ProdutosFlexusCasa360Route = ProdutosFlexusCasa360RouteImport.update({
+  id: '/flexus-casa360',
+  path: '/flexus-casa360',
+  getParentRoute: () => ProdutosRoute,
+} as any)
 const ProdutosFlexusCrmRoute = ProdutosFlexusCrmRouteImport.update({
   id: '/flexus-crm',
   path: '/flexus-crm',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByTo {
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
@@ -451,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosFlexusAbaRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/produtos/flexus-casa360': {
+      id: '/produtos/flexus-casa360'
+      path: '/flexus-casa360'
+      fullPath: '/produtos/flexus-casa360'
+      preLoaderRoute: typeof ProdutosFlexusCasa360RouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/produtos/flexus-crm': {
       id: '/produtos/flexus-crm'
       path: '/flexus-crm'
@@ -509,6 +528,7 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
 interface ProdutosRouteChildren {
   ProdutosCompararPlanosRoute: typeof ProdutosCompararPlanosRoute
   ProdutosFlexusAbaRoute: typeof ProdutosFlexusAbaRoute
+  ProdutosFlexusCasa360Route: typeof ProdutosFlexusCasa360Route
   ProdutosFlexusCrmRoute: typeof ProdutosFlexusCrmRoute
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
   ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
@@ -519,6 +539,7 @@ interface ProdutosRouteChildren {
 const ProdutosRouteChildren: ProdutosRouteChildren = {
   ProdutosCompararPlanosRoute: ProdutosCompararPlanosRoute,
   ProdutosFlexusAbaRoute: ProdutosFlexusAbaRoute,
+  ProdutosFlexusCasa360Route: ProdutosFlexusCasa360Route,
   ProdutosFlexusCrmRoute: ProdutosFlexusCrmRoute,
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
   ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,

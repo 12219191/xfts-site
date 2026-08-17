@@ -14,7 +14,7 @@ interface PricingPlan {
   ctaLabel: string;
 }
 
-type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm";
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360";
 
 interface PricingCardsProps {
   plans: PricingPlan[];
