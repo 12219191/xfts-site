@@ -18,6 +18,12 @@ export interface FlexusApp {
   name: string;
   /** Domínio do sistema (sem barra final). Vazio quando ainda não existe. */
   url: string;
+  /**
+   * Endpoint que recebe o webhook de provisionamento.
+   * Sistemas SPA não servem rotas de API no próprio domínio: nesses casos
+   * apontamos para a função de backend do projeto.
+   */
+  provisionUrl?: string;
   /** Prefixo dos lookup keys de preço usados no checkout. */
   pricePrefix: string;
   /** Rota da landing do produto neste site. */
@@ -30,6 +36,7 @@ export const FLEXUS_APPS: FlexusApp[] = [
     key: "barbearia",
     name: "FLEXUS | Barbearia",
     url: "https://xfts-flexus6.com",
+    provisionUrl: "https://xqosihkaxmgjrrtfrscm.supabase.co/functions/v1/flexus-provision",
     pricePrefix: "gestao_barbearias",
     landing: "/produtos/gestao-barbearias",
     available: true,
@@ -38,6 +45,7 @@ export const FLEXUS_APPS: FlexusApp[] = [
     key: "crm",
     name: "FLEXUS | CRM",
     url: "https://xfts-flexus7.com",
+    provisionUrl: "https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-provision",
     pricePrefix: "flexus_crm",
     landing: "/produtos/flexus-crm",
     available: true,
@@ -46,10 +54,12 @@ export const FLEXUS_APPS: FlexusApp[] = [
     key: "casa360",
     name: "FLEXUS | Casa360°",
     url: "https://xfts-flexus8.com",
+    provisionUrl: "https://xfts-flexus8.com/api/public/provision",
     pricePrefix: "flexus_casa360",
     landing: "/produtos/flexus-casa360",
     available: true,
   },
+
   {
     key: "clinica",
     name: "FLEXUS | Clínica",
