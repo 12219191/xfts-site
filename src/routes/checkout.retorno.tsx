@@ -21,9 +21,11 @@ function CheckoutReturnPage() {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center bg-surface px-4 py-20">
       <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-10 text-center shadow-xl shadow-primary/5">
+        <Logo size={40} variant="mark" className="mx-auto mb-6" />
         <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-cta/10">
           <Check className="h-10 w-10 text-cta" />
         </div>
+
         
         <h1 className="text-3xl font-extrabold tracking-tight text-foreground md:text-4xl">
           Pagamento Confirmado!
