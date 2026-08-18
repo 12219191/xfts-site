@@ -9,6 +9,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
+import { abaPlans as plans } from "@/lib/product-plans";
 
 export const Route = createFileRoute("/produtos/flexus-aba")({
   head: () => ({
@@ -58,23 +59,6 @@ const testimonials = [
   { name: "Juliana Reis", role: "Coordenadora ABA Vida", text: "Toda a equipe trabalha alinhada. O controle de horas autorizadas evitou retrabalho com convênios." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 99", description: "Ideal para terapeutas autônomos", tier: "basico" as const,
-    features: ["Registro de tentativas", "Agenda de sessões", "Prontuário básico", "Relatórios mensais", "1 profissional"],
-    priceId: "flexus_aba_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 199", description: "Para clínicas em crescimento", tier: "pro" as const,
-    features: ["Tudo do Básico", "Gráficos de evolução", "PTI completo", "Controle de horas autorizadas", "Até 10 profissionais"],
-    priceId: "flexus_aba_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 399", description: "Para redes e grandes clínicas", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "Integração com convênios", "API e integrações", "Profissionais ilimitados"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function FlexusAbaPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

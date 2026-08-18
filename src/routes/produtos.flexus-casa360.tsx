@@ -9,6 +9,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
+import { casa360Plans as plans } from "@/lib/product-plans";
 
 export const Route = createFileRoute("/produtos/flexus-casa360")({
   head: () => ({
@@ -64,23 +65,6 @@ const testimonials = [
   { name: "Família Menezes", role: "Casa com 4 pessoas", text: "Todo mundo lança as despesas no mesmo lugar. Acabaram as discussões sobre as contas do mês." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 99", description: "Para quem mora sozinho", tier: "basico" as const,
-    features: ["Estoque da casa", "Lista de compras automática", "Controle de validade", "Finanças básicas do mês", "1 morador"],
-    priceId: "flexus_casa360_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 199", description: "Para casais e famílias", tier: "pro" as const,
-    features: ["Tudo do Básico", "Até 6 moradores", "Contas recorrentes e lembretes", "Histórico de preços", "Relatórios avançados"],
-    priceId: "flexus_casa360_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 399", description: "Para famílias grandes e múltiplas residências", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Múltiplas residências", "Moradores ilimitados", "API e integrações", "Suporte dedicado"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function FlexusCasa360Page() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
