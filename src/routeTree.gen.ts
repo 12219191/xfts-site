@@ -34,6 +34,7 @@ import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
+import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicSsoVerifyRouteImport } from './routes/api/public/sso/verify'
 
@@ -163,6 +164,11 @@ const ApiPublicEntitlementsRoute = ApiPublicEntitlementsRouteImport.update({
   path: '/api/public/entitlements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBlogImageSplatRoute = ApiPublicBlogImageSplatRouteImport.update({
+  id: '/api/public/blog-image/$',
+  path: '/api/public/blog-image/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
 }
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/produtos/'
     | '/api/public/entitlements'
+    | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
   fileRoutesByTo: FileRoutesByTo
@@ -316,6 +326,7 @@ export interface FileRouteTypes {
     | '/blog'
     | '/produtos'
     | '/api/public/entitlements'
+    | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
   id:
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/produtos/'
     | '/api/public/entitlements'
+    | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
   fileRoutesById: FileRoutesById
@@ -364,6 +376,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
+  ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicSsoVerifyRoute: typeof ApiPublicSsoVerifyRoute
 }
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicEntitlementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/blog-image/$': {
+      id: '/api/public/blog-image/$'
+      path: '/api/public/blog-image/$'
+      fullPath: '/api/public/blog-image/$'
+      preLoaderRoute: typeof ApiPublicBlogImageSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -627,6 +647,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
+  ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicSsoVerifyRoute: ApiPublicSsoVerifyRoute,
 }

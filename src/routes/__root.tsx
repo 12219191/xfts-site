@@ -4,6 +4,7 @@ import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppButton";
+import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { Logo } from "@/components/Logo";
 
@@ -137,6 +138,7 @@ function RootComponent() {
       </main>
       <Footer />
       <WhatsAppFloatingButton />
+      <Toaster />
     </div>
   );
 }
