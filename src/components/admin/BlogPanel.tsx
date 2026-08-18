@@ -350,10 +350,10 @@ export function BlogPanel() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
-                <th className="px-5 py-3 font-medium text-muted-foreground">Artigo</th>
-                <th className="hidden px-5 py-3 font-medium text-muted-foreground sm:table-cell">Categoria</th>
-                <th className="px-5 py-3 font-medium text-muted-foreground">Publicado</th>
-                <th className="hidden px-5 py-3 font-medium text-muted-foreground md:table-cell">Data</th>
+                <SortHeader label="Artigo" sortKey="title" active={sortKey} dir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Categoria" sortKey="category" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden sm:table-cell" />
+                <SortHeader label="Publicado" sortKey="published" active={sortKey} dir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Data" sortKey="created_at" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden md:table-cell" />
                 <th className="px-5 py-3 text-right font-medium text-muted-foreground">Ações</th>
               </tr>
             </thead>
