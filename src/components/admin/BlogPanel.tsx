@@ -17,6 +17,7 @@ import {
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
+  ArrowUp, ArrowDown, ChevronsUpDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -38,8 +39,10 @@ const emptyForm: ArticleForm = {
   published: false,
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZES = [10, 20, 50, 100];
 type StatusFilter = "todos" | "publicados" | "rascunhos";
+type SortKey = "created_at" | "title" | "category" | "published";
+type SortDir = "asc" | "desc";
 
 export function BlogPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -49,6 +52,10 @@ export function BlogPanel() {
   const [category, setCategory] = useState("Todas");
   const [view, setView] = useState<"table" | "grid">("table");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [sortKey, setSortKey] = useState<SortKey>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
@@ -72,7 +79,7 @@ export function BlogPanel() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, status, category]);
+  }, [search, status, category, pageSize, sortKey, sortDir]);
 
   const categories = useMemo(
     () => ["Todas", ...Array.from(new Set(articles.map((a) => a.category))).sort()],
@@ -81,7 +88,7 @@ export function BlogPanel() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return articles.filter((a) => {
+    const list = articles.filter((a) => {
       const matchSearch =
         !q ||
         a.title.toLowerCase().includes(q) ||
@@ -92,10 +99,37 @@ export function BlogPanel() {
       const matchCat = category === "Todas" || a.category === category;
       return matchSearch && matchStatus && matchCat;
     });
-  }, [articles, search, status, category]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => {
+      let cmp = 0;
+      if (sortKey === "created_at") {
+        cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (sortKey === "published") {
+        cmp = Number(a.published) - Number(b.published);
+      } else {
+        cmp = String(a[sortKey] ?? "").localeCompare(String(b[sortKey] ?? ""), "pt-BR");
+      }
+      if (cmp === 0) {
+        cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      return cmp * dir;
+    });
+  }, [articles, search, status, category, sortKey, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "created_at" ? "desc" : "asc");
+    }
+  };
+
 
   const slugTaken = useMemo(
     () =>
@@ -225,7 +259,25 @@ export function BlogPanel() {
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            value={`${sortKey}:${sortDir}`}
+            aria-label="Ordenar artigos"
+            onChange={(e) => {
+              const [k, d] = e.target.value.split(":") as [SortKey, SortDir];
+              setSortKey(k);
+              setSortDir(d);
+            }}
+          >
+            <option value="created_at:desc">Mais recentes</option>
+            <option value="created_at:asc">Mais antigos</option>
+            <option value="title:asc">Título (A–Z)</option>
+            <option value="title:desc">Título (Z–A)</option>
+            <option value="category:asc">Categoria (A–Z)</option>
+            <option value="published:desc">Publicados primeiro</option>
+            <option value="published:asc">Rascunhos primeiro</option>
+          </select>
           <div className="flex gap-1 rounded-lg bg-muted/40 p-1">
             <button
               onClick={() => setView("table")}
@@ -248,10 +300,28 @@ export function BlogPanel() {
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-muted-foreground">
-        Mostrando {pageItems.length} de {filtered.length} artigo(s)
-        {filtered.length !== articles.length && ` (${articles.length} no total)`}
-      </p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Mostrando {pageItems.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+          –{(currentPage - 1) * pageSize + pageItems.length} de {filtered.length} artigo(s)
+          {filtered.length !== articles.length && ` (${articles.length} no total)`}
+        </p>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          Por página
+          <select
+            className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {PAGE_SIZES.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
 
       {loading ? (
         <div className="mt-4 space-y-3">
@@ -280,10 +350,10 @@ export function BlogPanel() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
-                <th className="px-5 py-3 font-medium text-muted-foreground">Artigo</th>
-                <th className="hidden px-5 py-3 font-medium text-muted-foreground sm:table-cell">Categoria</th>
-                <th className="px-5 py-3 font-medium text-muted-foreground">Publicado</th>
-                <th className="hidden px-5 py-3 font-medium text-muted-foreground md:table-cell">Data</th>
+                <SortHeader label="Artigo" sortKey="title" active={sortKey} dir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Categoria" sortKey="category" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden sm:table-cell" />
+                <SortHeader label="Publicado" sortKey="published" active={sortKey} dir={sortDir} onSort={toggleSort} />
+                <SortHeader label="Data" sortKey="created_at" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden md:table-cell" />
                 <th className="px-5 py-3 text-right font-medium text-muted-foreground">Ações</th>
               </tr>
             </thead>
@@ -404,30 +474,52 @@ export function BlogPanel() {
       )}
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
           <Button
             size="icon"
             variant="outline"
             className="h-8 w-8"
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
+            aria-label="Página anterior"
+            disabled={currentPage === 1}
+            onClick={() => setPage(currentPage - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-muted-foreground">
-            Página {page} de {totalPages}
-          </span>
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(
+              (p) =>
+                p === 1 ||
+                p === totalPages ||
+                Math.abs(p - currentPage) <= 1,
+            )
+            .map((p, idx, arr) => (
+              <span key={p} className="flex items-center gap-2">
+                {idx > 0 && arr[idx - 1] !== p - 1 && (
+                  <span className="text-xs text-muted-foreground">…</span>
+                )}
+                <Button
+                  size="icon"
+                  variant={p === currentPage ? "default" : "outline"}
+                  className="h-8 w-8 text-xs"
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </Button>
+              </span>
+            ))}
           <Button
             size="icon"
             variant="outline"
             className="h-8 w-8"
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
+            aria-label="Próxima página"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(currentPage + 1)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}
+
 
       <ArticleEditorDialog
         open={modalOpen}
@@ -462,6 +554,41 @@ export function BlogPanel() {
     </>
   );
 }
+
+function SortHeader({
+  label,
+  sortKey,
+  active,
+  dir,
+  onSort,
+  className = "",
+}: {
+  label: string;
+  sortKey: SortKey;
+  active: SortKey;
+  dir: SortDir;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}) {
+  const isActive = active === sortKey;
+  const Icon = !isActive ? ChevronsUpDown : dir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <th className={`px-5 py-3 font-medium text-muted-foreground ${className}`}>
+      <button
+        type="button"
+        onClick={() => onSort(sortKey)}
+        aria-label={`Ordenar por ${label}`}
+        className={`inline-flex items-center gap-1 transition-colors hover:text-foreground ${
+          isActive ? "text-foreground" : ""
+        }`}
+      >
+        {label}
+        <Icon className="h-3.5 w-3.5" />
+      </button>
+    </th>
+  );
+}
+
 
 function Thumb({ url, alt }: { url: string; alt: string }) {
   if (!url) {
