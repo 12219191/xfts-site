@@ -79,7 +79,7 @@ export function BlogPanel() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, status, category]);
+  }, [search, status, category, pageSize, sortKey, sortDir]);
 
   const categories = useMemo(
     () => ["Todas", ...Array.from(new Set(articles.map((a) => a.category))).sort()],
@@ -88,7 +88,7 @@ export function BlogPanel() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    return articles.filter((a) => {
+    const list = articles.filter((a) => {
       const matchSearch =
         !q ||
         a.title.toLowerCase().includes(q) ||
@@ -99,10 +99,37 @@ export function BlogPanel() {
       const matchCat = category === "Todas" || a.category === category;
       return matchSearch && matchStatus && matchCat;
     });
-  }, [articles, search, status, category]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...list].sort((a, b) => {
+      let cmp = 0;
+      if (sortKey === "created_at") {
+        cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      } else if (sortKey === "published") {
+        cmp = Number(a.published) - Number(b.published);
+      } else {
+        cmp = String(a[sortKey] ?? "").localeCompare(String(b[sortKey] ?? ""), "pt-BR");
+      }
+      if (cmp === 0) {
+        cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      return cmp * dir;
+    });
+  }, [articles, search, status, category, sortKey, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "created_at" ? "desc" : "asc");
+    }
+  };
+
 
   const slugTaken = useMemo(
     () =>
