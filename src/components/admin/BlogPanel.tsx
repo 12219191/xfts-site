@@ -524,7 +524,19 @@ export function BlogPanel() {
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {pageItems.map((article) => (
-            <Card key={article.id} className="overflow-hidden border-border bg-card">
+            <Card
+              key={article.id}
+              className={`relative overflow-hidden border-border bg-card ${
+                selectedSet.has(article.id) ? "ring-2 ring-primary" : ""
+              }`}
+            >
+              <div className="absolute left-3 top-3 z-10 rounded-md bg-background/90 p-1 shadow-sm">
+                <Checkbox
+                  checked={selectedSet.has(article.id)}
+                  onCheckedChange={() => toggleOne(article.id)}
+                  aria-label={`Selecionar ${article.title}`}
+                />
+              </div>
               {article.image_url ? (
                 <img
                   src={article.image_url}
