@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const SITE_URL = "https://xfts.com.br";
+const SITE_URL = "https://xfts-flexus.com";
 
 const staticRoutes = [
   { path: "/", priority: "1.0", changefreq: "weekly" },

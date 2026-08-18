@@ -27,7 +27,17 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
       { name: "description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { property: "og:title", content: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
+      { property: "og:description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://xfts-flexus.com/" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f480906-6ed1-4b34-80bf-977ce01e735d/id-preview-911ffcd3--26205ede-bbe4-4e90-90d5-5be5b0db494b.lovable.app-1779899998656.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
+      { name: "twitter:description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f480906-6ed1-4b34-80bf-977ce01e735d/id-preview-911ffcd3--26205ede-bbe4-4e90-90d5-5be5b0db494b.lovable.app-1779899998656.png" },
     ],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/" }],
   }),
   component: HomePage,
 });

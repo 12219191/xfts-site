@@ -14,8 +14,14 @@ export const Route = createFileRoute("/contato")({
   head: () => ({
     meta: [
       { title: "Contato - XFTS Inteligência Analítica" },
-      { name: "description", content: "Entre em contato com a XFTS. Solicite uma demonstração ou tire suas dúvidas." },
+      { name: "description", content: "Entre em contato com a XFTS. Solicite uma demonstração gratuita dos sistemas FLEXUS ou tire suas dúvidas com nosso time." },
+      { property: "og:title", content: "Contato - XFTS Inteligência Analítica" },
+      { property: "og:description", content: "Solicite uma demonstração gratuita dos sistemas FLEXUS ou fale com nosso time." },
+      { property: "og:url", content: "https://xfts-flexus.com/contato" },
+      { name: "twitter:title", content: "Contato - XFTS Inteligência Analítica" },
+      { name: "twitter:description", content: "Solicite uma demonstração gratuita dos sistemas FLEXUS ou fale com nosso time." },
     ],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/contato" }],
   }),
   component: ContatoPage,
 });
