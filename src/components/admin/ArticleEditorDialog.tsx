@@ -64,8 +64,17 @@ export function ArticleEditorDialog({
   isEditing,
   slugTaken,
 }: Props) {
+  const invalidRange =
+    !!form.publish_at &&
+    !!form.unpublish_at &&
+    new Date(form.unpublish_at) <= new Date(form.publish_at);
+
   const canSave =
-    form.title.trim().length > 0 && form.slug.trim().length > 0 && !slugTaken && !saving;
+    form.title.trim().length > 0 &&
+    form.slug.trim().length > 0 &&
+    !slugTaken &&
+    !invalidRange &&
+    !saving;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
