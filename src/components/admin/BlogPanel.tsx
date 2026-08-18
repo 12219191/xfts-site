@@ -509,7 +509,7 @@ export function BlogPanel() {
                         <p className="line-clamp-1 max-w-md text-xs text-muted-foreground">
                           {article.summary}
                         </p>
-                        <ScheduleBadge article={article} />
+                        <ScheduleBadge article={article} onCancel={cancelSchedule} />
 
                       </div>
                     </div>
