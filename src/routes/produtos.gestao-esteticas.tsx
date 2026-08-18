@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
 import { productJsonLd } from "@/lib/product-schema";
+import { esteticasPlans as plans } from "@/lib/product-plans";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -51,23 +52,6 @@ const testimonials = [
   { name: "Fernanda Alves", role: "Studio de Beleza", text: "Os relatórios analíticos nos mostraram quais serviços dão mais lucro. Faturamento cresceu 25%." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 99", description: "Para studios individuais", tier: "basico" as const,
-    features: ["Gestão de vendas e PDV", "Controle de estoque", "Agendamento online", "CRM de clientes", "1 profissional"],
-    priceId: "gestao_esteticas_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 189", description: "Para clínicas com equipe", tier: "pro" as const,
-    features: ["Tudo do Básico", "Controle de pacotes e sessões", "Gestão de comissões", "Notificações automáticas", "Até 10 profissionais"],
-    priceId: "gestao_esteticas_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 379", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "API e integrações", "Suporte dedicado 24/7", "Profissionais ilimitados"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function GestaoEsteticasPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

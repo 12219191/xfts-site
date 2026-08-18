@@ -9,6 +9,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
+import { barbeariasPlans as plans } from "@/lib/product-plans";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
@@ -56,23 +57,6 @@ const testimonials = [
   { name: "André Oliveira", role: "Rede de Barbearias", text: "Gerenciar 5 unidades ficou simples com os dashboards analíticos. Recomendo demais." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 89", description: "Para barbearias individuais", tier: "basico" as const,
-    features: ["PDV integrado", "Controle de estoque", "Agendamento online", "CRM de clientes", "1 profissional"],
-    priceId: "gestao_barbearias_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 169", description: "Para redes e múltiplas unidades", tier: "pro" as const,
-    features: ["Tudo do Básico", "Gestão de comissões", "Notificações WhatsApp", "Fidelização de clientes", "Até 10 profissionais"],
-    priceId: "gestao_barbearias_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 349", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "Relatórios completos", "Suporte dedicado 24/7", "Profissionais ilimitados"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function GestaoBarbeariasPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

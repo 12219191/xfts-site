@@ -9,6 +9,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
+import { crmPlans as plans } from "@/lib/product-plans";
 
 export const Route = createFileRoute("/produtos/flexus-crm")({
   head: () => ({
@@ -58,23 +59,6 @@ const testimonials = [
   { name: "Lucas Ferreira", role: "CEO - Agência Digital Up", text: "Conseguimos visualizar o pipeline completo e identificar gargalos rapidamente. Decisões muito mais rápidas." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 99", description: "Para times pequenos começando", tier: "basico" as const,
-    features: ["Pipeline kanban", "Gestão de leads", "Importação de contatos", "Relatórios básicos", "Até 3 usuários"],
-    priceId: "flexus_crm_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 199", description: "Para equipes em escala", tier: "pro" as const,
-    features: ["Tudo do Básico", "Automações de follow-up", "WhatsApp integrado", "Funil customizável", "Até 15 usuários"],
-    priceId: "flexus_crm_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 399", description: "Para grandes operações comerciais", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Múltiplas equipes", "Relatórios avançados", "API e integrações", "Usuários ilimitados"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function FlexusCrmPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

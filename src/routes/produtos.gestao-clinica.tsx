@@ -5,6 +5,7 @@ import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
 const heroClinic = heroClinicAsset.url;
 import { productJsonLd } from "@/lib/product-schema";
+import { clinicaPlans as plans } from "@/lib/product-plans";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -56,23 +57,6 @@ const testimonials = [
   { name: "Dra. Patrícia Lima", role: "Clínica de Harmonização", text: "A inteligência analítica nos ajudou a identificar os melhores horários e serviços. Faturamento cresceu 30%." },
 ];
 
-const plans = [
-  {
-    name: "Básico", price: "R$ 99", description: "Ideal para consultórios individuais", tier: "basico" as const,
-    features: ["Agendamento online", "Prontuário eletrônico", "Controle financeiro", "Emissão de recibos", "1 profissional"],
-    priceId: "gestao_clinica_basico_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Pro", price: "R$ 199", description: "Para clínicas com múltiplos profissionais", tier: "pro" as const,
-    features: ["Tudo do Básico", "Notificações automáticas", "Relatórios avançados", "Gestão de equipe", "Até 10 profissionais"],
-    priceId: "gestao_clinica_pro_mensal", ctaLabel: "Começar Agora",
-  },
-  {
-    name: "Enterprise", price: "R$ 399", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "Integração com convênios", "API e integrações", "Profissionais ilimitados"],
-    ctaLabel: "Falar com Consultor",
-  },
-];
 
 function GestaoClinicaPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
