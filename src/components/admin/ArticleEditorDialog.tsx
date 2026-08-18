@@ -193,7 +193,60 @@ export function ArticleEditorDialog({
                 onCheckedChange={(v) => setForm({ ...form, published: v })}
               />
             </div>
+
+            <div className="space-y-3 rounded-lg border border-border bg-muted/20 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">Agendamento</p>
+                <p className="text-xs text-muted-foreground">
+                  Opcional. O sistema publica e despublica automaticamente (verificação a cada 5
+                  minutos), no seu fuso horário.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="publish_at">Publicar em</Label>
+                <Input
+                  id="publish_at"
+                  type="datetime-local"
+                  value={isoToLocalInput(form.publish_at)}
+                  onChange={(e) =>
+                    setForm({ ...form, publish_at: localInputToIso(e.target.value) })
+                  }
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="unpublish_at">Despublicar em</Label>
+                <Input
+                  id="unpublish_at"
+                  type="datetime-local"
+                  value={isoToLocalInput(form.unpublish_at)}
+                  onChange={(e) =>
+                    setForm({ ...form, unpublish_at: localInputToIso(e.target.value) })
+                  }
+                />
+              </div>
+
+              {invalidRange && (
+                <p className="text-xs text-destructive">
+                  A data de despublicação deve ser posterior à de publicação.
+                </p>
+              )}
+
+              {(form.publish_at || form.unpublish_at) && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-0 text-xs text-muted-foreground"
+                  onClick={() => setForm({ ...form, publish_at: null, unpublish_at: null })}
+                >
+                  Limpar agendamento
+                </Button>
+              )}
+            </div>
           </div>
+
         </div>
 
         <div className="mt-6 flex justify-end gap-2 border-t border-border pt-4">
