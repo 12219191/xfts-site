@@ -204,6 +204,37 @@ export function BlogPanel() {
     toast.success(next ? "Artigo publicado" : "Artigo movido para rascunho");
   };
 
+  const cancelSchedule = async (
+    article: Article,
+    which: "publish" | "unpublish" | "both",
+  ) => {
+    const patch: { publish_at?: null; unpublish_at?: null } = {};
+    if (which === "publish" || which === "both") patch.publish_at = null;
+    if (which === "unpublish" || which === "both") patch.unpublish_at = null;
+
+    setArticles((prev) =>
+      prev.map((a) => (a.id === article.id ? { ...a, ...patch } : a)),
+    );
+    const { error } = await supabase
+      .from("blog_articles")
+      .update(patch)
+      .eq("id", article.id);
+    if (error) {
+      toast.error("Não foi possível cancelar o agendamento", { description: error.message });
+      void fetchArticles();
+      return;
+    }
+    toast.success(
+      which === "both"
+        ? "Agendamento cancelado"
+        : which === "publish"
+          ? "Agendamento de publicação cancelado"
+          : "Agendamento de despublicação cancelado",
+    );
+  };
+
+
+
   const confirmDelete = async () => {
     if (!toDelete) return;
     const { error } = await supabase.from("blog_articles").delete().eq("id", toDelete.id);
@@ -478,7 +509,7 @@ export function BlogPanel() {
                         <p className="line-clamp-1 max-w-md text-xs text-muted-foreground">
                           {article.summary}
                         </p>
-                        <ScheduleBadge article={article} />
+                        <ScheduleBadge article={article} onCancel={cancelSchedule} />
 
                       </div>
                     </div>
@@ -563,6 +594,7 @@ export function BlogPanel() {
                 </div>
                 <h4 className="mt-2 line-clamp-2 font-semibold text-foreground">{article.title}</h4>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{article.summary}</p>
+                <ScheduleBadge article={article} onCancel={cancelSchedule} />
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Switch
@@ -750,21 +782,63 @@ function SortHeader({
 }
 
 
-function ScheduleBadge({ article }: { article: Article }) {
+function ScheduleBadge({
+  article,
+  onCancel,
+}: {
+  article: Article;
+  onCancel: (article: Article, which: "publish" | "unpublish" | "both") => void;
+}) {
   if (!article.publish_at && !article.unpublish_at) return null;
   const fmt = (iso: string) =>
     new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
   return (
-    <div className="mt-1 flex flex-wrap gap-1.5">
+    <div className="mt-1 flex flex-wrap items-center gap-1.5">
       {article.publish_at && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
+        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 py-0.5 pl-2 pr-1 text-[11px] text-primary">
           <Clock className="h-3 w-3" /> Publica {fmt(article.publish_at)}
+          <button
+            type="button"
+            aria-label="Cancelar agendamento de publicação"
+            title="Cancelar agendamento de publicação"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel(article, "publish");
+            }}
+            className="rounded-full p-0.5 hover:bg-primary/20"
+          >
+            <X className="h-3 w-3" />
+          </button>
         </span>
       )}
       {article.unpublish_at && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded-full bg-muted py-0.5 pl-2 pr-1 text-[11px] text-muted-foreground">
           <Clock className="h-3 w-3" /> Despublica {fmt(article.unpublish_at)}
+          <button
+            type="button"
+            aria-label="Cancelar agendamento de despublicação"
+            title="Cancelar agendamento de despublicação"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel(article, "unpublish");
+            }}
+            className="rounded-full p-0.5 hover:bg-foreground/10"
+          >
+            <X className="h-3 w-3" />
+          </button>
         </span>
+      )}
+      {article.publish_at && article.unpublish_at && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCancel(article, "both");
+          }}
+          className="text-[11px] text-muted-foreground underline-offset-2 hover:underline"
+        >
+          Cancelar tudo
+        </button>
       )}
     </div>
   );

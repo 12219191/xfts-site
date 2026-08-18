@@ -213,7 +213,18 @@ export function ArticleEditorDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="publish_at">Publicar em</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="publish_at">Publicar em</Label>
+                  {form.publish_at && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, publish_at: null })}
+                      className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </div>
                 <Input
                   id="publish_at"
                   type="datetime-local"
@@ -225,7 +236,18 @@ export function ArticleEditorDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="unpublish_at">Despublicar em</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="unpublish_at">Despublicar em</Label>
+                  {form.unpublish_at && (
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, unpublish_at: null })}
+                      className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </div>
                 <Input
                   id="unpublish_at"
                   type="datetime-local"
@@ -235,6 +257,7 @@ export function ArticleEditorDialog({
                   }
                 />
               </div>
+
 
               {invalidRange && (
                 <p className="text-xs text-destructive">
