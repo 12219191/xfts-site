@@ -204,6 +204,37 @@ export function BlogPanel() {
     toast.success(next ? "Artigo publicado" : "Artigo movido para rascunho");
   };
 
+  const cancelSchedule = async (
+    article: Article,
+    which: "publish" | "unpublish" | "both",
+  ) => {
+    const patch: { publish_at?: null; unpublish_at?: null } = {};
+    if (which === "publish" || which === "both") patch.publish_at = null;
+    if (which === "unpublish" || which === "both") patch.unpublish_at = null;
+
+    setArticles((prev) =>
+      prev.map((a) => (a.id === article.id ? { ...a, ...patch } : a)),
+    );
+    const { error } = await supabase
+      .from("blog_articles")
+      .update(patch)
+      .eq("id", article.id);
+    if (error) {
+      toast.error("Não foi possível cancelar o agendamento", { description: error.message });
+      void fetchArticles();
+      return;
+    }
+    toast.success(
+      which === "both"
+        ? "Agendamento cancelado"
+        : which === "publish"
+          ? "Agendamento de publicação cancelado"
+          : "Agendamento de despublicação cancelado",
+    );
+  };
+
+
+
   const confirmDelete = async () => {
     if (!toDelete) return;
     const { error } = await supabase.from("blog_articles").delete().eq("id", toDelete.id);
