@@ -8,12 +8,32 @@ import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { productJsonLd } from "@/lib/product-schema";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | Barbearia - XFTS Inteligência Analítica" },
-      { name: "description", content: "Sistema SaaS para barbearias e salões. Controle estoque, vendas, PDV e CRM." },
+      { title: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
+      { name: "description", content: "Sistema SaaS para barbearias e salões: PDV, estoque, agendamento online, comissões e CRM. Planos a partir de R$ 89/mês." },
+      { property: "og:title", content: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
+      { property: "og:description", content: "PDV, estoque, agendamento, comissões e CRM para barbearias. Planos a partir de R$ 89/mês." },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/gestao-barbearias" },
+      { property: "og:image", content: heroBarbershop },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
+      { name: "twitter:description", content: "PDV, estoque, agendamento, comissões e CRM para barbearias." },
+      { name: "twitter:image", content: heroBarbershop },
+    ],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/produtos/gestao-barbearias" }],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | Barbearia",
+        description: "Sistema SaaS de gestão para barbearias e salões masculinos.",
+        path: "/produtos/gestao-barbearias",
+        image: heroBarbershop,
+        plans,
+      }),
     ],
   }),
   component: GestaoBarbeariasPage,

@@ -8,22 +8,34 @@ import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { productJsonLd } from "@/lib/product-schema";
 
 export const Route = createFileRoute("/produtos/flexus-crm")({
   head: () => ({
     meta: [
       { title: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
-      { name: "description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão em tempo real." },
+      { name: "description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão. Planos a partir de R$ 99/mês." },
       { property: "og:title", content: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
-      { property: "og:description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão em tempo real." },
+      { property: "og:description", content: "Pipeline kanban, automações de follow-up e WhatsApp integrado para times comerciais." },
       { property: "og:type", content: "product" },
-      { property: "og:url", content: "/produtos/flexus-crm" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/flexus-crm" },
       { property: "og:image", content: heroCrm },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
+      { name: "twitter:description", content: "Pipeline kanban, automações de follow-up e WhatsApp integrado." },
       { name: "twitter:image", content: heroCrm },
     ],
     links: [
-      { rel: "canonical", href: "/produtos/flexus-crm" },
+      { rel: "canonical", href: "https://xfts-flexus.com/produtos/flexus-crm" },
+    ],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | CRM",
+        description: "CRM SaaS de vendas multi-segmento com pipeline kanban e automações.",
+        path: "/produtos/flexus-crm",
+        image: heroCrm,
+        plans,
+      }),
     ],
   }),
   component: FlexusCrmPage,

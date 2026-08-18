@@ -8,22 +8,34 @@ import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { productJsonLd } from "@/lib/product-schema";
 
 export const Route = createFileRoute("/produtos/flexus-aba")({
   head: () => ({
     meta: [
       { title: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
-      { name: "description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios." },
+      { name: "description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios. Planos a partir de R$ 99/mês." },
       { property: "og:title", content: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
-      { property: "og:description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios." },
+      { property: "og:description", content: "Registro de tentativas, PTI, gráficos de evolução e relatórios para convênios em clínicas ABA / TEA." },
       { property: "og:type", content: "product" },
-      { property: "og:url", content: "/produtos/flexus-aba" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/flexus-aba" },
       { property: "og:image", content: heroAba },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
+      { name: "twitter:description", content: "Registro de tentativas, PTI e gráficos de evolução para clínicas ABA / TEA." },
       { name: "twitter:image", content: heroAba },
     ],
     links: [
-      { rel: "canonical", href: "/produtos/flexus-aba" },
+      { rel: "canonical", href: "https://xfts-flexus.com/produtos/flexus-aba" },
+    ],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | ABA",
+        description: "Sistema SaaS de gestão para clínicas de análise do comportamento aplicada (ABA/TEA).",
+        path: "/produtos/flexus-aba",
+        image: heroAba,
+        plans,
+      }),
     ],
   }),
   component: FlexusAbaPage,

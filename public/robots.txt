@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xfts.com.br/sitemap.xml
+Sitemap: https://xfts-flexus.com/sitemap.xml

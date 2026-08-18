@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
 const heroClinic = heroClinicAsset.url;
+import { productJsonLd } from "@/lib/product-schema";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -12,8 +13,27 @@ import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 export const Route = createFileRoute("/produtos/gestao-clinica")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | Clínica - XFTS Inteligência Analítica" },
-      { name: "description", content: "Sistema SaaS completo para gestão de consultórios e clínicas. Agendamentos, prontuários e finanças." },
+      { title: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
+      { name: "description", content: "Sistema SaaS completo para gestão de consultórios e clínicas: agendamento online, prontuário eletrônico, finanças e relatórios. Planos a partir de R$ 99/mês." },
+      { property: "og:title", content: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
+      { property: "og:description", content: "Agendamento, prontuário eletrônico e controle financeiro para clínicas. Planos a partir de R$ 99/mês." },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/gestao-clinica" },
+      { property: "og:image", content: heroClinic },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
+      { name: "twitter:description", content: "Agendamento, prontuário eletrônico e controle financeiro para clínicas." },
+      { name: "twitter:image", content: heroClinic },
+    ],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/produtos/gestao-clinica" }],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | Clínica",
+        description: "Sistema SaaS de gestão para consultórios e clínicas.",
+        path: "/produtos/gestao-clinica",
+        image: heroClinic,
+        plans,
+      }),
     ],
   }),
   component: GestaoClinicaPage,

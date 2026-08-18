@@ -24,7 +24,13 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Login - XFTS Inteligência Analítica" },
-      { name: "description", content: "Acesse seu sistema SaaS FLEXUS. Clínica, Barbearias ou Estéticas." },
+      { name: "description", content: "Acesse sua conta XFTS e entre nos sistemas FLEXUS de Clínica, Barbearia, Estética, ABA, CRM e Casa360°." },
+      { property: "og:title", content: "Login - XFTS Inteligência Analítica" },
+      { property: "og:description", content: "Acesse sua conta XFTS e entre nos sistemas FLEXUS." },
+      { property: "og:url", content: "https://xfts-flexus.com/login" },
+      { name: "twitter:title", content: "Login - XFTS Inteligência Analítica" },
+      { name: "twitter:description", content: "Acesse sua conta XFTS e entre nos sistemas FLEXUS." },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: LoginPage,

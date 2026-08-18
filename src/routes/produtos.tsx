@@ -17,8 +17,13 @@ const heroCasa360 = heroCasa360Asset.url;
 export const Route = createFileRoute("/produtos")({
   head: () => ({
     meta: [
-      { title: "Produtos - XFTS Inteligência Analítica" },
-      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias, estéticas, terapias ABA e CRM de vendas." },
+      { title: "Produtos FLEXUS - Sistemas de Gestão | XFTS" },
+      { name: "description", content: "Conheça as soluções FLEXUS para gestão de clínicas, barbearias, estéticas, terapias ABA, CRM de vendas e Casa360°." },
+      { property: "og:title", content: "Produtos FLEXUS - Sistemas de Gestão | XFTS" },
+      { property: "og:description", content: "Soluções FLEXUS para clínicas, barbearias, estéticas, ABA, CRM e Casa360°." },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos" },
+      { name: "twitter:title", content: "Produtos FLEXUS - Sistemas de Gestão | XFTS" },
+      { name: "twitter:description", content: "Soluções FLEXUS para clínicas, barbearias, estéticas, ABA, CRM e Casa360°." },
     ],
   }),
   component: ProdutosLayout,
