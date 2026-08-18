@@ -437,6 +437,13 @@ export function BlogPanel() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
+                <th className="w-10 px-4 py-3">
+                  <Checkbox
+                    checked={allVisibleSelected ? true : someVisibleSelected ? "indeterminate" : false}
+                    onCheckedChange={toggleAllVisible}
+                    aria-label="Selecionar todos desta página"
+                  />
+                </th>
                 <SortHeader label="Artigo" sortKey="title" active={sortKey} dir={sortDir} onSort={toggleSort} />
                 <SortHeader label="Categoria" sortKey="category" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden sm:table-cell" />
                 <SortHeader label="Publicado" sortKey="published" active={sortKey} dir={sortDir} onSort={toggleSort} />
@@ -448,8 +455,17 @@ export function BlogPanel() {
               {pageItems.map((article) => (
                 <tr
                   key={article.id}
-                  className="border-b border-border/50 transition-colors last:border-0 hover:bg-muted/20"
+                  className={`border-b border-border/50 transition-colors last:border-0 hover:bg-muted/20 ${
+                    selectedSet.has(article.id) ? "bg-primary/5" : ""
+                  }`}
                 >
+                  <td className="w-10 px-4 py-3">
+                    <Checkbox
+                      checked={selectedSet.has(article.id)}
+                      onCheckedChange={() => toggleOne(article.id)}
+                      aria-label={`Selecionar ${article.title}`}
+                    />
+                  </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
                       <Thumb url={article.image_url} alt={article.title} />
