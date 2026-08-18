@@ -18,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
-  ArrowUp, ArrowDown, ChevronsUpDown, X,
+  ArrowUp, ArrowDown, ChevronsUpDown, X, Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -38,6 +38,8 @@ const emptyForm: ArticleForm = {
   image_url: "",
   author: "Equipe XFTS",
   published: false,
+  publish_at: null,
+  unpublish_at: null,
 };
 
 const PAGE_SIZES = [10, 20, 50, 100];
@@ -160,6 +162,8 @@ export function BlogPanel() {
       image_url: article.image_url ?? "",
       author: article.author,
       published: article.published,
+      publish_at: article.publish_at ?? null,
+      unpublish_at: article.unpublish_at ?? null,
     });
     setModalOpen(true);
   };
@@ -474,6 +478,8 @@ export function BlogPanel() {
                         <p className="line-clamp-1 max-w-md text-xs text-muted-foreground">
                           {article.summary}
                         </p>
+                        <ScheduleBadge article={article} />
+
                       </div>
                     </div>
                   </td>
@@ -743,6 +749,26 @@ function SortHeader({
   );
 }
 
+
+function ScheduleBadge({ article }: { article: Article }) {
+  if (!article.publish_at && !article.unpublish_at) return null;
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  return (
+    <div className="mt-1 flex flex-wrap gap-1.5">
+      {article.publish_at && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
+          <Clock className="h-3 w-3" /> Publica {fmt(article.publish_at)}
+        </span>
+      )}
+      {article.unpublish_at && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          <Clock className="h-3 w-3" /> Despublica {fmt(article.unpublish_at)}
+        </span>
+      )}
+    </div>
+  );
+}
 
 function Thumb({ url, alt }: { url: string; alt: string }) {
   if (!url) {

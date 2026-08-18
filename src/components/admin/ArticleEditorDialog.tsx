@@ -22,7 +22,26 @@ export interface ArticleForm {
   image_url: string;
   author: string;
   published: boolean;
+  publish_at: string | null;
+  unpublish_at: string | null;
 }
+
+/** ISO (UTC) -> valor de input datetime-local no fuso do navegador */
+export function isoToLocalInput(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** valor de input datetime-local -> ISO (UTC) */
+export function localInputToIso(value: string) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 
 interface Props {
   open: boolean;
@@ -45,8 +64,17 @@ export function ArticleEditorDialog({
   isEditing,
   slugTaken,
 }: Props) {
+  const invalidRange =
+    !!form.publish_at &&
+    !!form.unpublish_at &&
+    new Date(form.unpublish_at) <= new Date(form.publish_at);
+
   const canSave =
-    form.title.trim().length > 0 && form.slug.trim().length > 0 && !slugTaken && !saving;
+    form.title.trim().length > 0 &&
+    form.slug.trim().length > 0 &&
+    !slugTaken &&
+    !invalidRange &&
+    !saving;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -174,7 +202,60 @@ export function ArticleEditorDialog({
                 onCheckedChange={(v) => setForm({ ...form, published: v })}
               />
             </div>
+
+            <div className="space-y-3 rounded-lg border border-border bg-muted/20 px-4 py-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">Agendamento</p>
+                <p className="text-xs text-muted-foreground">
+                  Opcional. O sistema publica e despublica automaticamente (verificação a cada 5
+                  minutos), no seu fuso horário.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="publish_at">Publicar em</Label>
+                <Input
+                  id="publish_at"
+                  type="datetime-local"
+                  value={isoToLocalInput(form.publish_at)}
+                  onChange={(e) =>
+                    setForm({ ...form, publish_at: localInputToIso(e.target.value) })
+                  }
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="unpublish_at">Despublicar em</Label>
+                <Input
+                  id="unpublish_at"
+                  type="datetime-local"
+                  value={isoToLocalInput(form.unpublish_at)}
+                  onChange={(e) =>
+                    setForm({ ...form, unpublish_at: localInputToIso(e.target.value) })
+                  }
+                />
+              </div>
+
+              {invalidRange && (
+                <p className="text-xs text-destructive">
+                  A data de despublicação deve ser posterior à de publicação.
+                </p>
+              )}
+
+              {(form.publish_at || form.unpublish_at) && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-0 text-xs text-muted-foreground"
+                  onClick={() => setForm({ ...form, publish_at: null, unpublish_at: null })}
+                >
+                  Limpar agendamento
+                </Button>
+              )}
+            </div>
           </div>
+
         </div>
 
         <div className="mt-6 flex justify-end gap-2 border-t border-border pt-4">
