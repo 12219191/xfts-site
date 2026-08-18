@@ -17,6 +17,7 @@ import {
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
+  ArrowUp, ArrowDown, ChevronsUpDown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -38,8 +39,10 @@ const emptyForm: ArticleForm = {
   published: false,
 };
 
-const PAGE_SIZE = 20;
+const PAGE_SIZES = [10, 20, 50, 100];
 type StatusFilter = "todos" | "publicados" | "rascunhos";
+type SortKey = "created_at" | "title" | "category" | "published";
+type SortDir = "asc" | "desc";
 
 export function BlogPanel() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -49,6 +52,10 @@ export function BlogPanel() {
   const [category, setCategory] = useState("Todas");
   const [view, setView] = useState<"table" | "grid">("table");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [sortKey, setSortKey] = useState<SortKey>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
