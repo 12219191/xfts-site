@@ -259,7 +259,25 @@ export function BlogPanel() {
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            value={`${sortKey}:${sortDir}`}
+            aria-label="Ordenar artigos"
+            onChange={(e) => {
+              const [k, d] = e.target.value.split(":") as [SortKey, SortDir];
+              setSortKey(k);
+              setSortDir(d);
+            }}
+          >
+            <option value="created_at:desc">Mais recentes</option>
+            <option value="created_at:asc">Mais antigos</option>
+            <option value="title:asc">Título (A–Z)</option>
+            <option value="title:desc">Título (Z–A)</option>
+            <option value="category:asc">Categoria (A–Z)</option>
+            <option value="published:desc">Publicados primeiro</option>
+            <option value="published:asc">Rascunhos primeiro</option>
+          </select>
           <div className="flex gap-1 rounded-lg bg-muted/40 p-1">
             <button
               onClick={() => setView("table")}
@@ -282,10 +300,28 @@ export function BlogPanel() {
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-muted-foreground">
-        Mostrando {pageItems.length} de {filtered.length} artigo(s)
-        {filtered.length !== articles.length && ` (${articles.length} no total)`}
-      </p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Mostrando {pageItems.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+          –{(currentPage - 1) * pageSize + pageItems.length} de {filtered.length} artigo(s)
+          {filtered.length !== articles.length && ` (${articles.length} no total)`}
+        </p>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          Por página
+          <select
+            className="rounded-md border border-input bg-background px-2 py-1 text-xs text-foreground"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            {PAGE_SIZES.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
 
       {loading ? (
         <div className="mt-4 space-y-3">
