@@ -14,10 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
-  ArrowUp, ArrowDown, ChevronsUpDown,
+  ArrowUp, ArrowDown, ChevronsUpDown, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -62,6 +63,9 @@ export function BlogPanel() {
   const [form, setForm] = useState<ArticleForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<Article | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkAction, setBulkAction] = useState<"publish" | "unpublish" | "delete" | null>(null);
+  const [bulkRunning, setBulkRunning] = useState(false);
 
   const fetchArticles = async () => {
     const { data, error } = await supabase
