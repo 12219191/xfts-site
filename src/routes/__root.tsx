@@ -138,6 +138,7 @@ function RootComponent() {
       </main>
       <Footer />
       <WhatsAppFloatingButton />
+      <Toaster />
     </div>
   );
 }
