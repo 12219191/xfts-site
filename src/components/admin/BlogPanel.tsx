@@ -666,7 +666,46 @@ export function BlogPanel() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!bulkAction} onOpenChange={(o) => !o && setBulkAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {bulkAction === "delete"
+                ? `Excluir ${selected.length} artigo(s)?`
+                : bulkAction === "publish"
+                  ? `Publicar ${selected.length} artigo(s)?`
+                  : `Despublicar ${selected.length} artigo(s)?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkAction === "delete"
+                ? "Esta ação é permanente e não pode ser desfeita."
+                : bulkAction === "publish"
+                  ? "Os artigos selecionados ficarão visíveis no blog público."
+                  : "Os artigos selecionados voltarão para rascunho e sairão do ar."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkRunning}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void runBulk();
+              }}
+              disabled={bulkRunning}
+              className={
+                bulkAction === "delete"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }
+            >
+              {bulkRunning ? "Aplicando..." : "Confirmar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
+
   );
 }
 
