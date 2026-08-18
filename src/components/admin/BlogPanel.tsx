@@ -162,6 +162,8 @@ export function BlogPanel() {
       image_url: article.image_url ?? "",
       author: article.author,
       published: article.published,
+      publish_at: article.publish_at ?? null,
+      unpublish_at: article.unpublish_at ?? null,
     });
     setModalOpen(true);
   };
