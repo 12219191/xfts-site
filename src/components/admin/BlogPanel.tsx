@@ -594,6 +594,7 @@ export function BlogPanel() {
                 </div>
                 <h4 className="mt-2 line-clamp-2 font-semibold text-foreground">{article.title}</h4>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{article.summary}</p>
+                <ScheduleBadge article={article} onCancel={cancelSchedule} />
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Switch
