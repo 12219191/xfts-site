@@ -18,7 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
-  ArrowUp, ArrowDown, ChevronsUpDown, X,
+  ArrowUp, ArrowDown, ChevronsUpDown, X, Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
