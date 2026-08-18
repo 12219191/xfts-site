@@ -374,6 +374,41 @@ export function BlogPanel() {
         </label>
       </div>
 
+      {selected.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+          <span className="text-sm font-medium text-foreground">
+            {selected.length} selecionado(s)
+          </span>
+          {selected.length < filtered.length && (
+            <button
+              onClick={selectAllFiltered}
+              className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Selecionar todos os {filtered.length} filtrados
+            </button>
+          )}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setBulkAction("publish")}>
+              <Eye className="mr-2 h-4 w-4" /> Publicar
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setBulkAction("unpublish")}>
+              <EyeOff className="mr-2 h-4 w-4" /> Despublicar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setBulkAction("delete")}
+            >
+              <Trash2 className="mr-2 h-4 w-4" /> Excluir
+            </Button>
+            <Button size="sm" variant="ghost" onClick={clearSelection} aria-label="Limpar seleção">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
 
       {loading ? (
         <div className="mt-4 space-y-3">
