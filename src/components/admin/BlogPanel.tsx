@@ -14,10 +14,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, Edit, Trash2, Eye, EyeOff, FileText, Search, ImageOff,
   LayoutGrid, List, ExternalLink, ChevronLeft, ChevronRight,
-  ArrowUp, ArrowDown, ChevronsUpDown,
+  ArrowUp, ArrowDown, ChevronsUpDown, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -62,6 +63,9 @@ export function BlogPanel() {
   const [form, setForm] = useState<ArticleForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<Article | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkAction, setBulkAction] = useState<"publish" | "unpublish" | "delete" | null>(null);
+  const [bulkRunning, setBulkRunning] = useState(false);
 
   const fetchArticles = async () => {
     const { data, error } = await supabase
@@ -208,6 +212,54 @@ export function BlogPanel() {
     void fetchArticles();
   };
 
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const visibleIds = pageItems.map((a) => a.id);
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedSet.has(id));
+  const someVisibleSelected = visibleIds.some((id) => selectedSet.has(id));
+
+  const toggleOne = (id: string) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const toggleAllVisible = () =>
+    setSelected((prev) =>
+      allVisibleSelected
+        ? prev.filter((id) => !visibleIds.includes(id))
+        : Array.from(new Set([...prev, ...visibleIds])),
+    );
+
+  const selectAllFiltered = () => setSelected(filtered.map((a) => a.id));
+  const clearSelection = () => setSelected([]);
+
+  const runBulk = async () => {
+    if (!bulkAction || selected.length === 0) return;
+    setBulkRunning(true);
+    const ids = [...selected];
+    const { error } =
+      bulkAction === "delete"
+        ? await supabase.from("blog_articles").delete().in("id", ids)
+        : await supabase
+            .from("blog_articles")
+            .update({ published: bulkAction === "publish" })
+            .in("id", ids);
+    setBulkRunning(false);
+    setBulkAction(null);
+
+    if (error) {
+      toast.error("Não foi possível aplicar a ação em lote", { description: error.message });
+      return;
+    }
+    toast.success(
+      bulkAction === "delete"
+        ? `${ids.length} artigo(s) excluído(s)`
+        : bulkAction === "publish"
+          ? `${ids.length} artigo(s) publicado(s)`
+          : `${ids.length} artigo(s) movido(s) para rascunho`,
+    );
+    clearSelection();
+    void fetchArticles();
+  };
+
   const publishedCount = articles.filter((a) => a.published).length;
   const draftCount = articles.length - publishedCount;
   const noImageCount = articles.filter((a) => !a.image_url).length;
@@ -322,6 +374,41 @@ export function BlogPanel() {
         </label>
       </div>
 
+      {selected.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
+          <span className="text-sm font-medium text-foreground">
+            {selected.length} selecionado(s)
+          </span>
+          {selected.length < filtered.length && (
+            <button
+              onClick={selectAllFiltered}
+              className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Selecionar todos os {filtered.length} filtrados
+            </button>
+          )}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setBulkAction("publish")}>
+              <Eye className="mr-2 h-4 w-4" /> Publicar
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setBulkAction("unpublish")}>
+              <EyeOff className="mr-2 h-4 w-4" /> Despublicar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setBulkAction("delete")}
+            >
+              <Trash2 className="mr-2 h-4 w-4" /> Excluir
+            </Button>
+            <Button size="sm" variant="ghost" onClick={clearSelection} aria-label="Limpar seleção">
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
 
       {loading ? (
         <div className="mt-4 space-y-3">
@@ -350,6 +437,13 @@ export function BlogPanel() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
+                <th className="w-10 px-4 py-3">
+                  <Checkbox
+                    checked={allVisibleSelected ? true : someVisibleSelected ? "indeterminate" : false}
+                    onCheckedChange={toggleAllVisible}
+                    aria-label="Selecionar todos desta página"
+                  />
+                </th>
                 <SortHeader label="Artigo" sortKey="title" active={sortKey} dir={sortDir} onSort={toggleSort} />
                 <SortHeader label="Categoria" sortKey="category" active={sortKey} dir={sortDir} onSort={toggleSort} className="hidden sm:table-cell" />
                 <SortHeader label="Publicado" sortKey="published" active={sortKey} dir={sortDir} onSort={toggleSort} />
@@ -361,8 +455,17 @@ export function BlogPanel() {
               {pageItems.map((article) => (
                 <tr
                   key={article.id}
-                  className="border-b border-border/50 transition-colors last:border-0 hover:bg-muted/20"
+                  className={`border-b border-border/50 transition-colors last:border-0 hover:bg-muted/20 ${
+                    selectedSet.has(article.id) ? "bg-primary/5" : ""
+                  }`}
                 >
+                  <td className="w-10 px-4 py-3">
+                    <Checkbox
+                      checked={selectedSet.has(article.id)}
+                      onCheckedChange={() => toggleOne(article.id)}
+                      aria-label={`Selecionar ${article.title}`}
+                    />
+                  </td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
                       <Thumb url={article.image_url} alt={article.title} />
@@ -421,7 +524,19 @@ export function BlogPanel() {
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {pageItems.map((article) => (
-            <Card key={article.id} className="overflow-hidden border-border bg-card">
+            <Card
+              key={article.id}
+              className={`relative overflow-hidden border-border bg-card ${
+                selectedSet.has(article.id) ? "ring-2 ring-primary" : ""
+              }`}
+            >
+              <div className="absolute left-3 top-3 z-10 rounded-md bg-background/90 p-1 shadow-sm">
+                <Checkbox
+                  checked={selectedSet.has(article.id)}
+                  onCheckedChange={() => toggleOne(article.id)}
+                  aria-label={`Selecionar ${article.title}`}
+                />
+              </div>
               {article.image_url ? (
                 <img
                   src={article.image_url}
@@ -551,7 +666,46 @@ export function BlogPanel() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!bulkAction} onOpenChange={(o) => !o && setBulkAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {bulkAction === "delete"
+                ? `Excluir ${selected.length} artigo(s)?`
+                : bulkAction === "publish"
+                  ? `Publicar ${selected.length} artigo(s)?`
+                  : `Despublicar ${selected.length} artigo(s)?`}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkAction === "delete"
+                ? "Esta ação é permanente e não pode ser desfeita."
+                : bulkAction === "publish"
+                  ? "Os artigos selecionados ficarão visíveis no blog público."
+                  : "Os artigos selecionados voltarão para rascunho e sairão do ar."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkRunning}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void runBulk();
+              }}
+              disabled={bulkRunning}
+              className={
+                bulkAction === "delete"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }
+            >
+              {bulkRunning ? "Aplicando..." : "Confirmar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
+
   );
 }
 
