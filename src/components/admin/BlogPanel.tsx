@@ -555,6 +555,41 @@ export function BlogPanel() {
   );
 }
 
+function SortHeader({
+  label,
+  sortKey,
+  active,
+  dir,
+  onSort,
+  className = "",
+}: {
+  label: string;
+  sortKey: SortKey;
+  active: SortKey;
+  dir: SortDir;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}) {
+  const isActive = active === sortKey;
+  const Icon = !isActive ? ChevronsUpDown : dir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <th className={`px-5 py-3 font-medium text-muted-foreground ${className}`}>
+      <button
+        type="button"
+        onClick={() => onSort(sortKey)}
+        aria-label={`Ordenar por ${label}`}
+        className={`inline-flex items-center gap-1 transition-colors hover:text-foreground ${
+          isActive ? "text-foreground" : ""
+        }`}
+      >
+        {label}
+        <Icon className="h-3.5 w-3.5" />
+      </button>
+    </th>
+  );
+}
+
+
 function Thumb({ url, alt }: { url: string; alt: string }) {
   if (!url) {
     return (
