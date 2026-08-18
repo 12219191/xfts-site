@@ -8,22 +8,34 @@ import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { productJsonLd } from "@/lib/product-schema";
 
 export const Route = createFileRoute("/produtos/flexus-casa360")({
   head: () => ({
     meta: [
       { title: "FLEXUS | Casa360° - ERP Doméstico para sua Casa" },
-      { name: "description", content: "ERP doméstico com estoque da despensa, lista de compras automática, controle de validade e finanças da casa em um só painel." },
+      { name: "description", content: "ERP doméstico com estoque da despensa, lista de compras automática, controle de validade e finanças da casa. Planos a partir de R$ 99/mês." },
       { property: "og:title", content: "FLEXUS | Casa360° - ERP Doméstico para sua Casa" },
       { property: "og:description", content: "Estoque, compras e finanças da sua casa em um só lugar. Chega de comprar duplicado ou perder validade." },
       { property: "og:type", content: "product" },
-      { property: "og:url", content: "/produtos/flexus-casa360" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/flexus-casa360" },
       { property: "og:image", content: heroCasa360 },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "FLEXUS | Casa360° - ERP Doméstico para sua Casa" },
+      { name: "twitter:description", content: "Estoque, compras e finanças da sua casa em um só lugar." },
       { name: "twitter:image", content: heroCasa360 },
     ],
     links: [
-      { rel: "canonical", href: "/produtos/flexus-casa360" },
+      { rel: "canonical", href: "https://xfts-flexus.com/produtos/flexus-casa360" },
+    ],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | Casa360°",
+        description: "ERP doméstico para estoque, compras e finanças da casa.",
+        path: "/produtos/flexus-casa360",
+        image: heroCasa360,
+        plans,
+      }),
     ],
   }),
   component: FlexusCasa360Page,
