@@ -38,6 +38,8 @@ const emptyForm: ArticleForm = {
   image_url: "",
   author: "Equipe XFTS",
   published: false,
+  publish_at: null,
+  unpublish_at: null,
 };
 
 const PAGE_SIZES = [10, 20, 50, 100];
