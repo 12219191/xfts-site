@@ -474,30 +474,52 @@ export function BlogPanel() {
       )}
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
           <Button
             size="icon"
             variant="outline"
             className="h-8 w-8"
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
+            aria-label="Página anterior"
+            disabled={currentPage === 1}
+            onClick={() => setPage(currentPage - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-muted-foreground">
-            Página {page} de {totalPages}
-          </span>
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(
+              (p) =>
+                p === 1 ||
+                p === totalPages ||
+                Math.abs(p - currentPage) <= 1,
+            )
+            .map((p, idx, arr) => (
+              <span key={p} className="flex items-center gap-2">
+                {idx > 0 && arr[idx - 1] !== p - 1 && (
+                  <span className="text-xs text-muted-foreground">…</span>
+                )}
+                <Button
+                  size="icon"
+                  variant={p === currentPage ? "default" : "outline"}
+                  className="h-8 w-8 text-xs"
+                  onClick={() => setPage(p)}
+                >
+                  {p}
+                </Button>
+              </span>
+            ))}
           <Button
             size="icon"
             variant="outline"
             className="h-8 w-8"
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
+            aria-label="Próxima página"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(currentPage + 1)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}
+
 
       <ArticleEditorDialog
         open={modalOpen}
