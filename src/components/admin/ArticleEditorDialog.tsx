@@ -22,7 +22,26 @@ export interface ArticleForm {
   image_url: string;
   author: string;
   published: boolean;
+  publish_at: string | null;
+  unpublish_at: string | null;
 }
+
+/** ISO (UTC) -> valor de input datetime-local no fuso do navegador */
+export function isoToLocalInput(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** valor de input datetime-local -> ISO (UTC) */
+export function localInputToIso(value: string) {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 
 interface Props {
   open: boolean;
