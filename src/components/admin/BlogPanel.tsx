@@ -750,6 +750,26 @@ function SortHeader({
 }
 
 
+function ScheduleBadge({ article }: { article: Article }) {
+  if (!article.publish_at && !article.unpublish_at) return null;
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+  return (
+    <div className="mt-1 flex flex-wrap gap-1.5">
+      {article.publish_at && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] text-primary">
+          <Clock className="h-3 w-3" /> Publica {fmt(article.publish_at)}
+        </span>
+      )}
+      {article.unpublish_at && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+          <Clock className="h-3 w-3" /> Despublica {fmt(article.unpublish_at)}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function Thumb({ url, alt }: { url: string; alt: string }) {
   if (!url) {
     return (
