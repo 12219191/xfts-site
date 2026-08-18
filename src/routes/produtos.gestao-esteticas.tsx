@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
 import heroAesthetics from "@/assets/hero-aesthetics.jpg";
+import { productJsonLd } from "@/lib/product-schema";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -11,8 +12,23 @@ import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 export const Route = createFileRoute("/produtos/gestao-esteticas")({
   head: () => ({
     meta: [
-      { title: "FLEXUS | Estética e Salões - XFTS Inteligência Analítica" },
-      { name: "description", content: "Sistema SaaS para clínicas de estética e salões de beleza. Estoque, vendas e CRM." },
+      { title: "FLEXUS | Estética - Gestão de Clínicas de Estética e Salões" },
+      { name: "description", content: "Sistema SaaS para clínicas de estética e salões: estoque, PDV, pacotes e sessões, comissões e CRM. Planos a partir de R$ 99/mês." },
+      { property: "og:title", content: "FLEXUS | Estética - Gestão de Clínicas de Estética e Salões" },
+      { property: "og:description", content: "Estoque, PDV, pacotes, comissões e CRM para estética e salões. Planos a partir de R$ 99/mês." },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: "https://xfts-flexus.com/produtos/gestao-esteticas" },
+      { name: "twitter:title", content: "FLEXUS | Estética - Gestão de Clínicas de Estética e Salões" },
+      { name: "twitter:description", content: "Estoque, PDV, pacotes, comissões e CRM para estética e salões." },
+    ],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/produtos/gestao-esteticas" }],
+    scripts: [
+      productJsonLd({
+        name: "FLEXUS | Estética",
+        description: "Sistema SaaS de gestão para clínicas de estética e salões de beleza.",
+        path: "/produtos/gestao-esteticas",
+        plans,
+      }),
     ],
   }),
   component: GestaoEsteticasPage,
