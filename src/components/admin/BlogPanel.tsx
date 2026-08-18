@@ -212,6 +212,54 @@ export function BlogPanel() {
     void fetchArticles();
   };
 
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const visibleIds = pageItems.map((a) => a.id);
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedSet.has(id));
+  const someVisibleSelected = visibleIds.some((id) => selectedSet.has(id));
+
+  const toggleOne = (id: string) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const toggleAllVisible = () =>
+    setSelected((prev) =>
+      allVisibleSelected
+        ? prev.filter((id) => !visibleIds.includes(id))
+        : Array.from(new Set([...prev, ...visibleIds])),
+    );
+
+  const selectAllFiltered = () => setSelected(filtered.map((a) => a.id));
+  const clearSelection = () => setSelected([]);
+
+  const runBulk = async () => {
+    if (!bulkAction || selected.length === 0) return;
+    setBulkRunning(true);
+    const ids = [...selected];
+    const { error } =
+      bulkAction === "delete"
+        ? await supabase.from("blog_articles").delete().in("id", ids)
+        : await supabase
+            .from("blog_articles")
+            .update({ published: bulkAction === "publish" })
+            .in("id", ids);
+    setBulkRunning(false);
+    setBulkAction(null);
+
+    if (error) {
+      toast.error("Não foi possível aplicar a ação em lote", { description: error.message });
+      return;
+    }
+    toast.success(
+      bulkAction === "delete"
+        ? `${ids.length} artigo(s) excluído(s)`
+        : bulkAction === "publish"
+          ? `${ids.length} artigo(s) publicado(s)`
+          : `${ids.length} artigo(s) movido(s) para rascunho`,
+    );
+    clearSelection();
+    void fetchArticles();
+  };
+
   const publishedCount = articles.filter((a) => a.published).length;
   const draftCount = articles.length - publishedCount;
   const noImageCount = articles.filter((a) => !a.image_url).length;
