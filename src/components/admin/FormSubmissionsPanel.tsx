@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listFormSubmissions, type FormSubmissionRow } from "@/lib/form-submissions.functions";
+import {
+  ATTRIBUTION_WINDOW_OPTIONS,
+  DEFAULT_ATTRIBUTION_WINDOW_DAYS,
+  getAttributionWindow,
+  setAttributionWindow,
+} from "@/lib/attribution-settings.functions";
+import { setAttributionWindowDays } from "@/lib/attribution";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
