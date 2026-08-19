@@ -415,6 +415,21 @@ export function FormSubmissionsPanel() {
             </select>
           </div>
           <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">CRM</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={crmStatus}
+              onChange={(e) => setCrmStatus(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="created">Criado</option>
+              <option value="updated">Atualizado</option>
+              <option value="pending">Pendente</option>
+              <option value="failed">Falhou</option>
+              <option value="skipped">Não aplicável</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
             <label className="text-xs text-muted-foreground">Status</label>
             <select
               className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
