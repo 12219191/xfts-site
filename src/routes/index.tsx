@@ -183,7 +183,10 @@ function HomePage() {
                     <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
-                  <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline" onClick={() => trackProductClick(p.title)}>
+                  <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline" onClick={() => {
+                    trackProductClick(p.title);
+                    trackCTAClick({ section: "cards-produtos", action: `card-${p.slug}`, label: `Saiba Mais — ${p.title}`, destination: p.link });
+                  }}>
                     Saiba Mais <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </CardContent>
