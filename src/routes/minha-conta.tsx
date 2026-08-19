@@ -349,8 +349,10 @@ function MinhaContaPage() {
         if (result.applied === "immediate" && result.appliedPriceId) {
           await confirmPlanChange(user.id, subscriptionId, result.appliedPriceId);
         } else {
-          setSyncState("processing");
+          // Downgrade agendado: nada muda agora, o plano atual segue ativo.
+          setSyncState("active");
           await fetchSubscription(user.id);
+
         }
       }
     } catch (e) {
