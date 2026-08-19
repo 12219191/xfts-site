@@ -113,7 +113,9 @@ export function FormSubmissionsPanel() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
+  const [compare, setCompare] = useState(false);
   const [search, setSearch] = useState("");
+
   const readWindow = useServerFn(getAttributionWindow);
   const saveWindowFn = useServerFn(setAttributionWindow);
   const [windowDays, setWindowDays] = useState<number>(DEFAULT_ATTRIBUTION_WINDOW_DAYS);
