@@ -84,6 +84,22 @@ function ContatoPage() {
               <Button type="submit" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Enviar Mensagem"}
               </Button>
+              {lastStatus && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className={`rounded-md border p-3 text-sm ${lastStatus.success ? "border-cta/40 bg-cta/10 text-foreground" : "border-destructive/40 bg-destructive/10 text-foreground"}`}
+                >
+                  <p className="font-medium">
+                    {lastStatus.success ? "Recebemos sua mensagem" : "Envio não concluído"}
+                  </p>
+                  <p className="mt-1 text-muted-foreground">{lastStatus.message}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Status: {lastStatus.status}
+                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
+                  </p>
+                </div>
+              )}
             </form>
           </div>
 
