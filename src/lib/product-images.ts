@@ -34,36 +34,60 @@ export const PRODUCT_IMAGE_LABELS: { slug: ProductSlug; label: string }[] = [
   { slug: "casa360", label: "FLEXUS | Casa360°" },
 ];
 
-export async function fetchProductImageOverrides(): Promise<
-  Partial<Record<ProductSlug, string>>
-> {
+export const PRODUCT_IMAGE_ALT_DEFAULTS: Record<ProductSlug, string> = {
+  clinica: "FLEXUS | Clínica — software de gestão para clínicas em uso na recepção",
+  barbearia: "FLEXUS | Barbearia — sistema de gestão para barbearias em uso no salão",
+  estetica: "FLEXUS | Estética — software de gestão para clínicas de estética",
+  aba: "FLEXUS | ABA — plataforma de gestão para clínicas de terapia ABA",
+  crm: "FLEXUS | CRM — painel de CRM com funil de vendas e oportunidades",
+  casa360: "FLEXUS | Casa360° — sistema de gestão para casas de repouso e cuidado 360°",
+};
+
+export interface ProductImage {
+  url: string;
+  alt: string;
+}
+
+export async function fetchProductImageOverrides(): Promise<Partial<Record<ProductSlug, ProductImage>>> {
   const { data, error } = await supabase
     .from("product_images")
-    .select("slug, image_url");
+    .select("slug, image_url, alt_text");
 
   if (error || !data) return {};
 
-  const map: Partial<Record<ProductSlug, string>> = {};
-  for (const row of data) {
-    if (row.image_url) map[row.slug as ProductSlug] = row.image_url;
+  const map: Partial<Record<ProductSlug, ProductImage>> = {};
+  for (const row of data as { slug: string; image_url: string | null; alt_text?: string | null }[]) {
+    const slug = row.slug as ProductSlug;
+    if (!row.image_url) continue;
+    map[slug] = {
+      url: row.image_url,
+      alt: row.alt_text?.trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug] || "",
+    };
   }
   return map;
 }
+
+const DEFAULT_PRODUCT_IMAGES = Object.fromEntries(
+  (Object.keys(PRODUCT_IMAGE_DEFAULTS) as ProductSlug[]).map((slug) => [
+    slug,
+    { url: PRODUCT_IMAGE_DEFAULTS[slug], alt: PRODUCT_IMAGE_ALT_DEFAULTS[slug] },
+  ]),
+) as Record<ProductSlug, ProductImage>;
 
 /**
  * Retorna as imagens dos produtos: começa nos assets do código (SSR-safe)
  * e substitui pelas imagens enviadas no admin assim que carregam.
  */
-export function useProductImages(): Record<ProductSlug, string> {
-  const [images, setImages] = useState<Record<ProductSlug, string>>(
-    PRODUCT_IMAGE_DEFAULTS,
+export function useProductImageData(): Record<ProductSlug, ProductImage> {
+  const [images, setImages] = useState<Record<ProductSlug, ProductImage>>(
+    DEFAULT_PRODUCT_IMAGES,
   );
 
   useEffect(() => {
     let active = true;
     void fetchProductImageOverrides().then((overrides) => {
       if (active && Object.keys(overrides).length > 0) {
-        setImages({ ...PRODUCT_IMAGE_DEFAULTS, ...overrides });
+        setImages({ ...DEFAULT_PRODUCT_IMAGES, ...overrides });
       }
     });
     return () => {
@@ -74,6 +98,18 @@ export function useProductImages(): Record<ProductSlug, string> {
   return images;
 }
 
+/** Apenas as URLs (compatível com o uso existente). */
+export function useProductImages(): Record<ProductSlug, string> {
+  const data = useProductImageData();
+  return Object.fromEntries(
+    (Object.keys(data) as ProductSlug[]).map((s) => [s, data[s].url]),
+  ) as Record<ProductSlug, string>;
+}
+
 export function useProductImage(slug: ProductSlug): string {
-  return useProductImages()[slug];
+  return useProductImageData()[slug].url;
+}
+
+export function useProductImageAlt(slug: ProductSlug): string {
+  return useProductImageData()[slug].alt;
 }
