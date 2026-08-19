@@ -249,10 +249,22 @@ function MinhaContaPage() {
     );
   }
 
-  const currentPlanKey = subscription
-    ? detectPlanFromProductId(subscription.product_id)
+  const currentPlanKey: TierKey | null = subscription
+    ? tierKeyFromPriceId(subscription.price_id)
     : null;
-  const currentPlan = currentPlanKey ? planMap[currentPlanKey] : null;
+  const interval = billingIntervalFromPriceId(subscription?.price_id);
+  const planInfo = (tier: TierKey) => {
+    const plan = plansForCurrentApp.find((p) => p.tier === tier);
+    if (!plan) return null;
+    return {
+      name: plan.name,
+      price: interval === "anual" ? plan.annualPrice ?? plan.price : plan.price,
+      features: plan.features,
+      tier: plan.name,
+    };
+  };
+  const currentPlan = currentPlanKey ? planInfo(currentPlanKey) : null;
+
 
   const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
 
