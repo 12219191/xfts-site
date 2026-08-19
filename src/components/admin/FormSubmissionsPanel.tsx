@@ -114,7 +114,10 @@ export function FormSubmissionsPanel() {
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [compare, setCompare] = useState(false);
+  const [divergence, setDivergence] = useState<"all" | "diff" | "same">("all");
+  const [sort, setSort] = useState<"recent" | "impact">("recent");
   const [search, setSearch] = useState("");
+
 
   const readWindow = useServerFn(getAttributionWindow);
   const saveWindowFn = useServerFn(setAttributionWindow);
