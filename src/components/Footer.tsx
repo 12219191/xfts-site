@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Facebook } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { trackCTAClick } from "@/lib/tracking";
 
 
 export function Footer() {
@@ -18,10 +19,10 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Navegação</h4>
           <nav className="flex flex-col gap-2 text-sm">
-            <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground">Home</Link>
-            <Link to="/produtos" className="text-primary-foreground/80 hover:text-primary-foreground">Produtos</Link>
-            <Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground">Blog</Link>
-            <Link to="/contato" className="text-primary-foreground/80 hover:text-primary-foreground">Contato</Link>
+            <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Home", destination: "/" })}>Home</Link>
+            <Link to="/produtos" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Produtos", destination: "/produtos" })}>Produtos</Link>
+            <Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Blog", destination: "/blog" })}>Blog</Link>
+            <Link to="/contato" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Contato", destination: "/contato" })}>Contato</Link>
           </nav>
         </div>
         <div>
@@ -35,13 +36,13 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Redes</h4>
           <div className="flex gap-4">
-            <a href="https://www.instagram.com/xftsolucoes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a href="https://www.instagram.com/xftsolucoes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" onClick={() => trackCTAClick({ section: "footer-social", label: "Instagram", destination: "https://www.instagram.com/xftsolucoes/" })}>
               <Instagram className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
-            <a href="https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <a href="https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" onClick={() => trackCTAClick({ section: "footer-social", label: "LinkedIn", destination: "https://www.linkedin.com/company/xftsconsultoriaemgest%C3%A3oempresarial/" })}>
               <Linkedin className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
-            <a href="https://www.facebook.com/XFTSolucoes" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <a href="https://www.facebook.com/XFTSolucoes" target="_blank" rel="noopener noreferrer" aria-label="Facebook" onClick={() => trackCTAClick({ section: "footer-social", label: "Facebook", destination: "https://www.facebook.com/XFTSolucoes" })}>
               <Facebook className="h-5 w-5 text-primary-foreground/80 hover:text-primary-foreground" />
             </a>
           </div>
@@ -51,9 +52,9 @@ export function Footer() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span>© 2026 XFTS Inteligência Analítica. Todos os direitos reservados.</span>
           <span>Hospedado na Hostinger</span>
-          <Link to="/politica-de-privacidade" className="hover:text-primary-foreground">Política de Privacidade</Link>
-          <Link to="/termos-de-uso" className="hover:text-primary-foreground">Termos de Uso</Link>
-          <Link to="/exclusao-de-dados" className="hover:text-primary-foreground">Exclusão de Dados</Link>
+          <Link to="/politica-de-privacidade" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Política de Privacidade", destination: "/politica-de-privacidade" })}>Política de Privacidade</Link>
+          <Link to="/termos-de-uso" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Termos de Uso", destination: "/termos-de-uso" })}>Termos de Uso</Link>
+          <Link to="/exclusao-de-dados" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Exclusão de Dados", destination: "/exclusao-de-dados" })}>Exclusão de Dados</Link>
         </div>
       </div>
     </footer>
