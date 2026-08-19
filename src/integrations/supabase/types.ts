@@ -205,18 +205,21 @@ export type Database = {
       }
       product_images: {
         Row: {
+          alt_text: string | null
           image_url: string
           slug: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          alt_text?: string | null
           image_url: string
           slug: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          alt_text?: string | null
           image_url?: string
           slug?: string
           updated_at?: string
