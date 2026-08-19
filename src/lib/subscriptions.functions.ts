@@ -1,32 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
+import { friendlyStripeError } from "@/lib/subscriptions.server";
+import { DEMO_MESSAGE, isRealStripeId } from "@/lib/subscription-guards";
 
 type ActionResult = { ok: true; message: string } | { error: string };
 
 const envInput = (data: { environment: StripeEnv }) => data;
-
-const DEMO_MESSAGE =
-  "Esta é uma assinatura de demonstração, sem cobrança real vinculada ao provedor de pagamento. Faça uma assinatura real para usar esta ação.";
-
-/** IDs reais do Stripe têm prefixo conhecido; o resto são registros de teste. */
-export function isRealStripeId(id: string | null | undefined, prefix: "cus_" | "sub_"): boolean {
-  return typeof id === "string" && id.startsWith(prefix);
-}
-
-/** Traduz erros do Stripe, dando destaque ao caso de cadastro inexistente. */
-function friendlyStripeError(error: unknown): string {
-  const raw = error as { code?: string; raw?: { code?: string } } | null;
-  const code = raw?.raw?.code ?? raw?.code;
-  if (code === "resource_missing") {
-    return "Cadastro de cobrança não encontrado no provedor de pagamento. Refaça a assinatura para gerar um cadastro válido.";
-  }
-  return getStripeErrorMessage(error);
-}
 
 /**
  * Cancelamento: o acesso permanece liberado até o fim do período já pago
@@ -133,7 +113,6 @@ export const changePlan = createServerFn({ method: "POST" })
 
       if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
       if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
-    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
       try {
         const stripe = createStripeClient(data.environment);
