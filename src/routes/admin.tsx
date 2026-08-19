@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { AdminSubscriptionsPanel } from "@/components/AdminSubscriptionsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
 import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox } from "lucide-react";
+import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "forms" | "settings";
+type Tab = "blog" | "subscriptions" | "forms" | "images" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -95,6 +96,7 @@ function AdminPage() {
     { id: "blog", label: "Blog", icon: FileText },
     { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
     { id: "forms", label: "Formulários", icon: Inbox },
+    { id: "images", label: "Imagens", icon: ImageIcon },
     { id: "settings", label: "Configurações", icon: Settings },
   ];
 
@@ -151,6 +153,8 @@ function AdminPage() {
           {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
 
           {activeTab === "forms" && <FormSubmissionsPanel />}
+
+          {activeTab === "images" && <ProductImagesPanel />}
 
           {activeTab === "settings" && (
             <div className="max-w-md">
