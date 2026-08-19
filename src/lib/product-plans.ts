@@ -93,11 +93,13 @@ export const casa360Plans = [
     name: "Básico", price: "R$ 99", description: "Para quem mora sozinho", tier: "basico" as const,
     features: ["Estoque da casa", "Lista de compras automática", "Controle de validade", "Finanças básicas do mês", "1 morador"],
     priceId: "flexus_casa360_basico_mensal", ctaLabel: "Começar Agora",
+    annualPrice: "R$ 950", annualPriceId: "flexus_casa360_basico_anual",
   },
   {
     name: "Pro", price: "R$ 199", description: "Para casais e famílias", tier: "pro" as const,
     features: ["Tudo do Básico", "Até 6 moradores", "Contas recorrentes e lembretes", "Histórico de preços", "Relatórios avançados"],
     priceId: "flexus_casa360_pro_mensal", ctaLabel: "Começar Agora",
+    annualPrice: "R$ 1.910", annualPriceId: "flexus_casa360_pro_anual",
   },
   {
     name: "Enterprise", price: "R$ 399", description: "Para famílias grandes e múltiplas residências", tier: "enterprise" as const,
@@ -105,3 +107,4 @@ export const casa360Plans = [
     ctaLabel: "Falar com Consultor",
   },
 ];
+
