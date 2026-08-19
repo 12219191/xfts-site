@@ -1,4 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { captureAttribution } from "@/lib/attribution";
 import { Header } from "@/components/Header";
 import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
