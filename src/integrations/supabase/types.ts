@@ -93,6 +93,13 @@ export type Database = {
           http_status: number | null
           id: string
           landing_page: string | null
+          lt_landing_page: string | null
+          lt_referrer: string | null
+          lt_utm_campaign: string | null
+          lt_utm_content: string | null
+          lt_utm_medium: string | null
+          lt_utm_source: string | null
+          lt_utm_term: string | null
           mensagem: string | null
           nome: string | null
           reference_id: string
@@ -120,6 +127,13 @@ export type Database = {
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          lt_landing_page?: string | null
+          lt_referrer?: string | null
+          lt_utm_campaign?: string | null
+          lt_utm_content?: string | null
+          lt_utm_medium?: string | null
+          lt_utm_source?: string | null
+          lt_utm_term?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id: string
@@ -147,6 +161,13 @@ export type Database = {
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          lt_landing_page?: string | null
+          lt_referrer?: string | null
+          lt_utm_campaign?: string | null
+          lt_utm_content?: string | null
+          lt_utm_medium?: string | null
+          lt_utm_source?: string | null
+          lt_utm_term?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id?: string

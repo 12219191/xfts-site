@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { captureAttribution } from "@/lib/attribution";
 import { Header } from "@/components/Header";
@@ -125,9 +125,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   usePageTracking();
+  const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
     captureAttribution();
-  }, []);
+  }, [href]);
   return (
     <div className="flex min-h-screen flex-col">
       <PaymentTestModeBanner />

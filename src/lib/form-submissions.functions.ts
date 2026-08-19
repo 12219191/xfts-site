@@ -10,6 +10,7 @@ const filterSchema = z.object({
   utm_source: z.string().max(160).optional(),
   utm_campaign: z.string().max(160).optional(),
   status: z.string().max(40).optional(),
+  model: z.enum(["first", "last"]).optional(),
   search: z.string().max(120).optional(),
   limit: z.number().int().min(1).max(200).optional(),
 });
@@ -40,6 +41,13 @@ export type FormSubmissionRow = {
   utm_content: string | null;
   referrer: string | null;
   landing_page: string | null;
+  lt_utm_source: string | null;
+  lt_utm_medium: string | null;
+  lt_utm_campaign: string | null;
+  lt_utm_term: string | null;
+  lt_utm_content: string | null;
+  lt_referrer: string | null;
+  lt_landing_page: string | null;
   error_message: string | null;
   created_at: string;
 };
@@ -58,8 +66,9 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.to) query = query.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     if (data.tela) query = query.eq("tela", data.tela);
     if (data.botao) query = query.eq("botao", data.botao);
-    if (data.utm_source) query = query.ilike("utm_source", data.utm_source);
-    if (data.utm_campaign) query = query.ilike("utm_campaign", data.utm_campaign);
+    const prefix = data.model === "last" ? "lt_" : "";
+    if (data.utm_source) query = query.ilike(`${prefix}utm_source`, data.utm_source);
+    if (data.utm_campaign) query = query.ilike(`${prefix}utm_campaign`, data.utm_campaign);
     if (data.status) query = query.eq("status", data.status);
     if (data.search) {
       const term = `%${data.search}%`;

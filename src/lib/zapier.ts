@@ -1,5 +1,5 @@
 import { sendZapierWebhook, type ZapierResult } from "@/lib/zapier.functions";
-import { getAttribution } from "@/lib/attribution";
+import { getAttributionPayload } from "@/lib/attribution";
 
 export type { ZapierResult };
 
@@ -18,7 +18,7 @@ export async function sendToZapier(
 ): Promise<ZapierResult> {
   const startedAt = Date.now();
   try {
-    const attribution = getAttribution();
+    const attribution = getAttributionPayload();
     const result = await sendZapierWebhook({
       data: {
         ...data,
