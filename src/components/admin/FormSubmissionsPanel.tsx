@@ -306,12 +306,14 @@ export function FormSubmissionsPanel() {
       </Card>
 
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Envios no filtro", value: kpis.total },
           { label: "Entregues", value: kpis.ok },
           { label: "Com falha", value: kpis.fail },
+          { label: "Divergentes (first × last)", value: kpis.diff },
         ].map((k) => (
+
           <Card key={k.label} className="border-border bg-card">
             <CardContent className="p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">{k.label}</p>
