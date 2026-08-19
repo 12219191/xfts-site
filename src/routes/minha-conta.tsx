@@ -542,6 +542,13 @@ function MinhaContaPage() {
             </>
           )}
 
+          {hasRealBilling && (
+            <>
+              <Separator />
+              <InvoicesSection environment={env} />
+            </>
+          )}
+
           {/* Account info */}
           <Separator />
           <div>
