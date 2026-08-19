@@ -42,8 +42,9 @@ Endpoint que o CRM precisa expor:
 
 ### Autenticação
 
-Header `x-flexus-signature`: HMAC-SHA256 hex do corpo bruto usando `FLEXUS_APP_KEY_CRM`
-(mesma chave do SSO/provisionamento). Comparar em tempo constante e recusar com 401.
+Header `x-flexus-signature`: HMAC-SHA256 **em hexadecimal** do corpo bruto usando
+`FLEXUS_APP_KEY_CRM` (mesma chave do SSO/provisionamento). Comparar em tempo constante e
+recusar com 401. O formato pode ser alternado para base64url no /admin, mas o padrão é hex.
 
 ### Corpo enviado
 
