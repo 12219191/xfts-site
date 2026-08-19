@@ -35,6 +35,62 @@ const BOTAO_LABEL: Record<string, string> = {
 };
 
 
+type Attribution = {
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  referrer: string | null;
+  landing: string | null;
+};
+
+function pickAttribution(r: FormSubmissionRow, model: "first" | "last"): Attribution {
+  return model === "last"
+    ? {
+        source: r.lt_utm_source,
+        medium: r.lt_utm_medium,
+        campaign: r.lt_utm_campaign,
+        term: r.lt_utm_term,
+        content: r.lt_utm_content,
+        referrer: r.lt_referrer,
+        landing: r.lt_landing_page,
+      }
+    : {
+        source: r.utm_source,
+        medium: r.utm_medium,
+        campaign: r.utm_campaign,
+        term: r.utm_term,
+        content: r.utm_content,
+        referrer: r.referrer,
+        landing: r.landing_page,
+      };
+}
+
+function isDifferent(r: FormSubmissionRow) {
+  const a = pickAttribution(r, "first");
+  const b = pickAttribution(r, "last");
+  return (["source", "medium", "campaign", "term", "content", "referrer"] as const).some(
+    (k) => (a[k] ?? "") !== (b[k] ?? "")
+  );
+}
+
+function AttributionCell({ a }: { a: Attribution }) {
+  return (
+    <>
+      <span className="block text-xs text-muted-foreground">
+        {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
+          (a.referrer ? `ref: ${a.referrer}` : "direto")}
+      </span>
+      {(a.term || a.content || a.landing) && (
+        <span className="block text-[11px] text-muted-foreground/80">
+          {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
+        </span>
+      )}
+    </>
+  );
+}
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
@@ -42,6 +98,7 @@ function formatDate(iso: string) {
     return iso;
   }
 }
+
 
 export function FormSubmissionsPanel() {
   const fetchRows = useServerFn(listFormSubmissions);
@@ -56,7 +113,9 @@ export function FormSubmissionsPanel() {
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
+  const [compare, setCompare] = useState(false);
   const [search, setSearch] = useState("");
+
   const readWindow = useServerFn(getAttributionWindow);
   const saveWindowFn = useServerFn(setAttributionWindow);
   const [windowDays, setWindowDays] = useState<number>(DEFAULT_ATTRIBUTION_WINDOW_DAYS);
@@ -152,12 +211,26 @@ export function FormSubmissionsPanel() {
             </button>
           ))}
         </div>
+        <button
+          onClick={() => setCompare((v) => !v)}
+          className={`ml-2 mt-3 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+            compare
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {compare ? "Comparação lado a lado ativa" : "Comparar first × last"}
+        </button>
         <p className="mt-2 text-xs text-muted-foreground">
-          {model === "first"
-            ? "Atribuindo ao primeiro contato do visitante com o site (first-touch)."
-            : "Atribuindo à última origem antes do envio (last-touch)."}
+          {compare
+            ? "Mostrando first-touch e last-touch lado a lado para cada protocolo; os filtros de UTM seguem o modelo selecionado."
+            : model === "first"
+              ? "Atribuindo ao primeiro contato do visitante com o site (first-touch)."
+              : "Atribuindo à última origem antes do envio (last-touch)."}
         </p>
       </div>
+
+
 
       <Card className="border-border bg-card">
         <CardContent className="flex flex-wrap items-center gap-3 p-4">
@@ -301,7 +374,14 @@ export function FormSubmissionsPanel() {
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Protocolo</th>
                   <th className="px-4 py-3">Tela</th>
-                  <th className="px-4 py-3">Origem</th>
+                  {compare ? (
+                    <>
+                      <th className="px-4 py-3">First-touch</th>
+                      <th className="px-4 py-3">Last-touch</th>
+                    </>
+                  ) : (
+                    <th className="px-4 py-3">Origem</th>
+                  )}
                   <th className="px-4 py-3">Contato</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Duração</th>
@@ -310,11 +390,12 @@ export function FormSubmissionsPanel() {
               <tbody>
                 {!loading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={compare ? 8 : 7} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
                     </td>
                   </tr>
                 )}
+
                 {rows.map((r) => (
                   <tr key={r.id} className="border-b border-border/60 last:border-0">
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
@@ -322,45 +403,32 @@ export function FormSubmissionsPanel() {
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {TELA_LABEL[r.tela] ?? r.tela ?? "—"}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="block text-xs font-medium text-foreground">
-                        {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
-                      </span>
-                      {(() => {
-                        const a = model === "last"
-                          ? {
-                              source: r.lt_utm_source,
-                              medium: r.lt_utm_medium,
-                              campaign: r.lt_utm_campaign,
-                              term: r.lt_utm_term,
-                              content: r.lt_utm_content,
-                              referrer: r.lt_referrer,
-                              landing: r.lt_landing_page,
-                            }
-                          : {
-                              source: r.utm_source,
-                              medium: r.utm_medium,
-                              campaign: r.utm_campaign,
-                              term: r.utm_term,
-                              content: r.utm_content,
-                              referrer: r.referrer,
-                              landing: r.landing_page,
-                            };
-                        return (
-                          <>
-                            <span className="block text-xs text-muted-foreground">
-                              {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
-                                (a.referrer ? `ref: ${a.referrer}` : "direto")}
-                            </span>
-                            {(a.term || a.content || a.landing) && (
-                              <span className="block text-[11px] text-muted-foreground/80">
-                                {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
-                              </span>
-                            )}
-                          </>
-                        );
-                      })()}
-                    </td>
+                    {compare ? (
+                      <>
+                        <td className="px-4 py-3 align-top">
+                          <span className="block text-xs font-medium text-foreground">
+                            {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                          </span>
+                          <AttributionCell a={pickAttribution(r, "first")} />
+                        </td>
+                        <td className="px-4 py-3 align-top">
+                          <AttributionCell a={pickAttribution(r, "last")} />
+                          {isDifferent(r) ? (
+                            <Badge variant="destructive" className="mt-1">Divergente</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="mt-1">Igual</Badge>
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-4 py-3">
+                        <span className="block text-xs font-medium text-foreground">
+                          {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                        </span>
+                        <AttributionCell a={pickAttribution(r, model)} />
+                      </td>
+                    )}
+
 
                     <td className="px-4 py-3">
                       <span className="block font-medium text-foreground">{r.nome ?? "—"}</span>
