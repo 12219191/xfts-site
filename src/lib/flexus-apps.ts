@@ -122,11 +122,30 @@ export const SEATS_BY_TIER: Record<string, number | null> = {
   Enterprise: null,
 };
 
+/**
+ * Sobrescritas por sistema. Casa360° conta moradores, não profissionais:
+ * Básico = 1 morador, Pro = 6 moradores, Enterprise = ilimitado.
+ */
+export const SEATS_BY_APP: Partial<Record<FlexusAppKey, Record<string, number | null>>> = {
+  casa360: { "Básico": 1, Pro: 6, Enterprise: null },
+};
+
 /** Limite de usuários da equipe liberado pelo plano do price_id. */
 export function seatsFromPriceId(priceId: string | null | undefined): number | null {
   const tier = planTierFromPriceId(priceId);
+  const appKey = appKeyFromPriceId(priceId);
+  const perApp = appKey ? SEATS_BY_APP[appKey] : undefined;
+  if (perApp && tier in perApp) return perApp[tier]!;
   return tier in SEATS_BY_TIER ? SEATS_BY_TIER[tier]! : 2;
 }
+
+/** Ciclo de cobrança embutido no lookup key (mensal/anual). */
+export function billingIntervalFromPriceId(
+  priceId: string | null | undefined,
+): "mensal" | "anual" {
+  return (priceId ?? "").toLowerCase().includes("anual") ? "anual" : "mensal";
+}
+
 
 /** Texto amigável do limite de usuários. */
 export function seatsLabel(seats: number | null): string {
