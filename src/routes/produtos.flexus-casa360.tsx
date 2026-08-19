@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useProductImage, PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
+const heroCasa360 = PRODUCT_IMAGE_DEFAULTS.casa360;
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
-const heroCasa360 = heroCasa360Asset.url;
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -67,6 +67,7 @@ const testimonials = [
 
 
 function FlexusCasa360Page() {
+  const heroCasa360Live = useProductImage("casa360");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
@@ -91,7 +92,7 @@ function FlexusCasa360Page() {
       )}
 
       <section className="relative overflow-hidden">
-        <img src={heroCasa360} alt="Despensa organizada com painel digital de estoque e finanças da casa" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
+        <img src={heroCasa360Live} alt="Despensa organizada com painel digital de estoque e finanças da casa" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
         <div className="container-wide relative z-10 flex min-h-[500px] flex-col items-start justify-center px-4 py-24">
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Casa360°</h1>

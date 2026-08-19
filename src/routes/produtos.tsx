@@ -1,19 +1,8 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
+import { useProductImages } from "@/lib/product-images";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
-import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
-const heroClinic = heroClinicAsset.url;
-import heroBarbershopAsset from "@/assets/hero-barbershop.webp.asset.json";
-const heroBarbershop = heroBarbershopAsset.url;
-import heroAestheticsAsset from "@/assets/hero-aesthetics.webp.asset.json";
-const heroAesthetics = heroAestheticsAsset.url;
-import heroAbaAsset from "@/assets/hero-aba.webp.asset.json";
-const heroAba = heroAbaAsset.url;
-import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
-const heroCrm = heroCrmAsset.url;
-import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
-const heroCasa360 = heroCasa360Asset.url;
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
@@ -35,42 +24,42 @@ const products = [
     icon: Stethoscope,
     title: "FLEXUS | Clínica",
     desc: "Sistema completo para consultórios e clínicas. Agendamentos, prontuários eletrônicos e controle financeiro.",
-    image: heroClinic,
+    slug: "clinica" as const,
     link: "/produtos/gestao-clinica" as const,
   },
   {
     icon: Scissors,
     title: "FLEXUS | Barbearia",
     desc: "Controle de estoque, vendas, PDV e CRM para barbearias e salões masculinos.",
-    image: heroBarbershop,
+    slug: "barbearia" as const,
     link: "/produtos/gestao-barbearias" as const,
   },
   {
     icon: Sparkles,
     title: "FLEXUS | Estética",
     desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza.",
-    image: heroAesthetics,
+    slug: "estetica" as const,
     link: "/produtos/gestao-esteticas" as const,
   },
   {
     icon: Brain,
     title: "FLEXUS | ABA",
     desc: "Sistema para clínicas de Análise do Comportamento Aplicada (ABA / TEA): coleta de dados, evolução e relatórios.",
-    image: heroAba,
+    slug: "aba" as const,
     link: "/produtos/flexus-aba" as const,
   },
   {
     icon: TrendingUp,
     title: "FLEXUS | CRM",
     desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão.",
-    image: heroCrm,
+    slug: "crm" as const,
     link: "/produtos/flexus-crm" as const,
   },
   {
     icon: House,
     title: "FLEXUS | Casa360°",
     desc: "ERP doméstico: estoque da despensa, lista de compras automática e finanças da casa em um só painel.",
-    image: heroCasa360,
+    slug: "casa360" as const,
     link: "/produtos/flexus-casa360" as const,
   },
 ];
@@ -80,6 +69,7 @@ function ProdutosLayout() {
 }
 
 export function ProdutosIndex() {
+  const productImages = useProductImages();
   return (
     <>
       <section className="gradient-primary section-padding text-center">
@@ -95,7 +85,7 @@ export function ProdutosIndex() {
           {products.map((p) => (
             <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
               <div className="aspect-video overflow-hidden">
-                <img src={p.image} alt={p.title} loading="lazy" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src={productImages[p.slug]} alt={p.title} loading="lazy" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">

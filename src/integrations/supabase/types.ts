@@ -203,6 +203,27 @@ export type Database = {
         }
         Relationships: []
       }
+      product_images: {
+        Row: {
+          image_url: string
+          slug: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          image_url: string
+          slug: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          image_url?: string
+          slug?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       sso_tokens: {
         Row: {
           app_key: string
