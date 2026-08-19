@@ -75,6 +75,30 @@ function isDifferent(r: FormSubmissionRow) {
   );
 }
 
+const IMPACT_WEIGHTS = {
+  source: 5,
+  campaign: 4,
+  medium: 3,
+  content: 2,
+  term: 2,
+  referrer: 1,
+} as const;
+
+function impactScore(r: FormSubmissionRow) {
+  const a = pickAttribution(r, "first");
+  const b = pickAttribution(r, "last");
+  let score = 0;
+  for (const [key, weight] of Object.entries(IMPACT_WEIGHTS) as [
+    keyof typeof IMPACT_WEIGHTS,
+    number,
+  ][]) {
+    if ((a[key] ?? "") !== (b[key] ?? "")) score += weight;
+  }
+  return score;
+}
+
+
+
 function AttributionCell({ a }: { a: Attribution }) {
   return (
     <>
