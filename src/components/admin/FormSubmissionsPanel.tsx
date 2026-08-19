@@ -457,7 +457,7 @@ export function FormSubmissionsPanel() {
                 </tr>
               </thead>
               <tbody>
-                {!loading && rows.length === 0 && (
+                {!loading && visibleRows.length === 0 && (
                   <tr>
                     <td colSpan={compare ? 8 : 7} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
@@ -465,7 +465,7 @@ export function FormSubmissionsPanel() {
                   </tr>
                 )}
 
-                {rows.map((r) => (
+                {visibleRows.map((r) => (
                   <tr key={r.id} className="border-b border-border/60 last:border-0">
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
                     <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-foreground">{r.reference_id}</td>
