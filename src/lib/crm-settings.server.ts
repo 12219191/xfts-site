@@ -33,12 +33,14 @@ export async function saveCrmSettings(
 ): Promise<CrmIntegrationSettings> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const normalized = normalizeCrmSettings(settings);
-  const { error } = await supabaseAdmin.from("integration_settings").upsert({
-    key: CRM_SETTINGS_KEY,
-    value: normalized as unknown as Record<string, unknown>,
-    updated_at: new Date().toISOString(),
-    updated_by: userId,
-  });
+  const { error } = await supabaseAdmin.from("integration_settings").upsert([
+    {
+      key: CRM_SETTINGS_KEY,
+      value: normalized as unknown as never,
+      updated_at: new Date().toISOString(),
+      updated_by: userId,
+    },
+  ]);
   if (error) throw new Error(error.message);
   return normalized;
 }
