@@ -447,6 +447,8 @@ export type Database = {
           id: string
           price_id: string
           product_id: string
+          seats_reported_at: string | null
+          seats_used: number | null
           status: string
           stripe_customer_id: string
           stripe_subscription_id: string
@@ -462,6 +464,8 @@ export type Database = {
           id?: string
           price_id: string
           product_id: string
+          seats_reported_at?: string | null
+          seats_used?: number | null
           status?: string
           stripe_customer_id: string
           stripe_subscription_id: string
@@ -477,6 +481,8 @@ export type Database = {
           id?: string
           price_id?: string
           product_id?: string
+          seats_reported_at?: string | null
+          seats_used?: number | null
           status?: string
           stripe_customer_id?: string
           stripe_subscription_id?: string
@@ -491,6 +497,10 @@ export type Database = {
     }
     Functions: {
       apply_blog_schedule: { Args: never; Returns: undefined }
+      verify_cron_key: {
+        Args: { _name: string; _value: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
