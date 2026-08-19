@@ -8,6 +8,7 @@ import {
   changePlan,
   createPortalSession,
 } from "@/lib/subscriptions.functions";
+import { isRealStripeId } from "@/lib/subscription-guards";
 import {
   planTierFromPriceId,
   seatsFromPriceId,
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/minha-conta")({
 
 interface SubscriptionRow {
   id: string;
+  stripe_customer_id: string | null;
   status: string;
   product_id: string;
   price_id: string;
@@ -265,6 +267,8 @@ function MinhaContaPage() {
     : null;
   const currentPlan = currentPlanKey ? planMap[currentPlanKey] : null;
 
+  const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
+
   const initials = user.email
     .split("@")[0]
     .slice(0, 2)
@@ -447,6 +451,7 @@ function MinhaContaPage() {
                 </Card>
 
                 {/* Portal de cobrança do Stripe */}
+                {hasRealBilling ? (
                 <Card className="mt-4 border-border">
                   <CardContent className="flex flex-wrap items-center gap-4 p-5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
@@ -470,6 +475,12 @@ function MinhaContaPage() {
                     </Button>
                   </CardContent>
                 </Card>
+                ) : (
+                  <div className="mt-4 rounded-xl border border-dashed border-border bg-muted/20 p-5 text-sm text-muted-foreground">
+                    Assinatura de demonstração — o portal de cobrança, a troca de plano e o
+                    cancelamento ficam disponíveis após uma compra real.
+                  </div>
+                )}
 
 
 
