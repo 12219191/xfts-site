@@ -90,9 +90,11 @@ export const changePlan = createServerFn({ method: "POST" })
     async ({
       data,
       context,
-    }): Promise<
-      { ok: true; message: string; applied: "immediate" | "scheduled" } | { error: string }
+    ): Promise<
+      | { ok: true; message: string; applied: "immediate" | "scheduled"; appliedPriceId?: string }
+      | { error: string }
     > => {
+
       const { supabase, userId } = context;
       const sub = await resolveSubscription(
         supabase,
