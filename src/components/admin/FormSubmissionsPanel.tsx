@@ -330,45 +330,32 @@ export function FormSubmissionsPanel() {
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {TELA_LABEL[r.tela] ?? r.tela ?? "—"}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="block text-xs font-medium text-foreground">
-                        {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
-                      </span>
-                      {(() => {
-                        const a = model === "last"
-                          ? {
-                              source: r.lt_utm_source,
-                              medium: r.lt_utm_medium,
-                              campaign: r.lt_utm_campaign,
-                              term: r.lt_utm_term,
-                              content: r.lt_utm_content,
-                              referrer: r.lt_referrer,
-                              landing: r.lt_landing_page,
-                            }
-                          : {
-                              source: r.utm_source,
-                              medium: r.utm_medium,
-                              campaign: r.utm_campaign,
-                              term: r.utm_term,
-                              content: r.utm_content,
-                              referrer: r.referrer,
-                              landing: r.landing_page,
-                            };
-                        return (
-                          <>
-                            <span className="block text-xs text-muted-foreground">
-                              {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
-                                (a.referrer ? `ref: ${a.referrer}` : "direto")}
-                            </span>
-                            {(a.term || a.content || a.landing) && (
-                              <span className="block text-[11px] text-muted-foreground/80">
-                                {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
-                              </span>
-                            )}
-                          </>
-                        );
-                      })()}
-                    </td>
+                    {compare ? (
+                      <>
+                        <td className="px-4 py-3 align-top">
+                          <span className="block text-xs font-medium text-foreground">
+                            {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                          </span>
+                          <AttributionCell a={pickAttribution(r, "first")} />
+                        </td>
+                        <td className="px-4 py-3 align-top">
+                          <AttributionCell a={pickAttribution(r, "last")} />
+                          {isDifferent(r) ? (
+                            <Badge variant="destructive" className="mt-1">Divergente</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="mt-1">Igual</Badge>
+                          )}
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-4 py-3">
+                        <span className="block text-xs font-medium text-foreground">
+                          {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                        </span>
+                        <AttributionCell a={pickAttribution(r, model)} />
+                      </td>
+                    )}
+
 
                     <td className="px-4 py-3">
                       <span className="block font-medium text-foreground">{r.nome ?? "—"}</span>
