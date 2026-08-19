@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
+import { useProductImages } from "@/lib/product-images";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
 
@@ -68,6 +69,7 @@ function ProdutosLayout() {
 }
 
 export function ProdutosIndex() {
+  const productImages = useProductImages();
   return (
     <>
       <section className="gradient-primary section-padding text-center">

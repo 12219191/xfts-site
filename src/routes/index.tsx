@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
 import heroMain from "@/assets/hero-main.jpg";
 import { Logo } from "@/components/Logo";
+import { useProductImages } from "@/lib/product-images";
 
 
 export const Route = createFileRoute("/")({
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const productImages = useProductImages();
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
   const [sending, setSending] = useState(false);
   const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
