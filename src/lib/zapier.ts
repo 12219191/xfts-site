@@ -32,6 +32,7 @@ export async function sendToZapier(
         cta_id: lastCta?.cta_id ?? "",
         cta_label: lastCta?.cta_label ?? "",
         cta_page: lastCta?.cta_page ?? "",
+        cta_placement: lastCta?.cta_placement ?? "",
         tela: page?.slug ?? "",
         source: typeof window === "undefined" ? "" : window.location.origin,
       },
