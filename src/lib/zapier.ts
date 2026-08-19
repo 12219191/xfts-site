@@ -20,6 +20,7 @@ export async function sendToZapier(
       data: {
         ...data,
         form_type: formType,
+        tela: typeof window === "undefined" ? "" : window.location.pathname,
         source: typeof window === "undefined" ? "" : window.location.origin,
       },
     });
