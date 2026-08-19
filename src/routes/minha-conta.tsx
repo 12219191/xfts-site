@@ -332,12 +332,16 @@ function MinhaContaPage() {
     if (!target || !subscriptionId) return;
     setShowUpgrade(false);
     setActionLoading(true);
+    setSyncState("syncing");
+    setSyncError(null);
     try {
       const result = await changePlan({
         data: { environment: env, subscriptionId, targetPriceId: target },
       });
       if ("error" in result) {
         toast.error(result.error);
+        setSyncState("error");
+        setSyncError(result.error);
         return;
       }
       toast.success(result.message);
@@ -345,14 +349,19 @@ function MinhaContaPage() {
         if (result.applied === "immediate" && result.appliedPriceId) {
           await confirmPlanChange(user.id, subscriptionId, result.appliedPriceId);
         } else {
+          setSyncState("processing");
           await fetchSubscription(user.id);
         }
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      const msg = e instanceof Error ? e.message : "Não foi possível concluir a operação.";
+      toast.error(msg);
+      setSyncState("error");
+      setSyncError(msg);
     } finally {
       setActionLoading(false);
     }
+
   };
 
 
