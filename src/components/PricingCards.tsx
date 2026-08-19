@@ -151,13 +151,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                     onClick={() => {
                       trackCTAClick({
                         section: trackingSection,
-                        action: `${plan.tier}-assinar`,
+                        action: `${plan.tier}-assinar-${useAnnual ? "anual" : "mensal"}`,
                         label: plan.ctaLabel,
                         destination: "/checkout",
                       });
-                      if (plan.priceId && onCheckout) {
-                        onCheckout(plan.priceId, plan.ctaLabel);
+                      if (activePriceId && onCheckout) {
+                        onCheckout(activePriceId, plan.ctaLabel);
                       }
+
                     }}
                   >
                     {plan.ctaLabel}
