@@ -98,6 +98,17 @@ function MinhaContaPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const [upgradeTo, setUpgradeTo] = useState<TierKey>("pro");
+  /** Estado de sincronização do plano com o provedor de pagamento. */
+  const [syncState, setSyncState] = useState<"active" | "syncing" | "processing" | "error">(
+    "active",
+  );
+  const [syncError, setSyncError] = useState<string | null>(null);
+  /** Mudança de plano aguardando confirmação no banco. */
+  const [pendingChange, setPendingChange] = useState<{ subId: string; priceId: string } | null>(
+    null,
+  );
+  const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
+
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
 
