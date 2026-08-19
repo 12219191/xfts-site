@@ -36,6 +36,8 @@ const UTM_KEYS = [
   "utm_campaign",
   "utm_term",
   "utm_content",
+  "gclid",
+  "fbclid",
 ] as const;
 
 /** Janela de atribuição configurada no admin (cacheada no navegador). */
