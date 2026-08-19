@@ -396,52 +396,53 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {hasRealBilling && currentPlanKey === "basico" && (
-                    <Card
-                      className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
-                      onClick={() => {
-                        setUpgradeTo("pro");
-                        setShowUpgrade(true);
-                      }}
-                    >
-                      <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                          <ArrowUpRight className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">Upgrade para Pro</p>
-                          <p className="text-xs text-muted-foreground">
-                            Imediato, com cobrança proporcional ao período restante.
-                          </p>
-                        </div>
-                        <Badge className="ml-auto bg-primary/10 text-primary border-0">
-                          Popular
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  )}
+                  {hasRealBilling &&
+                    changeOptions.map((opt) => (
+                      <Card
+                        key={opt.tier}
+                        className={
+                          opt.isUpgrade
+                            ? "cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
+                            : "cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
+                        }
+                        onClick={() => {
+                          setUpgradeTo(opt.tier);
+                          setShowUpgrade(true);
+                        }}
+                      >
+                        <CardContent className="flex items-center gap-4 p-5">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              opt.isUpgrade ? "bg-primary/10" : "bg-muted"
+                            }`}
+                          >
+                            {opt.isUpgrade ? (
+                              <ArrowUpRight className="h-5 w-5 text-primary" />
+                            ) : (
+                              <Settings className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              {opt.isUpgrade
+                                ? `Upgrade para ${opt.name}`
+                                : `Mudar para ${opt.name}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {opt.isUpgrade
+                                ? "Imediato, com cobrança proporcional ao período restante."
+                                : "Entra em vigor apenas na próxima renovação."}
+                            </p>
+                          </div>
+                          {opt.isUpgrade && (
+                            <Badge className="ml-auto bg-primary/10 text-primary border-0">
+                              Recomendado
+                            </Badge>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
 
-                  {hasRealBilling && currentPlanKey === "pro" && (
-                    <Card
-                      className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
-                      onClick={() => {
-                        setUpgradeTo("basico");
-                        setShowUpgrade(true);
-                      }}
-                    >
-                      <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                          <Settings className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">Mudar para Básico</p>
-                          <p className="text-xs text-muted-foreground">
-                            Entra em vigor apenas na próxima renovação.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
 
                   <Card className="border-gold-deep/30">
                     <CardContent className="flex items-center gap-4 p-5">
