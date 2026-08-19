@@ -70,8 +70,8 @@ export const PLACEMENT_LABEL: Record<CtaPlacement, string> = {
 /** Deriva o tipo de clique a partir da seção quando não informado explicitamente. */
 export function derivePlacement(section: string): CtaPlacement {
   const s = section.toLowerCase();
-  if (s.includes("header") || s.includes("topo") || s.includes("nav")) return "topo";
   if (s.includes("footer") || s.includes("rodape")) return "rodape";
+  if (s.includes("header") || s.includes("topo") || s.includes("nav")) return "topo";
   if (s.includes("card")) return "card";
   if (s.includes("hero")) return "hero";
   if (s.includes("pricing") || s.includes("preco") || s.includes("plano")) return "precos";
