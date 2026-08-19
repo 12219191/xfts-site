@@ -16,16 +16,51 @@ const payloadSchema = z.object({
 
 export type ZapierPayload = z.infer<typeof payloadSchema>;
 
+export type ZapierResult = {
+  success: boolean;
+  message: string;
+  referenceId: string;
+  sentAt: string;
+  status: "sent" | "not_configured" | "rejected" | "network_error";
+  httpStatus?: number;
+  durationMs: number;
+};
+
 export const sendZapierWebhook = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => payloadSchema.parse(input))
-  .handler(async ({ data }): Promise<{ success: boolean; message: string }> => {
+  .handler(async ({ data }): Promise<ZapierResult> => {
+    const startedAt = Date.now();
+    const sentAt = new Date().toISOString();
+    const referenceId = `XF-${sentAt.slice(2, 10).replace(/-/g, "")}-${Math.random()
+      .toString(36)
+      .slice(2, 7)
+      .toUpperCase()}`;
     const webhookUrl = process.env["ZAPIER_WEBHOOK_URL"];
 
+    const log = (status: string, extra: Record<string, unknown> = {}) => {
+      console.log(
+        JSON.stringify({
+          scope: "zapier_webhook",
+          referenceId,
+          form_type: data.form_type,
+          source: data.source ?? "",
+          status,
+          durationMs: Date.now() - startedAt,
+          ...extra,
+        })
+      );
+    };
+
     if (!webhookUrl) {
+      log("not_configured");
       return {
         success: false,
         message:
           "Envio indisponível no momento. Fale conosco pelo WhatsApp ou por xfts@xfts.com.br.",
+        referenceId,
+        sentAt,
+        status: "not_configured",
+        durationMs: Date.now() - startedAt,
       };
     }
 
@@ -35,27 +70,43 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
-          timestamp: new Date().toISOString(),
+          reference_id: referenceId,
+          timestamp: sentAt,
         }),
       });
 
       if (!res.ok) {
-        console.error("Zapier webhook failed with status", res.status);
+        log("rejected", { httpStatus: res.status });
         return {
           success: false,
-          message: "Erro ao enviar mensagem. Tente novamente em instantes.",
+          message: `Não foi possível concluir o envio (código ${res.status}). Tente novamente ou escreva para xfts@xfts.com.br informando o protocolo ${referenceId}.`,
+          referenceId,
+          sentAt,
+          status: "rejected",
+          httpStatus: res.status,
+          durationMs: Date.now() - startedAt,
         };
       }
 
+      log("sent", { httpStatus: res.status });
       return {
         success: true,
         message: "Mensagem enviada com sucesso! Entraremos em contato em breve.",
+        referenceId,
+        sentAt,
+        status: "sent",
+        httpStatus: res.status,
+        durationMs: Date.now() - startedAt,
       };
     } catch (error) {
-      console.error("Zapier webhook error", error);
+      log("network_error", { error: error instanceof Error ? error.message : String(error) });
       return {
         success: false,
-        message: "Erro ao enviar mensagem. Tente novamente em instantes.",
+        message: `Falha de conexão ao enviar. Tente novamente em instantes (protocolo ${referenceId}).`,
+        referenceId,
+        sentAt,
+        status: "network_error",
+        durationMs: Date.now() - startedAt,
       };
     }
   });

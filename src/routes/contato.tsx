@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
-import { sendToZapier } from "@/lib/zapier";
+import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
+import { toast } from "sonner";
 import { trackFormSubmit } from "@/lib/tracking";
 import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 
@@ -29,16 +30,27 @@ function ContatoPage() {
   const [form, setForm] = useState({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
 
   const [sending, setSending] = useState(false);
+  const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    const email = form.email;
     const result = await sendToZapier(form, "contato");
     if (result.success) {
       trackFormSubmit("contato", form.segmento);
       setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+      toast.success("Mensagem enviada com sucesso", {
+        description: `Enviamos sua mensagem para nosso time em ${formatSentAt(result.sentAt)}. Retornamos em até 1 dia útil no e-mail ${email}. Protocolo: ${result.referenceId}.`,
+        duration: 10000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", {
+        description: result.message,
+        duration: 12000,
+      });
     }
-    alert(result.message);
+    setLastStatus(result);
     setSending(false);
   };
 
@@ -72,6 +84,22 @@ function ContatoPage() {
               <Button type="submit" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Enviar Mensagem"}
               </Button>
+              {lastStatus && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className={`rounded-md border p-3 text-sm ${lastStatus.success ? "border-cta/40 bg-cta/10 text-foreground" : "border-destructive/40 bg-destructive/10 text-foreground"}`}
+                >
+                  <p className="font-medium">
+                    {lastStatus.success ? "Recebemos sua mensagem" : "Envio não concluído"}
+                  </p>
+                  <p className="mt-1 text-muted-foreground">{lastStatus.message}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Status: {lastStatus.status}
+                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
+                  </p>
+                </div>
+              )}
             </form>
           </div>
 

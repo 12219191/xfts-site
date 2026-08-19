@@ -4,7 +4,8 @@ import { LegalPageLayout, type LegalSection } from "@/components/LegalPageLayout
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { sendToZapier } from "@/lib/zapier";
+import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/exclusao-de-dados")({
   head: () => ({
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/exclusao-de-dados")({
 function SolicitacaoExclusaoForm() {
   const [form, setForm] = useState({ nome: "", email: "", empresa: "", motivo: "" });
   const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [status, setStatus] = useState<ZapierResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +43,14 @@ function SolicitacaoExclusaoForm() {
     );
     if (result.success) {
       setForm({ nome: "", email: "", empresa: "", motivo: "" });
+      toast.success("Solicitação de exclusão registrada", {
+        description: `Recebida em ${formatSentAt(result.sentAt)}. Responderemos em até 15 dias, conforme a LGPD. Protocolo: ${result.referenceId}.`,
+        duration: 12000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", { description: result.message, duration: 12000 });
     }
-    setStatus({ ok: result.success, msg: result.message });
+    setStatus(result);
     setSending(false);
   };
 
@@ -75,7 +82,20 @@ function SolicitacaoExclusaoForm() {
           {sending ? "Enviando..." : "Enviar solicitação"}
         </Button>
         {status && (
-          <p className={`text-xs ${status.ok ? "text-green-600" : "text-destructive"}`}>{status.msg}</p>
+          <div
+            role="status"
+            aria-live="polite"
+            className={`rounded-md border p-3 text-xs ${status.success ? "border-cta/40 bg-cta/10" : "border-destructive/40 bg-destructive/10"}`}
+          >
+            <p className="text-sm font-medium text-foreground">
+              {status.success ? "Solicitação registrada" : "Envio não concluído"}
+            </p>
+            <p className="mt-1 text-muted-foreground">{status.message}</p>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Status: {status.status}
+              {status.referenceId ? ` · Protocolo ${status.referenceId}` : ""} · {formatSentAt(status.sentAt)} · {status.durationMs}ms
+            </p>
+          </div>
         )}
         <p className="text-[11px] text-muted-foreground">
           Ao enviar, você concorda que utilizaremos os dados informados apenas para processar sua solicitação de exclusão.

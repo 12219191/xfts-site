@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House } from "lucide-react";
 import { useState } from "react";
-import { sendToZapier } from "@/lib/zapier";
+import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
+import { toast } from "sonner";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
 import heroMain from "@/assets/hero-main.jpg";
 import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
@@ -44,16 +45,24 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
   const [sending, setSending] = useState(false);
+  const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
 
   const handleDemoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    const email = formData.email;
     const result = await sendToZapier(formData, "demo");
     if (result.success) {
       trackFormSubmit("demo", formData.segmento);
       setFormData({ nome: "", email: "", telefone: "", segmento: "" });
+      toast.success("Solicitação de demonstração recebida", {
+        description: `Registrada em ${formatSentAt(result.sentAt)}. Nosso time entra em contato em até 1 dia útil pelo e-mail ${email}. Protocolo: ${result.referenceId}.`,
+        duration: 10000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", { description: result.message, duration: 12000 });
     }
-    alert(result.message);
+    setLastStatus(result);
     setSending(false);
   };
 
@@ -219,6 +228,22 @@ function HomePage() {
               <Button type="submit" size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Solicitar Demonstração"}
               </Button>
+              {lastStatus && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 p-3 text-left text-sm text-primary-foreground"
+                >
+                  <p className="font-medium">
+                    {lastStatus.success ? "Solicitação recebida" : "Envio não concluído"}
+                  </p>
+                  <p className="mt-1 text-primary-foreground/80">{lastStatus.message}</p>
+                  <p className="mt-2 text-xs text-primary-foreground/60">
+                    Status: {lastStatus.status}
+                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
+                  </p>
+                </div>
+              )}
             </form>
           </div>
         </div>
