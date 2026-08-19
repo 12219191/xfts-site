@@ -56,6 +56,8 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
           referenceId,
           form_type: data.form_type,
           tela: data.tela ?? "",
+          botao: data.botao ?? "",
+          utm_campaign: data.utm_campaign ?? "",
           source: data.source ?? "",
           status,
           durationMs: Date.now() - startedAt,
