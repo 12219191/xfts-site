@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const payloadSchema = z.object({
   form_type: z.enum(["contato", "demo"]),
+  tela: z.string().max(120).optional(),
   nome: z.string().max(120).optional(),
   email: z.string().max(255).optional(),
   telefone: z.string().max(40).optional(),
@@ -37,22 +38,49 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
       .toUpperCase()}`;
     const webhookUrl = process.env["ZAPIER_WEBHOOK_URL"];
 
-    const log = (status: string, extra: Record<string, unknown> = {}) => {
+    const record = async (
+      status: string,
+      extra: { httpStatus?: number; errorMessage?: string } = {}
+    ) => {
       console.log(
         JSON.stringify({
           scope: "zapier_webhook",
           referenceId,
           form_type: data.form_type,
+          tela: data.tela ?? "",
           source: data.source ?? "",
           status,
           durationMs: Date.now() - startedAt,
           ...extra,
         })
       );
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("form_submissions").insert({
+          reference_id: referenceId,
+          form_type: data.form_type,
+          tela: data.tela ?? "",
+          status,
+          http_status: extra.httpStatus ?? null,
+          duration_ms: Date.now() - startedAt,
+          nome: data.nome ?? null,
+          email: data.email ?? null,
+          telefone: data.telefone ?? null,
+          segmento: data.segmento ?? null,
+          empresa: data.empresa ?? null,
+          assunto: data.assunto ?? null,
+          mensagem: data.mensagem ?? data.motivo ?? null,
+          source: data.source ?? null,
+          error_message: extra.errorMessage ?? null,
+          created_at: sentAt,
+        });
+      } catch (persistError) {
+        console.error("zapier_webhook persist failed", persistError);
+      }
     };
 
     if (!webhookUrl) {
-      log("not_configured");
+      await record("not_configured");
       return {
         success: false,
         message:
@@ -76,7 +104,7 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
       });
 
       if (!res.ok) {
-        log("rejected", { httpStatus: res.status });
+        await record("rejected", { httpStatus: res.status });
         return {
           success: false,
           message: `Não foi possível concluir o envio (código ${res.status}). Tente novamente ou escreva para xfts@xfts.com.br informando o protocolo ${referenceId}.`,
@@ -88,7 +116,7 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
         };
       }
 
-      log("sent", { httpStatus: res.status });
+      await record("sent", { httpStatus: res.status });
       return {
         success: true,
         message: "Mensagem enviada com sucesso! Entraremos em contato em breve.",
@@ -99,7 +127,8 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
         durationMs: Date.now() - startedAt,
       };
     } catch (error) {
-      log("network_error", { error: error instanceof Error ? error.message : String(error) });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      await record("network_error", { errorMessage });
       return {
         success: false,
         message: `Falha de conexão ao enviar. Tente novamente em instantes (protocolo ${referenceId}).`,

@@ -80,6 +80,66 @@ export type Database = {
         }
         Relationships: []
       }
+      form_submissions: {
+        Row: {
+          assunto: string | null
+          created_at: string
+          duration_ms: number
+          email: string | null
+          empresa: string | null
+          error_message: string | null
+          form_type: string
+          http_status: number | null
+          id: string
+          mensagem: string | null
+          nome: string | null
+          reference_id: string
+          segmento: string | null
+          source: string | null
+          status: string
+          tela: string
+          telefone: string | null
+        }
+        Insert: {
+          assunto?: string | null
+          created_at?: string
+          duration_ms?: number
+          email?: string | null
+          empresa?: string | null
+          error_message?: string | null
+          form_type: string
+          http_status?: number | null
+          id?: string
+          mensagem?: string | null
+          nome?: string | null
+          reference_id: string
+          segmento?: string | null
+          source?: string | null
+          status: string
+          tela?: string
+          telefone?: string | null
+        }
+        Update: {
+          assunto?: string | null
+          created_at?: string
+          duration_ms?: number
+          email?: string | null
+          empresa?: string | null
+          error_message?: string | null
+          form_type?: string
+          http_status?: number | null
+          id?: string
+          mensagem?: string | null
+          nome?: string | null
+          reference_id?: string
+          segmento?: string | null
+          source?: string | null
+          status?: string
+          tela?: string
+          telefone?: string | null
+        }
+        Relationships: []
+      }
       sso_tokens: {
         Row: {
           app_key: string
