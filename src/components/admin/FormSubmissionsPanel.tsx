@@ -391,7 +391,31 @@ export function FormSubmissionsPanel() {
               onKeyDown={(e) => e.key === "Enter" && load()}
             />
           </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Atribuição</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={divergence}
+              onChange={(e) => setDivergence(e.target.value as "all" | "diff" | "same")}
+            >
+              <option value="all">Todos os protocolos</option>
+              <option value="diff">Apenas divergentes</option>
+              <option value="same">Apenas iguais</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Ordenar por</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as "recent" | "impact")}
+            >
+              <option value="recent">Mais recentes</option>
+              <option value="impact">Impacto da divergência</option>
+            </select>
+          </div>
           <div className="grid gap-1 md:col-span-2">
+
             <label className="text-xs text-muted-foreground">Protocolo, nome ou e-mail</label>
             <div className="flex gap-2">
               <Input
