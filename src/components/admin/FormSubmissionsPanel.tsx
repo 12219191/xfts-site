@@ -57,6 +57,27 @@ export function FormSubmissionsPanel() {
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [search, setSearch] = useState("");
+  const readWindow = useServerFn(getAttributionWindow);
+  const saveWindowFn = useServerFn(setAttributionWindow);
+  const [windowDays, setWindowDays] = useState<number>(DEFAULT_ATTRIBUTION_WINDOW_DAYS);
+  const [savingWindow, setSavingWindow] = useState(false);
+  const [windowMessage, setWindowMessage] = useState("");
+
+  const saveWindow = async (days: number) => {
+    setSavingWindow(true);
+    setWindowMessage("");
+    try {
+      const res = await saveWindowFn({ data: { window_days: days } });
+      setWindowDays(res.window_days);
+      setAttributionWindowDays(res.window_days);
+      setWindowMessage(`Janela salva: ${res.window_days} dias.`);
+    } catch (e) {
+      setWindowMessage(e instanceof Error ? e.message : "Não foi possível salvar a janela.");
+    } finally {
+      setSavingWindow(false);
+    }
+  };
+
 
   const load = async () => {
     setLoading(true);
