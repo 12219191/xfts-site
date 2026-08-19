@@ -1,6 +1,8 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { captureAttribution } from "@/lib/attribution";
+import { captureAttribution, setAttributionWindowDays } from "@/lib/attribution";
+import { getAttributionWindow } from "@/lib/attribution-settings.functions";
+
 import { Header } from "@/components/Header";
 import { usePageTracking } from "@/hooks/use-page-tracking";
 import { Footer } from "@/components/Footer";
@@ -127,8 +129,20 @@ function RootComponent() {
   usePageTracking();
   const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
-    captureAttribution();
+    let cancelled = false;
+    getAttributionWindow()
+      .then((res) => {
+        if (!cancelled) setAttributionWindowDays(res.window_days);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) captureAttribution();
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [href]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <PaymentTestModeBanner />

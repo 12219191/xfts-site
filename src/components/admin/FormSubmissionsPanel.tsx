@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listFormSubmissions, type FormSubmissionRow } from "@/lib/form-submissions.functions";
+import {
+  ATTRIBUTION_WINDOW_OPTIONS,
+  DEFAULT_ATTRIBUTION_WINDOW_DAYS,
+  getAttributionWindow,
+  setAttributionWindow,
+} from "@/lib/attribution-settings.functions";
+import { setAttributionWindowDays } from "@/lib/attribution";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,6 +57,27 @@ export function FormSubmissionsPanel() {
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [search, setSearch] = useState("");
+  const readWindow = useServerFn(getAttributionWindow);
+  const saveWindowFn = useServerFn(setAttributionWindow);
+  const [windowDays, setWindowDays] = useState<number>(DEFAULT_ATTRIBUTION_WINDOW_DAYS);
+  const [savingWindow, setSavingWindow] = useState(false);
+  const [windowMessage, setWindowMessage] = useState("");
+
+  const saveWindow = async (days: number) => {
+    setSavingWindow(true);
+    setWindowMessage("");
+    try {
+      const res = await saveWindowFn({ data: { window_days: days } });
+      setWindowDays(res.window_days);
+      setAttributionWindowDays(res.window_days);
+      setWindowMessage(`Janela salva: ${res.window_days} dias.`);
+    } catch (e) {
+      setWindowMessage(e instanceof Error ? e.message : "Não foi possível salvar a janela.");
+    } finally {
+      setSavingWindow(false);
+    }
+  };
+
 
   const load = async () => {
     setLoading(true);
@@ -82,8 +111,15 @@ export function FormSubmissionsPanel() {
   }, [model]);
 
   useEffect(() => {
+    readWindow()
+      .then((res) => {
+        setWindowDays(res.window_days);
+        setAttributionWindowDays(res.window_days);
+      })
+      .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const kpis = useMemo(() => {
     const total = rows.length;
@@ -122,6 +158,37 @@ export function FormSubmissionsPanel() {
             : "Atribuindo à última origem antes do envio (last-touch)."}
         </p>
       </div>
+
+      <Card className="border-border bg-card">
+        <CardContent className="flex flex-wrap items-center gap-3 p-4">
+          <div className="min-w-[220px]">
+            <p className="text-sm font-medium text-foreground">Janela de atribuição</p>
+            <p className="text-xs text-muted-foreground">
+              Período em que a origem do visitante continua válida para first-touch e last-touch.
+            </p>
+          </div>
+          <div className="inline-flex flex-wrap gap-1 rounded-lg border border-border p-1">
+            {ATTRIBUTION_WINDOW_OPTIONS.map((days) => (
+              <button
+                key={days}
+                disabled={savingWindow}
+                onClick={() => saveWindow(days)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60 ${
+                  windowDays === days
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {days} dias
+              </button>
+            ))}
+          </div>
+          {windowMessage && (
+            <span className="text-xs text-muted-foreground">{windowMessage}</span>
+          )}
+        </CardContent>
+      </Card>
+
 
       <div className="grid gap-4 sm:grid-cols-3">
         {[
