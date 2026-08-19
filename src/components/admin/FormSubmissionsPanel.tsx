@@ -111,8 +111,15 @@ export function FormSubmissionsPanel() {
   }, [model]);
 
   useEffect(() => {
+    readWindow()
+      .then((res) => {
+        setWindowDays(res.window_days);
+        setAttributionWindowDays(res.window_days);
+      })
+      .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const kpis = useMemo(() => {
     const total = rows.length;
