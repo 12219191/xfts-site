@@ -6,7 +6,13 @@ import {
   cancelSubscription,
   reactivateSubscription,
   changePlan,
+  createPortalSession,
 } from "@/lib/subscriptions.functions";
+import {
+  planTierFromPriceId,
+  seatsFromPriceId,
+  seatsLabel,
+} from "@/lib/flexus-apps";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
@@ -25,6 +31,8 @@ import {
   Shield,
   ArrowUpRight,
   Loader2,
+  Users,
+  ExternalLink,
 } from "lucide-react";
 import { getStripeEnvironment } from "@/lib/stripe";
 
@@ -112,6 +120,7 @@ function MinhaContaPage() {
   const [allSubscriptions, setAllSubscriptions] = useState<SistemaSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
@@ -180,6 +189,28 @@ function MinhaContaPage() {
       return false;
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleOpenPortal = async () => {
+    setPortalLoading(true);
+    try {
+      const result = await createPortalSession({
+        data: {
+          environment: env,
+          returnUrl:
+            typeof window !== "undefined" ? `${window.location.origin}/minha-conta` : undefined,
+        },
+      });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      window.open(result.url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível abrir o portal.");
+    } finally {
+      setPortalLoading(false);
     }
   };
 
