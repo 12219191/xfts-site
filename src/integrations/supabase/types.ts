@@ -404,11 +404,6 @@ export type Database = {
     }
     Functions: {
       apply_blog_schedule: { Args: never; Returns: undefined }
-      has_active_subscription: {
-        Args: { check_env?: string; user_uuid: string }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
