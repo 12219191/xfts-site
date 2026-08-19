@@ -67,6 +67,11 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
         {plans.map((plan) => {
           const isPro = plan.tier === "pro";
           const isEnterprise = plan.tier === "enterprise";
+          const useAnnual = annual && !!plan.annualPriceId;
+          const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
+          const shownPeriod = useAnnual ? "/ano" : "/mês";
+          const activePriceId = useAnnual ? plan.annualPriceId : plan.priceId;
+
 
           return (
             <div
