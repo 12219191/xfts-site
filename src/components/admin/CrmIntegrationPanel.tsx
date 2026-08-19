@@ -88,8 +88,16 @@ export function CrmIntegrationPanel() {
     try {
       const res = await test({});
       const label = TEST_LABEL[res.status] ?? res.status;
-      if (res.status === "created" || res.status === "updated") setMessage(label);
-      else setError(`${label}${res.error ? ` (${res.error})` : ""}`);
+      const detalhe = [
+        res.httpStatus ? `HTTP ${res.httpStatus}` : null,
+        `assinatura ${res.signatureEncoding}`,
+        res.leadId ? `lead ${res.leadId}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      if (res.status === "created" || res.status === "updated")
+        setMessage(`${label} — ${detalhe}`);
+      else setError(`${label} — ${detalhe}${res.error ? ` · ${res.error}` : ""}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Falha no teste.");
     } finally {
