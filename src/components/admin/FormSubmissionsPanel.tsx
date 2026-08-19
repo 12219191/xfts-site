@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listFormSubmissions, type FormSubmissionRow } from "@/lib/form-submissions.functions";
+import { retryCrmLead } from "@/lib/crm-lead.functions";
 import {
   ATTRIBUTION_WINDOW_OPTIONS,
   DEFAULT_ATTRIBUTION_WINDOW_DAYS,
@@ -24,6 +25,14 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "Recusado",
   network_error: "Falha de conexão",
   not_configured: "Não configurado",
+};
+
+const CRM_STATUS_LABEL: Record<string, string> = {
+  created: "Criado",
+  updated: "Atualizado",
+  pending: "Pendente",
+  failed: "Falhou",
+  skipped: "Não aplicável",
 };
 
 const BOTAO_LABEL: Record<string, string> = {
