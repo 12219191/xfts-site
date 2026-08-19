@@ -6,7 +6,13 @@ import {
   cancelSubscription,
   reactivateSubscription,
   changePlan,
+  createPortalSession,
 } from "@/lib/subscriptions.functions";
+import {
+  planTierFromPriceId,
+  seatsFromPriceId,
+  seatsLabel,
+} from "@/lib/flexus-apps";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
@@ -25,6 +31,8 @@ import {
   Shield,
   ArrowUpRight,
   Loader2,
+  Users,
+  ExternalLink,
 } from "lucide-react";
 import { getStripeEnvironment } from "@/lib/stripe";
 
@@ -112,6 +120,7 @@ function MinhaContaPage() {
   const [allSubscriptions, setAllSubscriptions] = useState<SistemaSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
@@ -180,6 +189,28 @@ function MinhaContaPage() {
       return false;
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleOpenPortal = async () => {
+    setPortalLoading(true);
+    try {
+      const result = await createPortalSession({
+        data: {
+          environment: env,
+          returnUrl:
+            typeof window !== "undefined" ? `${window.location.origin}/minha-conta` : undefined,
+        },
+      });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      window.open(result.url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível abrir o portal.");
+    } finally {
+      setPortalLoading(false);
     }
   };
 
@@ -385,6 +416,62 @@ function MinhaContaPage() {
                     </CardContent>
                   </Card>
                 </div>
+
+                {/* Usuários incluídos no plano */}
+                <Card className="mt-6 border-border">
+                  <CardContent className="flex flex-wrap items-center gap-4 p-5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-[12rem] flex-1">
+                      <p className="font-semibold text-foreground">Usuários do plano</p>
+                      <p className="text-xs text-muted-foreground">
+                        {seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano{" "}
+                        {planTierFromPriceId(subscription.price_id)}. Para liberar mais usuários,
+                        faça upgrade de plano.
+                      </p>
+                    </div>
+                    {currentPlanKey === "basico" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setUpgradeTo("pro");
+                          setShowUpgrade(true);
+                        }}
+                      >
+                        Aumentar limite
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Portal de cobrança do Stripe */}
+                <Card className="mt-4 border-border">
+                  <CardContent className="flex flex-wrap items-center gap-4 p-5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                      <ExternalLink className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-[12rem] flex-1">
+                      <p className="font-semibold text-foreground">Portal de cobrança</p>
+                      <p className="text-xs text-muted-foreground">
+                        Atualize o cartão, veja faturas e recibos em ambiente seguro do provedor
+                        de pagamento. Abre em uma nova aba.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      disabled={portalLoading}
+                      onClick={handleOpenPortal}
+                      className="bg-cta text-cta-foreground hover:bg-cta/90"
+                    >
+                      {portalLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Abrir portal
+                    </Button>
+                  </CardContent>
+                </Card>
+
+
 
                 {/* Cancel / reactivate */}
                 {subscription.cancel_at_period_end ? (
