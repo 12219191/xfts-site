@@ -90,7 +90,7 @@ export const changePlan = createServerFn({ method: "POST" })
     async ({
       data,
       context,
-    ): Promise<
+    }): Promise<
       | { ok: true; message: string; applied: "immediate" | "scheduled"; appliedPriceId?: string }
       | { error: string }
     > => {
