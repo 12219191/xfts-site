@@ -92,13 +92,14 @@ A função usa a service role para gravar.
 Ao terminar, me informe a URL final do endpoint.
 ```
 
-## Depois que o CRM implementar
+## Passo 3 — depois que o CRM implementar
 
 1. No hub, abra `/admin` → aba **Integração CRM**.
 2. Confirme a URL (hoje já configurada como
    `https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-lead`),
    o modo **Assinatura HMAC** e o header `x-flexus-signature`.
-3. Clique em **Testar envio** — deve retornar `created`.
+3. Clique em **Enviar lead de teste** — deve retornar `created`.
 4. Os protocolos que ficaram como `pending` são reenviados automaticamente pelo retry.
 
-Nenhuma alteração de código é necessária neste site.
+Nenhuma alteração de código é necessária neste site — apenas a troca do segredo.
+
