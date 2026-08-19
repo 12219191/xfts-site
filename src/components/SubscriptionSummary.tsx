@@ -55,7 +55,10 @@ export function SubscriptionSummary({
     {
       icon: Layers,
       label: "Plano",
-      value: `${planName} · ${planTierFromPriceId(priceId)}`,
+      value:
+        planName.toLowerCase() === planTierFromPriceId(priceId).toLowerCase()
+          ? planName
+          : `${planName} · ${planTierFromPriceId(priceId)}`,
     },
     {
       icon: Activity,
