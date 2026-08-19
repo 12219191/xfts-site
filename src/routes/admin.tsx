@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AdminSubscriptionsPanel } from "@/components/AdminSubscriptionsPanel";
 import { BlogPanel } from "@/components/admin/BlogPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen } from "lucide-react";
+import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,7 +16,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "settings";
+type Tab = "blog" | "subscriptions" | "forms" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -93,6 +94,7 @@ function AdminPage() {
   const sidebarItems: { id: Tab; label: string; icon: typeof FileText }[] = [
     { id: "blog", label: "Blog", icon: FileText },
     { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
+    { id: "forms", label: "Formulários", icon: Inbox },
     { id: "settings", label: "Configurações", icon: Settings },
   ];
 
@@ -147,6 +149,8 @@ function AdminPage() {
           {activeTab === "blog" && <BlogPanel />}
 
           {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
+
+          {activeTab === "forms" && <FormSubmissionsPanel />}
 
           {activeTab === "settings" && (
             <div className="max-w-md">
