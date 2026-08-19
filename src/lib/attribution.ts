@@ -1,3 +1,9 @@
+import {
+  normalizeClickId,
+  normalizeUrlValue,
+  normalizeUtmValue,
+} from "@/lib/utm-normalize";
+
 export type Attribution = {
   utm_source?: string;
   utm_medium?: string;
