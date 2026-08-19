@@ -35,6 +35,8 @@ export function InvoicesSection({
 
   useEffect(() => {
     let active = true;
+    setInvoices(null);
+    setError(null);
     listInvoices({ data: { environment, subscriptionId } })
       .then((result) => {
         if (!active) return;
@@ -47,7 +49,7 @@ export function InvoicesSection({
     return () => {
       active = false;
     };
-  }, [environment]);
+  }, [environment, subscriptionId]);
 
   return (
     <div>
