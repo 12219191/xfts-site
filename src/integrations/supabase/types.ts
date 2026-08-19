@@ -106,6 +106,7 @@ export type Database = {
           cta_id: string | null
           cta_label: string | null
           cta_page: string | null
+          cta_placement: string | null
           duration_ms: number
           email: string | null
           empresa: string | null
@@ -147,6 +148,7 @@ export type Database = {
           cta_id?: string | null
           cta_label?: string | null
           cta_page?: string | null
+          cta_placement?: string | null
           duration_ms?: number
           email?: string | null
           empresa?: string | null
@@ -188,6 +190,7 @@ export type Database = {
           cta_id?: string | null
           cta_label?: string | null
           cta_page?: string | null
+          cta_placement?: string | null
           duration_ms?: number
           email?: string | null
           empresa?: string | null

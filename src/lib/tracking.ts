@@ -41,10 +41,43 @@ export type CtaClick = {
   cta_page_name: string;
   /** seção da página (hero, pricing, header, footer...) */
   cta_section: string;
+  /** tipo/posição do clique: topo, rodape, card, hero, precos, flutuante, corpo */
+  cta_placement: CtaPlacement;
   /** destino do clique (rota ou URL), quando informado */
   cta_destination?: string;
   ts: number;
 };
+
+export type CtaPlacement =
+  | "topo"
+  | "rodape"
+  | "card"
+  | "hero"
+  | "precos"
+  | "flutuante"
+  | "corpo";
+
+export const PLACEMENT_LABEL: Record<CtaPlacement, string> = {
+  topo: "Topo (header)",
+  rodape: "Rodapé",
+  card: "Card",
+  hero: "Hero",
+  precos: "Preços",
+  flutuante: "Botão flutuante",
+  corpo: "Corpo da página",
+};
+
+/** Deriva o tipo de clique a partir da seção quando não informado explicitamente. */
+export function derivePlacement(section: string): CtaPlacement {
+  const s = section.toLowerCase();
+  if (s.includes("footer") || s.includes("rodape")) return "rodape";
+  if (s.includes("header") || s.includes("topo") || s.includes("nav")) return "topo";
+  if (s.includes("card")) return "card";
+  if (s.includes("hero")) return "hero";
+  if (s.includes("pricing") || s.includes("preco") || s.includes("plano")) return "precos";
+  if (s.includes("float") || s.includes("whatsapp") || s.includes("flutuante")) return "flutuante";
+  return "corpo";
+}
 
 const LAST_CTA_KEY = "xfts_last_cta";
 
@@ -89,6 +122,8 @@ type CtaInput = {
   destination?: string;
   /** sobrescreve o slug da página (raro) */
   page?: string;
+  /** tipo/posição do clique; se omitido é derivado da seção */
+  placement?: CtaPlacement;
 };
 
 /**
@@ -102,6 +137,7 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
   let destination: string | undefined;
   let pageSlug: string;
   let pageName: string;
+  let placement: CtaPlacement | undefined;
 
   const page = typeof window === "undefined" ? resolvePage("/") : currentPage();
 
@@ -118,6 +154,7 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
     destination = input.destination;
     pageSlug = input.page ?? page.slug;
     pageName = input.page ? input.page : page.name;
+    placement = input.placement;
   }
 
   const ctaId = `${pageSlug}.${slugify(section)}.${slugify(action)}`;
@@ -127,6 +164,7 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
     cta_page: pageSlug,
     cta_page_name: pageName,
     cta_section: section,
+    cta_placement: placement ?? derivePlacement(section),
     cta_destination: destination,
     ts: Date.now(),
   };
@@ -139,6 +177,8 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
     cta_page: pageSlug,
     cta_page_name: pageName,
     cta_section: section,
+    cta_placement: click.cta_placement,
+    cta_placement_label: PLACEMENT_LABEL[click.cta_placement],
     cta_destination: destination ?? "",
     // compatibilidade com relatórios antigos
     cta_location: `${pageSlug}-${slugify(section)}`,

@@ -8,6 +8,7 @@ const filterSchema = z.object({
   tela: z.string().max(120).optional(),
   botao: z.string().max(80).optional(),
   cta_page: z.string().max(80).optional(),
+  cta_placement: z.string().max(40).optional(),
   cta_id: z.string().max(120).optional(),
   utm_source: z.string().max(160).optional(),
   utm_campaign: z.string().max(160).optional(),
@@ -39,6 +40,7 @@ export type FormSubmissionRow = {
   cta_id: string | null;
   cta_label: string | null;
   cta_page: string | null;
+  cta_placement: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
@@ -77,6 +79,7 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.botao) query = query.eq("botao", data.botao);
     if (data.cta_page) query = query.eq("cta_page", data.cta_page);
     if (data.cta_id) query = query.eq("cta_id", data.cta_id);
+    if (data.cta_placement) query = query.eq("cta_placement", data.cta_placement);
     const prefix = data.model === "last" ? "lt_" : "";
     if (data.utm_source) query = query.ilike(`${prefix}utm_source`, data.utm_source);
     if (data.utm_campaign) query = query.ilike(`${prefix}utm_campaign`, data.utm_campaign);
