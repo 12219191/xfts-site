@@ -13,6 +13,14 @@ const payloadSchema = z.object({
   motivo: z.string().max(2000).optional(),
   assunto: z.string().max(160).optional(),
   source: z.string().max(255).optional(),
+  botao: z.string().max(80).optional(),
+  utm_source: z.string().max(160).optional(),
+  utm_medium: z.string().max(160).optional(),
+  utm_campaign: z.string().max(160).optional(),
+  utm_term: z.string().max(160).optional(),
+  utm_content: z.string().max(160).optional(),
+  referrer: z.string().max(255).optional(),
+  landing_page: z.string().max(255).optional(),
 });
 
 export type ZapierPayload = z.infer<typeof payloadSchema>;
