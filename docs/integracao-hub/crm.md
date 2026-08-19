@@ -28,3 +28,77 @@ Resumo dos artefatos:
 
 Endpoint de provisionamento já configurado no hub:
 `https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-provision`
+
+---
+
+## Captura de leads dos formulários do site (hub → CRM)
+
+O hub envia automaticamente os leads dos formulários **contato** e **demo** para o CRM,
+criando um novo lead ou atualizando um existente (upsert por e-mail **ou** telefone).
+
+Endpoint que o CRM precisa expor:
+`POST https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-lead`
+(`verify_jwt = false` no `supabase/config.toml`).
+
+### Autenticação
+
+Header `x-flexus-signature`: HMAC-SHA256 hex do corpo bruto usando `FLEXUS_APP_KEY_CRM`
+(mesma chave do SSO/provisionamento). Comparar em tempo constante e recusar com 401.
+
+### Corpo enviado
+
+```json
+{
+  "reference_id": "XF-250212-ABCDE",
+  "form_type": "contato",
+  "nome": "Maria Silva",
+  "email": "maria@empresa.com",
+  "telefone": "+55 17 99999-0000",
+  "empresa": "Clínica Alfa",
+  "segmento": "clinica",
+  "assunto": "Planos",
+  "mensagem": "Gostaria de uma demonstração",
+  "tela": "/contato",
+  "cta_id": "contato.form.enviar",
+  "cta_label": "Enviar mensagem",
+  "cta_page": "/contato",
+  "cta_placement": "corpo",
+  "utm_source": "google",
+  "utm_medium": "cpc",
+  "utm_campaign": "flexus-clinica",
+  "utm_term": null,
+  "utm_content": null,
+  "gclid": null,
+  "fbclid": null,
+  "referrer": "https://www.google.com/",
+  "landing_page": "https://xfts-flexus.com/produtos/clinica",
+  "origem": "site-xfts",
+  "timestamp": "2026-02-12T14:03:11.000Z"
+}
+```
+
+### Resposta esperada
+
+```json
+{ "lead_id": "uuid-do-lead", "action": "created" }
+```
+
+`action` deve ser `created` ou `updated`. Content-Type **precisa** ser `application/json`
+— HTML é interpretado pelo hub como "endpoint ainda não implementado" e o protocolo fica
+como `pending` para nova tentativa.
+
+### Regras de deduplicação
+
+1. Procurar lead com o mesmo e-mail (case-insensitive).
+2. Se não houver, procurar pelo telefone normalizado (somente dígitos, últimos 11).
+3. Encontrando, atualizar os campos vazios e registrar nova interação/nota com a mensagem
+   e a origem (UTMs + botão). Não sobrescrever dados preenchidos manualmente.
+4. Não encontrando, criar o lead com estágio inicial de entrada e origem `site-xfts`.
+
+### Códigos de status
+
+- `2xx` → hub grava `created`/`updated`.
+- `400/401/403` → hub grava `failed` (não tenta de novo automaticamente; há botão de
+  reenvio manual no `/admin`).
+- Demais erros/timeout → `pending`, reprocessado pelo retry automático
+  (`POST /api/public/crm-retry`, autenticado com a `FLEXUS_APP_KEY_CRM`).
