@@ -127,7 +127,17 @@ export const casa360Plans = [
 ];
 
 /** Tipo de um plano do catálogo. */
-export type ProductPlan = (typeof clinicaPlans)[number];
+export interface ProductPlan {
+  name: string;
+  price: string;
+  description: string;
+  tier: "basico" | "pro" | "enterprise";
+  features: string[];
+  priceId?: string;
+  ctaLabel: string;
+  annualPrice?: string;
+  annualPriceId?: string;
+}
 
 /**
  * Catálogo por sistema FLEXUS — usado na área do cliente para montar as
