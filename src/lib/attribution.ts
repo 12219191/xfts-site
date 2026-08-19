@@ -1,3 +1,9 @@
+import {
+  normalizeClickId,
+  normalizeUrlValue,
+  normalizeUtmValue,
+} from "@/lib/utm-normalize";
+
 export type Attribution = {
   utm_source?: string;
   utm_medium?: string;
@@ -145,20 +151,26 @@ function readCurrent(): { data: Attribution; hasSignal: boolean } {
   let hasSignal = false;
 
   for (const key of UTM_KEYS) {
-    const value = params.get(key);
+    const raw = params.get(key);
+    const value =
+      key === "gclid" || key === "fbclid"
+        ? normalizeClickId(raw)
+        : normalizeUtmValue(raw);
     if (value) {
-      data[key] = value.slice(0, 160);
+      data[key] = value;
       hasSignal = true;
     }
   }
 
   const ref = typeof document === "undefined" ? "" : document.referrer;
   if (ref && !ref.startsWith(window.location.origin)) {
-    data.referrer = ref.slice(0, 255);
+    data.referrer = normalizeUrlValue(ref);
     hasSignal = true;
   }
 
-  data.landing_page = `${window.location.pathname}${window.location.search}`.slice(0, 255);
+  data.landing_page = normalizeUrlValue(
+    `${window.location.pathname}${window.location.search}`
+  );
   return { data, hasSignal };
 }
 
