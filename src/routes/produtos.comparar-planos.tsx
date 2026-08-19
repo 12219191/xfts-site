@@ -372,19 +372,23 @@ function CompararPlanosPage() {
                     <tr className="border-t border-border">
                       <td className="px-6 py-5" />
                       <td className="px-6 py-5 text-center">
-                        <Link to="/contato">
-                          <Button variant="outline" className="w-full" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Básico" })}>
-                            Começar
-                          </Button>
-                        </Link>
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => startCheckout(product.key, "basico", `planos-${product.product}`, "Começar - Básico")}
+                        >
+                          Começar
+                        </Button>
                       </td>
                       <td className="border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
-                        <Link to="/contato">
-                          <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Pro" })}>
-                            Começar Agora
-                          </Button>
-                        </Link>
+                        <Button
+                          className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20"
+                          onClick={() => startCheckout(product.key, "pro", `planos-${product.product}`, "Começar - Pro")}
+                        >
+                          Começar Agora
+                        </Button>
                       </td>
+
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
                           <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
