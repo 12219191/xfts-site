@@ -1,6 +1,27 @@
-# Prompt para colar no projeto FLEXUS | CRM
+# Integrar o FLEXUS | CRM: nova chave compartilhada + prompt
+
+## Passo 1 — gerar a nova FLEXUS_APP_KEY_CRM
+
+O valor atual não pode ser lido de volta (segredos são cifrados). Como ele se perdeu,
+geramos uma chave nova e usamos **exatamente o mesmo valor** nos dois projetos.
+
+1. Gere um valor aleatório forte (ex.: `openssl rand -hex 32`, ou um gerador de senhas
+   de 64 caracteres). Guarde num gerenciador de senhas.
+2. Neste site (hub): eu abro o formulário seguro para você colar o valor em
+   `FLEXUS_APP_KEY_CRM` (substitui o atual).
+3. No projeto do CRM: cadastre o **mesmo** valor com o **mesmo nome**
+   `FLEXUS_APP_KEY_CRM`.
+
+Enquanto os dois lados não tiverem o mesmo valor, o CRM responde 401 e os leads ficam
+como "Pendente" no /admin — depois são reenviados automaticamente, sem perda.
+
+Observação: essa chave também é usada no SSO e no provisionamento do CRM, então ela
+precisa ser trocada nos dois projetos na mesma janela.
+
+## Passo 2 — prompt para colar no projeto FLEXUS | CRM
 
 Copie o bloco abaixo inteiro e cole no chat do projeto **FLEXUS | CRM**. Ele descreve exatamente o que o hub (site XFTS) já envia e o que o CRM precisa expor.
+
 
 ```text
 Preciso receber automaticamente os leads enviados pelo site XFTS (hub) neste projeto.
@@ -71,13 +92,14 @@ A função usa a service role para gravar.
 Ao terminar, me informe a URL final do endpoint.
 ```
 
-## Depois que o CRM implementar
+## Passo 3 — depois que o CRM implementar
 
 1. No hub, abra `/admin` → aba **Integração CRM**.
 2. Confirme a URL (hoje já configurada como
    `https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-lead`),
    o modo **Assinatura HMAC** e o header `x-flexus-signature`.
-3. Clique em **Testar envio** — deve retornar `created`.
+3. Clique em **Enviar lead de teste** — deve retornar `created`.
 4. Os protocolos que ficaram como `pending` são reenviados automaticamente pelo retry.
 
-Nenhuma alteração de código é necessária neste site.
+Nenhuma alteração de código é necessária neste site — apenas a troca do segredo.
+
