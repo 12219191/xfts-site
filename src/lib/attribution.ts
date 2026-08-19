@@ -4,6 +4,8 @@ export type Attribution = {
   utm_campaign?: string;
   utm_term?: string;
   utm_content?: string;
+  gclid?: string;
+  fbclid?: string;
   referrer?: string;
   landing_page?: string;
 };
@@ -14,6 +16,8 @@ export type AttributionPayload = Attribution & {
   lt_utm_campaign?: string;
   lt_utm_term?: string;
   lt_utm_content?: string;
+  lt_gclid?: string;
+  lt_fbclid?: string;
   lt_referrer?: string;
   lt_landing_page?: string;
 };
