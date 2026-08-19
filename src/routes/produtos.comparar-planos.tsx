@@ -1,11 +1,21 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield } from "lucide-react";
+import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
 import { SEATS_BY_TIER, seatsLabel } from "@/lib/flexus-apps";
 import { trackCTAClick } from "@/lib/tracking";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import {
+  clinicaPlans,
+  barbeariasPlans,
+  esteticasPlans,
+  abaPlans,
+  crmPlans,
+  casa360Plans,
+} from "@/lib/product-plans";
+
 
 const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360"] as const;
 type ProductKey = (typeof PRODUCT_KEYS)[number];
@@ -181,20 +191,57 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   return <span className="text-sm font-medium text-foreground">{value}</span>;
 }
 
+const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
+  clinica: clinicaPlans,
+  barbearia: barbeariasPlans,
+  estetica: esteticasPlans,
+  aba: abaPlans,
+  crm: crmPlans,
+  casa360: casa360Plans,
+};
+
 function CompararPlanosPage() {
   const { produto } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const selected = products.find((p) => p.key === produto) ?? products[0];
   const [annual, setAnnual] = useState(false);
   const discount = 0.8;
+  const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const formatPrice = (price: number) => {
     const final = annual ? Math.round(price * discount) : price;
     return `R$ ${final}`;
   };
 
+  const priceIdFor = (productKey: ProductKey, tier: "basico" | "pro") => {
+    const plan = PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
+    if (!plan) return undefined;
+    return (annual && plan.annualPriceId) || plan.priceId;
+  };
+
+  const startCheckout = (productKey: ProductKey, tier: "basico" | "pro", section: string, label: string) => {
+    trackCTAClick({ section, label, destination: "/checkout" });
+    const priceId = priceIdFor(productKey, tier);
+    if (!priceId) return;
+    openCheckout({
+      priceId,
+      returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
+
   return (
     <TooltipProvider>
+      {isOpen && CheckoutForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-2xl">
+            <button onClick={closeCheckout} className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted">
+              <X className="h-5 w-5" />
+            </button>
+            <CheckoutForm />
+          </div>
+        </div>
+      )}
+
       <section className="section-padding">
         <div className="container-wide px-4">
           {/* Header */}
@@ -325,19 +372,23 @@ function CompararPlanosPage() {
                     <tr className="border-t border-border">
                       <td className="px-6 py-5" />
                       <td className="px-6 py-5 text-center">
-                        <Link to="/contato">
-                          <Button variant="outline" className="w-full" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Básico" })}>
-                            Começar
-                          </Button>
-                        </Link>
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => startCheckout(product.key, "basico", `planos-${product.product}`, "Começar - Básico")}
+                        >
+                          Começar
+                        </Button>
                       </td>
                       <td className="border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
-                        <Link to="/contato">
-                          <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Pro" })}>
-                            Começar Agora
-                          </Button>
-                        </Link>
+                        <Button
+                          className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20"
+                          onClick={() => startCheckout(product.key, "pro", `planos-${product.product}`, "Começar - Pro")}
+                        >
+                          Começar Agora
+                        </Button>
                       </td>
+
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
                           <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
