@@ -274,18 +274,26 @@ function MinhaContaPage() {
       const result = await fn();
       if (result.error) {
         toast.error(result.error);
+        setSyncState("error");
+        setSyncError(result.error);
         return false;
       }
       toast.success(result.message ?? "Tudo certo!");
+      setSyncError(null);
+      setSyncState("active");
       if (user) await fetchSubscription(user.id);
       return true;
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      const msg = e instanceof Error ? e.message : "Não foi possível concluir a operação.";
+      toast.error(msg);
+      setSyncState("error");
+      setSyncError(msg);
       return false;
     } finally {
       setActionLoading(false);
     }
   };
+
 
   const handleOpenPortal = async () => {
     setPortalLoading(true);
