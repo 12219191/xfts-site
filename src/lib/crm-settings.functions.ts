@@ -74,22 +74,38 @@ export const saveCrmSettingsFn = createServerFn({ method: "POST" })
 /** Dispara um lead de teste com a configuração atual. */
 export const testCrmConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ status: string; error: string | null }> => {
-    await assertAdmin(context);
-    const { sendLeadToCrm } = await import("@/lib/crm-lead.server");
-    const { loadCrmSettings } = await import("@/lib/crm-settings.server");
+  .handler(
+    async ({
+      context,
+    }): Promise<{
+      status: string;
+      error: string | null;
+      httpStatus: number | null;
+      signatureEncoding: string;
+      leadId: string | null;
+    }> => {
+      await assertAdmin(context);
+      const { sendLeadToCrm } = await import("@/lib/crm-lead.server");
+      const { loadCrmSettings } = await import("@/lib/crm-settings.server");
 
-    const settings = await loadCrmSettings();
-    const result = await sendLeadToCrm({
-      reference_id: `TESTE-${Date.now()}`,
-      form_type: settings.form_types[0] ?? "contato",
-      nome: "Teste de integração XFTS",
-      email: "teste-integracao@xfts.com.br",
-      telefone: "+55 17 99794-3349",
-      empresa: "XFTS",
-      mensagem: "Lead de teste enviado pelo painel administrativo.",
-      tela: "/admin",
-    });
+      const settings = await loadCrmSettings();
+      const result = await sendLeadToCrm({
+        reference_id: `TESTE-${Date.now()}`,
+        form_type: settings.form_types[0] ?? "contato",
+        nome: "Teste de integração XFTS",
+        email: "teste-integracao@xfts.com.br",
+        telefone: "+55 17 99794-3349",
+        empresa: "XFTS",
+        mensagem: "Lead de teste enviado pelo painel administrativo.",
+        tela: "/admin",
+      });
 
-    return { status: result.status, error: result.error ?? null };
-  });
+      return {
+        status: result.status,
+        error: result.error ?? null,
+        httpStatus: result.httpStatus ?? null,
+        signatureEncoding: result.signatureEncoding ?? settings.signature_encoding,
+        leadId: result.leadId,
+      };
+    },
+  );
