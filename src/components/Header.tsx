@@ -78,7 +78,7 @@ export function Header() {
             </Link>
           ) : null}
 
-          <Link to="/contato" onClick={() => trackCTAClick({ section: "header", action: "demo", label: "Solicite Demo", destination: "/contato" })}>
+          <Link to="/contato" onClick={() => trackCTAClick({ section: "header", action: "demo", label: "Solicite Demo", destination: "/contato", placement: "topo" })}>
             <Button className="bg-cta text-cta-foreground hover:bg-cta/90">Solicite Demo</Button>
           </Link>
         </nav>
@@ -138,7 +138,7 @@ export function Header() {
             <Link
               to="/contato"
               onClick={() => {
-                trackCTAClick({ section: "header-mobile", action: "demo", label: "Solicite Demo", destination: "/contato" });
+                trackCTAClick({ section: "header-mobile", action: "demo", label: "Solicite Demo (menu mobile)", destination: "/contato", placement: "topo" });
                 setMobileOpen(false);
               }}
             >
