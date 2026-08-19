@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { sendToZapier } from "@/lib/zapier";
-import { ZapierSettings } from "@/components/ZapierSettings";
 
 export const Route = createFileRoute("/exclusao-de-dados")({
   head: () => ({
@@ -54,7 +53,6 @@ function SolicitacaoExclusaoForm() {
         <p className="text-sm text-foreground/80">
           Preencha o formulário abaixo para enviar sua solicitação diretamente ao time responsável.
         </p>
-        <ZapierSettings />
       </div>
       <form onSubmit={handleSubmit} className="grid gap-3">
         <div className="grid gap-1.5">
