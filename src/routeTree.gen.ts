@@ -37,6 +37,7 @@ import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-r
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
 import { Route as ApiPublicSeatsUsageRouteImport } from './routes/api/public/seats-usage'
 import { Route as ApiPublicTmpCatalogRouteImport } from './routes/api/public/tmp-catalog'
+import { Route as ApiPublicTmpPricesRouteImport } from './routes/api/public/tmp-prices'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
 import { Route as ApiPublicPaymentsDunningRouteImport } from './routes/api/public/payments/dunning'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -184,6 +185,11 @@ const ApiPublicTmpCatalogRoute = ApiPublicTmpCatalogRouteImport.update({
   path: '/api/public/tmp-catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTmpPricesRoute = ApiPublicTmpPricesRouteImport.update({
+  id: '/api/public/tmp-prices',
+  path: '/api/public/tmp-prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicBlogImageSplatRoute = ApiPublicBlogImageSplatRouteImport.update({
   id: '/api/public/blog-image/$',
   path: '/api/public/blog-image/$',
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/tmp-catalog': typeof ApiPublicTmpCatalogRoute
+  '/api/public/tmp-prices': typeof ApiPublicTmpPricesRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -275,6 +282,7 @@ export interface FileRoutesByTo {
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/tmp-catalog': typeof ApiPublicTmpCatalogRoute
+  '/api/public/tmp-prices': typeof ApiPublicTmpPricesRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/tmp-catalog': typeof ApiPublicTmpCatalogRoute
+  '/api/public/tmp-prices': typeof ApiPublicTmpPricesRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -348,6 +357,7 @@ export interface FileRouteTypes {
     | '/api/public/entitlements'
     | '/api/public/seats-usage'
     | '/api/public/tmp-catalog'
+    | '/api/public/tmp-prices'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/api/public/entitlements'
     | '/api/public/seats-usage'
     | '/api/public/tmp-catalog'
+    | '/api/public/tmp-prices'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/api/public/entitlements'
     | '/api/public/seats-usage'
     | '/api/public/tmp-catalog'
+    | '/api/public/tmp-prices'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
   ApiPublicSeatsUsageRoute: typeof ApiPublicSeatsUsageRoute
   ApiPublicTmpCatalogRoute: typeof ApiPublicTmpCatalogRoute
+  ApiPublicTmpPricesRoute: typeof ApiPublicTmpPricesRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
   ApiPublicPaymentsDunningRoute: typeof ApiPublicPaymentsDunningRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -646,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTmpCatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/tmp-prices': {
+      id: '/api/public/tmp-prices'
+      path: '/api/public/tmp-prices'
+      fullPath: '/api/public/tmp-prices'
+      preLoaderRoute: typeof ApiPublicTmpPricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/blog-image/$': {
       id: '/api/public/blog-image/$'
       path: '/api/public/blog-image/$'
@@ -752,6 +772,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
   ApiPublicSeatsUsageRoute: ApiPublicSeatsUsageRoute,
   ApiPublicTmpCatalogRoute: ApiPublicTmpCatalogRoute,
+  ApiPublicTmpPricesRoute: ApiPublicTmpPricesRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
   ApiPublicPaymentsDunningRoute: ApiPublicPaymentsDunningRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
