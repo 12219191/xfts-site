@@ -101,3 +101,11 @@ export async function signBody(secret: string, body: string): Promise<string> {
   const sig = await crypto.subtle.sign("HMAC", await getKey(secret), encoder.encode(body));
   return base64UrlEncode(new Uint8Array(sig));
 }
+
+/** Mesma assinatura HMAC-SHA256, porém em hexadecimal (formato aceito pelo CRM). */
+export async function signBodyHex(secret: string, body: string): Promise<string> {
+  const sig = await crypto.subtle.sign("HMAC", await getKey(secret), encoder.encode(body));
+  return Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}

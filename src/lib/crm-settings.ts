@@ -5,6 +5,14 @@
 
 export type CrmAuthMode = "hmac" | "bearer" | "api_key" | "none";
 
+/** Formato da assinatura HMAC enviada no header. */
+export type CrmSignatureEncoding = "hex" | "base64url";
+
+export const CRM_SIGNATURE_ENCODING_OPTIONS: { id: CrmSignatureEncoding; label: string }[] = [
+  { id: "hex", label: "Hexadecimal (padrão do CRM)" },
+  { id: "base64url", label: "Base64 URL-safe" },
+];
+
 /** Campos internos disponíveis para mapeamento no payload enviado ao CRM. */
 export const CRM_SOURCE_FIELDS = [
   { id: "reference_id", label: "Protocolo" },
