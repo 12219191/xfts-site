@@ -43,8 +43,14 @@ function SolicitacaoExclusaoForm() {
     );
     if (result.success) {
       setForm({ nome: "", email: "", empresa: "", motivo: "" });
+      toast.success("Solicitação de exclusão registrada", {
+        description: `Recebida em ${formatSentAt(result.sentAt)}. Responderemos em até 15 dias, conforme a LGPD. Protocolo: ${result.referenceId}.`,
+        duration: 12000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", { description: result.message, duration: 12000 });
     }
-    setStatus({ ok: result.success, msg: result.message });
+    setStatus(result);
     setSending(false);
   };
 
