@@ -18,8 +18,14 @@ export type AttributionPayload = Attribution & {
   lt_landing_page?: string;
 };
 
+type StoredRecord = { data: Attribution; ts: number };
+
 const FIRST_KEY = "xfts_attribution";
 const LAST_KEY = "xfts_attribution_last";
+const WINDOW_KEY = "xfts_attribution_window_days";
+const DEFAULT_WINDOW_DAYS = 30;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 const UTM_KEYS = [
   "utm_source",
   "utm_medium",
@@ -28,20 +34,56 @@ const UTM_KEYS = [
   "utm_content",
 ] as const;
 
-function readStored(key: string): Attribution | null {
+/** Janela de atribuição configurada no admin (cacheada no navegador). */
+export function getAttributionWindowDays(): number {
+  if (typeof window === "undefined") return DEFAULT_WINDOW_DAYS;
   try {
-    const raw = sessionStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as Attribution) : null;
+    const raw = localStorage.getItem(WINDOW_KEY);
+    const days = raw ? Number(raw) : NaN;
+    return Number.isFinite(days) && days > 0 ? days : DEFAULT_WINDOW_DAYS;
+  } catch {
+    return DEFAULT_WINDOW_DAYS;
+  }
+}
+
+export function setAttributionWindowDays(days: number) {
+  if (typeof window === "undefined" || !Number.isFinite(days) || days <= 0) return;
+  try {
+    localStorage.setItem(WINDOW_KEY, String(Math.round(days)));
+  } catch {
+    /* storage indisponível */
+  }
+}
+
+function readStored(key: string): StoredRecord | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredRecord | Attribution;
+    if (parsed && typeof parsed === "object" && "data" in parsed && "ts" in parsed) {
+      return parsed as StoredRecord;
+    }
+    // Formato antigo (sem timestamp): trata como capturado agora.
+    return { data: parsed as Attribution, ts: Date.now() };
   } catch {
     return null;
   }
 }
 
-function write(key: string, value: Attribution) {
+/** Retorna o registro apenas se ainda estiver dentro da janela de atribuição. */
+function readValid(key: string): StoredRecord | null {
+  const record = readStored(key);
+  if (!record) return null;
+  const maxAge = getAttributionWindowDays() * DAY_MS;
+  if (Date.now() - record.ts > maxAge) return null;
+  return record;
+}
+
+function write(key: string, data: Attribution) {
   try {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() } satisfies StoredRecord));
   } catch {
-    /* sessionStorage indisponível (modo privado) */
+    /* storage indisponível (modo privado) */
   }
 }
 
@@ -71,28 +113,29 @@ function readCurrent(): { data: Attribution; hasSignal: boolean } {
 /**
  * Captura a atribuição de primeira visita (first-touch) e atualiza a
  * atribuição mais recente (last-touch) sempre que há novo sinal de origem.
+ * Registros fora da janela configurada expiram e são recapturados.
  * Deve ser chamada apenas no navegador (useEffect / handler).
  */
 export function captureAttribution(): Attribution {
   if (typeof window === "undefined") return {};
 
   const { data, hasSignal } = readCurrent();
-  const first = readStored(FIRST_KEY);
+  const first = readValid(FIRST_KEY);
 
   if (!first) write(FIRST_KEY, data);
-  if (hasSignal || !readStored(LAST_KEY)) write(LAST_KEY, data);
+  if (hasSignal || !readValid(LAST_KEY)) write(LAST_KEY, data);
 
-  return first ?? data;
+  return first?.data ?? data;
 }
 
 export function getAttribution(): Attribution {
   if (typeof window === "undefined") return {};
-  return readStored(FIRST_KEY) ?? captureAttribution();
+  return readValid(FIRST_KEY)?.data ?? captureAttribution();
 }
 
 export function getLastTouchAttribution(): Attribution {
   if (typeof window === "undefined") return {};
-  return readStored(LAST_KEY) ?? getAttribution();
+  return readValid(LAST_KEY)?.data ?? getAttribution();
 }
 
 /** First-touch + last-touch (prefixado com `lt_`) para envio ao servidor. */
