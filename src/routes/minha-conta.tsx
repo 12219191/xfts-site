@@ -257,12 +257,32 @@ function MinhaContaPage() {
 
   const handleChangePlan = async () => {
     const target = targetPriceId(upgradeTo);
-    if (!target) return;
+    if (!target || !subscriptionId) return;
     setShowUpgrade(false);
-    await runAction(() =>
-      changePlan({ data: { environment: env, subscriptionId, targetPriceId: target } }),
-    );
+    setActionLoading(true);
+    try {
+      const result = await changePlan({
+        data: { environment: env, subscriptionId, targetPriceId: target },
+      });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(result.message);
+      if (user) {
+        if (result.applied === "immediate" && result.appliedPriceId) {
+          await confirmPlanChange(user.id, subscriptionId, result.appliedPriceId);
+        } else {
+          await fetchSubscription(user.id);
+        }
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+    } finally {
+      setActionLoading(false);
+    }
   };
+
 
 
   if (loading) {
