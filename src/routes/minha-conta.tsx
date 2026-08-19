@@ -109,6 +109,7 @@ function MinhaContaPage() {
     null,
   );
   const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
