@@ -122,23 +122,59 @@ function MinhaContaPage() {
     ? getFlexusApp(appKeyFromPriceId(subscription.price_id) ?? "")?.name ?? "FLEXUS"
     : "FLEXUS";
 
+  /** Mudança pendente acessível dentro dos callbacks sem recriá-los. */
+  const pendingRef = useRef<{ subId: string; priceId: string } | null>(null);
+  pendingRef.current = pendingChange;
+
   const fetchSubscription = useCallback(
     async (userId: string) => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
         .eq("user_id", userId)
         .eq("environment", env)
         .order("created_at", { ascending: false });
+
+      if (error) {
+        setSyncState("error");
+        setSyncError("Não foi possível consultar sua assinatura agora. Tentaremos de novo em instantes.");
+        return [];
+      }
+
       const rows = (data as SubscriptionRow[]) ?? [];
-      setSubscriptions(rows);
+      setLastSyncAt(new Date());
+
+      const pending = pendingRef.current;
+      if (pending) {
+        const row = rows.find((r) => r.stripe_subscription_id === pending.subId);
+        if (row?.price_id === pending.priceId) {
+          setPendingChange(null);
+          pendingRef.current = null;
+          setSyncState("active");
+          setSyncError(null);
+        }
+      } else {
+        setSyncState((prev) => (prev === "error" ? "active" : prev));
+        setSyncError(null);
+      }
+
+      // Enquanto o banco não confirma, mantemos o plano novo visível.
+      const shown = pendingRef.current
+        ? rows.map((r) =>
+            r.stripe_subscription_id === pendingRef.current!.subId
+              ? { ...r, price_id: pendingRef.current!.priceId }
+              : r,
+          )
+        : rows;
+
+      setSubscriptions(shown);
       setSelectedSubId((prev) =>
-        prev && rows.some((r) => r.stripe_subscription_id === prev)
+        prev && shown.some((r) => r.stripe_subscription_id === prev)
           ? prev
-          : rows[0]?.stripe_subscription_id ?? null,
+          : shown[0]?.stripe_subscription_id ?? null,
       );
       setAllSubscriptions(
-        rows.map((r) => ({
+        shown.map((r) => ({
           price_id: r.price_id,
           status: r.status,
           current_period_end: r.current_period_end,
@@ -157,24 +193,25 @@ function MinhaContaPage() {
    */
   const confirmPlanChange = useCallback(
     async (userId: string, subId: string, appliedPriceId: string) => {
+      setPendingChange({ subId, priceId: appliedPriceId });
+      pendingRef.current = { subId, priceId: appliedPriceId };
+      setSyncState("syncing");
+      setSyncError(null);
       setSubscriptions((prev) =>
         prev.map((s) =>
           s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
         ),
       );
-      
+
       for (const delay of [2000, 4000, 8000]) {
         await new Promise((r) => setTimeout(r, delay));
         const rows = await fetchSubscription(userId);
         const row = rows.find((r) => r.stripe_subscription_id === subId);
         if (row?.price_id === appliedPriceId) return;
-        // Enquanto o banco não confirma, mantém o plano novo visível.
-        setSubscriptions((prev) =>
-          prev.map((s) =>
-            s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
-          ),
-        );
       }
+
+      // Sem confirmação após as tentativas: a reconciliação periódica assume.
+      if (pendingRef.current) setSyncState("processing");
     },
     [fetchSubscription],
   );
@@ -195,6 +232,22 @@ function MinhaContaPage() {
     }
     load();
   }, [fetchSubscription]);
+
+  /**
+   * Reconciliação periódica: mesmo sem webhook confirmado, a página volta a
+   * consultar o banco (rápido enquanto há mudança pendente, devagar no resto
+   * do tempo) para o card de usuários nunca ficar preso no plano antigo.
+   */
+  useEffect(() => {
+    if (!user) return;
+    const interval = pendingChange || syncState === "error" ? 10000 : 60000;
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      void fetchSubscription(user.id);
+    }, interval);
+    return () => clearInterval(id);
+  }, [user, pendingChange, syncState, fetchSubscription]);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
