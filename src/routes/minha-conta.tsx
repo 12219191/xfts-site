@@ -71,57 +71,20 @@ interface SubscriptionRow {
   created_at: string | null;
 }
 
-const planMap: Record<
-  string,
-  { name: string; tier: string; price: string; features: string[] }
-> = {
-  basico: {
-    name: "Básico",
-    tier: "Básico",
-    price: "R$ 97",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-    ],
-  },
-  pro: {
-    name: "Profissional",
-    tier: "Pro",
-    price: "R$ 197",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-      "Financeiro completo",
-      "Notificações automáticas",
-      "Relatórios avançados",
-    ],
-  },
-  enterprise: {
-    name: "Enterprise",
-    tier: "Enterprise",
-    price: "R$ 397",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-      "Financeiro completo",
-      "Notificações automáticas",
-      "Relatórios avançados",
-      "API & Integrações",
-      "Multi-unidades",
-      "Suporte prioritário 24/7",
-    ],
-  },
-};
+type TierKey = "basico" | "pro" | "enterprise";
 
-function detectPlanFromProductId(productId: string): string {
-  const lower = productId.toLowerCase();
-  if (lower.includes("enterprise") || lower.includes("premium")) return "enterprise";
-  if (lower.includes("pro") || lower.includes("profissional")) return "pro";
+/**
+ * Nível do plano a partir do lookup key do preço (ex.: flexus_crm_basico_mensal).
+ * Nunca usar `product_id`: ele guarda o id interno do provedor (prod_xxx),
+ * que contém "pro" em todo registro real.
+ */
+function tierKeyFromPriceId(priceId: string | null | undefined): TierKey {
+  const lower = (priceId ?? "").toLowerCase();
+  if (lower.includes("enterprise")) return "enterprise";
+  if (lower.includes("_pro_") || lower.endsWith("_pro")) return "pro";
   return "basico";
 }
+
 
 function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
