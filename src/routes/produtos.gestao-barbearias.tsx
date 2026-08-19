@@ -64,7 +64,6 @@ function GestaoBarbeariasPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick({ section: "pricing", label: label });
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
