@@ -17,6 +17,7 @@ import {
   seatsFromPriceId,
   seatsLabel,
 } from "@/lib/flexus-apps";
+import { PLANS_BY_APP, type ProductPlan } from "@/lib/product-plans";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SubscriptionSummary } from "@/components/SubscriptionSummary";
@@ -96,7 +97,7 @@ function MinhaContaPage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
+  const [upgradeTo, setUpgradeTo] = useState<TierKey>("pro");
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
 
@@ -625,7 +626,7 @@ function MinhaContaPage() {
           <div className="w-full max-w-lg">
             <PlanUpgradeCard
               currentPlan={currentPlan}
-              targetPlan={planMap[upgradeTo]}
+              targetPlan={planInfo(upgradeTo) ?? currentPlan}
               isUpgrade={upgradeTo === "pro"}
               prorataMessage={
                 upgradeTo === "pro"
