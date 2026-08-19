@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
-import { friendlyStripeError } from "@/lib/subscriptions.server";
+import { friendlyStripeError, toMajorUnit } from "@/lib/subscriptions.server";
 import { DEMO_MESSAGE, isRealStripeId } from "@/lib/subscription-guards";
 
 type ActionResult = { ok: true; message: string } | { error: string };
@@ -213,3 +213,59 @@ export const createPortalSession = createServerFn({ method: "POST" })
       return { error: friendlyStripeError(error) };
     }
   });
+
+export interface InvoiceRow {
+  id: string;
+  number: string | null;
+  status: string | null;
+  amount_paid: number;
+  amount_due: number;
+  currency: string;
+  created: string | null;
+  hosted_invoice_url: string | null;
+  pdf_url: string | null;
+}
+
+/** Lista as faturas recentes do cliente logado. */
+export const listInvoices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(envInput)
+  .handler(
+    async ({ data, context }): Promise<{ invoices: InvoiceRow[] } | { error: string }> => {
+      const { supabase, userId } = context;
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("stripe_customer_id")
+        .eq("user_id", userId)
+        .eq("environment", data.environment)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!sub?.stripe_customer_id) return { invoices: [] };
+      if (!isRealStripeId(sub.stripe_customer_id, "cus_")) return { error: DEMO_MESSAGE };
+
+      try {
+        const stripe = createStripeClient(data.environment);
+        const list = await stripe.invoices.list({
+          customer: sub.stripe_customer_id,
+          limit: 12,
+        });
+        return {
+          invoices: list.data.map((inv) => ({
+            id: inv.id ?? "",
+            number: inv.number ?? null,
+            status: inv.status ?? null,
+            amount_paid: toMajorUnit(inv.amount_paid, inv.currency),
+            amount_due: toMajorUnit(inv.amount_due, inv.currency),
+            currency: (inv.currency ?? "brl").toUpperCase(),
+            created: inv.created ? new Date(inv.created * 1000).toISOString() : null,
+            hosted_invoice_url: inv.hosted_invoice_url ?? null,
+            pdf_url: inv.invoice_pdf ?? null,
+          })),
+        };
+      } catch (error) {
+        return { error: friendlyStripeError(error) };
+      }
+    },
+  );

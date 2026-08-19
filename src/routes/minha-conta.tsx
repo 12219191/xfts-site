@@ -17,6 +17,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SubscriptionSummary } from "@/components/SubscriptionSummary";
+import { InvoicesSection } from "@/components/InvoicesSection";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
 import { CancelSubscriptionFlow } from "@/components/CancelSubscriptionFlow";
 import { MeusSistemas, type SistemaSubscription } from "@/components/MeusSistemas";
@@ -539,6 +540,13 @@ function MinhaContaPage() {
                   )
                 )}
               </div>
+            </>
+          )}
+
+          {hasRealBilling && (
+            <>
+              <Separator />
+              <InvoicesSection environment={env} />
             </>
           )}
 
