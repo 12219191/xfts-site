@@ -6,7 +6,6 @@ import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Br
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
-import { ZapierSettings } from "@/components/ZapierSettings";
 import heroMain from "@/assets/hero-main.jpg";
 import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
 const heroClinic = heroClinicAsset.url;
@@ -200,7 +199,6 @@ function HomePage() {
           <div className="mx-auto max-w-xl text-center">
             <div className="flex items-center justify-center gap-2">
               <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">Comece Agora</h2>
-              <ZapierSettings />
             </div>
             <p className="mt-4 text-primary-foreground/70">Preencha o formulário e nossa equipe entrará em contato.</p>
             <form className="mt-8 grid gap-4" onSubmit={handleDemoSubmit}>

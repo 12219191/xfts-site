@@ -7,7 +7,6 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier } from "@/lib/zapier";
 import { trackFormSubmit } from "@/lib/tracking";
-import { ZapierSettings } from "@/components/ZapierSettings";
 import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 
 export const Route = createFileRoute("/contato")({
@@ -57,7 +56,6 @@ function ContatoPage() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Envie uma mensagem</h2>
-              <ZapierSettings />
             </div>
             <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
               <Input placeholder="Nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required />
