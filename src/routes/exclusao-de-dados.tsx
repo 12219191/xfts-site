@@ -39,7 +39,8 @@ function SolicitacaoExclusaoForm() {
         motivo: form.motivo,
         assunto: "Solicitação de Exclusão de Dados",
       },
-      "contato"
+      "contato",
+      "exclusao_dados"
     );
     if (result.success) {
       setForm({ nome: "", email: "", empresa: "", motivo: "" });

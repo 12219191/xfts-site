@@ -83,6 +83,7 @@ export type Database = {
       form_submissions: {
         Row: {
           assunto: string | null
+          botao: string | null
           created_at: string
           duration_ms: number
           email: string | null
@@ -91,17 +92,25 @@ export type Database = {
           form_type: string
           http_status: number | null
           id: string
+          landing_page: string | null
           mensagem: string | null
           nome: string | null
           reference_id: string
+          referrer: string | null
           segmento: string | null
           source: string | null
           status: string
           tela: string
           telefone: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           assunto?: string | null
+          botao?: string | null
           created_at?: string
           duration_ms?: number
           email?: string | null
@@ -110,17 +119,25 @@ export type Database = {
           form_type: string
           http_status?: number | null
           id?: string
+          landing_page?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id: string
+          referrer?: string | null
           segmento?: string | null
           source?: string | null
           status: string
           tela?: string
           telefone?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           assunto?: string | null
+          botao?: string | null
           created_at?: string
           duration_ms?: number
           email?: string | null
@@ -129,14 +146,21 @@ export type Database = {
           form_type?: string
           http_status?: number | null
           id?: string
+          landing_page?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id?: string
+          referrer?: string | null
           segmento?: string | null
           source?: string | null
           status?: string
           tela?: string
           telefone?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

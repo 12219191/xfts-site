@@ -51,7 +51,7 @@ function HomePage() {
     e.preventDefault();
     setSending(true);
     const email = formData.email;
-    const result = await sendToZapier(formData, "demo");
+    const result = await sendToZapier(formData, "demo", "home_demo");
     if (result.success) {
       trackFormSubmit("demo", formData.segmento);
       setFormData({ nome: "", email: "", telefone: "", segmento: "" });

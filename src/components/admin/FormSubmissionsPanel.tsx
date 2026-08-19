@@ -20,6 +20,13 @@ const TELA_LABEL: Record<string, string> = {
   "/exclusao-de-dados": "Exclusão de Dados",
 };
 
+const BOTAO_LABEL: Record<string, string> = {
+  home_demo: "Home · Solicitar demonstração",
+  contato_mensagem: "Contato · Enviar mensagem",
+  exclusao_dados: "Exclusão de dados · Enviar solicitação",
+};
+
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
@@ -36,6 +43,9 @@ export function FormSubmissionsPanel() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [tela, setTela] = useState("");
+  const [botao, setBotao] = useState("");
+  const [utmSource, setUtmSource] = useState("");
+  const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
 
@@ -48,6 +58,9 @@ export function FormSubmissionsPanel() {
           from: from || undefined,
           to: to || undefined,
           tela: tela || undefined,
+          botao: botao || undefined,
+          utm_source: utmSource.trim() || undefined,
+          utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
           search: search.trim() || undefined,
           limit: 200,
@@ -133,6 +146,37 @@ export function FormSubmissionsPanel() {
               <option value="not_configured">Não configurado</option>
             </select>
           </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Botão</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={botao}
+              onChange={(e) => setBotao(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="home_demo">Home · Solicitar demonstração</option>
+              <option value="contato_mensagem">Contato · Enviar mensagem</option>
+              <option value="exclusao_dados">Exclusão · Enviar solicitação</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">utm_source</label>
+            <Input
+              placeholder="google, meta..."
+              value={utmSource}
+              onChange={(e) => setUtmSource(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && load()}
+            />
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">utm_campaign</label>
+            <Input
+              placeholder="black-friday"
+              value={utmCampaign}
+              onChange={(e) => setUtmCampaign(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && load()}
+            />
+          </div>
           <div className="grid gap-1 md:col-span-2">
             <label className="text-xs text-muted-foreground">Protocolo, nome ou e-mail</label>
             <div className="flex gap-2">
@@ -161,6 +205,7 @@ export function FormSubmissionsPanel() {
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Protocolo</th>
                   <th className="px-4 py-3">Tela</th>
+                  <th className="px-4 py-3">Origem</th>
                   <th className="px-4 py-3">Contato</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Duração</th>
@@ -169,7 +214,7 @@ export function FormSubmissionsPanel() {
               <tbody>
                 {!loading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
                     </td>
                   </tr>
@@ -181,6 +226,21 @@ export function FormSubmissionsPanel() {
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                       {TELA_LABEL[r.tela] ?? r.tela ?? "—"}
                     </td>
+                    <td className="px-4 py-3">
+                      <span className="block text-xs font-medium text-foreground">
+                        {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">
+                        {[r.utm_source, r.utm_medium, r.utm_campaign].filter(Boolean).join(" · ") ||
+                          (r.referrer ? `ref: ${r.referrer}` : "direto")}
+                      </span>
+                      {(r.utm_term || r.utm_content || r.landing_page) && (
+                        <span className="block text-[11px] text-muted-foreground/80">
+                          {[r.utm_term, r.utm_content, r.landing_page].filter(Boolean).join(" · ")}
+                        </span>
+                      )}
+                    </td>
+
                     <td className="px-4 py-3">
                       <span className="block font-medium text-foreground">{r.nome ?? "—"}</span>
                       <span className="block text-xs text-muted-foreground">{r.email ?? ""}</span>

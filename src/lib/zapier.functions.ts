@@ -13,6 +13,14 @@ const payloadSchema = z.object({
   motivo: z.string().max(2000).optional(),
   assunto: z.string().max(160).optional(),
   source: z.string().max(255).optional(),
+  botao: z.string().max(80).optional(),
+  utm_source: z.string().max(160).optional(),
+  utm_medium: z.string().max(160).optional(),
+  utm_campaign: z.string().max(160).optional(),
+  utm_term: z.string().max(160).optional(),
+  utm_content: z.string().max(160).optional(),
+  referrer: z.string().max(255).optional(),
+  landing_page: z.string().max(255).optional(),
 });
 
 export type ZapierPayload = z.infer<typeof payloadSchema>;
@@ -48,6 +56,8 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
           referenceId,
           form_type: data.form_type,
           tela: data.tela ?? "",
+          botao: data.botao ?? "",
+          utm_campaign: data.utm_campaign ?? "",
           source: data.source ?? "",
           status,
           durationMs: Date.now() - startedAt,
@@ -71,6 +81,14 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
           assunto: data.assunto ?? null,
           mensagem: data.mensagem ?? data.motivo ?? null,
           source: data.source ?? null,
+          botao: data.botao || null,
+          utm_source: data.utm_source ?? null,
+          utm_medium: data.utm_medium ?? null,
+          utm_campaign: data.utm_campaign ?? null,
+          utm_term: data.utm_term ?? null,
+          utm_content: data.utm_content ?? null,
+          referrer: data.referrer ?? null,
+          landing_page: data.landing_page ?? null,
           error_message: extra.errorMessage ?? null,
           created_at: sentAt,
         });
