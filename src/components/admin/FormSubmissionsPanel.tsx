@@ -8,6 +8,7 @@ import {
   setAttributionWindow,
 } from "@/lib/attribution-settings.functions";
 import { setAttributionWindowDays } from "@/lib/attribution";
+import { LeadsByUtmReport } from "@/components/admin/LeadsByUtmReport";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
