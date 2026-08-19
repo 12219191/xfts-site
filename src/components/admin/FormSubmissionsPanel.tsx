@@ -460,6 +460,8 @@ export function FormSubmissionsPanel() {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
+      <LeadsByUtmReport rows={visibleRows} model={model} />
+
       <Card className="border-border bg-card">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
