@@ -10,6 +10,24 @@ type ActionResult = { ok: true; message: string } | { error: string };
 
 const envInput = (data: { environment: StripeEnv }) => data;
 
+const DEMO_MESSAGE =
+  "Esta é uma assinatura de demonstração, sem cobrança real vinculada ao provedor de pagamento. Faça uma assinatura real para usar esta ação.";
+
+/** IDs reais do Stripe têm prefixo conhecido; o resto são registros de teste. */
+export function isRealStripeId(id: string | null | undefined, prefix: "cus_" | "sub_"): boolean {
+  return typeof id === "string" && id.startsWith(prefix);
+}
+
+/** Traduz erros do Stripe, dando destaque ao caso de cadastro inexistente. */
+function friendlyStripeError(error: unknown): string {
+  const raw = error as { code?: string; raw?: { code?: string } } | null;
+  const code = raw?.raw?.code ?? raw?.code;
+  if (code === "resource_missing") {
+    return "Cadastro de cobrança não encontrado no provedor de pagamento. Refaça a assinatura para gerar um cadastro válido.";
+  }
+  return getStripeErrorMessage(error);
+}
+
 /**
  * Cancelamento: o acesso permanece liberado até o fim do período já pago
  * (cancel_at_period_end = true).
@@ -29,6 +47,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -47,7 +66,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
         message: "Cancelamento agendado. Você mantém o acesso até o fim do período pago.",
       };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });
 
@@ -67,6 +86,7 @@ export const reactivateSubscription = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -79,7 +99,7 @@ export const reactivateSubscription = createServerFn({ method: "POST" })
         .eq("stripe_subscription_id", sub.stripe_subscription_id);
       return { ok: true, message: "Assinatura reativada com sucesso." };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });
 
@@ -112,6 +132,8 @@ export const changePlan = createServerFn({ method: "POST" })
         .maybeSingle();
 
       if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+      if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
+    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
       try {
         const stripe = createStripeClient(data.environment);
@@ -175,7 +197,7 @@ export const changePlan = createServerFn({ method: "POST" })
             "Downgrade agendado. Ele entra em vigor na próxima renovação, sem perda do período já pago.",
         };
       } catch (error) {
-        return { error: getStripeErrorMessage(error) };
+        return { error: friendlyStripeError(error) };
       }
     },
   );
@@ -199,6 +221,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_customer_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_customer_id, "cus_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -208,6 +231,6 @@ export const createPortalSession = createServerFn({ method: "POST" })
       });
       return { url: portal.url };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });
