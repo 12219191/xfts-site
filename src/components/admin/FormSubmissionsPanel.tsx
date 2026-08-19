@@ -171,11 +171,31 @@ export function FormSubmissionsPanel() {
   const [utmSource, setUtmSource] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
+  const [crmStatus, setCrmStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [compare, setCompare] = useState(false);
   const [divergence, setDivergence] = useState<"all" | "diff" | "same">("all");
   const [sort, setSort] = useState<"recent" | "impact">("recent");
   const [search, setSearch] = useState("");
+  const retryCrm = useServerFn(retryCrmLead);
+  const [retrying, setRetrying] = useState<string | null>(null);
+
+  const resendToCrm = async (referenceId: string) => {
+    setRetrying(referenceId);
+    try {
+      const res = await retryCrm({ data: { referenceId } });
+      setRows((prev) =>
+        prev.map((r) =>
+          r.reference_id === referenceId ? { ...r, crm_status: res.status } : r
+        )
+      );
+      setError(res.success ? "" : res.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Não foi possível reenviar ao CRM.");
+    } finally {
+      setRetrying(null);
+    }
+  };
 
 
   const readWindow = useServerFn(getAttributionWindow);
@@ -216,6 +236,7 @@ export function FormSubmissionsPanel() {
           utm_source: utmSource.trim() || undefined,
           utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
+          crm_status: crmStatus || undefined,
           model,
           search: search.trim() || undefined,
           limit: 200,
@@ -263,7 +284,10 @@ export function FormSubmissionsPanel() {
     const total = visibleRows.length;
     const ok = visibleRows.filter((r) => r.status === "sent").length;
     const diff = visibleRows.filter((r) => isDifferent(r)).length;
-    return { total, ok, fail: total - ok, diff };
+    const crm = visibleRows.filter(
+      (r) => r.crm_status === "created" || r.crm_status === "updated"
+    ).length;
+    return { total, ok, fail: total - ok, diff, crm };
   }, [visibleRows]);
 
 
@@ -344,12 +368,13 @@ export function FormSubmissionsPanel() {
       </Card>
 
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {[
           { label: "Envios no filtro", value: kpis.total },
           { label: "Entregues", value: kpis.ok },
           { label: "Com falha", value: kpis.fail },
           { label: "Divergentes (first × last)", value: kpis.diff },
+          { label: "Leads no CRM", value: kpis.crm },
         ].map((k) => (
 
           <Card key={k.label} className="border-border bg-card">
