@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { listFormSubmissions, type FormSubmissionRow } from "@/lib/form-submissions.functions";
+import { retryCrmLead } from "@/lib/crm-lead.functions";
 import {
   ATTRIBUTION_WINDOW_OPTIONS,
   DEFAULT_ATTRIBUTION_WINDOW_DAYS,
@@ -24,6 +25,14 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "Recusado",
   network_error: "Falha de conexão",
   not_configured: "Não configurado",
+};
+
+const CRM_STATUS_LABEL: Record<string, string> = {
+  created: "Criado",
+  updated: "Atualizado",
+  pending: "Pendente",
+  failed: "Falhou",
+  skipped: "Não aplicável",
 };
 
 const BOTAO_LABEL: Record<string, string> = {
@@ -162,11 +171,31 @@ export function FormSubmissionsPanel() {
   const [utmSource, setUtmSource] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
+  const [crmStatus, setCrmStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [compare, setCompare] = useState(false);
   const [divergence, setDivergence] = useState<"all" | "diff" | "same">("all");
   const [sort, setSort] = useState<"recent" | "impact">("recent");
   const [search, setSearch] = useState("");
+  const retryCrm = useServerFn(retryCrmLead);
+  const [retrying, setRetrying] = useState<string | null>(null);
+
+  const resendToCrm = async (referenceId: string) => {
+    setRetrying(referenceId);
+    try {
+      const res = await retryCrm({ data: { referenceId } });
+      setRows((prev) =>
+        prev.map((r) =>
+          r.reference_id === referenceId ? { ...r, crm_status: res.status } : r
+        )
+      );
+      setError(res.success ? "" : res.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Não foi possível reenviar ao CRM.");
+    } finally {
+      setRetrying(null);
+    }
+  };
 
 
   const readWindow = useServerFn(getAttributionWindow);
@@ -207,6 +236,7 @@ export function FormSubmissionsPanel() {
           utm_source: utmSource.trim() || undefined,
           utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
+          crm_status: crmStatus || undefined,
           model,
           search: search.trim() || undefined,
           limit: 200,
@@ -254,7 +284,10 @@ export function FormSubmissionsPanel() {
     const total = visibleRows.length;
     const ok = visibleRows.filter((r) => r.status === "sent").length;
     const diff = visibleRows.filter((r) => isDifferent(r)).length;
-    return { total, ok, fail: total - ok, diff };
+    const crm = visibleRows.filter(
+      (r) => r.crm_status === "created" || r.crm_status === "updated"
+    ).length;
+    return { total, ok, fail: total - ok, diff, crm };
   }, [visibleRows]);
 
 
@@ -335,12 +368,13 @@ export function FormSubmissionsPanel() {
       </Card>
 
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {[
           { label: "Envios no filtro", value: kpis.total },
           { label: "Entregues", value: kpis.ok },
           { label: "Com falha", value: kpis.fail },
           { label: "Divergentes (first × last)", value: kpis.diff },
+          { label: "Leads no CRM", value: kpis.crm },
         ].map((k) => (
 
           <Card key={k.label} className="border-border bg-card">
@@ -378,6 +412,21 @@ export function FormSubmissionsPanel() {
               <option value="/">Home (registros antigos)</option>
               <option value="/contato">Contato (registros antigos)</option>
               <option value="/exclusao-de-dados">Exclusão de Dados (registros antigos)</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">CRM</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={crmStatus}
+              onChange={(e) => setCrmStatus(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="created">Criado</option>
+              <option value="updated">Atualizado</option>
+              <option value="pending">Pendente</option>
+              <option value="failed">Falhou</option>
+              <option value="skipped">Não aplicável</option>
             </select>
           </div>
           <div className="grid gap-1">
@@ -531,13 +580,14 @@ export function FormSubmissionsPanel() {
                   )}
                   <th className="px-4 py-3">Contato</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">CRM</th>
                   <th className="px-4 py-3">Duração</th>
                 </tr>
               </thead>
               <tbody>
                 {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={compare ? 9 : 8} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={compare ? 10 : 9} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
                     </td>
                   </tr>
@@ -606,6 +656,39 @@ export function FormSubmissionsPanel() {
                         {STATUS_LABEL[r.status] ?? r.status}
                         {r.http_status ? ` · ${r.http_status}` : ""}
                       </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      {r.crm_status ? (
+                        <Badge
+                          variant={
+                            r.crm_status === "created" || r.crm_status === "updated"
+                              ? "default"
+                              : r.crm_status === "failed"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {CRM_STATUS_LABEL[r.crm_status] ?? r.crm_status}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                      {r.crm_error && (
+                        <span className="mt-1 block max-w-[220px] truncate text-[11px] text-destructive" title={r.crm_error}>
+                          {r.crm_error}
+                        </span>
+                      )}
+                      {(r.crm_status === "failed" || r.crm_status === "pending") && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2 h-7 px-2 text-xs"
+                          disabled={retrying === r.reference_id}
+                          onClick={() => resendToCrm(r.reference_id)}
+                        >
+                          {retrying === r.reference_id ? "Reenviando…" : "Reenviar ao CRM"}
+                        </Button>
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{r.duration_ms} ms</td>
                   </tr>

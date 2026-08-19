@@ -24,6 +24,8 @@ export interface FlexusApp {
    * apontamos para a função de backend do projeto.
    */
   provisionUrl?: string;
+  /** Endpoint que recebe leads dos formulários do site (apenas o CRM). */
+  leadUrl?: string;
   /** Prefixo dos lookup keys de preço usados no checkout. */
   pricePrefix: string;
   /** Rota da landing do produto neste site. */
@@ -46,6 +48,7 @@ export const FLEXUS_APPS: FlexusApp[] = [
     name: "FLEXUS | CRM",
     url: "https://xfts-flexus7.com",
     provisionUrl: "https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-provision",
+    leadUrl: "https://awehexeiciruuqxqtdgk.supabase.co/functions/v1/flexus-lead",
     pricePrefix: "flexus_crm",
     landing: "/produtos/flexus-crm",
     available: true,

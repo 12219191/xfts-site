@@ -33,6 +33,7 @@ import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
+import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-retry'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -159,6 +160,11 @@ const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
   path: '/gestao-esteticas',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ApiPublicCrmRetryRoute = ApiPublicCrmRetryRouteImport.update({
+  id: '/api/public/crm-retry',
+  path: '/api/public/crm-retry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicEntitlementsRoute = ApiPublicEntitlementsRouteImport.update({
   id: '/api/public/entitlements',
   path: '/api/public/entitlements',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
+  '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -265,6 +273,7 @@ export interface FileRoutesById {
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -297,6 +306,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog'
     | '/produtos'
+    | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-esteticas'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
     | '/api/public/payments/webhook'
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -551,6 +564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/api/public/crm-retry': {
+      id: '/api/public/crm-retry'
+      path: '/api/public/crm-retry'
+      fullPath: '/api/public/crm-retry'
+      preLoaderRoute: typeof ApiPublicCrmRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/entitlements': {
       id: '/api/public/entitlements'
       path: '/api/public/entitlements'
@@ -646,6 +666,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
