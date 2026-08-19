@@ -79,6 +79,7 @@ export const DEFAULT_CRM_SETTINGS: CrmIntegrationSettings = {
   lead_url: "",
   auth_mode: "hmac",
   signature_header: "x-flexus-signature",
+  signature_encoding: "hex",
   auth_header: "Authorization",
   auth_token: "",
   form_types: ["contato", "demo"],
@@ -121,6 +122,7 @@ export function normalizeCrmSettings(raw: unknown): CrmIntegrationSettings {
     signature_header:
       (typeof v.signature_header === "string" && v.signature_header.trim()) ||
       DEFAULT_CRM_SETTINGS.signature_header,
+    signature_encoding: v.signature_encoding === "base64url" ? "base64url" : "hex",
     auth_header:
       (typeof v.auth_header === "string" && v.auth_header.trim()) || DEFAULT_CRM_SETTINGS.auth_header,
     auth_token: typeof v.auth_token === "string" ? v.auth_token : "",
