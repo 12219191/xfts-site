@@ -25,7 +25,7 @@ export const Route = createFileRoute("/exclusao-de-dados")({
 function SolicitacaoExclusaoForm() {
   const [form, setForm] = useState({ nome: "", email: "", empresa: "", motivo: "" });
   const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [status, setStatus] = useState<ZapierResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
