@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 type StripeEnv = "sandbox" | "live";
 import {
@@ -21,6 +21,7 @@ import { PLANS_BY_APP, type ProductPlan } from "@/lib/product-plans";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SubscriptionSummary } from "@/components/SubscriptionSummary";
+import { PlanSyncIndicator } from "@/components/PlanSyncIndicator";
 import { InvoicesSection } from "@/components/InvoicesSection";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
 import { CancelSubscriptionFlow } from "@/components/CancelSubscriptionFlow";
@@ -98,6 +99,18 @@ function MinhaContaPage() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
   const [upgradeTo, setUpgradeTo] = useState<TierKey>("pro");
+  /** Estado de sincronização do plano com o provedor de pagamento. */
+  const [syncState, setSyncState] = useState<"active" | "syncing" | "processing" | "error">(
+    "active",
+  );
+  const [syncError, setSyncError] = useState<string | null>(null);
+  /** Mudança de plano aguardando confirmação no banco. */
+  const [pendingChange, setPendingChange] = useState<{ subId: string; priceId: string } | null>(
+    null,
+  );
+  const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
 
@@ -111,23 +124,59 @@ function MinhaContaPage() {
     ? getFlexusApp(appKeyFromPriceId(subscription.price_id) ?? "")?.name ?? "FLEXUS"
     : "FLEXUS";
 
+  /** Mudança pendente acessível dentro dos callbacks sem recriá-los. */
+  const pendingRef = useRef<{ subId: string; priceId: string } | null>(null);
+  pendingRef.current = pendingChange;
+
   const fetchSubscription = useCallback(
     async (userId: string) => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
         .eq("user_id", userId)
         .eq("environment", env)
         .order("created_at", { ascending: false });
+
+      if (error) {
+        setSyncState("error");
+        setSyncError("Não foi possível consultar sua assinatura agora. Tentaremos de novo em instantes.");
+        return [];
+      }
+
       const rows = (data as SubscriptionRow[]) ?? [];
-      setSubscriptions(rows);
+      setLastSyncAt(new Date());
+
+      const pending = pendingRef.current;
+      if (pending) {
+        const row = rows.find((r) => r.stripe_subscription_id === pending.subId);
+        if (row?.price_id === pending.priceId) {
+          setPendingChange(null);
+          pendingRef.current = null;
+          setSyncState("active");
+          setSyncError(null);
+        }
+      } else {
+        setSyncState((prev) => (prev === "error" ? "active" : prev));
+        setSyncError(null);
+      }
+
+      // Enquanto o banco não confirma, mantemos o plano novo visível.
+      const shown = pendingRef.current
+        ? rows.map((r) =>
+            r.stripe_subscription_id === pendingRef.current!.subId
+              ? { ...r, price_id: pendingRef.current!.priceId }
+              : r,
+          )
+        : rows;
+
+      setSubscriptions(shown);
       setSelectedSubId((prev) =>
-        prev && rows.some((r) => r.stripe_subscription_id === prev)
+        prev && shown.some((r) => r.stripe_subscription_id === prev)
           ? prev
-          : rows[0]?.stripe_subscription_id ?? null,
+          : shown[0]?.stripe_subscription_id ?? null,
       );
       setAllSubscriptions(
-        rows.map((r) => ({
+        shown.map((r) => ({
           price_id: r.price_id,
           status: r.status,
           current_period_end: r.current_period_end,
@@ -146,24 +195,25 @@ function MinhaContaPage() {
    */
   const confirmPlanChange = useCallback(
     async (userId: string, subId: string, appliedPriceId: string) => {
+      setPendingChange({ subId, priceId: appliedPriceId });
+      pendingRef.current = { subId, priceId: appliedPriceId };
+      setSyncState("syncing");
+      setSyncError(null);
       setSubscriptions((prev) =>
         prev.map((s) =>
           s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
         ),
       );
-      
+
       for (const delay of [2000, 4000, 8000]) {
         await new Promise((r) => setTimeout(r, delay));
         const rows = await fetchSubscription(userId);
         const row = rows.find((r) => r.stripe_subscription_id === subId);
         if (row?.price_id === appliedPriceId) return;
-        // Enquanto o banco não confirma, mantém o plano novo visível.
-        setSubscriptions((prev) =>
-          prev.map((s) =>
-            s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
-          ),
-        );
       }
+
+      // Sem confirmação após as tentativas: a reconciliação periódica assume.
+      if (pendingRef.current) setSyncState("processing");
     },
     [fetchSubscription],
   );
@@ -184,6 +234,22 @@ function MinhaContaPage() {
     }
     load();
   }, [fetchSubscription]);
+
+  /**
+   * Reconciliação periódica: mesmo sem webhook confirmado, a página volta a
+   * consultar o banco (rápido enquanto há mudança pendente, devagar no resto
+   * do tempo) para o card de usuários nunca ficar preso no plano antigo.
+   */
+  useEffect(() => {
+    if (!user) return;
+    const interval = pendingChange || syncState === "error" ? 10000 : 60000;
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      void fetchSubscription(user.id);
+    }, interval);
+    return () => clearInterval(id);
+  }, [user, pendingChange, syncState, fetchSubscription]);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -210,18 +276,26 @@ function MinhaContaPage() {
       const result = await fn();
       if (result.error) {
         toast.error(result.error);
+        setSyncState("error");
+        setSyncError(result.error);
         return false;
       }
       toast.success(result.message ?? "Tudo certo!");
+      setSyncError(null);
+      setSyncState("active");
       if (user) await fetchSubscription(user.id);
       return true;
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      const msg = e instanceof Error ? e.message : "Não foi possível concluir a operação.";
+      toast.error(msg);
+      setSyncState("error");
+      setSyncError(msg);
       return false;
     } finally {
       setActionLoading(false);
     }
   };
+
 
   const handleOpenPortal = async () => {
     setPortalLoading(true);
@@ -260,12 +334,16 @@ function MinhaContaPage() {
     if (!target || !subscriptionId) return;
     setShowUpgrade(false);
     setActionLoading(true);
+    setSyncState("syncing");
+    setSyncError(null);
     try {
       const result = await changePlan({
         data: { environment: env, subscriptionId, targetPriceId: target },
       });
       if ("error" in result) {
         toast.error(result.error);
+        setSyncState("error");
+        setSyncError(result.error);
         return;
       }
       toast.success(result.message);
@@ -273,14 +351,21 @@ function MinhaContaPage() {
         if (result.applied === "immediate" && result.appliedPriceId) {
           await confirmPlanChange(user.id, subscriptionId, result.appliedPriceId);
         } else {
+          // Downgrade agendado: nada muda agora, o plano atual segue ativo.
+          setSyncState("active");
           await fetchSubscription(user.id);
+
         }
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+      const msg = e instanceof Error ? e.message : "Não foi possível concluir a operação.";
+      toast.error(msg);
+      setSyncState("error");
+      setSyncError(msg);
     } finally {
       setActionLoading(false);
     }
+
   };
 
 
@@ -423,7 +508,20 @@ function MinhaContaPage() {
 
             {subscription && currentPlan ? (
               <div className="space-y-4">
+                <PlanSyncIndicator
+                  state={syncState}
+                  error={syncError}
+                  lastSyncAt={lastSyncAt}
+                  refreshing={refreshing}
+                  onRefresh={async () => {
+                    if (!user) return;
+                    setRefreshing(true);
+                    await fetchSubscription(user.id);
+                    setRefreshing(false);
+                  }}
+                />
                 <SubscriptionSummary
+
                   planName={currentPlan.name}
                   priceId={subscription.price_id}
                   status={subscription.status}
