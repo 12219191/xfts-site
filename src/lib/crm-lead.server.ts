@@ -4,8 +4,8 @@
  * Canal servidor→servidor assinado com HMAC-SHA256 usando FLEXUS_APP_KEY_CRM,
  * no mesmo padrão do provisionamento (`provisioning.server.ts`).
  */
-import { getFlexusApp } from "@/lib/flexus-apps";
 import { appApiKey, signBody } from "@/lib/sso.server";
+import { loadCrmSettings } from "@/lib/crm-settings.server";
 
 export type CrmLeadStatus = "created" | "updated" | "pending" | "failed" | "skipped";
 
@@ -55,38 +55,71 @@ export function shouldSendToCrm(formType: string): boolean {
   return formType === "contato" || formType === "demo";
 }
 
+function pick(payload: unknown, path: string): string | null {
+  let cur: unknown = payload;
+  for (const part of path.split(".")) {
+    if (!cur || typeof cur !== "object") return null;
+    cur = (cur as Record<string, unknown>)[part];
+  }
+  return typeof cur === "string" || typeof cur === "number" ? String(cur) : null;
+}
+
+/** Aplica o mapeamento configurado: campo interno → nome do campo no CRM. */
+function applyFieldMap(input: CrmLeadInput, map: Record<string, string>) {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    out[map[key] ?? key] = value;
+  }
+  return out;
+}
+
 /**
  * Nunca lança: qualquer falha vira `pending` (será reenviado) ou `failed`.
  * `pending` = problema temporário/endpoint ainda não disponível.
  */
 export async function sendLeadToCrm(input: CrmLeadInput): Promise<CrmLeadResult> {
-  const app = getFlexusApp("crm");
-  const endpoint = app?.leadUrl;
-  if (!endpoint) return { status: "pending", leadId: null, error: "endpoint do CRM não configurado" };
+  const settings = await loadCrmSettings();
 
-  const secret = appApiKey("crm");
-  if (!secret) return { status: "pending", leadId: null, error: "FLEXUS_APP_KEY_CRM não configurada" };
+  if (!settings.enabled) {
+    return { status: "skipped", leadId: null, error: "integração desativada no /admin" };
+  }
+  if (!settings.form_types.includes(input.form_type)) {
+    return { status: "skipped", leadId: null, error: "tipo de formulário fora do escopo do CRM" };
+  }
+
+  const endpoint = settings.lead_url;
+  if (!endpoint) return { status: "pending", leadId: null, error: "URL do CRM não configurada" };
+
+  const secret = settings.auth_token || appApiKey("crm") || "";
+  if (settings.auth_mode !== "none" && !secret) {
+    return { status: "pending", leadId: null, error: "credencial do CRM não configurada" };
+  }
 
   if (!input.email && !input.telefone) {
     return { status: "skipped", leadId: null, error: "sem e-mail ou telefone para identificar o lead" };
   }
 
   const body = JSON.stringify({
-    ...input,
-    origem: "site-xfts",
+    ...applyFieldMap(input, settings.field_map),
+    origem: settings.origem,
     timestamp: new Date().toISOString(),
   });
 
   try {
-    const signature = await signBody(secret, body);
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (settings.auth_mode === "hmac") {
+      headers[settings.signature_header] = await signBody(secret, body);
+    } else if (settings.auth_mode === "bearer") {
+      headers[settings.auth_header] = `Bearer ${secret}`;
+    } else if (settings.auth_mode === "api_key") {
+      headers[settings.auth_header] = secret;
+    }
+
     const res = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-flexus-signature": signature,
-      },
+      headers,
       body,
-      signal: AbortSignal.timeout(10_000),
+      signal: AbortSignal.timeout(settings.timeout_ms),
     });
 
     if (!res.ok) {
@@ -104,9 +137,9 @@ export async function sendLeadToCrm(input: CrmLeadInput): Promise<CrmLeadResult>
       return { status: "pending", leadId: null, error: "endpoint de lead ainda não implementado no CRM" };
     }
 
-    const payload = (await res.json()) as { lead_id?: string; action?: string };
-    const action = payload.action === "created" ? "created" : "updated";
-    return { status: action, leadId: payload.lead_id ?? null };
+    const payload = (await res.json()) as unknown;
+    const action = pick(payload, settings.response_action_path) === "created" ? "created" : "updated";
+    return { status: action, leadId: pick(payload, settings.response_lead_id_path) };
   } catch (e) {
     return {
       status: "pending",
