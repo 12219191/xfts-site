@@ -105,7 +105,13 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
       );
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        await supabaseAdmin.from("form_submissions").insert({
+        const {
+          rowToLeadInput,
+          sendLeadToCrm,
+          shouldSendToCrm,
+        } = await import("@/lib/crm-lead.server");
+
+        const row = {
           reference_id: referenceId,
           form_type: data.form_type,
           tela: data.tela ?? "",
@@ -145,6 +151,29 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
           lt_landing_page: data.lt_landing_page ?? null,
           error_message: extra.errorMessage ?? null,
           created_at: sentAt,
+        };
+
+        // Leads comerciais vão direto para o FLEXUS | CRM (criar ou atualizar).
+        const crm = shouldSendToCrm(data.form_type)
+          ? await sendLeadToCrm(rowToLeadInput(row))
+          : { status: "skipped" as const, leadId: null, error: undefined as string | undefined };
+
+        console.log(
+          JSON.stringify({
+            scope: "crm_lead",
+            referenceId,
+            crm_status: crm.status,
+            crm_error: crm.error ?? null,
+          })
+        );
+
+        await supabaseAdmin.from("form_submissions").insert({
+          ...row,
+          crm_status: crm.status,
+          crm_lead_id: crm.leadId,
+          crm_error: crm.error ?? null,
+          crm_synced_at: crm.status === "skipped" ? null : new Date().toISOString(),
+          crm_attempts: crm.status === "skipped" ? 0 : 1,
         });
       } catch (persistError) {
         console.error("zapier_webhook persist failed", persistError);
