@@ -155,11 +155,19 @@ function MinhaContaPage() {
     window.location.href = "/";
   };
 
-  /** Deriva o lookup key do plano de destino a partir do plano atual. */
-  const targetPriceId = (target: "basico" | "pro") => {
-    const current = subscription?.price_id ?? "";
-    return current.replace(/_(basico|pro)_/, `_${target}_`);
+  /** Planos do catálogo do sistema da assinatura selecionada. */
+  const plansForCurrentApp: ProductPlan[] =
+    PLANS_BY_APP[appKeyFromPriceId(subscription?.price_id) ?? ""] ?? [];
+
+  /** Lookup key do plano de destino, respeitando o ciclo (mensal/anual). */
+  const targetPriceId = (target: TierKey) => {
+    const plan = plansForCurrentApp.find((p) => p.tier === target);
+    if (!plan) return "";
+    return billingIntervalFromPriceId(subscription?.price_id) === "anual"
+      ? plan.annualPriceId ?? plan.priceId ?? ""
+      : plan.priceId ?? "";
   };
+
 
   const runAction = async (fn: () => Promise<{ ok?: true; message?: string; error?: string }>) => {
     setActionLoading(true);
