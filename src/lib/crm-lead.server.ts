@@ -48,6 +48,10 @@ export interface CrmLeadResult {
   status: CrmLeadStatus;
   leadId: string | null;
   error?: string;
+  /** Código HTTP da resposta do CRM, quando houve resposta. */
+  httpStatus?: number;
+  /** Formato de assinatura usado nesta tentativa. */
+  signatureEncoding?: string;
 }
 
 /** Só formulários comerciais viram lead. Exclusão de dados é privacidade. */
