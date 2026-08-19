@@ -356,7 +356,7 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {currentPlanKey === "basico" && (
+                  {hasRealBilling && currentPlanKey === "basico" && (
                     <Card
                       className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
                       onClick={() => {
@@ -381,7 +381,7 @@ function MinhaContaPage() {
                     </Card>
                   )}
 
-                  {currentPlanKey === "pro" && (
+                  {hasRealBilling && currentPlanKey === "pro" && (
                     <Card
                       className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
                       onClick={() => {
@@ -435,7 +435,7 @@ function MinhaContaPage() {
                         faça upgrade de plano.
                       </p>
                     </div>
-                    {currentPlanKey === "basico" && (
+                    {hasRealBilling && currentPlanKey === "basico" && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -485,7 +485,7 @@ function MinhaContaPage() {
 
 
                 {/* Cancel / reactivate */}
-                {subscription.cancel_at_period_end ? (
+                {!hasRealBilling ? null : subscription.cancel_at_period_end ? (
                   <div className="mt-6 rounded-xl border border-gold-deep/40 bg-gold/5 p-5">
                     <div className="flex items-center justify-between gap-4">
                       <div>
