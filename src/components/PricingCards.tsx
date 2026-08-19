@@ -103,10 +103,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
               <div className={`${isPro || isEnterprise ? "mt-2" : ""}`}>
                 <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
                 <div className="mt-3">
-                  <span className="text-4xl font-extrabold text-foreground">{plan.price}</span>
-                  <span className="text-base text-muted-foreground">/mês</span>
+                  <span className="text-4xl font-extrabold text-foreground">{shownPrice}</span>
+                  <span className="text-base text-muted-foreground">{shownPeriod}</span>
                 </div>
+                {useAnnual && (
+                  <p className="mt-1 text-xs font-medium text-cta">Equivale a 12 meses com 20% de desconto</p>
+                )}
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
+
               </div>
 
               {/* Features */}
