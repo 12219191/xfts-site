@@ -75,6 +75,30 @@ function isDifferent(r: FormSubmissionRow) {
   );
 }
 
+const IMPACT_WEIGHTS = {
+  source: 5,
+  campaign: 4,
+  medium: 3,
+  content: 2,
+  term: 2,
+  referrer: 1,
+} as const;
+
+function impactScore(r: FormSubmissionRow) {
+  const a = pickAttribution(r, "first");
+  const b = pickAttribution(r, "last");
+  let score = 0;
+  for (const [key, weight] of Object.entries(IMPACT_WEIGHTS) as [
+    keyof typeof IMPACT_WEIGHTS,
+    number,
+  ][]) {
+    if ((a[key] ?? "") !== (b[key] ?? "")) score += weight;
+  }
+  return score;
+}
+
+
+
 function AttributionCell({ a }: { a: Attribution }) {
   return (
     <>
@@ -114,7 +138,10 @@ export function FormSubmissionsPanel() {
   const [status, setStatus] = useState("");
   const [model, setModel] = useState<"first" | "last">("first");
   const [compare, setCompare] = useState(false);
+  const [divergence, setDivergence] = useState<"all" | "diff" | "same">("all");
+  const [sort, setSort] = useState<"recent" | "impact">("recent");
   const [search, setSearch] = useState("");
+
 
   const readWindow = useServerFn(getAttributionWindow);
   const saveWindowFn = useServerFn(setAttributionWindow);
@@ -180,11 +207,27 @@ export function FormSubmissionsPanel() {
   }, []);
 
 
+  const visibleRows = useMemo(() => {
+    let list = rows;
+    if (divergence === "diff") list = list.filter((r) => isDifferent(r));
+    if (divergence === "same") list = list.filter((r) => !isDifferent(r));
+    if (sort === "impact") {
+      list = [...list].sort((a, b) => {
+        const d = impactScore(b) - impactScore(a);
+        if (d !== 0) return d;
+        return b.created_at.localeCompare(a.created_at);
+      });
+    }
+    return list;
+  }, [rows, divergence, sort]);
+
   const kpis = useMemo(() => {
-    const total = rows.length;
-    const ok = rows.filter((r) => r.status === "sent").length;
-    return { total, ok, fail: total - ok };
-  }, [rows]);
+    const total = visibleRows.length;
+    const ok = visibleRows.filter((r) => r.status === "sent").length;
+    const diff = visibleRows.filter((r) => isDifferent(r)).length;
+    return { total, ok, fail: total - ok, diff };
+  }, [visibleRows]);
+
 
   return (
     <div className="space-y-6">
@@ -263,12 +306,14 @@ export function FormSubmissionsPanel() {
       </Card>
 
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Envios no filtro", value: kpis.total },
           { label: "Entregues", value: kpis.ok },
           { label: "Com falha", value: kpis.fail },
+          { label: "Divergentes (first × last)", value: kpis.diff },
         ].map((k) => (
+
           <Card key={k.label} className="border-border bg-card">
             <CardContent className="p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">{k.label}</p>
@@ -346,7 +391,31 @@ export function FormSubmissionsPanel() {
               onKeyDown={(e) => e.key === "Enter" && load()}
             />
           </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Atribuição</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={divergence}
+              onChange={(e) => setDivergence(e.target.value as "all" | "diff" | "same")}
+            >
+              <option value="all">Todos os protocolos</option>
+              <option value="diff">Apenas divergentes</option>
+              <option value="same">Apenas iguais</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Ordenar por</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as "recent" | "impact")}
+            >
+              <option value="recent">Mais recentes</option>
+              <option value="impact">Impacto da divergência</option>
+            </select>
+          </div>
           <div className="grid gap-1 md:col-span-2">
+
             <label className="text-xs text-muted-foreground">Protocolo, nome ou e-mail</label>
             <div className="flex gap-2">
               <Input
@@ -388,7 +457,7 @@ export function FormSubmissionsPanel() {
                 </tr>
               </thead>
               <tbody>
-                {!loading && rows.length === 0 && (
+                {!loading && visibleRows.length === 0 && (
                   <tr>
                     <td colSpan={compare ? 8 : 7} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
@@ -396,7 +465,7 @@ export function FormSubmissionsPanel() {
                   </tr>
                 )}
 
-                {rows.map((r) => (
+                {visibleRows.map((r) => (
                   <tr key={r.id} className="border-b border-border/60 last:border-0">
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
                     <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-foreground">{r.reference_id}</td>
