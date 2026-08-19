@@ -228,6 +228,22 @@ function HomePage() {
               <Button type="submit" size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Solicitar Demonstração"}
               </Button>
+              {lastStatus && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 p-3 text-left text-sm text-primary-foreground"
+                >
+                  <p className="font-medium">
+                    {lastStatus.success ? "Solicitação recebida" : "Envio não concluído"}
+                  </p>
+                  <p className="mt-1 text-primary-foreground/80">{lastStatus.message}</p>
+                  <p className="mt-2 text-xs text-primary-foreground/60">
+                    Status: {lastStatus.status}
+                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
+                  </p>
+                </div>
+              )}
             </form>
           </div>
         </div>
