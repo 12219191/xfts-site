@@ -205,6 +205,7 @@ export function FormSubmissionsPanel() {
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Protocolo</th>
                   <th className="px-4 py-3">Tela</th>
+                  <th className="px-4 py-3">Origem</th>
                   <th className="px-4 py-3">Contato</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Duração</th>
@@ -213,7 +214,7 @@ export function FormSubmissionsPanel() {
               <tbody>
                 {!loading && rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
                     </td>
                   </tr>
