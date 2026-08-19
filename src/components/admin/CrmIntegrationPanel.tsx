@@ -12,6 +12,8 @@ import {
   DEFAULT_CRM_SETTINGS,
   type CrmAuthMode,
   type CrmIntegrationSettings,
+  CRM_SIGNATURE_ENCODING_OPTIONS,
+  type CrmSignatureEncoding,
 } from "@/lib/crm-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -200,17 +202,38 @@ export function CrmIntegrationPanel() {
           </div>
 
           {form.auth_mode === "hmac" && (
-            <div className="grid gap-1">
-              <label className="text-xs text-muted-foreground">Header da assinatura</label>
-              <Input
-                value={form.signature_header}
-                onChange={(e) => patch({ signature_header: e.target.value })}
-              />
-              <p className="text-xs text-muted-foreground">
-                {hasServerKey
-                  ? "Usando a chave FLEXUS_APP_KEY_CRM do servidor quando o campo abaixo estiver vazio."
-                  : "Nenhuma chave de servidor detectada — informe o segredo abaixo."}
-              </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1">
+                <label className="text-xs text-muted-foreground">Header da assinatura</label>
+                <Input
+                  value={form.signature_header}
+                  onChange={(e) => patch({ signature_header: e.target.value })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {hasServerKey
+                    ? "Usando a chave FLEXUS_APP_KEY_CRM do servidor quando o campo abaixo estiver vazio."
+                    : "Nenhuma chave de servidor detectada — informe o segredo abaixo."}
+                </p>
+              </div>
+              <div className="grid gap-1">
+                <label className="text-xs text-muted-foreground">Formato da assinatura</label>
+                <select
+                  className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  value={form.signature_encoding}
+                  onChange={(e) =>
+                    patch({ signature_encoding: e.target.value as CrmSignatureEncoding })
+                  }
+                >
+                  {CRM_SIGNATURE_ENCODING_OPTIONS.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  O FLEXUS | CRM valida a assinatura em hexadecimal.
+                </p>
+              </div>
             </div>
           )}
 

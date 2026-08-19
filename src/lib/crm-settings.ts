@@ -5,6 +5,14 @@
 
 export type CrmAuthMode = "hmac" | "bearer" | "api_key" | "none";
 
+/** Formato da assinatura HMAC enviada no header. */
+export type CrmSignatureEncoding = "hex" | "base64url";
+
+export const CRM_SIGNATURE_ENCODING_OPTIONS: { id: CrmSignatureEncoding; label: string }[] = [
+  { id: "hex", label: "Hexadecimal (padrão do CRM)" },
+  { id: "base64url", label: "Base64 URL-safe" },
+];
+
 /** Campos internos disponíveis para mapeamento no payload enviado ao CRM. */
 export const CRM_SOURCE_FIELDS = [
   { id: "reference_id", label: "Protocolo" },
@@ -43,6 +51,8 @@ export interface CrmIntegrationSettings {
   auth_mode: CrmAuthMode;
   /** Header da assinatura HMAC (modo hmac). */
   signature_header: string;
+  /** Formato da assinatura HMAC (modo hmac). */
+  signature_encoding: CrmSignatureEncoding;
   /** Header usado nos modos bearer/api_key. */
   auth_header: string;
   /**
@@ -69,6 +79,7 @@ export const DEFAULT_CRM_SETTINGS: CrmIntegrationSettings = {
   lead_url: "",
   auth_mode: "hmac",
   signature_header: "x-flexus-signature",
+  signature_encoding: "hex",
   auth_header: "Authorization",
   auth_token: "",
   form_types: ["contato", "demo"],
@@ -111,6 +122,7 @@ export function normalizeCrmSettings(raw: unknown): CrmIntegrationSettings {
     signature_header:
       (typeof v.signature_header === "string" && v.signature_header.trim()) ||
       DEFAULT_CRM_SETTINGS.signature_header,
+    signature_encoding: v.signature_encoding === "base64url" ? "base64url" : "hex",
     auth_header:
       (typeof v.auth_header === "string" && v.auth_header.trim()) || DEFAULT_CRM_SETTINGS.auth_header,
     auth_token: typeof v.auth_token === "string" ? v.auth_token : "",

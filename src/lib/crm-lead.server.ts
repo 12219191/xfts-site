@@ -4,7 +4,7 @@
  * Canal servidor→servidor assinado com HMAC-SHA256 usando FLEXUS_APP_KEY_CRM,
  * no mesmo padrão do provisionamento (`provisioning.server.ts`).
  */
-import { appApiKey, signBody } from "@/lib/sso.server";
+import { appApiKey, signBody, signBodyHex } from "@/lib/sso.server";
 import { loadCrmSettings } from "@/lib/crm-settings.server";
 
 export type CrmLeadStatus = "created" | "updated" | "pending" | "failed" | "skipped";
@@ -108,7 +108,10 @@ export async function sendLeadToCrm(input: CrmLeadInput): Promise<CrmLeadResult>
   try {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (settings.auth_mode === "hmac") {
-      headers[settings.signature_header] = await signBody(secret, body);
+      headers[settings.signature_header] =
+        settings.signature_encoding === "base64url"
+          ? await signBody(secret, body)
+          : await signBodyHex(secret, body);
     } else if (settings.auth_mode === "bearer") {
       headers[settings.auth_header] = `Bearer ${secret}`;
     } else if (settings.auth_mode === "api_key") {
