@@ -12,6 +12,8 @@ import {
   DEFAULT_CRM_SETTINGS,
   type CrmAuthMode,
   type CrmIntegrationSettings,
+  CRM_SIGNATURE_ENCODING_OPTIONS,
+  type CrmSignatureEncoding,
 } from "@/lib/crm-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
