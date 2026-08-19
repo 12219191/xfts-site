@@ -9,6 +9,8 @@ import {
 } from "@/lib/attribution-settings.functions";
 import { setAttributionWindowDays } from "@/lib/attribution";
 import { LeadsByUtmReport } from "@/components/admin/LeadsByUtmReport";
+import { LeadsByPageCtaReport } from "@/components/admin/LeadsByPageCtaReport";
+import { PAGE_OPTIONS, pageNameBySlug } from "@/lib/page-registry";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,12 +23,6 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "Recusado",
   network_error: "Falha de conexão",
   not_configured: "Não configurado",
-};
-
-const TELA_LABEL: Record<string, string> = {
-  "/": "Home (Demo)",
-  "/contato": "Contato",
-  "/exclusao-de-dados": "Exclusão de Dados",
 };
 
 const BOTAO_LABEL: Record<string, string> = {
@@ -159,6 +155,8 @@ export function FormSubmissionsPanel() {
   const [to, setTo] = useState("");
   const [tela, setTela] = useState("");
   const [botao, setBotao] = useState("");
+  const [ctaPage, setCtaPage] = useState("");
+  const [ctaId, setCtaId] = useState("");
   const [utmSource, setUtmSource] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
@@ -201,6 +199,8 @@ export function FormSubmissionsPanel() {
           to: to || undefined,
           tela: tela || undefined,
           botao: botao || undefined,
+          cta_page: ctaPage || undefined,
+          cta_id: ctaId.trim() || undefined,
           utm_source: utmSource.trim() || undefined,
           utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
@@ -360,16 +360,21 @@ export function FormSubmissionsPanel() {
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
           <div className="grid gap-1">
-            <label className="text-xs text-muted-foreground">Tela</label>
+            <label className="text-xs text-muted-foreground">Página do formulário</label>
             <select
               className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
               value={tela}
               onChange={(e) => setTela(e.target.value)}
             >
               <option value="">Todas</option>
-              <option value="/">Home (Demo)</option>
-              <option value="/contato">Contato</option>
-              <option value="/exclusao-de-dados">Exclusão de Dados</option>
+              {PAGE_OPTIONS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+              <option value="/">Home (registros antigos)</option>
+              <option value="/contato">Contato (registros antigos)</option>
+              <option value="/exclusao-de-dados">Exclusão de Dados (registros antigos)</option>
             </select>
           </div>
           <div className="grid gap-1">
@@ -398,6 +403,30 @@ export function FormSubmissionsPanel() {
               <option value="contato_mensagem">Contato · Enviar mensagem</option>
               <option value="exclusao_dados">Exclusão · Enviar solicitação</option>
             </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Página do clique</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={ctaPage}
+              onChange={(e) => setCtaPage(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {PAGE_OPTIONS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Botão de origem (cta_id)</label>
+            <Input
+              placeholder="home.hero.demo"
+              value={ctaId}
+              onChange={(e) => setCtaId(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && load()}
+            />
           </div>
           <div className="grid gap-1">
             <label className="text-xs text-muted-foreground">utm_source</label>
@@ -460,6 +489,8 @@ export function FormSubmissionsPanel() {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
+      <LeadsByPageCtaReport rows={visibleRows} />
+
       <LeadsByUtmReport rows={visibleRows} model={model} />
 
       <Card className="border-border bg-card">
@@ -470,7 +501,8 @@ export function FormSubmissionsPanel() {
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Protocolo</th>
-                  <th className="px-4 py-3">Tela</th>
+                  <th className="px-4 py-3">Página do formulário</th>
+                  <th className="px-4 py-3">Botão de origem</th>
                   {compare ? (
                     <>
                       <th className="px-4 py-3">First-touch</th>
@@ -487,7 +519,7 @@ export function FormSubmissionsPanel() {
               <tbody>
                 {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={compare ? 8 : 7} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={compare ? 9 : 8} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum envio encontrado para esse filtro.
                     </td>
                   </tr>
@@ -498,7 +530,22 @@ export function FormSubmissionsPanel() {
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDate(r.created_at)}</td>
                     <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-foreground">{r.reference_id}</td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                      {TELA_LABEL[r.tela] ?? r.tela ?? "—"}
+                      {pageNameBySlug(r.tela)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="block text-xs font-medium text-foreground">
+                        {r.cta_label ?? (r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—")}
+                      </span>
+                      {r.cta_id && (
+                        <span className="block font-mono text-[11px] text-muted-foreground">
+                          {r.cta_id}
+                        </span>
+                      )}
+                      {r.cta_page && (
+                        <span className="block text-[11px] text-muted-foreground/80">
+                          clicou em: {pageNameBySlug(r.cta_page)}
+                        </span>
+                      )}
                     </td>
                     {compare ? (
                       <>
