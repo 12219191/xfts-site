@@ -60,7 +60,6 @@ function GestaoEsteticasPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick(label, "gestao-esteticas-pricing");
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -87,7 +86,7 @@ function GestaoEsteticasPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Estética e Bem-estar</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Gestão completa para clínicas de estética e salões de beleza.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-esteticas-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
             <AcessarSistemaButton app="estetica" size="lg" variant="heroOutline" />
           </div>
         </div>
@@ -116,7 +115,7 @@ function GestaoEsteticasPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para sua clínica ou rede.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="gestao-esteticas-pricing" onCheckout={handleCheckout} compareProduct="estetica" productName="FLEXUS | Estética" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="estetica" productName="FLEXUS | Estética" />
           </div>
         </div>
       </section>

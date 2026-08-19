@@ -64,7 +64,6 @@ function GestaoClinicaPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick(label, "gestao-clinica-pricing");
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -91,7 +90,7 @@ function GestaoClinicaPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Clínica Completo</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Sistema SaaS para otimizar agendamentos, prontuários e finanças da sua clínica.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-clinica-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
             <AcessarSistemaButton app="clinica" size="lg" variant="heroOutline" />
           </div>
         </div>
@@ -120,7 +119,7 @@ function GestaoClinicaPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para o seu consultório ou clínica.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="gestao-clinica-pricing" onCheckout={handleCheckout} compareProduct="clinica" productName="FLEXUS | Clínica" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="clinica" productName="FLEXUS | Clínica" />
           </div>
         </div>
       </section>

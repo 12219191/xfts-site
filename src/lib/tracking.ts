@@ -1,3 +1,5 @@
+import { currentPage, resolvePage } from "@/lib/page-registry";
+
 // Utility for firing tracking events across GTM/GA4 and Meta Pixel
 // Replace placeholder IDs in __root.tsx when you have real ones.
 
@@ -28,13 +30,124 @@ function pushMeta(event: string, params?: Record<string, unknown>) {
   }
 }
 
-/** Track a CTA button click */
-export function trackCTAClick(label: string, location: string) {
-  const params = { cta_label: label, cta_location: location };
+export type CtaClick = {
+  /** identificador canônico: pagina.secao.acao */
+  cta_id: string;
+  /** texto visível do botão */
+  cta_label: string;
+  /** slug canônico da página onde o clique ocorreu */
+  cta_page: string;
+  /** nome legível da página */
+  cta_page_name: string;
+  /** seção da página (hero, pricing, header, footer...) */
+  cta_section: string;
+  /** destino do clique (rota ou URL), quando informado */
+  cta_destination?: string;
+  ts: number;
+};
+
+const LAST_CTA_KEY = "xfts_last_cta";
+
+function slugify(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/** Último CTA clicado nesta sessão (usado para atribuir formulários). */
+export function getLastCtaClick(): CtaClick | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(LAST_CTA_KEY);
+    return raw ? (JSON.parse(raw) as CtaClick) : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeLastCta(click: CtaClick) {
+  try {
+    sessionStorage.setItem(LAST_CTA_KEY, JSON.stringify(click));
+  } catch {
+    /* storage indisponível */
+  }
+}
+
+type CtaInput = {
+  /** seção da página: hero, pricing, header, footer, cards... */
+  section: string;
+  /** ação/destino curto: demo, contato, assinar-pro, card-crm... */
+  action?: string;
+  /** texto visível do botão */
+  label: string;
+  /** rota ou URL de destino */
+  destination?: string;
+  /** sobrescreve o slug da página (raro) */
+  page?: string;
+};
+
+/**
+ * Registra o clique de um CTA com nomenclatura padronizada `pagina.secao.acao`.
+ * Aceita também a forma antiga `trackCTAClick(label, location)`.
+ */
+export function trackCTAClick(input: CtaInput | string, legacyLocation?: string) {
+  let section: string;
+  let action: string;
+  let label: string;
+  let destination: string | undefined;
+  let pageSlug: string;
+  let pageName: string;
+
+  const page = typeof window === "undefined" ? resolvePage("/") : currentPage();
+
+  if (typeof input === "string") {
+    label = input;
+    section = legacyLocation ?? "desconhecida";
+    action = slugify(input);
+    pageSlug = page.slug;
+    pageName = page.name;
+  } else {
+    label = input.label;
+    section = input.section;
+    action = input.action ?? slugify(input.label);
+    destination = input.destination;
+    pageSlug = input.page ?? page.slug;
+    pageName = input.page ? input.page : page.name;
+  }
+
+  const ctaId = `${pageSlug}.${slugify(section)}.${slugify(action)}`;
+  const click: CtaClick = {
+    cta_id: ctaId,
+    cta_label: label,
+    cta_page: pageSlug,
+    cta_page_name: pageName,
+    cta_section: section,
+    cta_destination: destination,
+    ts: Date.now(),
+  };
+
+  storeLastCta(click);
+
+  const params = {
+    cta_id: ctaId,
+    cta_label: label,
+    cta_page: pageSlug,
+    cta_page_name: pageName,
+    cta_section: section,
+    cta_destination: destination ?? "",
+    // compatibilidade com relatórios antigos
+    cta_location: `${pageSlug}-${slugify(section)}`,
+  };
   pushGTM("cta_click", params);
   pushGA4("cta_click", params);
-  pushMeta("Lead", { content_name: label, content_category: location });
+  pushMeta("Lead", { content_name: label, content_category: ctaId });
 }
+
 
 /** Track a "Saiba Mais" / product link click */
 export function trackProductClick(productName: string) {

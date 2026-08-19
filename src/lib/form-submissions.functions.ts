@@ -7,6 +7,8 @@ const filterSchema = z.object({
   to: z.string().max(40).optional(),
   tela: z.string().max(120).optional(),
   botao: z.string().max(80).optional(),
+  cta_page: z.string().max(80).optional(),
+  cta_id: z.string().max(120).optional(),
   utm_source: z.string().max(160).optional(),
   utm_campaign: z.string().max(160).optional(),
   status: z.string().max(40).optional(),
@@ -34,6 +36,9 @@ export type FormSubmissionRow = {
   mensagem: string | null;
   source: string | null;
   botao: string | null;
+  cta_id: string | null;
+  cta_label: string | null;
+  cta_page: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
@@ -70,6 +75,8 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.to) query = query.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     if (data.tela) query = query.eq("tela", data.tela);
     if (data.botao) query = query.eq("botao", data.botao);
+    if (data.cta_page) query = query.eq("cta_page", data.cta_page);
+    if (data.cta_id) query = query.eq("cta_id", data.cta_id);
     const prefix = data.model === "last" ? "lt_" : "";
     if (data.utm_source) query = query.ilike(`${prefix}utm_source`, data.utm_source);
     if (data.utm_campaign) query = query.ilike(`${prefix}utm_campaign`, data.utm_campaign);
@@ -77,7 +84,7 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.search) {
       const term = `%${data.search}%`;
       query = query.or(
-        `reference_id.ilike.${term},email.ilike.${term},nome.ilike.${term}`
+        `reference_id.ilike.${term},email.ilike.${term},nome.ilike.${term},cta_id.ilike.${term},cta_label.ilike.${term}`
       );
     }
 

@@ -72,7 +72,6 @@ function FlexusCasa360Page() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick(label, "flexus-casa360-pricing");
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -101,7 +100,7 @@ function FlexusCasa360Page() {
             Estoque, compras e finanças da sua casa em um só lugar. Sozinho, com quem mora com você ou com a família toda.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Começar Grátis", "flexus-casa360-hero")}>Começar Grátis <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick({ section: "hero", label: "Começar Grátis" })}>Começar Grátis <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
             <AcessarSistemaButton app="casa360" size="lg" variant="heroOutline" />
           </div>
         </div>
@@ -147,7 +146,7 @@ function FlexusCasa360Page() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para a sua casa.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="flexus-casa360-pricing" onCheckout={handleCheckout} compareProduct="casa360" productName="FLEXUS | Casa360°" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="casa360" productName="FLEXUS | Casa360°" />
           </div>
         </div>
       </section>

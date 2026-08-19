@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
+import { trackCTAClick } from "@/lib/tracking";
 
 
 export function Header() {
@@ -27,7 +28,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm">
       <div className="container-wide flex h-16 items-center justify-between px-4 md:px-8">
-        <Link to="/" className="flex items-center" aria-label="XFTS Inteligência Analítica - Home">
+        <Link
+          to="/"
+          className="flex items-center"
+          aria-label="XFTS Inteligência Analítica - Home"
+          onClick={() => trackCTAClick({ section: "header", action: "logo", label: "Logo XFTS", destination: "/" })}
+        >
           <Logo size={32} compactSubtitle />
         </Link>
 
@@ -39,6 +45,9 @@ export function Header() {
               to={link.to}
               className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
               activeProps={{ className: "text-sm font-medium text-primary" }}
+              onClick={() =>
+                trackCTAClick({ section: "header-nav", label: link.label, destination: link.to })
+              }
             >
               {link.label}
             </Link>
@@ -50,6 +59,9 @@ export function Header() {
                 to="/minha-conta"
                 className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
                 activeProps={{ className: "text-sm font-medium text-primary" }}
+                onClick={() =>
+                  trackCTAClick({ section: "header", action: "minha-conta", label: "Minha Conta", destination: "/minha-conta" })
+                }
               >
                 <span className="inline-flex items-center gap-1.5">
                   <User className="h-4 w-4" />
@@ -61,12 +73,12 @@ export function Header() {
               </Button>
             </>
           ) : !loading ? (
-            <Link to="/login">
+            <Link to="/login" onClick={() => trackCTAClick({ section: "header", action: "login", label: "Login", destination: "/login" })}>
               <Button variant="outline" size="sm">Login</Button>
             </Link>
           ) : null}
 
-          <Link to="/contato">
+          <Link to="/contato" onClick={() => trackCTAClick({ section: "header", action: "demo", label: "Solicite Demo", destination: "/contato" })}>
             <Button className="bg-cta text-cta-foreground hover:bg-cta/90">Solicite Demo</Button>
           </Link>
         </nav>
@@ -85,7 +97,10 @@ export function Header() {
                 to={link.to}
                 className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
                 activeProps={{ className: "text-sm font-medium text-primary" }}
-                onClick={() => setMobileOpen(false)}
+                onClick={() => {
+                  trackCTAClick({ section: "header-mobile-nav", label: link.label, destination: link.to });
+                  setMobileOpen(false);
+                }}
               >
                 {link.label}
               </Link>
@@ -109,12 +124,24 @@ export function Header() {
                 </button>
               </>
             ) : !loading ? (
-              <Link to="/login" onClick={() => setMobileOpen(false)}>
+              <Link
+                to="/login"
+                onClick={() => {
+                  trackCTAClick({ section: "header-mobile", action: "login", label: "Login", destination: "/login" });
+                  setMobileOpen(false);
+                }}
+              >
                 <Button variant="outline" size="sm" className="w-full">Login</Button>
               </Link>
             ) : null}
 
-            <Link to="/contato" onClick={() => setMobileOpen(false)}>
+            <Link
+              to="/contato"
+              onClick={() => {
+                trackCTAClick({ section: "header-mobile", action: "demo", label: "Solicite Demo", destination: "/contato" });
+                setMobileOpen(false);
+              }}
+            >
               <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90">Solicite Demo</Button>
             </Link>
           </nav>
