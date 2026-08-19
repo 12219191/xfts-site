@@ -180,11 +180,27 @@ export function FormSubmissionsPanel() {
   }, []);
 
 
+  const visibleRows = useMemo(() => {
+    let list = rows;
+    if (divergence === "diff") list = list.filter((r) => isDifferent(r));
+    if (divergence === "same") list = list.filter((r) => !isDifferent(r));
+    if (sort === "impact") {
+      list = [...list].sort((a, b) => {
+        const d = impactScore(b) - impactScore(a);
+        if (d !== 0) return d;
+        return b.created_at.localeCompare(a.created_at);
+      });
+    }
+    return list;
+  }, [rows, divergence, sort]);
+
   const kpis = useMemo(() => {
-    const total = rows.length;
-    const ok = rows.filter((r) => r.status === "sent").length;
-    return { total, ok, fail: total - ok };
-  }, [rows]);
+    const total = visibleRows.length;
+    const ok = visibleRows.filter((r) => r.status === "sent").length;
+    const diff = visibleRows.filter((r) => isDifferent(r)).length;
+    return { total, ok, fail: total - ok, diff };
+  }, [visibleRows]);
+
 
   return (
     <div className="space-y-6">
