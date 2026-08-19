@@ -142,9 +142,11 @@ export const changePlan = createServerFn({ method: "POST" })
           return {
             ok: true,
             applied: "immediate",
+            appliedPriceId: data.targetPriceId,
             message: "Upgrade aplicado agora. A diferença foi cobrada de forma proporcional.",
           };
         }
+
 
         // Downgrade: agenda a troca para o próximo ciclo.
         const schedule = await stripe.subscriptionSchedules.create({
