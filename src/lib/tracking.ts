@@ -1,3 +1,5 @@
+import { currentPage, resolvePage } from "@/lib/page-registry";
+
 // Utility for firing tracking events across GTM/GA4 and Meta Pixel
 // Replace placeholder IDs in __root.tsx when you have real ones.
 
@@ -94,10 +96,6 @@ type CtaInput = {
  * Aceita também a forma antiga `trackCTAClick(label, location)`.
  */
 export function trackCTAClick(input: CtaInput | string, legacyLocation?: string) {
-  // Import dinâmico evitado: registry é puro e leve.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { currentPage, resolvePage } = registry;
-
   let section: string;
   let action: string;
   let label: string;
