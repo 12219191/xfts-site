@@ -127,8 +127,20 @@ function RootComponent() {
   usePageTracking();
   const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
-    captureAttribution();
+    let cancelled = false;
+    getAttributionWindow()
+      .then((res) => {
+        if (!cancelled) setAttributionWindowDays(res.window_days);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) captureAttribution();
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [href]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <PaymentTestModeBanner />
