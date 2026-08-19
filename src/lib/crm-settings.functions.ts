@@ -8,6 +8,7 @@ const settingsSchema = z.object({
   lead_url: z.string().max(500),
   auth_mode: z.enum(["hmac", "bearer", "api_key", "none"]),
   signature_header: z.string().max(80),
+  signature_encoding: z.enum(["hex", "base64url"]).default("hex"),
   auth_header: z.string().max(80),
   auth_token: z.string().max(500),
   form_types: z.array(z.string().max(40)).max(10),
