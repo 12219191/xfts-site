@@ -1,10 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
+import { friendlyStripeError } from "@/lib/subscriptions.server";
+import { DEMO_MESSAGE, isRealStripeId } from "@/lib/subscription-guards";
 
 type ActionResult = { ok: true; message: string } | { error: string };
 
@@ -29,6 +27,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -47,7 +46,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
         message: "Cancelamento agendado. Você mantém o acesso até o fim do período pago.",
       };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });
 
@@ -67,6 +66,7 @@ export const reactivateSubscription = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -79,7 +79,7 @@ export const reactivateSubscription = createServerFn({ method: "POST" })
         .eq("stripe_subscription_id", sub.stripe_subscription_id);
       return { ok: true, message: "Assinatura reativada com sucesso." };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });
 
@@ -112,6 +112,7 @@ export const changePlan = createServerFn({ method: "POST" })
         .maybeSingle();
 
       if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
+      if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
 
       try {
         const stripe = createStripeClient(data.environment);
@@ -175,7 +176,7 @@ export const changePlan = createServerFn({ method: "POST" })
             "Downgrade agendado. Ele entra em vigor na próxima renovação, sem perda do período já pago.",
         };
       } catch (error) {
-        return { error: getStripeErrorMessage(error) };
+        return { error: friendlyStripeError(error) };
       }
     },
   );
@@ -199,6 +200,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
       .maybeSingle();
 
     if (!sub?.stripe_customer_id) return { error: "Nenhuma assinatura encontrada" };
+    if (!isRealStripeId(sub.stripe_customer_id, "cus_")) return { error: DEMO_MESSAGE };
 
     try {
       const stripe = createStripeClient(data.environment);
@@ -208,6 +210,6 @@ export const createPortalSession = createServerFn({ method: "POST" })
       });
       return { url: portal.url };
     } catch (error) {
-      return { error: getStripeErrorMessage(error) };
+      return { error: friendlyStripeError(error) };
     }
   });

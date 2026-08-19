@@ -8,6 +8,7 @@ import {
   changePlan,
   createPortalSession,
 } from "@/lib/subscriptions.functions";
+import { isRealStripeId } from "@/lib/subscription-guards";
 import {
   planTierFromPriceId,
   seatsFromPriceId,
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/minha-conta")({
 
 interface SubscriptionRow {
   id: string;
+  stripe_customer_id: string | null;
   status: string;
   product_id: string;
   price_id: string;
@@ -265,6 +267,8 @@ function MinhaContaPage() {
     : null;
   const currentPlan = currentPlanKey ? planMap[currentPlanKey] : null;
 
+  const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
+
   const initials = user.email
     .split("@")[0]
     .slice(0, 2)
@@ -352,7 +356,7 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {currentPlanKey === "basico" && (
+                  {hasRealBilling && currentPlanKey === "basico" && (
                     <Card
                       className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
                       onClick={() => {
@@ -377,7 +381,7 @@ function MinhaContaPage() {
                     </Card>
                   )}
 
-                  {currentPlanKey === "pro" && (
+                  {hasRealBilling && currentPlanKey === "pro" && (
                     <Card
                       className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
                       onClick={() => {
@@ -431,7 +435,7 @@ function MinhaContaPage() {
                         faça upgrade de plano.
                       </p>
                     </div>
-                    {currentPlanKey === "basico" && (
+                    {hasRealBilling && currentPlanKey === "basico" && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -447,6 +451,7 @@ function MinhaContaPage() {
                 </Card>
 
                 {/* Portal de cobrança do Stripe */}
+                {hasRealBilling ? (
                 <Card className="mt-4 border-border">
                   <CardContent className="flex flex-wrap items-center gap-4 p-5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
@@ -470,11 +475,17 @@ function MinhaContaPage() {
                     </Button>
                   </CardContent>
                 </Card>
+                ) : (
+                  <div className="mt-4 rounded-xl border border-dashed border-border bg-muted/20 p-5 text-sm text-muted-foreground">
+                    Assinatura de demonstração — o portal de cobrança, a troca de plano e o
+                    cancelamento ficam disponíveis após uma compra real.
+                  </div>
+                )}
 
 
 
                 {/* Cancel / reactivate */}
-                {subscription.cancel_at_period_end ? (
+                {!hasRealBilling ? null : subscription.cancel_at_period_end ? (
                   <div className="mt-6 rounded-xl border border-gold-deep/40 bg-gold/5 p-5">
                     <div className="flex items-center justify-between gap-4">
                       <div>
