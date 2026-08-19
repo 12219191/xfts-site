@@ -274,6 +274,27 @@ function MinhaContaPage() {
   };
   const currentPlan = currentPlanKey ? planInfo(currentPlanKey) : null;
 
+  const TIER_ORDER: TierKey[] = ["basico", "pro", "enterprise"];
+  /** Trocas possíveis dentro do mesmo sistema (só planos com preço cadastrado). */
+  const changeOptions = currentPlanKey
+    ? plansForCurrentApp
+        .filter(
+          (p) =>
+            p.tier !== currentPlanKey &&
+            (interval === "anual" ? p.annualPriceId ?? p.priceId : p.priceId),
+        )
+        .map((p) => ({
+          tier: p.tier,
+          name: p.name,
+          isUpgrade: TIER_ORDER.indexOf(p.tier) > TIER_ORDER.indexOf(currentPlanKey),
+        }))
+    : [];
+  const upgradeOption = changeOptions.find((o) => o.isUpgrade);
+  const changeIsUpgrade =
+    TIER_ORDER.indexOf(upgradeTo) > TIER_ORDER.indexOf(currentPlanKey ?? "basico");
+
+
+
 
   const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
 
