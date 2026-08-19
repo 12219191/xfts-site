@@ -57,6 +57,9 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.from) query = query.gte("created_at", new Date(`${data.from}T00:00:00`).toISOString());
     if (data.to) query = query.lte("created_at", new Date(`${data.to}T23:59:59`).toISOString());
     if (data.tela) query = query.eq("tela", data.tela);
+    if (data.botao) query = query.eq("botao", data.botao);
+    if (data.utm_source) query = query.ilike("utm_source", data.utm_source);
+    if (data.utm_campaign) query = query.ilike("utm_campaign", data.utm_campaign);
     if (data.status) query = query.eq("status", data.status);
     if (data.search) {
       const term = `%${data.search}%`;
