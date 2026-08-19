@@ -1,4 +1,5 @@
 import { sendZapierWebhook, type ZapierResult } from "@/lib/zapier.functions";
+import { getAttribution } from "@/lib/attribution";
 
 export type { ZapierResult };
 
@@ -12,19 +13,23 @@ export function formatSentAt(iso: string): string {
 
 export async function sendToZapier(
   data: Record<string, string>,
-  formType: "contato" | "demo"
+  formType: "contato" | "demo",
+  botao?: string
 ): Promise<ZapierResult> {
   const startedAt = Date.now();
   try {
+    const attribution = getAttribution();
     const result = await sendZapierWebhook({
       data: {
         ...data,
+        ...attribution,
         form_type: formType,
+        botao: botao ?? "",
         tela: typeof window === "undefined" ? "" : window.location.pathname,
         source: typeof window === "undefined" ? "" : window.location.origin,
       },
     });
-    console.log("[form:submit]", { formType, ...result });
+    console.log("[form:submit]", { formType, botao, ...result });
     return result;
   } catch (error) {
     const failure: ZapierResult = {
@@ -36,7 +41,7 @@ export async function sendToZapier(
       status: "network_error",
       durationMs: Date.now() - startedAt,
     };
-    console.error("[form:submit] falha", { formType, error, ...failure });
+    console.error("[form:submit] falha", { formType, botao, error, ...failure });
     return failure;
   }
 }
