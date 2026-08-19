@@ -111,29 +111,63 @@ function MinhaContaPage() {
     ? getFlexusApp(appKeyFromPriceId(subscription.price_id) ?? "")?.name ?? "FLEXUS"
     : "FLEXUS";
 
-  const fetchSubscription = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("environment", env)
-      .order("created_at", { ascending: false });
-    const rows = (data as SubscriptionRow[]) ?? [];
-    setSubscriptions(rows);
-    setSelectedSubId((prev) =>
-      prev && rows.some((r) => r.stripe_subscription_id === prev)
-        ? prev
-        : rows[0]?.stripe_subscription_id ?? null,
-    );
-    setAllSubscriptions(
-      rows.map((r) => ({
-        price_id: r.price_id,
-        status: r.status,
-        current_period_end: r.current_period_end,
-        cancel_at_period_end: r.cancel_at_period_end,
-      })),
-    );
-  }, [env]);
+  const fetchSubscription = useCallback(
+    async (userId: string) => {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("environment", env)
+        .order("created_at", { ascending: false });
+      const rows = (data as SubscriptionRow[]) ?? [];
+      setSubscriptions(rows);
+      setSelectedSubId((prev) =>
+        prev && rows.some((r) => r.stripe_subscription_id === prev)
+          ? prev
+          : rows[0]?.stripe_subscription_id ?? null,
+      );
+      setAllSubscriptions(
+        rows.map((r) => ({
+          price_id: r.price_id,
+          status: r.status,
+          current_period_end: r.current_period_end,
+          cancel_at_period_end: r.cancel_at_period_end,
+        })),
+      );
+      return rows;
+    },
+    [env],
+  );
+
+  /**
+   * A troca de plano é confirmada pelo provedor de pagamento por webhook, que
+   * chega alguns segundos depois. Atualizamos o plano na tela na hora e
+   * seguimos consultando até o banco confirmar, para nunca exibir o plano antigo.
+   */
+  const confirmPlanChange = useCallback(
+    async (userId: string, subId: string, appliedPriceId: string) => {
+      setSubscriptions((prev) =>
+        prev.map((s) =>
+          s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
+        ),
+      );
+      
+      for (const delay of [2000, 4000, 8000]) {
+        await new Promise((r) => setTimeout(r, delay));
+        const rows = await fetchSubscription(userId);
+        const row = rows.find((r) => r.stripe_subscription_id === subId);
+        if (row?.price_id === appliedPriceId) return;
+        // Enquanto o banco não confirma, mantém o plano novo visível.
+        setSubscriptions((prev) =>
+          prev.map((s) =>
+            s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
+          ),
+        );
+      }
+    },
+    [fetchSubscription],
+  );
+
 
   useEffect(() => {
     async function load() {
@@ -223,12 +257,32 @@ function MinhaContaPage() {
 
   const handleChangePlan = async () => {
     const target = targetPriceId(upgradeTo);
-    if (!target) return;
+    if (!target || !subscriptionId) return;
     setShowUpgrade(false);
-    await runAction(() =>
-      changePlan({ data: { environment: env, subscriptionId, targetPriceId: target } }),
-    );
+    setActionLoading(true);
+    try {
+      const result = await changePlan({
+        data: { environment: env, subscriptionId, targetPriceId: target },
+      });
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(result.message);
+      if (user) {
+        if (result.applied === "immediate" && result.appliedPriceId) {
+          await confirmPlanChange(user.id, subscriptionId, result.appliedPriceId);
+        } else {
+          await fetchSubscription(user.id);
+        }
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível concluir a operação.");
+    } finally {
+      setActionLoading(false);
+    }
   };
+
 
 
   if (loading) {
@@ -492,14 +546,17 @@ function MinhaContaPage() {
                     <div className="min-w-[12rem] flex-1">
                       <p className="font-semibold text-foreground">Usuários do plano</p>
                       <p className="text-xs text-muted-foreground">
-                        {seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano{" "}
-                        {planTierFromPriceId(subscription.price_id)} (
-                        {billingIntervalFromPriceId(subscription.price_id)}).{" "}
+                        {seatsFromPriceId(subscription.price_id) === null
+                          ? `Usuários ilimitados no plano ${planTierFromPriceId(subscription.price_id)} (${billingIntervalFromPriceId(subscription.price_id)}).`
+                          : `${seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano ${planTierFromPriceId(subscription.price_id)} (${billingIntervalFromPriceId(subscription.price_id)}).`}{" "}
                         {subscription.seats_used !== null
                           ? `Em uso hoje: ${subscription.seats_used}.`
-                          : "Uso ainda não reportado pelo sistema."}{" "}
-                        Para liberar mais usuários, faça upgrade de plano.
+                          : `O ${systemName} ainda não informou quantos usuários estão ativos.`}{" "}
+                        {upgradeOption
+                          ? `Para liberar mais usuários, faça upgrade para o ${upgradeOption.name}.`
+                          : "Este é o plano com o maior limite de usuários disponível."}
                       </p>
+
                     </div>
                     {hasRealBilling && upgradeOption && (
                       <Button

@@ -91,8 +91,10 @@ export const changePlan = createServerFn({ method: "POST" })
       data,
       context,
     }): Promise<
-      { ok: true; message: string; applied: "immediate" | "scheduled" } | { error: string }
+      | { ok: true; message: string; applied: "immediate" | "scheduled"; appliedPriceId?: string }
+      | { error: string }
     > => {
+
       const { supabase, userId } = context;
       const sub = await resolveSubscription(
         supabase,
@@ -140,9 +142,11 @@ export const changePlan = createServerFn({ method: "POST" })
           return {
             ok: true,
             applied: "immediate",
+            appliedPriceId: data.targetPriceId,
             message: "Upgrade aplicado agora. A diferença foi cobrada de forma proporcional.",
           };
         }
+
 
         // Downgrade: agenda a troca para o próximo ciclo.
         const schedule = await stripe.subscriptionSchedules.create({
