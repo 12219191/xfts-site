@@ -1,5 +1,27 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import {
+  normalizeClickId,
+  normalizeUrlValue,
+  normalizeUtmValue,
+} from "@/lib/utm-normalize";
+
+const utmField = z
+  .string()
+  .max(300)
+  .optional()
+  .transform((v) => normalizeUtmValue(v));
+const clickIdField = z
+  .string()
+  .max(400)
+  .optional()
+  .transform((v) => normalizeClickId(v));
+const urlField = z
+  .string()
+  .max(600)
+  .optional()
+  .transform((v) => normalizeUrlValue(v));
+
 
 const payloadSchema = z.object({
   form_type: z.enum(["contato", "demo"]),
