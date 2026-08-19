@@ -1,30 +1,35 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
-import { supabase } from "@/integrations/supabase/client";
+import { createCheckoutSession } from "@/lib/checkout.functions";
 
 interface StripeEmbeddedCheckoutProps {
   priceId: string;
   quantity?: number;
-  customerEmail?: string;
-  userId?: string;
   returnUrl?: string;
 }
 
 export function StripeEmbeddedCheckout({
   priceId,
   quantity,
-  customerEmail,
-  userId,
   returnUrl,
 }: StripeEmbeddedCheckoutProps) {
   const fetchClientSecret = async (): Promise<string> => {
-    const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { priceId, quantity, customerEmail, userId, returnUrl, environment: getStripeEnvironment() },
+    const fallbackReturn =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`
+        : undefined;
+
+    const result = await createCheckoutSession({
+      data: {
+        priceId,
+        quantity,
+        returnUrl: returnUrl ?? fallbackReturn,
+        environment: getStripeEnvironment() as "sandbox" | "live",
+      },
     });
-    if (error || !data?.clientSecret) {
-      throw new Error(error?.message || "Failed to create checkout session");
-    }
-    return data.clientSecret;
+
+    if ("error" in result) throw new Error(result.error);
+    return result.clientSecret;
   };
 
   return (

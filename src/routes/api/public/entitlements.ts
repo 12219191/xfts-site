@@ -47,12 +47,20 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
-          .select("price_id, status, current_period_end, cancel_at_period_end")
+          .select("price_id, status, current_period_end, cancel_at_period_end, seats_used")
           .eq("user_id", userId)
           .order("created_at", { ascending: false });
 
         const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
-        if (!sub) return json({ ativo: false, status: "none", plano: null, papel: "owner", limite_usuarios: 0 });
+        if (!sub)
+          return json({
+            ativo: false,
+            status: "none",
+            plano: null,
+            papel: "owner",
+            limite_usuarios: 0,
+            usuarios_em_uso: 0,
+          });
 
         const periodOk =
           !sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
@@ -65,9 +73,11 @@ export const Route = createFileRoute("/api/public/entitlements")({
           plano: planTierFromPriceId(sub.price_id),
           papel: "owner",
           limite_usuarios: ativo ? seatsFromPriceId(sub.price_id) : 0,
+          usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
         });
+
       },
     },
   },

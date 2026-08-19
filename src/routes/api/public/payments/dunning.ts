@@ -1,22 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Executa a régua de cobrança (e-mails D+3/D+5 e bloqueio ao fim da carência).
- * Chamado por agendamento externo com o header `x-flexus-key`.
+ * Executa a régua de cobrança (e-mails D+1/D+3/D+5 e bloqueio ao fim da carência).
+ *
+ * Autenticação aceita:
+ * - `x-cron-key`: chave do agendamento automático (validada no banco);
+ * - `x-flexus-key`: segredo compartilhado, para disparo manual/administrativo.
  */
 export const Route = createFileRoute("/api/public/payments/dunning")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = process.env["FLEXUS_SSO_SECRET"];
-        const provided = request.headers.get("x-flexus-key") ?? "";
-        const { safeEqual } = await import("@/lib/sso.server");
-        if (!key || !provided || !safeEqual(provided, key)) {
-          return new Response(JSON.stringify({ error: "unauthorized" }), {
+        const unauthorized = () =>
+          new Response(JSON.stringify({ error: "unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },
           });
+
+        const cronKey = request.headers.get("x-cron-key") ?? "";
+        const flexusKey = request.headers.get("x-flexus-key") ?? "";
+
+        let authorized = false;
+
+        if (cronKey) {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data } = await supabaseAdmin.rpc("verify_cron_key", {
+            _name: "dunning",
+            _value: cronKey,
+          });
+          authorized = data === true;
         }
+
+        if (!authorized && flexusKey) {
+          const secret = process.env["FLEXUS_SSO_SECRET"];
+          const { safeEqual } = await import("@/lib/sso.server");
+          authorized = Boolean(secret) && safeEqual(flexusKey, secret!);
+        }
+
+        if (!authorized) return unauthorized();
 
         const { runDunningSweep } = await import("@/lib/dunning.server");
         const result = await runDunningSweep();
@@ -25,3 +46,4 @@ export const Route = createFileRoute("/api/public/payments/dunning")({
     },
   },
 });
+

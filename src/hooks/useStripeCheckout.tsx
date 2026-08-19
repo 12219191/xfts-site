@@ -7,8 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 interface CheckoutOptions {
   priceId: string;
   quantity?: number;
-  customerEmail?: string;
-  userId?: string;
   returnUrl?: string;
 }
 
@@ -36,11 +34,7 @@ export function useStripeCheckout() {
         return;
       }
 
-      setOptions({
-        ...opts,
-        userId: user.id,
-        customerEmail: opts.customerEmail ?? user.email ?? undefined,
-      });
+      setOptions(opts);
       setIsOpen(true);
     },
     [navigate],
