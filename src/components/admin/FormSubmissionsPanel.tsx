@@ -11,6 +11,7 @@ import { setAttributionWindowDays } from "@/lib/attribution";
 import { LeadsByUtmReport } from "@/components/admin/LeadsByUtmReport";
 import { LeadsByPageCtaReport } from "@/components/admin/LeadsByPageCtaReport";
 import { PAGE_OPTIONS, pageNameBySlug } from "@/lib/page-registry";
+import { PLACEMENT_LABEL, type CtaPlacement } from "@/lib/tracking";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -157,6 +158,7 @@ export function FormSubmissionsPanel() {
   const [botao, setBotao] = useState("");
   const [ctaPage, setCtaPage] = useState("");
   const [ctaId, setCtaId] = useState("");
+  const [ctaPlacement, setCtaPlacement] = useState("");
   const [utmSource, setUtmSource] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
@@ -201,6 +203,7 @@ export function FormSubmissionsPanel() {
           botao: botao || undefined,
           cta_page: ctaPage || undefined,
           cta_id: ctaId.trim() || undefined,
+          cta_placement: ctaPlacement || undefined,
           utm_source: utmSource.trim() || undefined,
           utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
@@ -420,6 +423,21 @@ export function FormSubmissionsPanel() {
             </select>
           </div>
           <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Tipo de clique</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={ctaPlacement}
+              onChange={(e) => setCtaPlacement(e.target.value)}
+            >
+              <option value="">Todos</option>
+              {Object.entries(PLACEMENT_LABEL).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="grid gap-1">
             <label className="text-xs text-muted-foreground">Botão de origem (cta_id)</label>
             <Input
               placeholder="home.hero.demo"
@@ -540,6 +558,11 @@ export function FormSubmissionsPanel() {
                         <span className="block font-mono text-[11px] text-muted-foreground">
                           {r.cta_id}
                         </span>
+                      )}
+                      {r.cta_placement && (
+                        <Badge variant="outline" className="mt-1">
+                          {PLACEMENT_LABEL[r.cta_placement as CtaPlacement] ?? r.cta_placement}
+                        </Badge>
                       )}
                       {r.cta_page && (
                         <span className="block text-[11px] text-muted-foreground/80">

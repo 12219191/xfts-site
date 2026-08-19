@@ -5,12 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { pageNameBySlug } from "@/lib/page-registry";
+import { PLACEMENT_LABEL, type CtaPlacement } from "@/lib/tracking";
 
 type Group = { key: string; label: string; detail: string; total: number; sent: number };
 
 function aggregate(
   rows: FormSubmissionRow[],
-  mode: "page" | "cta" | "form-page"
+  mode: "page" | "cta" | "form-page" | "placement"
 ): Group[] {
   const map = new Map<string, Group>();
   for (const r of rows) {
@@ -22,6 +23,12 @@ function aggregate(
       key = r.cta_page ?? "(sem clique rastreado)";
       label = r.cta_page ? pageNameBySlug(r.cta_page) : "Sem clique rastreado";
       detail = r.cta_page ?? "—";
+    } else if (mode === "placement") {
+      key = r.cta_placement ?? "(sem clique rastreado)";
+      label = r.cta_placement
+        ? PLACEMENT_LABEL[r.cta_placement as CtaPlacement] ?? r.cta_placement
+        : "Sem clique rastreado";
+      detail = r.cta_placement ?? "—";
     } else if (mode === "cta") {
       key = r.cta_id ?? "(sem clique rastreado)";
       label = r.cta_label ?? "Sem clique rastreado";
@@ -104,6 +111,7 @@ export function LeadsByPageCtaReport({ rows }: { rows: FormSubmissionRow[] }) {
   const byClickPage = useMemo(() => aggregate(rows, "page"), [rows]);
   const byCta = useMemo(() => aggregate(rows, "cta"), [rows]);
   const byFormPage = useMemo(() => aggregate(rows, "form-page"), [rows]);
+  const byPlacement = useMemo(() => aggregate(rows, "placement"), [rows]);
 
   const exportCsv = () => {
     const lines = [["dimensao", "nome", "identificador", "leads", "entregues"].join(";")];
@@ -113,6 +121,7 @@ export function LeadsByPageCtaReport({ rows }: { rows: FormSubmissionRow[] }) {
       }
     };
     push("pagina_do_clique", byClickPage);
+    push("tipo_de_clique", byPlacement);
     push("botao", byCta);
     push("pagina_do_formulario", byFormPage);
 
@@ -138,7 +147,13 @@ export function LeadsByPageCtaReport({ rows }: { rows: FormSubmissionRow[] }) {
           <Download className="mr-2 h-4 w-4" /> Exportar CSV
         </Button>
       </div>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        <GroupTable
+          title="Tipo de clique"
+          subtitle="Topo, rodapé, card, hero, preços..."
+          groups={byPlacement}
+          totalRows={rows.length}
+        />
         <GroupTable
           title="Página do clique"
           subtitle="Onde o visitante clicou no CTA"
