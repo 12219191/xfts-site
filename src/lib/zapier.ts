@@ -1,5 +1,7 @@
 import { sendZapierWebhook, type ZapierResult } from "@/lib/zapier.functions";
 import { getAttributionPayload } from "@/lib/attribution";
+import { getLastCtaClick } from "@/lib/tracking";
+import { currentPage } from "@/lib/page-registry";
 
 export type { ZapierResult };
 
@@ -19,13 +21,18 @@ export async function sendToZapier(
   const startedAt = Date.now();
   try {
     const attribution = getAttributionPayload();
+    const lastCta = getLastCtaClick();
+    const page = typeof window === "undefined" ? null : currentPage();
     const result = await sendZapierWebhook({
       data: {
         ...data,
         ...attribution,
         form_type: formType,
         botao: botao ?? "",
-        tela: typeof window === "undefined" ? "" : window.location.pathname,
+        cta_id: lastCta?.cta_id ?? "",
+        cta_label: lastCta?.cta_label ?? "",
+        cta_page: lastCta?.cta_page ?? "",
+        tela: page?.slug ?? "",
         source: typeof window === "undefined" ? "" : window.location.origin,
       },
     });
