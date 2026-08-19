@@ -123,6 +123,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   usePageTracking();
+  useEffect(() => {
+    captureAttribution();
+  }, []);
   return (
     <div className="flex min-h-screen flex-col">
       <PaymentTestModeBanner />
