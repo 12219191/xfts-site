@@ -151,7 +151,7 @@ function MinhaContaPage() {
           s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
         ),
       );
-      setAllSubscriptions((prev) => prev);
+      
       for (const delay of [2000, 4000, 8000]) {
         await new Promise((r) => setTimeout(r, delay));
         const rows = await fetchSubscription(userId);
