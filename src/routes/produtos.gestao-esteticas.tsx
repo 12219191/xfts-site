@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useProductImage, PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
+import { useProductImage, useProductImageAlt, PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
 const heroAesthetics = PRODUCT_IMAGE_DEFAULTS.estetica;
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,6 +56,7 @@ const testimonials = [
 
 function GestaoEsteticasPage() {
   const heroAestheticsLive = useProductImage("estetica");
+  const heroAestheticsLiveAlt = useProductImageAlt("estetica");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
@@ -80,7 +81,7 @@ function GestaoEsteticasPage() {
       )}
 
       <section className="relative overflow-hidden">
-        <img src={heroAestheticsLive} alt="Clínica de estética moderna" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
+        <img src={heroAestheticsLive} alt={heroAestheticsLiveAlt} width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
         <div className="container-wide relative z-10 flex min-h-[500px] flex-col items-start justify-center px-4 py-24">
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Estética e Bem-estar</h1>

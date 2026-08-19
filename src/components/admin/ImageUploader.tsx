@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { ImagePlus, Loader2, Link2, Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { optimizeImage, formatBytes, altFromFileName } from "@/lib/image-optimize";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -11,6 +12,10 @@ const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 interface Props {
   value: string;
   onChange: (url: string) => void;
+  /** Recebe uma sugestão de alt text derivada do nome do arquivo enviado. */
+  onAltSuggestion?: (alt: string) => void;
+  /** Texto alternativo usado na pré-visualização. */
+  previewAlt?: string;
 }
 
 function buildPublicUrl(path: string) {
@@ -18,7 +23,7 @@ function buildPublicUrl(path: string) {
   return `${origin}/api/public/blog-image/${path}`;
 }
 
-export function ImageUploader({ value, onChange }: Props) {
+export function ImageUploader({ value, onChange, onAltSuggestion, previewAlt }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -35,12 +40,14 @@ export function ImageUploader({ value, onChange }: Props) {
     }
 
     setUploading(true);
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const optimized = await optimizeImage(file, { maxWidth: 1920, quality: 0.82 });
+    const upFile = optimized.file;
+    const ext = upFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const path = `${new Date().getFullYear()}/${crypto.randomUUID()}.${ext}`;
 
     const { error } = await supabase.storage
       .from("blog-images")
-      .upload(path, file, { cacheControl: "31536000", contentType: file.type });
+      .upload(path, upFile, { cacheControl: "31536000", contentType: upFile.type });
 
     setUploading(false);
 
@@ -50,7 +57,16 @@ export function ImageUploader({ value, onChange }: Props) {
     }
 
     onChange(buildPublicUrl(path));
-    toast.success("Imagem enviada com sucesso");
+    onAltSuggestion?.(altFromFileName(file.name));
+
+    if (optimized.converted) {
+      const saved = Math.round((1 - optimized.size / optimized.originalSize) * 100);
+      toast.success("Imagem enviada e otimizada", {
+        description: `WebP ${optimized.width}×${optimized.height} — ${formatBytes(optimized.originalSize)} → ${formatBytes(optimized.size)} (-${saved}%)`,
+      });
+    } else {
+      toast.success("Imagem enviada com sucesso");
+    }
   };
 
   const handleFiles = (files: FileList | null) => {
@@ -64,12 +80,12 @@ export function ImageUploader({ value, onChange }: Props) {
         <div className="group relative overflow-hidden rounded-lg border border-border">
           <img
             src={value}
-            alt="Capa do artigo"
+            alt={previewAlt || "Pré-visualização da imagem"}
             className="aspect-video w-full object-cover"
           />
           <div className="flex items-center justify-between gap-2 border-t border-border bg-card px-3 py-2">
             <span className="truncate text-xs text-muted-foreground">
-              Capa definida
+              Convertida para WebP no envio
             </span>
             <div className="flex gap-1">
               <Button
@@ -121,7 +137,7 @@ export function ImageUploader({ value, onChange }: Props) {
             {uploading ? "Enviando imagem..." : "Arraste a foto aqui ou clique para escolher"}
           </span>
           <span className="text-xs text-muted-foreground">
-            JPG, PNG, WebP ou GIF — até 5 MB
+            JPG, PNG, WebP ou GIF — até 5 MB (convertida para WebP)
           </span>
         </button>
       )}

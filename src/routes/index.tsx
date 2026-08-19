@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
 import heroMain from "@/assets/hero-main.jpg";
 import { Logo } from "@/components/Logo";
-import { useProductImages } from "@/lib/product-images";
+import { useProductImageData } from "@/lib/product-images";
 
 
 export const Route = createFileRoute("/")({
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const productImages = useProductImages();
+  const productImages = useProductImageData();
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
   const [sending, setSending] = useState(false);
   const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
@@ -175,7 +175,7 @@ function HomePage() {
             {products.map((p) => (
               <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
                 <div className="aspect-video overflow-hidden">
-                  <img src={productImages[p.slug]} alt={p.title} loading="lazy" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <img src={productImages[p.slug].url} alt={productImages[p.slug].alt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 </div>
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3">

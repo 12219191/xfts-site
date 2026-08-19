@@ -3,8 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   PRODUCT_IMAGE_DEFAULTS,
+  PRODUCT_IMAGE_ALT_DEFAULTS,
   PRODUCT_IMAGE_LABELS,
   type ProductSlug,
 } from "@/lib/product-images";
@@ -14,22 +17,29 @@ import { toast } from "sonner";
 export function ProductImagesPanel() {
   const [overrides, setOverrides] = useState<Partial<Record<ProductSlug, string>>>({});
   const [drafts, setDrafts] = useState<Partial<Record<ProductSlug, string>>>({});
+  const [altOverrides, setAltOverrides] = useState<Partial<Record<ProductSlug, string>>>({});
+  const [altDrafts, setAltDrafts] = useState<Partial<Record<ProductSlug, string>>>({});
   const [loading, setLoading] = useState(true);
   const [savingSlug, setSavingSlug] = useState<ProductSlug | null>(null);
 
   const load = async () => {
     const { data, error } = await supabase
       .from("product_images")
-      .select("slug, image_url");
+      .select("slug, image_url, alt_text");
     if (error) {
       toast.error("Não foi possível carregar as imagens", { description: error.message });
     }
     const map: Partial<Record<ProductSlug, string>> = {};
-    for (const row of data ?? []) {
-      if (row.image_url) map[row.slug as ProductSlug] = row.image_url;
+    const alts: Partial<Record<ProductSlug, string>> = {};
+    for (const row of (data ?? []) as { slug: string; image_url: string | null; alt_text?: string | null }[]) {
+      const slug = row.slug as ProductSlug;
+      if (row.image_url) map[slug] = row.image_url;
+      if (row.alt_text) alts[slug] = row.alt_text;
     }
     setOverrides(map);
     setDrafts(map);
+    setAltOverrides(alts);
+    setAltDrafts(alts);
     setLoading(false);
   };
 
@@ -40,12 +50,19 @@ export function ProductImagesPanel() {
   const save = async (slug: ProductSlug) => {
     const url = drafts[slug];
     if (!url) return;
+    const alt = (altDrafts[slug] ?? "").trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug];
     setSavingSlug(slug);
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase
       .from("product_images")
       .upsert(
-        { slug, image_url: url, updated_at: new Date().toISOString(), updated_by: user?.id ?? null },
+        {
+          slug,
+          image_url: url,
+          alt_text: alt,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id ?? null,
+        },
         { onConflict: "slug" },
       );
     setSavingSlug(null);
@@ -54,6 +71,8 @@ export function ProductImagesPanel() {
       return;
     }
     setOverrides((prev) => ({ ...prev, [slug]: url }));
+    setAltOverrides((prev) => ({ ...prev, [slug]: alt }));
+    setAltDrafts((prev) => ({ ...prev, [slug]: alt }));
     toast.success("Imagem do produto atualizada");
   };
 
@@ -75,6 +94,16 @@ export function ProductImagesPanel() {
       delete next[slug];
       return next;
     });
+    setAltOverrides((prev) => {
+      const next = { ...prev };
+      delete next[slug];
+      return next;
+    });
+    setAltDrafts((prev) => {
+      const next = { ...prev };
+      delete next[slug];
+      return next;
+    });
     toast.success("Imagem padrão restaurada");
   };
 
@@ -90,15 +119,21 @@ export function ProductImagesPanel() {
     <div>
       <h3 className="text-lg font-semibold text-foreground">Imagens dos produtos</h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma nova foto para cada produto. A troca aparece na home, na listagem
-        de produtos e na página do produto — sem alterar o código.
+        Envie uma nova foto para cada produto. As imagens são comprimidas e
+        convertidas para WebP automaticamente no envio, e o texto alternativo (alt)
+        é preenchido sozinho para SEO e acessibilidade.
       </p>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {PRODUCT_IMAGE_LABELS.map(({ slug, label }) => {
           const current = drafts[slug] ?? overrides[slug] ?? PRODUCT_IMAGE_DEFAULTS[slug];
           const isCustom = !!overrides[slug];
-          const dirty = (drafts[slug] ?? "") !== (overrides[slug] ?? "") && !!drafts[slug];
+          const currentAlt =
+            altDrafts[slug] ?? altOverrides[slug] ?? PRODUCT_IMAGE_ALT_DEFAULTS[slug];
+          const dirty =
+            !!drafts[slug] &&
+            ((drafts[slug] ?? "") !== (overrides[slug] ?? "") ||
+              (altDrafts[slug] ?? "") !== (altOverrides[slug] ?? ""));
 
           return (
             <Card key={slug} className="border-border bg-card">
@@ -112,8 +147,35 @@ export function ProductImagesPanel() {
 
                 <ImageUploader
                   value={current}
+                  previewAlt={currentAlt}
                   onChange={(url) => setDrafts((prev) => ({ ...prev, [slug]: url }))}
+                  onAltSuggestion={(suggested) =>
+                    setAltDrafts((prev) => ({
+                      ...prev,
+                      [slug]:
+                        prev[slug]?.trim() ||
+                        (suggested ? `${label} — ${suggested}` : PRODUCT_IMAGE_ALT_DEFAULTS[slug]),
+                    }))
+                  }
                 />
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={`alt-${slug}`} className="text-xs text-muted-foreground">
+                    Texto alternativo (alt) — SEO e acessibilidade
+                  </Label>
+                  <Input
+                    id={`alt-${slug}`}
+                    value={currentAlt}
+                    maxLength={125}
+                    placeholder={PRODUCT_IMAGE_ALT_DEFAULTS[slug]}
+                    onChange={(e) =>
+                      setAltDrafts((prev) => ({ ...prev, [slug]: e.target.value }))
+                    }
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    {currentAlt.length}/125 — preenchido automaticamente, ajuste se quiser.
+                  </p>
+                </div>
 
                 <div className="flex gap-2">
                   <Button
