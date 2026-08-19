@@ -55,10 +55,12 @@ export const setAttributionWindow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => windowSchema.parse(input))
   .handler(async ({ data, context }): Promise<{ window_days: number }> => {
-    const { data: isAdmin } = await context.supabase.rpc("is_admin", {
-      _user_id: context.userId,
-    });
-    if (!isAdmin) throw new Error("Acesso restrito a administradores.");
+    const { data: adminRow } = await context.supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!adminRow) throw new Error("Acesso restrito a administradores.");
 
     const { error } = await context.supabase
       .from("app_settings")
