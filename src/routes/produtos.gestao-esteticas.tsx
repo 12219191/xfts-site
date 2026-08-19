@@ -2,9 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroAestheticsAsset from "@/assets/hero-aesthetics.webp.asset.json";
-const heroAesthetics = heroAestheticsAssetAsset.url;
-const PRODUCT_SLUG = "estetica" as const;
 import { productJsonLd } from "@/lib/product-schema";
 import { esteticasPlans as plans } from "@/lib/product-plans";
 import { trackCTAClick } from "@/lib/tracking";
@@ -56,6 +53,7 @@ const testimonials = [
 
 
 function GestaoEsteticasPage() {
+  const heroAesthetics = useProductImage("estetica");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {

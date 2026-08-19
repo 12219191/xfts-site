@@ -2,9 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
-const heroCrm = heroCrmAssetAsset.url;
-const PRODUCT_SLUG = "crm" as const;
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -62,6 +59,7 @@ const testimonials = [
 
 
 function FlexusCrmPage() {
+  const heroCrm = useProductImage("crm");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {

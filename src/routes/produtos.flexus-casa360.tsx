@@ -2,9 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
-const heroCasa360 = heroCasa360AssetAsset.url;
-const PRODUCT_SLUG = "casa360" as const;
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -68,6 +65,7 @@ const testimonials = [
 
 
 function FlexusCasa360Page() {
+  const heroCasa360 = useProductImage("casa360");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {

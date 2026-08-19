@@ -2,9 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroClinicAsset from "@/assets/hero-clinic.webp.asset.json";
-const heroClinic = heroClinicAssetAsset.url;
-const PRODUCT_SLUG = "clinica" as const;
 import { productJsonLd } from "@/lib/product-schema";
 import { clinicaPlans as plans } from "@/lib/product-plans";
 import { trackCTAClick } from "@/lib/tracking";
@@ -60,6 +57,7 @@ const testimonials = [
 
 
 function GestaoClinicaPage() {
+  const heroClinic = useProductImage("clinica");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {

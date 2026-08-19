@@ -2,9 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
-import heroBarbershopAsset from "@/assets/hero-barbershop.webp.asset.json";
-const heroBarbershop = heroBarbershopAssetAsset.url;
-const PRODUCT_SLUG = "barbearia" as const;
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -60,6 +57,7 @@ const testimonials = [
 
 
 function GestaoBarbeariasPage() {
+  const heroBarbershop = useProductImage("barbearia");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
