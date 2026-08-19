@@ -354,6 +354,11 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             case "invoice.payment_failed":
               await handlePaymentFailed(event.data.object, env);
               break;
+            case "invoice.paid":
+            case "invoice.payment_succeeded":
+              await handleInvoicePaid(event.data.object);
+              break;
+
             default:
               console.log("Unhandled event:", event.type);
           }
