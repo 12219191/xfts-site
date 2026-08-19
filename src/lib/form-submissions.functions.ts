@@ -6,6 +6,9 @@ const filterSchema = z.object({
   from: z.string().max(40).optional(),
   to: z.string().max(40).optional(),
   tela: z.string().max(120).optional(),
+  botao: z.string().max(80).optional(),
+  utm_source: z.string().max(160).optional(),
+  utm_campaign: z.string().max(160).optional(),
   status: z.string().max(40).optional(),
   search: z.string().max(120).optional(),
   limit: z.number().int().min(1).max(200).optional(),
@@ -29,6 +32,14 @@ export type FormSubmissionRow = {
   assunto: string | null;
   mensagem: string | null;
   source: string | null;
+  botao: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_term: string | null;
+  utm_content: string | null;
+  referrer: string | null;
+  landing_page: string | null;
   error_message: string | null;
   created_at: string;
 };
