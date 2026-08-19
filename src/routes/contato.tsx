@@ -33,12 +33,22 @@ function ContatoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    const email = form.email;
     const result = await sendToZapier(form, "contato");
     if (result.success) {
       trackFormSubmit("contato", form.segmento);
       setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+      toast.success("Mensagem enviada com sucesso", {
+        description: `Enviamos sua mensagem para nosso time em ${formatSentAt(result.sentAt)}. Retornamos em até 1 dia útil no e-mail ${email}. Protocolo: ${result.referenceId}.`,
+        duration: 10000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", {
+        description: result.message,
+        duration: 12000,
+      });
     }
-    alert(result.message);
+    setLastStatus(result);
     setSending(false);
   };
 
