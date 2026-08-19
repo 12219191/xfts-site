@@ -17,6 +17,7 @@ import {
   seatsFromPriceId,
   seatsLabel,
 } from "@/lib/flexus-apps";
+import { PLANS_BY_APP, type ProductPlan } from "@/lib/product-plans";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SubscriptionSummary } from "@/components/SubscriptionSummary";
@@ -71,57 +72,20 @@ interface SubscriptionRow {
   created_at: string | null;
 }
 
-const planMap: Record<
-  string,
-  { name: string; tier: string; price: string; features: string[] }
-> = {
-  basico: {
-    name: "Básico",
-    tier: "Básico",
-    price: "R$ 97",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-    ],
-  },
-  pro: {
-    name: "Profissional",
-    tier: "Pro",
-    price: "R$ 197",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-      "Financeiro completo",
-      "Notificações automáticas",
-      "Relatórios avançados",
-    ],
-  },
-  enterprise: {
-    name: "Enterprise",
-    tier: "Enterprise",
-    price: "R$ 397",
-    features: [
-      "Agendamento online",
-      "Cadastro de clientes",
-      "Relatórios básicos",
-      "Financeiro completo",
-      "Notificações automáticas",
-      "Relatórios avançados",
-      "API & Integrações",
-      "Multi-unidades",
-      "Suporte prioritário 24/7",
-    ],
-  },
-};
+type TierKey = "basico" | "pro" | "enterprise";
 
-function detectPlanFromProductId(productId: string): string {
-  const lower = productId.toLowerCase();
-  if (lower.includes("enterprise") || lower.includes("premium")) return "enterprise";
-  if (lower.includes("pro") || lower.includes("profissional")) return "pro";
+/**
+ * Nível do plano a partir do lookup key do preço (ex.: flexus_crm_basico_mensal).
+ * Nunca usar `product_id`: ele guarda o id interno do provedor (prod_xxx),
+ * que contém "pro" em todo registro real.
+ */
+function tierKeyFromPriceId(priceId: string | null | undefined): TierKey {
+  const lower = (priceId ?? "").toLowerCase();
+  if (lower.includes("enterprise")) return "enterprise";
+  if (lower.includes("_pro_") || lower.endsWith("_pro")) return "pro";
   return "basico";
 }
+
 
 function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
@@ -133,7 +97,7 @@ function MinhaContaPage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [upgradeTo, setUpgradeTo] = useState<"basico" | "pro">("pro");
+  const [upgradeTo, setUpgradeTo] = useState<TierKey>("pro");
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
 
@@ -192,11 +156,19 @@ function MinhaContaPage() {
     window.location.href = "/";
   };
 
-  /** Deriva o lookup key do plano de destino a partir do plano atual. */
-  const targetPriceId = (target: "basico" | "pro") => {
-    const current = subscription?.price_id ?? "";
-    return current.replace(/_(basico|pro)_/, `_${target}_`);
+  /** Planos do catálogo do sistema da assinatura selecionada. */
+  const plansForCurrentApp: ProductPlan[] =
+    PLANS_BY_APP[appKeyFromPriceId(subscription?.price_id) ?? ""] ?? [];
+
+  /** Lookup key do plano de destino, respeitando o ciclo (mensal/anual). */
+  const targetPriceId = (target: TierKey) => {
+    const plan = plansForCurrentApp.find((p) => p.tier === target);
+    if (!plan) return "";
+    return billingIntervalFromPriceId(subscription?.price_id) === "anual"
+      ? plan.annualPriceId ?? plan.priceId ?? ""
+      : plan.priceId ?? "";
   };
+
 
   const runAction = async (fn: () => Promise<{ ok?: true; message?: string; error?: string }>) => {
     setActionLoading(true);
@@ -286,10 +258,43 @@ function MinhaContaPage() {
     );
   }
 
-  const currentPlanKey = subscription
-    ? detectPlanFromProductId(subscription.product_id)
+  const currentPlanKey: TierKey | null = subscription
+    ? tierKeyFromPriceId(subscription.price_id)
     : null;
-  const currentPlan = currentPlanKey ? planMap[currentPlanKey] : null;
+  const interval = billingIntervalFromPriceId(subscription?.price_id);
+  const planInfo = (tier: TierKey) => {
+    const plan = plansForCurrentApp.find((p) => p.tier === tier);
+    if (!plan) return null;
+    return {
+      name: plan.name,
+      price: interval === "anual" ? plan.annualPrice ?? plan.price : plan.price,
+      features: plan.features,
+      tier: plan.name,
+    };
+  };
+  const currentPlan = currentPlanKey ? planInfo(currentPlanKey) : null;
+
+  const TIER_ORDER: TierKey[] = ["basico", "pro", "enterprise"];
+  /** Trocas possíveis dentro do mesmo sistema (só planos com preço cadastrado). */
+  const changeOptions = currentPlanKey
+    ? plansForCurrentApp
+        .filter(
+          (p) =>
+            p.tier !== currentPlanKey &&
+            (interval === "anual" ? p.annualPriceId ?? p.priceId : p.priceId),
+        )
+        .map((p) => ({
+          tier: p.tier,
+          name: p.name,
+          isUpgrade: TIER_ORDER.indexOf(p.tier) > TIER_ORDER.indexOf(currentPlanKey),
+        }))
+    : [];
+  const upgradeOption = changeOptions.find((o) => o.isUpgrade);
+  const changeIsUpgrade =
+    TIER_ORDER.indexOf(upgradeTo) > TIER_ORDER.indexOf(currentPlanKey ?? "basico");
+
+
+
 
   const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
 
@@ -412,52 +417,53 @@ function MinhaContaPage() {
                 </h2>
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {hasRealBilling && currentPlanKey === "basico" && (
-                    <Card
-                      className="cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
-                      onClick={() => {
-                        setUpgradeTo("pro");
-                        setShowUpgrade(true);
-                      }}
-                    >
-                      <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                          <ArrowUpRight className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">Upgrade para Pro</p>
-                          <p className="text-xs text-muted-foreground">
-                            Imediato, com cobrança proporcional ao período restante.
-                          </p>
-                        </div>
-                        <Badge className="ml-auto bg-primary/10 text-primary border-0">
-                          Popular
-                        </Badge>
-                      </CardContent>
-                    </Card>
-                  )}
+                  {hasRealBilling &&
+                    changeOptions.map((opt) => (
+                      <Card
+                        key={opt.tier}
+                        className={
+                          opt.isUpgrade
+                            ? "cursor-pointer border-cta/30 transition-all hover:border-cta hover:shadow-md"
+                            : "cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
+                        }
+                        onClick={() => {
+                          setUpgradeTo(opt.tier);
+                          setShowUpgrade(true);
+                        }}
+                      >
+                        <CardContent className="flex items-center gap-4 p-5">
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              opt.isUpgrade ? "bg-primary/10" : "bg-muted"
+                            }`}
+                          >
+                            {opt.isUpgrade ? (
+                              <ArrowUpRight className="h-5 w-5 text-primary" />
+                            ) : (
+                              <Settings className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground">
+                              {opt.isUpgrade
+                                ? `Upgrade para ${opt.name}`
+                                : `Mudar para ${opt.name}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {opt.isUpgrade
+                                ? "Imediato, com cobrança proporcional ao período restante."
+                                : "Entra em vigor apenas na próxima renovação."}
+                            </p>
+                          </div>
+                          {opt.isUpgrade && (
+                            <Badge className="ml-auto bg-primary/10 text-primary border-0">
+                              Recomendado
+                            </Badge>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
 
-                  {hasRealBilling && currentPlanKey === "pro" && (
-                    <Card
-                      className="cursor-pointer border-border transition-all hover:border-primary hover:shadow-md"
-                      onClick={() => {
-                        setUpgradeTo("basico");
-                        setShowUpgrade(true);
-                      }}
-                    >
-                      <CardContent className="flex items-center gap-4 p-5">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                          <Settings className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">Mudar para Básico</p>
-                          <p className="text-xs text-muted-foreground">
-                            Entra em vigor apenas na próxima renovação.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
 
                   <Card className="border-gold-deep/30">
                     <CardContent className="flex items-center gap-4 p-5">
@@ -495,12 +501,12 @@ function MinhaContaPage() {
                         Para liberar mais usuários, faça upgrade de plano.
                       </p>
                     </div>
-                    {hasRealBilling && currentPlanKey === "basico" && (
+                    {hasRealBilling && upgradeOption && (
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setUpgradeTo("pro");
+                          setUpgradeTo(upgradeOption.tier);
                           setShowUpgrade(true);
                         }}
                       >
@@ -642,10 +648,10 @@ function MinhaContaPage() {
           <div className="w-full max-w-lg">
             <PlanUpgradeCard
               currentPlan={currentPlan}
-              targetPlan={planMap[upgradeTo]}
-              isUpgrade={upgradeTo === "pro"}
+              targetPlan={planInfo(upgradeTo) ?? currentPlan}
+              isUpgrade={changeIsUpgrade}
               prorataMessage={
-                upgradeTo === "pro"
+                changeIsUpgrade
                   ? "O upgrade é aplicado imediatamente e a diferença é cobrada de forma proporcional ao período restante."
                   : "O downgrade entra em vigor apenas na próxima renovação. Você mantém o plano atual até lá."
               }
@@ -662,7 +668,7 @@ function MinhaContaPage() {
         onClose={() => setShowCancel(false)}
         onConfirmCancel={handleCancel}
         onDowngrade={
-          currentPlanKey === "pro"
+          currentPlanKey && currentPlanKey !== "basico" && changeOptions.some((o) => !o.isUpgrade)
             ? () => {
                 setShowCancel(false);
                 setUpgradeTo("basico");

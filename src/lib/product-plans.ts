@@ -125,3 +125,29 @@ export const casa360Plans = [
     ctaLabel: "Falar com Consultor",
   },
 ];
+
+/** Tipo de um plano do catálogo. */
+export interface ProductPlan {
+  name: string;
+  price: string;
+  description: string;
+  tier: "basico" | "pro" | "enterprise";
+  features: string[];
+  priceId?: string;
+  ctaLabel: string;
+  annualPrice?: string;
+  annualPriceId?: string;
+}
+
+/**
+ * Catálogo por sistema FLEXUS — usado na área do cliente para montar as
+ * opções de troca de plano do sistema realmente selecionado.
+ */
+export const PLANS_BY_APP: Record<string, ProductPlan[]> = {
+  clinica: clinicaPlans,
+  barbearia: barbeariasPlans,
+  estetica: esteticasPlans,
+  aba: abaPlans,
+  crm: crmPlans,
+  casa360: casa360Plans,
+};
