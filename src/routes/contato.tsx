@@ -30,6 +30,7 @@ function ContatoPage() {
   const [form, setForm] = useState({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
 
   const [sending, setSending] = useState(false);
+  const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
