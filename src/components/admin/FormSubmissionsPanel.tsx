@@ -41,6 +41,8 @@ type Attribution = {
   campaign: string | null;
   term: string | null;
   content: string | null;
+  gclid: string | null;
+  fbclid: string | null;
   referrer: string | null;
   landing: string | null;
 };
@@ -53,6 +55,8 @@ function pickAttribution(r: FormSubmissionRow, model: "first" | "last"): Attribu
         campaign: r.lt_utm_campaign,
         term: r.lt_utm_term,
         content: r.lt_utm_content,
+        gclid: r.lt_gclid,
+        fbclid: r.lt_fbclid,
         referrer: r.lt_referrer,
         landing: r.lt_landing_page,
       }
@@ -62,6 +66,8 @@ function pickAttribution(r: FormSubmissionRow, model: "first" | "last"): Attribu
         campaign: r.utm_campaign,
         term: r.utm_term,
         content: r.utm_content,
+        gclid: r.gclid,
+        fbclid: r.fbclid,
         referrer: r.referrer,
         landing: r.landing_page,
       };
@@ -70,7 +76,16 @@ function pickAttribution(r: FormSubmissionRow, model: "first" | "last"): Attribu
 function isDifferent(r: FormSubmissionRow) {
   const a = pickAttribution(r, "first");
   const b = pickAttribution(r, "last");
-  return (["source", "medium", "campaign", "term", "content", "referrer"] as const).some(
+  return ([
+    "source",
+    "medium",
+    "campaign",
+    "term",
+    "content",
+    "gclid",
+    "fbclid",
+    "referrer",
+  ] as const).some(
     (k) => (a[k] ?? "") !== (b[k] ?? "")
   );
 }
@@ -81,6 +96,8 @@ const IMPACT_WEIGHTS = {
   medium: 3,
   content: 2,
   term: 2,
+  gclid: 2,
+  fbclid: 2,
   referrer: 1,
 } as const;
 
@@ -106,9 +123,17 @@ function AttributionCell({ a }: { a: Attribution }) {
         {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
           (a.referrer ? `ref: ${a.referrer}` : "direto")}
       </span>
-      {(a.term || a.content || a.landing) && (
+      {(a.term || a.content || a.gclid || a.fbclid || a.landing) && (
         <span className="block text-[11px] text-muted-foreground/80">
-          {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
+          {[
+            a.term,
+            a.content,
+            a.gclid ? `gclid: ${a.gclid}` : null,
+            a.fbclid ? `fbclid: ${a.fbclid}` : null,
+            a.landing,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </span>
       )}
     </>

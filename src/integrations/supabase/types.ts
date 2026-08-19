@@ -107,10 +107,14 @@ export type Database = {
           email: string | null
           empresa: string | null
           error_message: string | null
+          fbclid: string | null
           form_type: string
+          gclid: string | null
           http_status: number | null
           id: string
           landing_page: string | null
+          lt_fbclid: string | null
+          lt_gclid: string | null
           lt_landing_page: string | null
           lt_referrer: string | null
           lt_utm_campaign: string | null
@@ -141,10 +145,14 @@ export type Database = {
           email?: string | null
           empresa?: string | null
           error_message?: string | null
+          fbclid?: string | null
           form_type: string
+          gclid?: string | null
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          lt_fbclid?: string | null
+          lt_gclid?: string | null
           lt_landing_page?: string | null
           lt_referrer?: string | null
           lt_utm_campaign?: string | null
@@ -175,10 +183,14 @@ export type Database = {
           email?: string | null
           empresa?: string | null
           error_message?: string | null
+          fbclid?: string | null
           form_type?: string
+          gclid?: string | null
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          lt_fbclid?: string | null
+          lt_gclid?: string | null
           lt_landing_page?: string | null
           lt_referrer?: string | null
           lt_utm_campaign?: string | null
