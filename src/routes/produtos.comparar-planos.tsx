@@ -1,11 +1,21 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield } from "lucide-react";
+import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
 import { SEATS_BY_TIER, seatsLabel } from "@/lib/flexus-apps";
 import { trackCTAClick } from "@/lib/tracking";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import {
+  clinicaPlans,
+  barbeariasPlans,
+  esteticasPlans,
+  abaPlans,
+  crmPlans,
+  casa360Plans,
+} from "@/lib/product-plans";
+
 
 const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360"] as const;
 type ProductKey = (typeof PRODUCT_KEYS)[number];
