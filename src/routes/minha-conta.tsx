@@ -506,7 +506,20 @@ function MinhaContaPage() {
 
             {subscription && currentPlan ? (
               <div className="space-y-4">
+                <PlanSyncIndicator
+                  state={syncState}
+                  error={syncError}
+                  lastSyncAt={lastSyncAt}
+                  refreshing={refreshing}
+                  onRefresh={async () => {
+                    if (!user) return;
+                    setRefreshing(true);
+                    await fetchSubscription(user.id);
+                    setRefreshing(false);
+                  }}
+                />
                 <SubscriptionSummary
+
                   planName={currentPlan.name}
                   priceId={subscription.price_id}
                   status={subscription.status}
