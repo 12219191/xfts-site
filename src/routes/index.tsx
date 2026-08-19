@@ -45,16 +45,24 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
   const [sending, setSending] = useState(false);
+  const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
 
   const handleDemoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    const email = formData.email;
     const result = await sendToZapier(formData, "demo");
     if (result.success) {
       trackFormSubmit("demo", formData.segmento);
       setFormData({ nome: "", email: "", telefone: "", segmento: "" });
+      toast.success("Solicitação de demonstração recebida", {
+        description: `Registrada em ${formatSentAt(result.sentAt)}. Nosso time entra em contato em até 1 dia útil pelo e-mail ${email}. Protocolo: ${result.referenceId}.`,
+        duration: 10000,
+      });
+    } else {
+      toast.error("Não foi possível enviar", { description: result.message, duration: 12000 });
     }
-    alert(result.message);
+    setLastStatus(result);
     setSending(false);
   };
 
