@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router"
 import { Card, CardContent } from "@/components/ui/card";
 import { useProductImageData } from "@/lib/product-images";
 import { Button } from "@/components/ui/button";
+import { trackCTAClick } from "@/lib/tracking";
 import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/produtos")({
@@ -93,7 +94,17 @@ export function ProdutosIndex() {
                   <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
-                <Link to={p.link}>
+                <Link
+                  to={p.link}
+                  onClick={() =>
+                    trackCTAClick({
+                      section: "cards-produtos",
+                      action: `card-${p.slug}`,
+                      label: `Saiba Mais — ${p.title}`,
+                      destination: p.link,
+                    })
+                  }
+                >
                   <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
                     Saiba Mais <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
