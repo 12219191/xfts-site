@@ -501,12 +501,12 @@ function MinhaContaPage() {
                         Para liberar mais usuários, faça upgrade de plano.
                       </p>
                     </div>
-                    {hasRealBilling && currentPlanKey === "basico" && (
+                    {hasRealBilling && upgradeOption && (
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setUpgradeTo("pro");
+                          setUpgradeTo(upgradeOption.tier);
                           setShowUpgrade(true);
                         }}
                       >
@@ -649,9 +649,9 @@ function MinhaContaPage() {
             <PlanUpgradeCard
               currentPlan={currentPlan}
               targetPlan={planInfo(upgradeTo) ?? currentPlan}
-              isUpgrade={upgradeTo === "pro"}
+              isUpgrade={changeIsUpgrade}
               prorataMessage={
-                upgradeTo === "pro"
+                changeIsUpgrade
                   ? "O upgrade é aplicado imediatamente e a diferença é cobrada de forma proporcional ao período restante."
                   : "O downgrade entra em vigor apenas na próxima renovação. Você mantém o plano atual até lá."
               }
@@ -668,7 +668,7 @@ function MinhaContaPage() {
         onClose={() => setShowCancel(false)}
         onConfirmCancel={handleCancel}
         onDowngrade={
-          currentPlanKey === "pro"
+          currentPlanKey && currentPlanKey !== "basico" && changeOptions.some((o) => !o.isUpgrade)
             ? () => {
                 setShowCancel(false);
                 setUpgradeTo("basico");
