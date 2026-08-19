@@ -657,6 +657,39 @@ export function FormSubmissionsPanel() {
                         {r.http_status ? ` · ${r.http_status}` : ""}
                       </Badge>
                     </td>
+                    <td className="px-4 py-3">
+                      {r.crm_status ? (
+                        <Badge
+                          variant={
+                            r.crm_status === "created" || r.crm_status === "updated"
+                              ? "default"
+                              : r.crm_status === "failed"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                        >
+                          {CRM_STATUS_LABEL[r.crm_status] ?? r.crm_status}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                      {r.crm_error && (
+                        <span className="mt-1 block max-w-[220px] truncate text-[11px] text-destructive" title={r.crm_error}>
+                          {r.crm_error}
+                        </span>
+                      )}
+                      {(r.crm_status === "failed" || r.crm_status === "pending") && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2 h-7 px-2 text-xs"
+                          disabled={retrying === r.reference_id}
+                          onClick={() => resendToCrm(r.reference_id)}
+                        >
+                          {retrying === r.reference_id ? "Reenviando…" : "Reenviar ao CRM"}
+                        </Button>
+                      )}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{r.duration_ms} ms</td>
                   </tr>
                 ))}
