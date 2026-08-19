@@ -43,6 +43,9 @@ export function FormSubmissionsPanel() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [tela, setTela] = useState("");
+  const [botao, setBotao] = useState("");
+  const [utmSource, setUtmSource] = useState("");
+  const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
 
@@ -55,6 +58,9 @@ export function FormSubmissionsPanel() {
           from: from || undefined,
           to: to || undefined,
           tela: tela || undefined,
+          botao: botao || undefined,
+          utm_source: utmSource.trim() || undefined,
+          utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
           search: search.trim() || undefined,
           limit: 200,
