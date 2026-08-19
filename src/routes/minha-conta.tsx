@@ -316,13 +316,22 @@ function MinhaContaPage() {
             </h2>
 
             {subscription && currentPlan ? (
-              <SubscriptionStatus
-                status={subscription.status as "active" | "trialing" | "past_due" | "canceled" | "incomplete" | "unpaid" | "paused"}
-                currentPeriodEnd={subscription.current_period_end}
-                cancelAtPeriodEnd={subscription.cancel_at_period_end}
-                productName="FLEXUS"
-                planTier={currentPlan.tier}
-              />
+              <div className="space-y-4">
+                <SubscriptionSummary
+                  planName={currentPlan.name}
+                  priceId={subscription.price_id}
+                  status={subscription.status}
+                  currentPeriodEnd={subscription.current_period_end}
+                  cancelAtPeriodEnd={subscription.cancel_at_period_end}
+                />
+                <SubscriptionStatus
+                  status={subscription.status as "active" | "trialing" | "past_due" | "canceled" | "incomplete" | "unpaid" | "paused"}
+                  currentPeriodEnd={subscription.current_period_end}
+                  cancelAtPeriodEnd={subscription.cancel_at_period_end}
+                  productName="FLEXUS"
+                  planTier={currentPlan.tier}
+                />
+              </div>
             ) : (
               <Card className="border-dashed">
                 <CardContent className="flex flex-col items-center py-10 text-center">
