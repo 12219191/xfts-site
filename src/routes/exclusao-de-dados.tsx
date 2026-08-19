@@ -4,7 +4,8 @@ import { LegalPageLayout, type LegalSection } from "@/components/LegalPageLayout
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { sendToZapier } from "@/lib/zapier";
+import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/exclusao-de-dados")({
   head: () => ({
