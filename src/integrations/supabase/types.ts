@@ -103,6 +103,11 @@ export type Database = {
           assunto: string | null
           botao: string | null
           created_at: string
+          crm_attempts: number
+          crm_error: string | null
+          crm_lead_id: string | null
+          crm_status: string
+          crm_synced_at: string | null
           cta_id: string | null
           cta_label: string | null
           cta_page: string | null
@@ -145,6 +150,11 @@ export type Database = {
           assunto?: string | null
           botao?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_error?: string | null
+          crm_lead_id?: string | null
+          crm_status?: string
+          crm_synced_at?: string | null
           cta_id?: string | null
           cta_label?: string | null
           cta_page?: string | null
@@ -187,6 +197,11 @@ export type Database = {
           assunto?: string | null
           botao?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_error?: string | null
+          crm_lead_id?: string | null
+          crm_status?: string
+          crm_synced_at?: string | null
           cta_id?: string | null
           cta_label?: string | null
           cta_page?: string | null
