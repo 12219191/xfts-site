@@ -39,6 +39,8 @@ export type FormSubmissionRow = {
   utm_campaign: string | null;
   utm_term: string | null;
   utm_content: string | null;
+  gclid: string | null;
+  fbclid: string | null;
   referrer: string | null;
   landing_page: string | null;
   lt_utm_source: string | null;
@@ -46,6 +48,8 @@ export type FormSubmissionRow = {
   lt_utm_campaign: string | null;
   lt_utm_term: string | null;
   lt_utm_content: string | null;
+  lt_gclid: string | null;
+  lt_fbclid: string | null;
   lt_referrer: string | null;
   lt_landing_page: string | null;
   error_message: string | null;
