@@ -84,7 +84,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                   <Link to="/contato">
                     <Button
                       className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
-                      onClick={() => trackCTAClick(plan.ctaLabel, trackingSection)}
+                      onClick={() =>
+                        trackCTAClick({
+                          section: trackingSection,
+                          action: `${plan.tier}-consultor`,
+                          label: plan.ctaLabel,
+                          destination: "/contato",
+                        })
+                      }
                     >
                       Falar com Consultor
                     </Button>
@@ -97,6 +104,12 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                         : "bg-primary text-primary-foreground hover:bg-primary/90"
                     }`}
                     onClick={() => {
+                      trackCTAClick({
+                        section: trackingSection,
+                        action: `${plan.tier}-assinar`,
+                        label: plan.ctaLabel,
+                        destination: "/checkout",
+                      });
                       if (plan.priceId && onCheckout) {
                         onCheckout(plan.priceId, plan.ctaLabel);
                       }
@@ -121,6 +134,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
           to="/produtos/comparar-planos"
           search={{ produto: compareProduct }}
           className="text-sm text-primary underline underline-offset-4 hover:text-primary/80"
+          onClick={() =>
+            trackCTAClick({
+              section: trackingSection,
+              action: "comparar-planos",
+              label: "Comparar planos em detalhe",
+              destination: "/produtos/comparar-planos",
+            })
+          }
         >
           {productName ? `Comparar os planos do ${productName} em detalhe` : "Comparar todos os planos em detalhe"} →
         </Link>

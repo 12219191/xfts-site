@@ -120,7 +120,7 @@ function GestaoClinicaPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para o seu consultório ou clínica.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="gestao-clinica-pricing" onCheckout={handleCheckout} compareProduct="clinica" productName="FLEXUS | Clínica" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="clinica" productName="FLEXUS | Clínica" />
           </div>
         </div>
       </section>

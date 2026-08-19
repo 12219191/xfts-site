@@ -147,7 +147,7 @@ function FlexusCasa360Page() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para a sua casa.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="flexus-casa360-pricing" onCheckout={handleCheckout} compareProduct="casa360" productName="FLEXUS | Casa360°" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="casa360" productName="FLEXUS | Casa360°" />
           </div>
         </div>
       </section>

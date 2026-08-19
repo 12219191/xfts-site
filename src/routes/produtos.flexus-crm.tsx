@@ -122,7 +122,7 @@ function FlexusCrmPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para o seu time de vendas.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="flexus-crm-pricing" onCheckout={handleCheckout} compareProduct="crm" productName="FLEXUS | CRM" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="crm" productName="FLEXUS | CRM" />
           </div>
         </div>
       </section>

@@ -122,7 +122,7 @@ function FlexusAbaPage() {
             <p className="mt-3 text-muted-foreground">Escolha o plano ideal para a sua clínica ABA.</p>
           </div>
           <div className="mt-12">
-            <PricingCards plans={plans} trackingSection="flexus-aba-pricing" onCheckout={handleCheckout} compareProduct="aba" productName="FLEXUS | ABA" />
+            <PricingCards plans={plans} trackingSection="pricing" onCheckout={handleCheckout} compareProduct="aba" productName="FLEXUS | ABA" />
           </div>
         </div>
       </section>
