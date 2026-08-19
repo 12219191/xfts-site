@@ -171,6 +171,10 @@ export default defineConfig(({ command, mode }) => {
     envDefine[`import.meta.env.${key}`] = JSON.stringify(value);
   }
 
+  // Variáveis sem prefixo VITE_ ficam disponíveis apenas no servidor.
+  const serverEnv = loadEnv(mode, process.cwd(), "");
+  Object.assign(process.env, serverEnv);
+
   return {
     server: {
       host: "::",
@@ -180,7 +184,11 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        "entities/lib/decode.js": path.resolve(__dirname, "node_modules/entities/lib/decode.js"),
+        "entities/lib/encode.js": path.resolve(__dirname, "node_modules/entities/lib/encode.js"),
+        "entities": path.resolve(__dirname, "node_modules/entities"),
       },
+
       dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],
     },
     plugins: [

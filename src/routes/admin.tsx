@@ -7,7 +7,8 @@ import { BlogPanel } from "@/components/admin/BlogPanel";
 import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
 import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CrmIntegrationPanel } from "@/components/admin/CrmIntegrationPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap } from "lucide-react";
+import { DunningPanel } from "@/components/admin/DunningPanel";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "forms" | "images" | "crm" | "settings";
+type Tab = "blog" | "subscriptions" | "dunning" | "forms" | "images" | "crm" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -96,6 +97,7 @@ function AdminPage() {
   const sidebarItems: { id: Tab; label: string; icon: typeof FileText }[] = [
     { id: "blog", label: "Blog", icon: FileText },
     { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
+    { id: "dunning", label: "Cobrança", icon: AlertTriangle },
     { id: "forms", label: "Formulários", icon: Inbox },
     { id: "images", label: "Imagens", icon: ImageIcon },
     { id: "crm", label: "Integração CRM", icon: PlugZap },
@@ -153,6 +155,8 @@ function AdminPage() {
           {activeTab === "blog" && <BlogPanel />}
 
           {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
+
+          {activeTab === "dunning" && <DunningPanel />}
 
           {activeTab === "forms" && <FormSubmissionsPanel />}
 

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Crown } from "lucide-react";
@@ -12,6 +13,10 @@ interface PricingPlan {
   features: string[];
   priceId?: string;
   ctaLabel: string;
+  /** Preço anual já com desconto (ex.: "R$ 950"). */
+  annualPrice?: string;
+  /** Lookup key do preço anual no Stripe. */
+  annualPriceId?: string;
 }
 
 type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360";
@@ -25,12 +30,48 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
+  const hasAnnual = plans.some((p) => p.annualPriceId);
+  const [annual, setAnnual] = useState(false);
+
   return (
     <div>
+      {hasAnnual && (
+        <div className="mb-8 flex justify-center">
+          <div className="inline-flex items-center rounded-full border border-border bg-card p-1">
+            <button
+              type="button"
+              onClick={() => setAnnual(false)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                !annual ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              type="button"
+              onClick={() => setAnnual(true)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                annual ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Anual
+              <span className="ml-2 rounded-full bg-cta px-2 py-0.5 text-[10px] font-bold text-cta-foreground">
+                -20%
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
           const isPro = plan.tier === "pro";
           const isEnterprise = plan.tier === "enterprise";
+          const useAnnual = annual && !!plan.annualPriceId;
+          const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
+          const shownPeriod = useAnnual ? "/ano" : "/mês";
+          const activePriceId = useAnnual ? plan.annualPriceId : plan.priceId;
+
 
           return (
             <div
@@ -62,10 +103,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
               <div className={`${isPro || isEnterprise ? "mt-2" : ""}`}>
                 <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
                 <div className="mt-3">
-                  <span className="text-4xl font-extrabold text-foreground">{plan.price}</span>
-                  <span className="text-base text-muted-foreground">/mês</span>
+                  <span className="text-4xl font-extrabold text-foreground">{shownPrice}</span>
+                  <span className="text-base text-muted-foreground">{shownPeriod}</span>
                 </div>
+                {useAnnual && (
+                  <p className="mt-1 text-xs font-medium text-cta">Equivale a 12 meses com 20% de desconto</p>
+                )}
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
+
               </div>
 
               {/* Features */}
@@ -106,13 +151,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                     onClick={() => {
                       trackCTAClick({
                         section: trackingSection,
-                        action: `${plan.tier}-assinar`,
+                        action: `${plan.tier}-assinar-${useAnnual ? "anual" : "mensal"}`,
                         label: plan.ctaLabel,
                         destination: "/checkout",
                       });
-                      if (plan.priceId && onCheckout) {
-                        onCheckout(plan.priceId, plan.ctaLabel);
+                      if (activePriceId && onCheckout) {
+                        onCheckout(activePriceId, plan.ctaLabel);
                       }
+
                     }}
                   >
                     {plan.ctaLabel}

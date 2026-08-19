@@ -36,8 +36,10 @@ import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.g
 import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-retry'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
+import { Route as ApiPublicPaymentsDunningRouteImport } from './routes/api/public/payments/dunning'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicSsoVerifyRouteImport } from './routes/api/public/sso/verify'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -175,6 +177,12 @@ const ApiPublicBlogImageSplatRoute = ApiPublicBlogImageSplatRouteImport.update({
   path: '/api/public/blog-image/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymentsDunningRoute =
+  ApiPublicPaymentsDunningRouteImport.update({
+    id: '/api/public/payments/dunning',
+    path: '/api/public/payments/dunning',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -186,6 +194,12 @@ const ApiPublicSsoVerifyRoute = ApiPublicSsoVerifyRouteImport.update({
   path: '/api/public/sso/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -215,8 +229,10 @@ export interface FileRoutesByFullPath {
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
+  '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -244,8 +260,10 @@ export interface FileRoutesByTo {
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
+  '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -276,8 +294,10 @@ export interface FileRoutesById {
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
+  '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -309,8 +329,10 @@ export interface FileRouteTypes {
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
+    | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -338,8 +360,10 @@ export interface FileRouteTypes {
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
+    | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -369,8 +393,10 @@ export interface FileRouteTypes {
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
     | '/api/public/blog-image/$'
+    | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -390,8 +416,10 @@ export interface RootRouteChildren {
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
+  ApiPublicPaymentsDunningRoute: typeof ApiPublicPaymentsDunningRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicSsoVerifyRoute: typeof ApiPublicSsoVerifyRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -585,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBlogImageSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/dunning': {
+      id: '/api/public/payments/dunning'
+      path: '/api/public/payments/dunning'
+      fullPath: '/api/public/payments/dunning'
+      preLoaderRoute: typeof ApiPublicPaymentsDunningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -597,6 +632,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/sso/verify'
       fullPath: '/api/public/sso/verify'
       preLoaderRoute: typeof ApiPublicSsoVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -669,8 +711,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
+  ApiPublicPaymentsDunningRoute: ApiPublicPaymentsDunningRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicSsoVerifyRoute: ApiPublicSsoVerifyRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

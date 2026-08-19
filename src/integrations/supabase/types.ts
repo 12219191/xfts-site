@@ -98,6 +98,93 @@ export type Database = {
         }
         Relationships: []
       }
+      dunning_emails: {
+        Row: {
+          created_at: string
+          email: string | null
+          environment: string
+          error: string | null
+          id: string
+          stage: number
+          status: string
+          stripe_subscription_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          environment?: string
+          error?: string | null
+          id?: string
+          stage: number
+          status?: string
+          stripe_subscription_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          environment?: string
+          error?: string | null
+          id?: string
+          stage?: number
+          status?: string
+          stripe_subscription_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      dunning_state: {
+        Row: {
+          amount_due: number | null
+          blocked_at: string | null
+          created_at: string
+          email: string | null
+          environment: string
+          failed_at: string
+          grace_until: string
+          invoice_id: string | null
+          last_stage: number
+          price_id: string | null
+          resolved_at: string | null
+          stripe_subscription_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_due?: number | null
+          blocked_at?: string | null
+          created_at?: string
+          email?: string | null
+          environment?: string
+          failed_at?: string
+          grace_until?: string
+          invoice_id?: string | null
+          last_stage?: number
+          price_id?: string | null
+          resolved_at?: string | null
+          stripe_subscription_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_due?: number | null
+          blocked_at?: string | null
+          created_at?: string
+          email?: string | null
+          environment?: string
+          failed_at?: string
+          grace_until?: string
+          invoice_id?: string | null
+          last_stage?: number
+          price_id?: string | null
+          resolved_at?: string | null
+          stripe_subscription_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       form_submissions: {
         Row: {
           assunto: string | null

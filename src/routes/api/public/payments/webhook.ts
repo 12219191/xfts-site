@@ -293,7 +293,7 @@ async function handlePaymentFailed(invoice: any, env: StripeEnv) {
     environment: env,
     user_id: existing?.user_id ?? null,
     plano: existing?.price_id ?? null,
-    carencia_dias: 3,
+    carencia_dias: 5,
     valor: invoice.amount_due ? invoice.amount_due / 100 : null,
   });
   await provision("payment_failed", {
@@ -302,7 +302,28 @@ async function handlePaymentFailed(invoice: any, env: StripeEnv) {
     status: "past_due",
     env,
   });
+
+  // Abre a régua de cobrança (e-mail D+1 imediato, D+3 e D+5 pelo sweep).
+  const { openDunning } = await import("@/lib/dunning.server");
+  await openDunning({
+    subscriptionId: subscriptionId,
+    userId: existing?.user_id,
+    priceId: existing?.price_id,
+    invoiceId: invoice.id ?? null,
+    amountDue: invoice.amount_due ? invoice.amount_due / 100 : null,
+    env,
+  });
 }
+
+/** Pagamento regularizado: encerra a régua de cobrança. */
+async function handleInvoicePaid(invoice: any) {
+  const subscriptionId =
+    invoice.subscription ?? invoice.parent?.subscription_details?.subscription;
+  if (!subscriptionId) return;
+  const { resolveDunning } = await import("@/lib/dunning.server");
+  await resolveDunning(subscriptionId);
+}
+
 
 export const Route = createFileRoute("/api/public/payments/webhook")({
   server: {
@@ -333,6 +354,11 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             case "invoice.payment_failed":
               await handlePaymentFailed(event.data.object, env);
               break;
+            case "invoice.paid":
+            case "invoice.payment_succeeded":
+              await handleInvoicePaid(event.data.object);
+              break;
+
             default:
               console.log("Unhandled event:", event.type);
           }
