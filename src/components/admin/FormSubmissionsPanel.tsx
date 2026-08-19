@@ -227,6 +227,21 @@ export function FormSubmissionsPanel() {
                       {TELA_LABEL[r.tela] ?? r.tela ?? "—"}
                     </td>
                     <td className="px-4 py-3">
+                      <span className="block text-xs font-medium text-foreground">
+                        {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
+                      </span>
+                      <span className="block text-xs text-muted-foreground">
+                        {[r.utm_source, r.utm_medium, r.utm_campaign].filter(Boolean).join(" · ") ||
+                          (r.referrer ? `ref: ${r.referrer}` : "direto")}
+                      </span>
+                      {(r.utm_term || r.utm_content || r.landing_page) && (
+                        <span className="block text-[11px] text-muted-foreground/80">
+                          {[r.utm_term, r.utm_content, r.landing_page].filter(Boolean).join(" · ")}
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3">
                       <span className="block font-medium text-foreground">{r.nome ?? "—"}</span>
                       <span className="block text-xs text-muted-foreground">{r.email ?? ""}</span>
                     </td>
