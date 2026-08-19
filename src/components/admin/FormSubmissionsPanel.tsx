@@ -47,6 +47,7 @@ export function FormSubmissionsPanel() {
   const [utmSource, setUtmSource] = useState("");
   const [utmCampaign, setUtmCampaign] = useState("");
   const [status, setStatus] = useState("");
+  const [model, setModel] = useState<"first" | "last">("first");
   const [search, setSearch] = useState("");
 
   const load = async () => {
@@ -62,6 +63,7 @@ export function FormSubmissionsPanel() {
           utm_source: utmSource.trim() || undefined,
           utm_campaign: utmCampaign.trim() || undefined,
           status: status || undefined,
+          model,
           search: search.trim() || undefined,
           limit: 200,
         },
@@ -77,6 +79,10 @@ export function FormSubmissionsPanel() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const kpis = useMemo(() => {
@@ -91,6 +97,29 @@ export function FormSubmissionsPanel() {
         <h3 className="text-lg font-semibold text-foreground">Envios de formulários</h3>
         <p className="mt-1 text-sm text-muted-foreground">
           Consulte protocolos, status e origem de cada envio.
+        </p>
+        <div className="mt-3 inline-flex rounded-lg border border-border bg-card p-1">
+          {([
+            { id: "first", label: "First-touch" },
+            { id: "last", label: "Last-touch" },
+          ] as const).map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setModel(opt.id)}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                model === opt.id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          {model === "first"
+            ? "Atribuindo ao primeiro contato do visitante com o site (first-touch)."
+            : "Atribuindo à última origem antes do envio (last-touch)."}
         </p>
       </div>
 
@@ -230,15 +259,40 @@ export function FormSubmissionsPanel() {
                       <span className="block text-xs font-medium text-foreground">
                         {r.botao ? BOTAO_LABEL[r.botao] ?? r.botao : "—"}
                       </span>
-                      <span className="block text-xs text-muted-foreground">
-                        {[r.utm_source, r.utm_medium, r.utm_campaign].filter(Boolean).join(" · ") ||
-                          (r.referrer ? `ref: ${r.referrer}` : "direto")}
-                      </span>
-                      {(r.utm_term || r.utm_content || r.landing_page) && (
-                        <span className="block text-[11px] text-muted-foreground/80">
-                          {[r.utm_term, r.utm_content, r.landing_page].filter(Boolean).join(" · ")}
-                        </span>
-                      )}
+                      {(() => {
+                        const a = model === "last"
+                          ? {
+                              source: r.lt_utm_source,
+                              medium: r.lt_utm_medium,
+                              campaign: r.lt_utm_campaign,
+                              term: r.lt_utm_term,
+                              content: r.lt_utm_content,
+                              referrer: r.lt_referrer,
+                              landing: r.lt_landing_page,
+                            }
+                          : {
+                              source: r.utm_source,
+                              medium: r.utm_medium,
+                              campaign: r.utm_campaign,
+                              term: r.utm_term,
+                              content: r.utm_content,
+                              referrer: r.referrer,
+                              landing: r.landing_page,
+                            };
+                        return (
+                          <>
+                            <span className="block text-xs text-muted-foreground">
+                              {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
+                                (a.referrer ? `ref: ${a.referrer}` : "direto")}
+                            </span>
+                            {(a.term || a.content || a.landing) && (
+                              <span className="block text-[11px] text-muted-foreground/80">
+                                {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </td>
 
                     <td className="px-4 py-3">

@@ -125,9 +125,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   usePageTracking();
+  const href = useRouterState({ select: (s) => s.location.href });
   useEffect(() => {
     captureAttribution();
-  }, []);
+  }, [href]);
   return (
     <div className="flex min-h-screen flex-col">
       <PaymentTestModeBanner />
