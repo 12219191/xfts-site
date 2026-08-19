@@ -66,7 +66,7 @@ function FlexusCrmPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick(label, "flexus-crm-pricing");
+    trackCTAClick({ section: "pricing", label: label });
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -93,7 +93,7 @@ function FlexusCrmPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | CRM</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">CRM completo para vender mais e melhor. Pipeline visual, automações e relatórios em tempo real.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "flexus-crm-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
             <AcessarSistemaButton app="crm" size="lg" variant="heroOutline" />
           </div>
         </div>

@@ -64,7 +64,7 @@ function GestaoBarbeariasPage() {
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const handleCheckout = (priceId: string, label: string) => {
-    trackCTAClick(label, "gestao-barbearias-pricing");
+    trackCTAClick({ section: "pricing", label: label });
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -91,7 +91,7 @@ function GestaoBarbeariasPage() {
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">FLEXUS | Barbearia e Salões</h1>
           <p className="mt-4 max-w-xl text-lg text-primary-foreground/80">Estoque, vendas, PDV e CRM em uma única plataforma inteligente.</p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick("Solicitar Demo", "gestao-barbearias-hero")}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+            <Link to="/contato"><Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
             <AcessarSistemaButton app="barbearia" size="lg" variant="heroOutline" />
           </div>
         </div>

@@ -123,12 +123,12 @@ function HomePage() {
             Tecnologia, dados e gestão em uma só direção
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato" onClick={() => trackCTAClick("Solicite Demo Grátis", "hero")}>
+            <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicite Demo Grátis" })}>
               <Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
                 Solicite Demo Grátis <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/contato" onClick={() => trackCTAClick("Fale Conosco", "hero")}>
+            <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Fale Conosco" })}>
               <Button size="lg" variant="heroOutline">
                 Fale Conosco
               </Button>

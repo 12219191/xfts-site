@@ -19,7 +19,7 @@ export function WhatsAppFloatingButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar com a XFTS no WhatsApp"
-      onClick={() => trackCTAClick("WhatsApp", "floating-button")}
+      onClick={() => trackCTAClick({ section: "whatsapp-flutuante", label: "WhatsApp" })}
       className="group fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-cta px-5 py-3.5 shadow-lg ring-1 ring-cta-foreground/20 transition-colors hover:bg-cta/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <span className="pointer-events-none absolute inset-0 -z-10 animate-ping rounded-full bg-cta/40" />
@@ -38,7 +38,7 @@ export function WhatsAppInlineButton({ className }: { className?: string }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar com a XFTS no WhatsApp"
-      onClick={() => trackCTAClick("WhatsApp", "contato-inline")}
+      onClick={() => trackCTAClick({ section: "whatsapp-inline", label: "WhatsApp" })}
       className={`inline-flex w-full items-center justify-center gap-2 rounded-md bg-cta px-4 py-3 text-sm font-semibold text-cta-foreground transition-colors hover:bg-cta/90 ${className ?? ""}`}
     >
       <WhatsAppIcon className="h-5 w-5" />

@@ -251,7 +251,7 @@ function CompararPlanosPage() {
                   <p className="mt-1 text-sm text-muted-foreground">Compare funcionalidades lado a lado</p>
                 </div>
                 <Link to={product.slug as any}>
-                  <Button variant="outline" size="sm" onClick={() => trackCTAClick("Ver produto", `comparar-${product.product}`)}>
+                  <Button variant="outline" size="sm" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Ver produto" })}>
                     Ver produto <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </Link>
@@ -326,21 +326,21 @@ function CompararPlanosPage() {
                       <td className="px-6 py-5" />
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
-                          <Button variant="outline" className="w-full" onClick={() => trackCTAClick("Começar - Básico", `comparar-${product.product}`)}>
+                          <Button variant="outline" className="w-full" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Básico" })}>
                             Começar
                           </Button>
                         </Link>
                       </td>
                       <td className="border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
                         <Link to="/contato">
-                          <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20" onClick={() => trackCTAClick("Começar - Pro", `comparar-${product.product}`)}>
+                          <Button className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Começar - Pro" })}>
                             Começar Agora
                           </Button>
                         </Link>
                       </td>
                       <td className="px-6 py-5 text-center">
                         <Link to="/contato">
-                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick("Falar com Consultor", `comparar-${product.product}`)}>
+                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
                             Falar com Consultor
                           </Button>
                         </Link>
@@ -384,7 +384,7 @@ function CompararPlanosPage() {
             <h3 className="text-2xl font-bold text-primary-foreground">Não tem certeza qual plano escolher?</h3>
             <p className="mt-3 text-primary-foreground/80">Nossa equipe pode ajudar a encontrar a solução perfeita para o seu negócio.</p>
             <Link to="/contato">
-              <Button size="lg" className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/30" onClick={() => trackCTAClick("Falar com Especialista", "comparar-planos-cta")}>
+              <Button size="lg" className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/30" onClick={() => trackCTAClick({ section: "cta-final", label: "Falar com Especialista" })}>
                 Falar com Especialista <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
