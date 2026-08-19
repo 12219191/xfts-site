@@ -10,6 +10,9 @@ import {
 } from "@/lib/subscriptions.functions";
 import { isRealStripeId } from "@/lib/subscription-guards";
 import {
+  appKeyFromPriceId,
+  billingIntervalFromPriceId,
+  getFlexusApp,
   planTierFromPriceId,
   seatsFromPriceId,
   seatsLabel,
@@ -56,6 +59,8 @@ export const Route = createFileRoute("/minha-conta")({
 interface SubscriptionRow {
   id: string;
   stripe_customer_id: string | null;
+  stripe_subscription_id: string;
+  seats_used: number | null;
   status: string;
   product_id: string;
   price_id: string;
@@ -120,7 +125,8 @@ function detectPlanFromProductId(productId: string): string {
 
 function MinhaContaPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
-  const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
+  const [selectedSubId, setSelectedSubId] = useState<string | null>(null);
   const [allSubscriptions, setAllSubscriptions] = useState<SistemaSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -131,6 +137,16 @@ function MinhaContaPage() {
 
   const env: StripeEnv = getStripeEnvironment() === "live" ? "live" : "sandbox";
 
+  /** Assinatura atualmente selecionada — o usuário pode assinar vários sistemas. */
+  const subscription =
+    subscriptions.find((s) => s.stripe_subscription_id === selectedSubId) ??
+    subscriptions[0] ??
+    null;
+  const subscriptionId = subscription?.stripe_subscription_id;
+  const systemName = subscription
+    ? getFlexusApp(appKeyFromPriceId(subscription.price_id) ?? "")?.name ?? "FLEXUS"
+    : "FLEXUS";
+
   const fetchSubscription = useCallback(async (userId: string) => {
     const { data } = await supabase
       .from("subscriptions")
@@ -139,7 +155,12 @@ function MinhaContaPage() {
       .eq("environment", env)
       .order("created_at", { ascending: false });
     const rows = (data as SubscriptionRow[]) ?? [];
-    setSubscription(rows[0] ?? null);
+    setSubscriptions(rows);
+    setSelectedSubId((prev) =>
+      prev && rows.some((r) => r.stripe_subscription_id === prev)
+        ? prev
+        : rows[0]?.stripe_subscription_id ?? null,
+    );
     setAllSubscriptions(
       rows.map((r) => ({
         price_id: r.price_id,
@@ -202,6 +223,7 @@ function MinhaContaPage() {
       const result = await createPortalSession({
         data: {
           environment: env,
+          subscriptionId,
           returnUrl:
             typeof window !== "undefined" ? `${window.location.origin}/minha-conta` : undefined,
         },
@@ -220,11 +242,11 @@ function MinhaContaPage() {
 
   const handleCancel = async (reason?: string) => {
     setShowCancel(false);
-    await runAction(() => cancelSubscription({ data: { environment: env, reason } }));
+    await runAction(() => cancelSubscription({ data: { environment: env, subscriptionId, reason } }));
   };
 
   const handleReactivate = async () => {
-    await runAction(() => reactivateSubscription({ data: { environment: env } }));
+    await runAction(() => reactivateSubscription({ data: { environment: env, subscriptionId } }));
   };
 
   const handleChangePlan = async () => {
@@ -232,7 +254,7 @@ function MinhaContaPage() {
     if (!target) return;
     setShowUpgrade(false);
     await runAction(() =>
-      changePlan({ data: { environment: env, targetPriceId: target } }),
+      changePlan({ data: { environment: env, subscriptionId, targetPriceId: target } }),
     );
   };
 
@@ -317,6 +339,29 @@ function MinhaContaPage() {
               Sua Assinatura
             </h2>
 
+            {subscriptions.length > 1 && (
+              <div className="mb-4 flex flex-wrap gap-2">
+                {subscriptions.map((s) => {
+                  const name =
+                    getFlexusApp(appKeyFromPriceId(s.price_id) ?? "")?.name ?? s.price_id;
+                  const active = s.stripe_subscription_id === subscriptionId;
+                  return (
+                    <Button
+                      key={s.id}
+                      size="sm"
+                      variant={active ? "default" : "outline"}
+                      onClick={() => setSelectedSubId(s.stripe_subscription_id)}
+                    >
+                      {name}
+                      <span className="ml-2 text-xs opacity-70">
+                        {planTierFromPriceId(s.price_id)}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
+
             {subscription && currentPlan ? (
               <div className="space-y-4">
                 <SubscriptionSummary
@@ -330,7 +375,7 @@ function MinhaContaPage() {
                   status={subscription.status as "active" | "trialing" | "past_due" | "canceled" | "incomplete" | "unpaid" | "paused"}
                   currentPeriodEnd={subscription.current_period_end}
                   cancelAtPeriodEnd={subscription.cancel_at_period_end}
-                  productName="FLEXUS"
+                  productName={systemName}
                   planTier={currentPlan.tier}
                 />
               </div>
@@ -442,8 +487,12 @@ function MinhaContaPage() {
                       <p className="font-semibold text-foreground">Usuários do plano</p>
                       <p className="text-xs text-muted-foreground">
                         {seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano{" "}
-                        {planTierFromPriceId(subscription.price_id)}. Para liberar mais usuários,
-                        faça upgrade de plano.
+                        {planTierFromPriceId(subscription.price_id)} (
+                        {billingIntervalFromPriceId(subscription.price_id)}).{" "}
+                        {subscription.seats_used !== null
+                          ? `Em uso hoje: ${subscription.seats_used}.`
+                          : "Uso ainda não reportado pelo sistema."}{" "}
+                        Para liberar mais usuários, faça upgrade de plano.
                       </p>
                     </div>
                     {hasRealBilling && currentPlanKey === "basico" && (
@@ -546,7 +595,7 @@ function MinhaContaPage() {
           {hasRealBilling && (
             <>
               <Separator />
-              <InvoicesSection environment={env} />
+              <InvoicesSection environment={env} subscriptionId={subscriptionId} />
             </>
           )}
 
