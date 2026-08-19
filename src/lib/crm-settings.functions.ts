@@ -26,8 +26,12 @@ export type CrmSettingsView = CrmIntegrationSettings & {
 };
 
 async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data: isAdmin } = await context.supabase.rpc("is_admin", { _user_id: context.userId });
-  if (!isAdmin) throw new Error("Acesso restrito a administradores.");
+  const { data: adminRow } = await context.supabase
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", context.userId)
+    .maybeSingle();
+  if (!adminRow) throw new Error("Acesso restrito a administradores.");
 }
 
 /** Lê a configuração atual da integração de leads com o CRM. */
