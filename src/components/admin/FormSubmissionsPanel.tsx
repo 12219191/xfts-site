@@ -211,12 +211,26 @@ export function FormSubmissionsPanel() {
             </button>
           ))}
         </div>
+        <button
+          onClick={() => setCompare((v) => !v)}
+          className={`ml-2 mt-3 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+            compare
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {compare ? "Comparação lado a lado ativa" : "Comparar first × last"}
+        </button>
         <p className="mt-2 text-xs text-muted-foreground">
-          {model === "first"
-            ? "Atribuindo ao primeiro contato do visitante com o site (first-touch)."
-            : "Atribuindo à última origem antes do envio (last-touch)."}
+          {compare
+            ? "Mostrando first-touch e last-touch lado a lado para cada protocolo; os filtros de UTM seguem o modelo selecionado."
+            : model === "first"
+              ? "Atribuindo ao primeiro contato do visitante com o site (first-touch)."
+              : "Atribuindo à última origem antes do envio (last-touch)."}
         </p>
       </div>
+
+
 
       <Card className="border-border bg-card">
         <CardContent className="flex flex-wrap items-center gap-3 p-4">
