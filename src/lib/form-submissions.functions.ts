@@ -15,6 +15,7 @@ const filterSchema = z.object({
   status: z.string().max(40).optional(),
   model: z.enum(["first", "last"]).optional(),
   search: z.string().max(120).optional(),
+  crm_status: z.string().max(20).optional(),
   limit: z.number().int().min(1).max(200).optional(),
 });
 
@@ -60,6 +61,11 @@ export type FormSubmissionRow = {
   lt_referrer: string | null;
   lt_landing_page: string | null;
   error_message: string | null;
+  crm_status: string | null;
+  crm_lead_id: string | null;
+  crm_error: string | null;
+  crm_synced_at: string | null;
+  crm_attempts: number | null;
   created_at: string;
 };
 
@@ -84,6 +90,7 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
     if (data.utm_source) query = query.ilike(`${prefix}utm_source`, data.utm_source);
     if (data.utm_campaign) query = query.ilike(`${prefix}utm_campaign`, data.utm_campaign);
     if (data.status) query = query.eq("status", data.status);
+    if (data.crm_status) query = query.eq("crm_status", data.crm_status);
     if (data.search) {
       const term = `%${data.search}%`;
       query = query.or(
