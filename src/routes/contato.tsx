@@ -36,7 +36,7 @@ function ContatoPage() {
     e.preventDefault();
     setSending(true);
     const email = form.email;
-    const result = await sendToZapier(form, "contato");
+    const result = await sendToZapier(form, "contato", "contato_mensagem");
     if (result.success) {
       trackFormSubmit("contato", form.segmento);
       setForm({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
