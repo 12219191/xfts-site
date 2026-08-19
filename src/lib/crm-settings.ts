@@ -51,6 +51,8 @@ export interface CrmIntegrationSettings {
   auth_mode: CrmAuthMode;
   /** Header da assinatura HMAC (modo hmac). */
   signature_header: string;
+  /** Formato da assinatura HMAC (modo hmac). */
+  signature_encoding: CrmSignatureEncoding;
   /** Header usado nos modos bearer/api_key. */
   auth_header: string;
   /**
