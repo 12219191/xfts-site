@@ -546,14 +546,17 @@ function MinhaContaPage() {
                     <div className="min-w-[12rem] flex-1">
                       <p className="font-semibold text-foreground">Usuários do plano</p>
                       <p className="text-xs text-muted-foreground">
-                        {seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano{" "}
-                        {planTierFromPriceId(subscription.price_id)} (
-                        {billingIntervalFromPriceId(subscription.price_id)}).{" "}
+                        {seatsFromPriceId(subscription.price_id) === null
+                          ? `Usuários ilimitados no plano ${planTierFromPriceId(subscription.price_id)} (${billingIntervalFromPriceId(subscription.price_id)}).`
+                          : `${seatsLabel(seatsFromPriceId(subscription.price_id))} inclusos no plano ${planTierFromPriceId(subscription.price_id)} (${billingIntervalFromPriceId(subscription.price_id)}).`}{" "}
                         {subscription.seats_used !== null
                           ? `Em uso hoje: ${subscription.seats_used}.`
-                          : "Uso ainda não reportado pelo sistema."}{" "}
-                        Para liberar mais usuários, faça upgrade de plano.
+                          : `O ${systemName} ainda não informou quantos usuários estão ativos.`}{" "}
+                        {upgradeOption
+                          ? `Para liberar mais usuários, faça upgrade para o ${upgradeOption.name}.`
+                          : "Este é o plano com o maior limite de usuários disponível."}
                       </p>
+
                     </div>
                     {hasRealBilling && upgradeOption && (
                       <Button
