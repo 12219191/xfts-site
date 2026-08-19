@@ -146,6 +146,37 @@ export function FormSubmissionsPanel() {
               <option value="not_configured">Não configurado</option>
             </select>
           </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">Botão</label>
+            <select
+              className="h-9 rounded-md border border-input bg-card px-2 text-sm text-foreground"
+              value={botao}
+              onChange={(e) => setBotao(e.target.value)}
+            >
+              <option value="">Todos</option>
+              <option value="home_demo">Home · Solicitar demonstração</option>
+              <option value="contato_mensagem">Contato · Enviar mensagem</option>
+              <option value="exclusao_dados">Exclusão · Enviar solicitação</option>
+            </select>
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">utm_source</label>
+            <Input
+              placeholder="google, meta..."
+              value={utmSource}
+              onChange={(e) => setUtmSource(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && load()}
+            />
+          </div>
+          <div className="grid gap-1">
+            <label className="text-xs text-muted-foreground">utm_campaign</label>
+            <Input
+              placeholder="black-friday"
+              value={utmCampaign}
+              onChange={(e) => setUtmCampaign(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && load()}
+            />
+          </div>
           <div className="grid gap-1 md:col-span-2">
             <label className="text-xs text-muted-foreground">Protocolo, nome ou e-mail</label>
             <div className="flex gap-2">
