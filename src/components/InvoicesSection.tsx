@@ -23,13 +23,19 @@ function formatMoney(value: number, currency: string) {
   }
 }
 
-export function InvoicesSection({ environment }: { environment: StripeEnv }) {
+export function InvoicesSection({
+  environment,
+  subscriptionId,
+}: {
+  environment: StripeEnv;
+  subscriptionId?: string;
+}) {
   const [invoices, setInvoices] = useState<InvoiceRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    listInvoices({ data: { environment } })
+    listInvoices({ data: { environment, subscriptionId } })
       .then((result) => {
         if (!active) return;
         if ("error" in result) setError(result.error);
