@@ -61,10 +61,8 @@ export function setAttributionWindowDays(days: number) {
   }
 }
 
-function readStored(key: string): StoredRecord | null {
+function parseRecord(raw: string): StoredRecord | null {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
     const parsed = JSON.parse(raw) as StoredRecord | Attribution;
     if (parsed && typeof parsed === "object" && "data" in parsed && "ts" in parsed) {
       return parsed as StoredRecord;
@@ -74,6 +72,51 @@ function readStored(key: string): StoredRecord | null {
   } catch {
     return null;
   }
+}
+
+function readCookie(key: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie
+    .split("; ")
+    .find((entry) => entry.startsWith(`${key}=`));
+  return match ? decodeURIComponent(match.slice(key.length + 1)) : null;
+}
+
+function writeCookie(key: string, value: string, maxAgeSeconds: number) {
+  if (typeof document === "undefined") return;
+  try {
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${Math.round(
+      maxAgeSeconds
+    )}; SameSite=Lax${secure}`;
+  } catch {
+    /* cookies indisponíveis */
+  }
+}
+
+/** localStorage é a fonte primária; cookie serve de fallback (e vice-versa). */
+function readStored(key: string): StoredRecord | null {
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(key);
+  } catch {
+    raw = null;
+  }
+  const fromStorage = raw ? parseRecord(raw) : null;
+  if (fromStorage) return fromStorage;
+
+  const cookieRaw = readCookie(key);
+  if (!cookieRaw) return null;
+  const fromCookie = parseRecord(cookieRaw);
+  if (fromCookie) {
+    // Reidrata o localStorage a partir do cookie.
+    try {
+      localStorage.setItem(key, JSON.stringify(fromCookie));
+    } catch {
+      /* storage indisponível */
+    }
+  }
+  return fromCookie;
 }
 
 /** Retorna o registro apenas se ainda estiver dentro da janela de atribuição. */
@@ -86,12 +129,15 @@ function readValid(key: string): StoredRecord | null {
 }
 
 function write(key: string, data: Attribution) {
+  const serialized = JSON.stringify({ data, ts: Date.now() } satisfies StoredRecord);
   try {
-    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() } satisfies StoredRecord));
+    localStorage.setItem(key, serialized);
   } catch {
     /* storage indisponível (modo privado) */
   }
+  writeCookie(key, serialized, getAttributionWindowDays() * 24 * 60 * 60);
 }
+
 
 function readCurrent(): { data: Attribution; hasSignal: boolean } {
   const params = new URLSearchParams(window.location.search);
