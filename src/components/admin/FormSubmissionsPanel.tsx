@@ -20,6 +20,13 @@ const TELA_LABEL: Record<string, string> = {
   "/exclusao-de-dados": "Exclusão de Dados",
 };
 
+const BOTAO_LABEL: Record<string, string> = {
+  home_demo: "Home · Solicitar demonstração",
+  contato_mensagem: "Contato · Enviar mensagem",
+  exclusao_dados: "Exclusão de dados · Enviar solicitação",
+};
+
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
