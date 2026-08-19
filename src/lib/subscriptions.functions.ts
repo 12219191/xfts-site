@@ -1,12 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
-import { friendlyStripeError, toMajorUnit } from "@/lib/subscriptions.server";
+import { friendlyStripeError, resolveSubscription, toMajorUnit } from "@/lib/subscriptions.server";
 import { DEMO_MESSAGE, isRealStripeId } from "@/lib/subscription-guards";
+import { appKeyFromPriceId } from "@/lib/flexus-apps";
 
 type ActionResult = { ok: true; message: string } | { error: string };
 
-const envInput = (data: { environment: StripeEnv }) => data;
+/** Toda ação de conta aceita o id da assinatura alvo (suporte multi-sistema). */
+const targetInput = (data: { environment: StripeEnv; subscriptionId?: string }) => data;
 
 /**
  * Cancelamento: o acesso permanece liberado até o fim do período já pago
@@ -14,17 +16,12 @@ const envInput = (data: { environment: StripeEnv }) => data;
  */
 export const cancelSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { environment: StripeEnv; reason?: string }) => data)
+  .inputValidator(
+    (data: { environment: StripeEnv; subscriptionId?: string; reason?: string }) => data,
+  )
   .handler(async ({ data, context }): Promise<ActionResult> => {
     const { supabase, userId } = context;
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("stripe_subscription_id")
-      .eq("user_id", userId)
-      .eq("environment", data.environment)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const sub = await resolveSubscription(supabase, userId, data.environment, data.subscriptionId);
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
     if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
@@ -53,17 +50,10 @@ export const cancelSubscription = createServerFn({ method: "POST" })
 /** Reativa uma assinatura que estava marcada para cancelar no fim do período. */
 export const reactivateSubscription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(envInput)
+  .inputValidator(targetInput)
   .handler(async ({ data, context }): Promise<ActionResult> => {
     const { supabase, userId } = context;
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("stripe_subscription_id")
-      .eq("user_id", userId)
-      .eq("environment", data.environment)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const sub = await resolveSubscription(supabase, userId, data.environment, data.subscriptionId);
 
     if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
     if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
@@ -90,10 +80,12 @@ export const reactivateSubscription = createServerFn({ method: "POST" })
  */
 export const changePlan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { environment: StripeEnv; targetPriceId: string }) => {
-    if (!/^[a-zA-Z0-9_-]+$/.test(data.targetPriceId)) throw new Error("Plano inválido");
-    return data;
-  })
+  .inputValidator(
+    (data: { environment: StripeEnv; targetPriceId: string; subscriptionId?: string }) => {
+      if (!/^[a-zA-Z0-9_-]+$/.test(data.targetPriceId)) throw new Error("Plano inválido");
+      return data;
+    },
+  )
   .handler(
     async ({
       data,
@@ -102,17 +94,23 @@ export const changePlan = createServerFn({ method: "POST" })
       { ok: true; message: string; applied: "immediate" | "scheduled" } | { error: string }
     > => {
       const { supabase, userId } = context;
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("stripe_subscription_id")
-        .eq("user_id", userId)
-        .eq("environment", data.environment)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const sub = await resolveSubscription(
+        supabase,
+        userId,
+        data.environment,
+        data.subscriptionId,
+      );
 
       if (!sub?.stripe_subscription_id) return { error: "Nenhuma assinatura encontrada" };
       if (!isRealStripeId(sub.stripe_subscription_id, "sub_")) return { error: DEMO_MESSAGE };
+
+      // Trocar de plano só faz sentido dentro do mesmo sistema FLEXUS.
+      if (appKeyFromPriceId(data.targetPriceId) !== appKeyFromPriceId(sub.price_id)) {
+        return {
+          error:
+            "Este plano pertence a outro sistema FLEXUS. Assine-o separadamente pela página do produto.",
+        };
+      }
 
       try {
         const stripe = createStripeClient(data.environment);
@@ -187,17 +185,12 @@ export const changePlan = createServerFn({ method: "POST" })
  */
 export const createPortalSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { environment: StripeEnv; returnUrl?: string }) => data)
+  .inputValidator(
+    (data: { environment: StripeEnv; returnUrl?: string; subscriptionId?: string }) => data,
+  )
   .handler(async ({ data, context }): Promise<{ url: string } | { error: string }> => {
     const { supabase, userId } = context;
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("stripe_customer_id")
-      .eq("user_id", userId)
-      .eq("environment", data.environment)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const sub = await resolveSubscription(supabase, userId, data.environment, data.subscriptionId);
 
     if (!sub?.stripe_customer_id) return { error: "Nenhuma assinatura encontrada" };
     if (!isRealStripeId(sub.stripe_customer_id, "cus_")) return { error: DEMO_MESSAGE };
@@ -229,18 +222,16 @@ export interface InvoiceRow {
 /** Lista as faturas recentes do cliente logado. */
 export const listInvoices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(envInput)
+  .inputValidator(targetInput)
   .handler(
     async ({ data, context }): Promise<{ invoices: InvoiceRow[] } | { error: string }> => {
       const { supabase, userId } = context;
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("stripe_customer_id")
-        .eq("user_id", userId)
-        .eq("environment", data.environment)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const sub = await resolveSubscription(
+        supabase,
+        userId,
+        data.environment,
+        data.subscriptionId,
+      );
 
       if (!sub?.stripe_customer_id) return { invoices: [] };
       if (!isRealStripeId(sub.stripe_customer_id, "cus_")) return { error: DEMO_MESSAGE };
