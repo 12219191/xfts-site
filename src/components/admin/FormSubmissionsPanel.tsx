@@ -35,6 +35,62 @@ const BOTAO_LABEL: Record<string, string> = {
 };
 
 
+type Attribution = {
+  source: string | null;
+  medium: string | null;
+  campaign: string | null;
+  term: string | null;
+  content: string | null;
+  referrer: string | null;
+  landing: string | null;
+};
+
+function pickAttribution(r: FormSubmissionRow, model: "first" | "last"): Attribution {
+  return model === "last"
+    ? {
+        source: r.lt_utm_source,
+        medium: r.lt_utm_medium,
+        campaign: r.lt_utm_campaign,
+        term: r.lt_utm_term,
+        content: r.lt_utm_content,
+        referrer: r.lt_referrer,
+        landing: r.lt_landing_page,
+      }
+    : {
+        source: r.utm_source,
+        medium: r.utm_medium,
+        campaign: r.utm_campaign,
+        term: r.utm_term,
+        content: r.utm_content,
+        referrer: r.referrer,
+        landing: r.landing_page,
+      };
+}
+
+function isDifferent(r: FormSubmissionRow) {
+  const a = pickAttribution(r, "first");
+  const b = pickAttribution(r, "last");
+  return (["source", "medium", "campaign", "term", "content", "referrer"] as const).some(
+    (k) => (a[k] ?? "") !== (b[k] ?? "")
+  );
+}
+
+function AttributionCell({ a }: { a: Attribution }) {
+  return (
+    <>
+      <span className="block text-xs text-muted-foreground">
+        {[a.source, a.medium, a.campaign].filter(Boolean).join(" · ") ||
+          (a.referrer ? `ref: ${a.referrer}` : "direto")}
+      </span>
+      {(a.term || a.content || a.landing) && (
+        <span className="block text-[11px] text-muted-foreground/80">
+          {[a.term, a.content, a.landing].filter(Boolean).join(" · ")}
+        </span>
+      )}
+    </>
+  );
+}
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
@@ -42,6 +98,7 @@ function formatDate(iso: string) {
     return iso;
   }
 }
+
 
 export function FormSubmissionsPanel() {
   const fetchRows = useServerFn(listFormSubmissions);
