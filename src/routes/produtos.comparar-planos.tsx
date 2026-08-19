@@ -191,20 +191,57 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   return <span className="text-sm font-medium text-foreground">{value}</span>;
 }
 
+const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
+  clinica: clinicaPlans,
+  barbearia: barbeariasPlans,
+  estetica: esteticasPlans,
+  aba: abaPlans,
+  crm: crmPlans,
+  casa360: casa360Plans,
+};
+
 function CompararPlanosPage() {
   const { produto } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const selected = products.find((p) => p.key === produto) ?? products[0];
   const [annual, setAnnual] = useState(false);
   const discount = 0.8;
+  const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
   const formatPrice = (price: number) => {
     const final = annual ? Math.round(price * discount) : price;
     return `R$ ${final}`;
   };
 
+  const priceIdFor = (productKey: ProductKey, tier: "basico" | "pro") => {
+    const plan = PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
+    if (!plan) return undefined;
+    return (annual && plan.annualPriceId) || plan.priceId;
+  };
+
+  const startCheckout = (productKey: ProductKey, tier: "basico" | "pro", section: string, label: string) => {
+    trackCTAClick({ section, label, destination: "/checkout" });
+    const priceId = priceIdFor(productKey, tier);
+    if (!priceId) return;
+    openCheckout({
+      priceId,
+      returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
+    });
+  };
+
   return (
     <TooltipProvider>
+      {isOpen && CheckoutForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-2xl">
+            <button onClick={closeCheckout} className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted">
+              <X className="h-5 w-5" />
+            </button>
+            <CheckoutForm />
+          </div>
+        </div>
+      )}
+
       <section className="section-padding">
         <div className="container-wide px-4">
           {/* Header */}
