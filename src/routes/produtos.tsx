@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
-import { useProductImages } from "@/lib/product-images";
+import { useProductImageData } from "@/lib/product-images";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
 
@@ -69,7 +69,7 @@ function ProdutosLayout() {
 }
 
 export function ProdutosIndex() {
-  const productImages = useProductImages();
+  const productImages = useProductImageData();
   return (
     <>
       <section className="gradient-primary section-padding text-center">
@@ -85,7 +85,7 @@ export function ProdutosIndex() {
           {products.map((p) => (
             <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
               <div className="aspect-video overflow-hidden">
-                <img src={productImages[p.slug]} alt={p.title} loading="lazy" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src={productImages[p.slug].url} alt={productImages[p.slug].alt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
