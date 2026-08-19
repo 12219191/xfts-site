@@ -111,29 +111,63 @@ function MinhaContaPage() {
     ? getFlexusApp(appKeyFromPriceId(subscription.price_id) ?? "")?.name ?? "FLEXUS"
     : "FLEXUS";
 
-  const fetchSubscription = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from("subscriptions")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("environment", env)
-      .order("created_at", { ascending: false });
-    const rows = (data as SubscriptionRow[]) ?? [];
-    setSubscriptions(rows);
-    setSelectedSubId((prev) =>
-      prev && rows.some((r) => r.stripe_subscription_id === prev)
-        ? prev
-        : rows[0]?.stripe_subscription_id ?? null,
-    );
-    setAllSubscriptions(
-      rows.map((r) => ({
-        price_id: r.price_id,
-        status: r.status,
-        current_period_end: r.current_period_end,
-        cancel_at_period_end: r.cancel_at_period_end,
-      })),
-    );
-  }, [env]);
+  const fetchSubscription = useCallback(
+    async (userId: string) => {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("environment", env)
+        .order("created_at", { ascending: false });
+      const rows = (data as SubscriptionRow[]) ?? [];
+      setSubscriptions(rows);
+      setSelectedSubId((prev) =>
+        prev && rows.some((r) => r.stripe_subscription_id === prev)
+          ? prev
+          : rows[0]?.stripe_subscription_id ?? null,
+      );
+      setAllSubscriptions(
+        rows.map((r) => ({
+          price_id: r.price_id,
+          status: r.status,
+          current_period_end: r.current_period_end,
+          cancel_at_period_end: r.cancel_at_period_end,
+        })),
+      );
+      return rows;
+    },
+    [env],
+  );
+
+  /**
+   * A troca de plano é confirmada pelo provedor de pagamento por webhook, que
+   * chega alguns segundos depois. Atualizamos o plano na tela na hora e
+   * seguimos consultando até o banco confirmar, para nunca exibir o plano antigo.
+   */
+  const confirmPlanChange = useCallback(
+    async (userId: string, subId: string, appliedPriceId: string) => {
+      setSubscriptions((prev) =>
+        prev.map((s) =>
+          s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
+        ),
+      );
+      setAllSubscriptions((prev) => prev);
+      for (const delay of [2000, 4000, 8000]) {
+        await new Promise((r) => setTimeout(r, delay));
+        const rows = await fetchSubscription(userId);
+        const row = rows.find((r) => r.stripe_subscription_id === subId);
+        if (row?.price_id === appliedPriceId) return;
+        // Enquanto o banco não confirma, mantém o plano novo visível.
+        setSubscriptions((prev) =>
+          prev.map((s) =>
+            s.stripe_subscription_id === subId ? { ...s, price_id: appliedPriceId } : s,
+          ),
+        );
+      }
+    },
+    [fetchSubscription],
+  );
+
 
   useEffect(() => {
     async function load() {
