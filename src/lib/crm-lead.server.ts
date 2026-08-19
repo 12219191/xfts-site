@@ -48,6 +48,10 @@ export interface CrmLeadResult {
   status: CrmLeadStatus;
   leadId: string | null;
   error?: string;
+  /** Código HTTP da resposta do CRM, quando houve resposta. */
+  httpStatus?: number;
+  /** Formato de assinatura usado nesta tentativa. */
+  signatureEncoding?: string;
 }
 
 /** Só formulários comerciais viram lead. Exclusão de dados é privacidade. */
@@ -127,22 +131,40 @@ export async function sendLeadToCrm(input: CrmLeadInput): Promise<CrmLeadResult>
 
     if (!res.ok) {
       const permanent = res.status === 400 || res.status === 401 || res.status === 403;
+      const raw = (await res.text().catch(() => "")).replace(/\s+/g, " ").trim().slice(0, 200);
+      const hint =
+        res.status === 401 || res.status === 403
+          ? " — assinatura recusada: confira se FLEXUS_APP_KEY_CRM é idêntica nos dois projetos"
+          : "";
       return {
         status: permanent ? "failed" : "pending",
         leadId: null,
-        error: `HTTP ${res.status}`,
+        httpStatus: res.status,
+        signatureEncoding: settings.signature_encoding,
+        error: `HTTP ${res.status}${raw ? ` — ${raw}` : ""}${hint}`,
       };
     }
 
     const contentType = res.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
       // Um SPA devolve HTML para qualquer rota: o endpoint ainda não existe.
-      return { status: "pending", leadId: null, error: "endpoint de lead ainda não implementado no CRM" };
+      return {
+        status: "pending",
+        leadId: null,
+        httpStatus: res.status,
+        signatureEncoding: settings.signature_encoding,
+        error: "endpoint de lead ainda não implementado no CRM",
+      };
     }
 
     const payload = (await res.json()) as unknown;
     const action = pick(payload, settings.response_action_path) === "created" ? "created" : "updated";
-    return { status: action, leadId: pick(payload, settings.response_lead_id_path) };
+    return {
+      status: action,
+      leadId: pick(payload, settings.response_lead_id_path),
+      httpStatus: res.status,
+      signatureEncoding: settings.signature_encoding,
+    };
   } catch (e) {
     return {
       status: "pending",
