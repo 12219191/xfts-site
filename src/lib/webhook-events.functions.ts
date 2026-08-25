@@ -9,7 +9,7 @@ export interface WebhookEventRow {
   status: string;
   error: string | null;
   duration_ms: number;
-  summary: Record<string, unknown> | null;
+  summary: Record<string, string | number | boolean | null> | null;
   created_at: string;
 }
 
