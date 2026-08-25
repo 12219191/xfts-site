@@ -21,12 +21,30 @@ Enquanto esses passos não terminam, o checkout continua funcionando só em modo
 - **Conferir a separação de ambientes**: a tabela de assinaturas guarda `environment` (`sandbox`/`live`), então as assinaturas de teste que você criou (Casa360 Pro, CRM) continuam separadas e não aparecem para clientes reais.
 - **Teste ponta a ponta em live**: uma assinatura real de menor valor, confirmando webhook, área do cliente, portal de cobrança e cancelamento — e depois o estorno dela.
 
-## Observações importantes
+## O que acontece com os dados de teste que existem hoje
 
-- As assinaturas de teste **não migram** para a conta live: assinantes reais precisam assinar novamente na conta da XFTS. Como hoje só existem assinaturas de teste, não há impacto em clientes.
-- O ambiente é escolhido automaticamente pela chave publicável do projeto; nenhuma alteração de código é necessária para "virar a chave".
-- Se a XFTS preferir usar as próprias chaves secretas do Stripe em vez do modelo gerenciado, isso é possível, mas perde a criação automática de chaves e a proteção do gateway — só recomendo se houver exigência interna.
+Hoje há 5 assinaturas na base, todas `environment = sandbox`:
+
+- 2 reais de teste (Casa360 Pro e CRM Pro, cliente `cus_V6UAR…`), criadas pelo checkout em modo teste;
+- 3 simuladas (`test_cus_lb`), criadas à mão para validar SSO.
+
+O que acontece:
+
+- **Nada é apagado.** Os registros continuam no banco e no /admin, marcados como `sandbox`.
+- **Continuo acessando?** Sim, para consulta/histórico no /admin e via banco. Elas não migram para a conta live e deixam de aparecer para clientes reais (todas as telas filtram por `environment`), e as ações de cobrança delas não funcionarão em live — o Stripe live não conhece esses clientes.
+- **A conta de teste do Stripe continua existindo** depois do go-live: ao vincular a conta da XFTS, o ambiente de teste passa a ser o "modo teste" dessa conta, e você segue podendo testar com cartão `4242…` sem cobrança real.
+- Sugiro, depois do go-live, apagar as 3 linhas simuladas (`test_cus_lb`) para o painel refletir só dados coerentes; as 2 de teste real podem ficar como histórico.
+
+## Beta testers que não pagam
+
+Duas formas, e recomendo usar as duas juntas:
+
+1. **Cupom / trial no Stripe (preferida)** — o beta tester passa pelo checkout normal, com 100% de desconto por N meses ou período de teste sem cartão. Vantagens: o fluxo é idêntico ao do cliente pagante (webhook, limites de usuários, SSO, área do cliente), e quando o desconto termina ele vira cliente pagante sem retrabalho. Preciso apenas criar os cupons na conta live e um campo de cupom no checkout.
+2. **Assinatura cortesia sem Stripe** — para casos em que ninguém deve passar pelo checkout: uma tela no /admin onde você concede acesso a um e-mail escolhendo sistema, plano e validade. Isso grava uma assinatura marcada como cortesia (sem `cus_`/`sub_` do Stripe), libera o sistema pelo mesmo provisionamento e limites, e as telas de cobrança ficam ocultas com a etiqueta "Cortesia — válido até dd/mm". No fim da validade o acesso é bloqueado automaticamente e você recebe o aviso para converter ou renovar.
+
+Se quiser, implemento os dois na mesma etapa, junto do go-live.
 
 ## Próximo passo
 
-Abra a aba de Pagamentos e conclua o passo 1 (vincular a conta da XFTS). Quando terminar, me avise que eu recrio o catálogo em live e faço o teste ponta a ponta.
+Abra a aba de Pagamentos e conclua o passo 1 (vincular a conta da XFTS). Em paralelo, me diga se quer os beta testers por **cupom no checkout**, por **cortesia no admin**, ou os dois — e eu já preparo essa parte.
+
