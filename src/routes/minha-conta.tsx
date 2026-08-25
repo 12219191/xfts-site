@@ -702,6 +702,16 @@ function MinhaContaPage() {
                     </Button>
                   </CardContent>
                 </Card>
+                ) : isCourtesy ? (
+                  <div className="mt-4 rounded-xl border border-gold-deep/40 bg-gold/5 p-5 text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      Acesso cortesia{courtesyUntil ? ` — válido até ${courtesyUntil}` : ""}
+                    </span>
+                    <p className="mt-1">
+                      Não há cobrança nesta assinatura. Para continuar após esse prazo,
+                      escolha um plano na página do produto ou fale com a nossa equipe.
+                    </p>
+                  </div>
                 ) : (
                   <div className="mt-4 rounded-xl border border-dashed border-border bg-muted/20 p-5 text-sm text-muted-foreground">
                     Assinatura de demonstração — o portal de cobrança, a troca de plano e o
