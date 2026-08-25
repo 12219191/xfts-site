@@ -440,11 +440,14 @@ export type Database = {
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
+          courtesy_note: string | null
           created_at: string | null
           current_period_end: string | null
           current_period_start: string | null
           environment: string
+          granted_by: string | null
           id: string
+          is_courtesy: boolean
           price_id: string
           product_id: string
           seats_reported_at: string | null
@@ -457,11 +460,14 @@ export type Database = {
         }
         Insert: {
           cancel_at_period_end?: boolean | null
+          courtesy_note?: string | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
+          granted_by?: string | null
           id?: string
+          is_courtesy?: boolean
           price_id: string
           product_id: string
           seats_reported_at?: string | null
@@ -474,11 +480,14 @@ export type Database = {
         }
         Update: {
           cancel_at_period_end?: boolean | null
+          courtesy_note?: string | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
+          granted_by?: string | null
           id?: string
+          is_courtesy?: boolean
           price_id?: string
           product_id?: string
           seats_reported_at?: string | null
