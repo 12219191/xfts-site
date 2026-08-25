@@ -8,8 +8,9 @@ import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
 import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CrmIntegrationPanel } from "@/components/admin/CrmIntegrationPanel";
 import { DunningPanel } from "@/components/admin/DunningPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle, Gift } from "lucide-react";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle, Gift, Webhook } from "lucide-react";
 import { CourtesyPanel } from "@/components/admin/CourtesyPanel";
+import { WebhooksPanel } from "@/components/admin/WebhooksPanel";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "dunning" | "courtesy" | "forms" | "images" | "crm" | "settings";
+type Tab = "blog" | "subscriptions" | "dunning" | "courtesy" | "forms" | "images" | "crm" | "webhooks" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -103,6 +104,7 @@ function AdminPage() {
     { id: "forms", label: "Formulários", icon: Inbox },
     { id: "images", label: "Imagens", icon: ImageIcon },
     { id: "crm", label: "Integração CRM", icon: PlugZap },
+    { id: "webhooks", label: "Webhooks Stripe", icon: Webhook },
     { id: "settings", label: "Configurações", icon: Settings },
   ];
 
@@ -167,6 +169,8 @@ function AdminPage() {
           {activeTab === "images" && <ProductImagesPanel />}
 
           {activeTab === "crm" && <CrmIntegrationPanel />}
+
+          {activeTab === "webhooks" && <WebhooksPanel />}
 
           {activeTab === "settings" && (
             <div className="max-w-md">

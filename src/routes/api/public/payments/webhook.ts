@@ -324,19 +324,79 @@ async function handleInvoicePaid(invoice: any) {
   await resolveDunning(subscriptionId);
 }
 
+/** Registra o recebimento do evento para monitoramento no /admin. */
+async function logWebhookEvent(row: {
+  stripe_event_id: string | null;
+  event_type: string;
+  environment: string;
+  status: "processed" | "ignored" | "failed";
+  error?: string | null;
+  duration_ms: number;
+  summary?: Record<string, unknown>;
+}) {
+  try {
+    const { error } = await getSupabase()
+      .from("webhook_events")
+      .upsert({ ...row, summary: row.summary ?? {} } as never, {
+        onConflict: "stripe_event_id",
+      });
+    if (error) console.error("Falha ao registrar webhook_event:", error.message);
+  } catch (e) {
+    console.error("Falha ao registrar webhook_event:", e);
+  }
+}
+
+const HANDLED_EVENTS = new Set([
+  "checkout.session.completed",
+  "customer.subscription.created",
+  "customer.subscription.updated",
+  "customer.subscription.deleted",
+  "invoice.payment_failed",
+  "invoice.paid",
+  "invoice.payment_succeeded",
+]);
+
+function eventSummary(event: any): Record<string, unknown> {
+  const o = event?.data?.object ?? {};
+  return {
+    object_id: o.id ?? null,
+    user_id: o.metadata?.userId ?? null,
+    subscription:
+      o.subscription ?? o.parent?.subscription_details?.subscription ?? null,
+    customer: o.customer ?? null,
+    status: o.status ?? o.payment_status ?? null,
+    amount:
+      typeof o.amount_total === "number"
+        ? o.amount_total / 100
+        : typeof o.amount_due === "number"
+          ? o.amount_due / 100
+          : null,
+    currency: o.currency ?? null,
+  };
+}
 
 export const Route = createFileRoute("/api/public/payments/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const startedAt = Date.now();
         const rawEnv = new URL(request.url).searchParams.get("env");
         if (rawEnv !== "sandbox" && rawEnv !== "live") {
           console.error("Webhook com env inválido:", rawEnv);
+          await logWebhookEvent({
+            stripe_event_id: null,
+            event_type: "desconhecido",
+            environment: String(rawEnv ?? "desconhecido"),
+            status: "failed",
+            error: "Parâmetro env inválido ou ausente na URL do webhook",
+            duration_ms: Date.now() - startedAt,
+          });
           return Response.json({ received: true, ignored: "invalid env" });
         }
         const env: StripeEnv = rawEnv;
+        let event: any = null;
         try {
-          const event = await verifyWebhook(request, env);
+          event = await verifyWebhook(request, env);
           console.log("Received event:", event.type, "env:", env);
           switch (event.type) {
             case "checkout.session.completed":
@@ -362,12 +422,30 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             default:
               console.log("Unhandled event:", event.type);
           }
+          await logWebhookEvent({
+            stripe_event_id: event.id ?? null,
+            event_type: event.type,
+            environment: env,
+            status: HANDLED_EVENTS.has(event.type) ? "processed" : "ignored",
+            duration_ms: Date.now() - startedAt,
+            summary: eventSummary(event),
+          });
           return Response.json({ received: true });
         } catch (e) {
           console.error("Webhook error:", e);
+          await logWebhookEvent({
+            stripe_event_id: event?.id ?? null,
+            event_type: event?.type ?? "assinatura_invalida",
+            environment: env,
+            status: "failed",
+            error: e instanceof Error ? e.message : String(e),
+            duration_ms: Date.now() - startedAt,
+            summary: event ? eventSummary(event) : {},
+          });
           return new Response("Webhook error", { status: 400 });
         }
       },
     },
   },
+
 });
