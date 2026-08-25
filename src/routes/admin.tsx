@@ -8,7 +8,8 @@ import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
 import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CrmIntegrationPanel } from "@/components/admin/CrmIntegrationPanel";
 import { DunningPanel } from "@/components/admin/DunningPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle } from "lucide-react";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle, Gift } from "lucide-react";
+import { CourtesyPanel } from "@/components/admin/CourtesyPanel";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "dunning" | "forms" | "images" | "crm" | "settings";
+type Tab = "blog" | "subscriptions" | "dunning" | "courtesy" | "forms" | "images" | "crm" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
@@ -98,6 +99,7 @@ function AdminPage() {
     { id: "blog", label: "Blog", icon: FileText },
     { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
     { id: "dunning", label: "Cobrança", icon: AlertTriangle },
+    { id: "courtesy", label: "Cortesias", icon: Gift },
     { id: "forms", label: "Formulários", icon: Inbox },
     { id: "images", label: "Imagens", icon: ImageIcon },
     { id: "crm", label: "Integração CRM", icon: PlugZap },
@@ -157,6 +159,8 @@ function AdminPage() {
           {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
 
           {activeTab === "dunning" && <DunningPanel />}
+
+          {activeTab === "courtesy" && <CourtesyPanel />}
 
           {activeTab === "forms" && <FormSubmissionsPanel />}
 

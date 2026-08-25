@@ -106,6 +106,8 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           line_items: [{ price: stripePrice.id, quantity: data.quantity || 1 }],
           mode: isRecurring ? "subscription" : "payment",
           ui_mode: "embedded_page",
+          // Permite cupons de beta tester / desconto promocional no checkout.
+          allow_promotion_codes: true,
           ...(data.returnUrl && { return_url: data.returnUrl }),
           ...(customerId ? { customer: customerId } : email ? { customer_email: email } : {}),
           metadata: { userId, appKey: appKey ?? "", lookupKey: data.priceId },
