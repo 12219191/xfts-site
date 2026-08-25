@@ -40,8 +40,10 @@ export const Route = createFileRoute("/api/public/payments/dunning")({
         if (!authorized) return unauthorized();
 
         const { runDunningSweep } = await import("@/lib/dunning.server");
+        const { expireCourtesyAccess } = await import("@/lib/courtesy.server");
         const result = await runDunningSweep();
-        return Response.json(result);
+        const courtesy = await expireCourtesyAccess();
+        return Response.json({ ...result, courtesy });
       },
     },
   },
