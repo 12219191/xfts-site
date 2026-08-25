@@ -500,6 +500,42 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_events: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          environment: string
+          error: string | null
+          event_type: string
+          id: string
+          status: string
+          stripe_event_id: string | null
+          summary: Json
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number
+          environment?: string
+          error?: string | null
+          event_type: string
+          id?: string
+          status?: string
+          stripe_event_id?: string | null
+          summary?: Json
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          environment?: string
+          error?: string | null
+          event_type?: string
+          id?: string
+          status?: string
+          stripe_event_id?: string | null
+          summary?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
