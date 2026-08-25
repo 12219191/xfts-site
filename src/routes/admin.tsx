@@ -8,7 +8,8 @@ import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
 import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CrmIntegrationPanel } from "@/components/admin/CrmIntegrationPanel";
 import { DunningPanel } from "@/components/admin/DunningPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle } from "lucide-react";
+import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle, Gift } from "lucide-react";
+import { CourtesyPanel } from "@/components/admin/CourtesyPanel";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
