@@ -436,6 +436,12 @@ function MinhaContaPage() {
 
 
   const hasRealBilling = isRealStripeId(subscription?.stripe_customer_id, "cus_");
+  const isCourtesy = Boolean(
+    (subscription as { is_courtesy?: boolean } | null)?.is_courtesy,
+  );
+  const courtesyUntil = subscription?.current_period_end
+    ? new Date(subscription.current_period_end).toLocaleDateString("pt-BR")
+    : null;
 
   const initials = user.email
     .split("@")[0]
