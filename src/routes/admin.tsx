@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "blog" | "subscriptions" | "dunning" | "forms" | "images" | "crm" | "settings";
+type Tab = "blog" | "subscriptions" | "dunning" | "courtesy" | "forms" | "images" | "crm" | "settings";
 
 function AdminPage() {
   const [isAuth, setIsAuth] = useState(false);
