@@ -99,6 +99,7 @@ function AdminPage() {
     { id: "blog", label: "Blog", icon: FileText },
     { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
     { id: "dunning", label: "Cobrança", icon: AlertTriangle },
+    { id: "courtesy", label: "Cortesias", icon: Gift },
     { id: "forms", label: "Formulários", icon: Inbox },
     { id: "images", label: "Imagens", icon: ImageIcon },
     { id: "crm", label: "Integração CRM", icon: PlugZap },
