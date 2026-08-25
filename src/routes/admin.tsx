@@ -160,6 +160,8 @@ function AdminPage() {
 
           {activeTab === "dunning" && <DunningPanel />}
 
+          {activeTab === "courtesy" && <CourtesyPanel />}
+
           {activeTab === "forms" && <FormSubmissionsPanel />}
 
           {activeTab === "images" && <ProductImagesPanel />}
