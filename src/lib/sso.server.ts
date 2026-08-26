@@ -11,6 +11,9 @@ export interface SsoPayload {
   plan: string | null;
   /** Papel do portador do token. Hoje só o titular usa SSO. */
   role?: "owner";
+  /** Finalidade: acesso normal do titular ou sessão de suporte da XFTS. */
+  purpose?: "owner" | "support";
+
   /** Assentos de equipe liberados pelo plano (null = ilimitado). */
   seats?: number | null;
   jti: string;
