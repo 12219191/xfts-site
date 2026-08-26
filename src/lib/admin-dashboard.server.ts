@@ -18,6 +18,12 @@ export interface DashboardAlertRow {
   detalhe: string | null;
 }
 
+export interface DashboardOpsAlerts {
+  webhooksFalhos24h: number;
+  provisionamentosEsgotados: number;
+  sistemasComProblema: string[];
+}
+
 export interface DashboardData {
   mrr: number;
   clientesAtivos: number;
@@ -28,6 +34,7 @@ export interface DashboardData {
   assinaturasComProblema: DashboardAlertRow[];
   cortesiasTerminando: DashboardAlertRow[];
   pagamentosFalhos: DashboardAlertRow[];
+  operacional: DashboardOpsAlerts;
   environment: string;
 }
 
@@ -48,6 +55,9 @@ export async function buildDashboard(environment: string): Promise<DashboardData
     .eq("environment", environment)
     .is("resolved_at", null)
     .limit(500);
+
+  const { buildOperationalAlerts } = await import("@/lib/reliability.server");
+  const operacional = await buildOperationalAlerts();
 
   const directory = await loadUserDirectory();
   const rows = subs ?? [];
@@ -137,6 +147,7 @@ export async function buildDashboard(environment: string): Promise<DashboardData
     assinaturasComProblema,
     cortesiasTerminando,
     pagamentosFalhos,
+    operacional,
     environment,
   };
 }
