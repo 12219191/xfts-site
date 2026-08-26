@@ -23,6 +23,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -111,6 +112,11 @@ const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
+  id: '/assinaturas',
+  path: '/assinaturas',
   getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -545,6 +557,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/assinaturas': {
+      id: '/admin/assinaturas'
+      path: '/assinaturas'
+      fullPath: '/admin/assinaturas'
+      preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -682,10 +701,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAssinaturasRoute: typeof AdminAssinaturasRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAssinaturasRoute: AdminAssinaturasRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
