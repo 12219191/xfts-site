@@ -24,6 +24,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
+import { Route as AdminAuditoriaRouteImport } from './routes/admin.auditoria'
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
 import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
@@ -126,6 +127,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
   id: '/assinaturas',
   path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditoriaRoute = AdminAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminClientesRoute = AdminClientesRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
@@ -376,6 +384,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
@@ -423,6 +432,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/auditoria'
     | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
@@ -465,6 +475,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/auditoria'
     | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
@@ -510,6 +521,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/auditoria'
     | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
@@ -670,6 +682,13 @@ declare module '@tanstack/react-router' {
       path: '/assinaturas'
       fullPath: '/admin/assinaturas'
       preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/auditoria': {
+      id: '/admin/auditoria'
+      path: '/auditoria'
+      fullPath: '/admin/auditoria'
+      preLoaderRoute: typeof AdminAuditoriaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/clientes': {
@@ -873,6 +892,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAssinaturasRoute: typeof AdminAssinaturasRoute
+  AdminAuditoriaRoute: typeof AdminAuditoriaRoute
   AdminClientesRoute: typeof AdminClientesRoute
   AdminCobrancaRoute: typeof AdminCobrancaRoute
   AdminConteudoRoute: typeof AdminConteudoRoute
@@ -887,6 +907,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAssinaturasRoute: AdminAssinaturasRoute,
+  AdminAuditoriaRoute: AdminAuditoriaRoute,
   AdminClientesRoute: AdminClientesRoute,
   AdminCobrancaRoute: AdminCobrancaRoute,
   AdminConteudoRoute: AdminConteudoRoute,
