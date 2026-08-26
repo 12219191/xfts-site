@@ -519,6 +519,7 @@ export type Database = {
           is_courtesy: boolean
           price_id: string
           product_id: string
+          seats_override: number | null
           seats_reported_at: string | null
           seats_used: number | null
           status: string
@@ -539,6 +540,7 @@ export type Database = {
           is_courtesy?: boolean
           price_id: string
           product_id: string
+          seats_override?: number | null
           seats_reported_at?: string | null
           seats_used?: number | null
           status?: string
@@ -559,6 +561,7 @@ export type Database = {
           is_courtesy?: boolean
           price_id?: string
           product_id?: string
+          seats_override?: number | null
           seats_reported_at?: string | null
           seats_used?: number | null
           status?: string
