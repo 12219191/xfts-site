@@ -1,51 +1,92 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AdminSubscriptionsPanel } from "@/components/AdminSubscriptionsPanel";
-import { BlogPanel } from "@/components/admin/BlogPanel";
-import { FormSubmissionsPanel } from "@/components/admin/FormSubmissionsPanel";
-import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
-import { CrmIntegrationPanel } from "@/components/admin/CrmIntegrationPanel";
-import { DunningPanel } from "@/components/admin/DunningPanel";
-import { LogOut, FileText, CreditCard, Settings, BookOpen, Inbox, Image as ImageIcon, PlugZap, AlertTriangle, Gift, Webhook } from "lucide-react";
-import { CourtesyPanel } from "@/components/admin/CourtesyPanel";
-import { WebhooksPanel } from "@/components/admin/WebhooksPanel";
-import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getAdminSession } from "@/lib/admin-core.functions";
+import { canAccess, ROLE_LABELS, type AdminModule, type AdminRole } from "@/lib/admin-rbac";
+import { AdminContext } from "@/components/admin/admin-context";
+import {
+  AlertTriangle,
+  BookOpen,
+  ClipboardList,
+  CreditCard,
+  FileText,
+  Gift,
+  Inbox,
+  LayoutDashboard,
+  LogOut,
+  Package,
+  PlugZap,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
-    meta: [{ title: "Admin - XFTS Blog" }],
+    meta: [
+      { title: "Control Center — XFTS FLEXUS" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
-  component: AdminPage,
+  component: AdminLayout,
 });
 
-type Tab = "blog" | "subscriptions" | "dunning" | "courtesy" | "forms" | "images" | "crm" | "webhooks" | "settings";
+interface NavItem {
+  to: string;
+  label: string;
+  module: AdminModule;
+  icon: typeof FileText;
+  group: string;
+}
 
-function AdminPage() {
-  const [isAuth, setIsAuth] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+const NAV: NavItem[] = [
+  { to: "/admin/dashboard", label: "Visão executiva", module: "dashboard", icon: LayoutDashboard, group: "Visão geral" },
+  { to: "/admin/clientes", label: "Clientes", module: "clientes", icon: Users, group: "Clientes" },
+  { to: "/admin/assinaturas", label: "Assinaturas", module: "assinaturas", icon: CreditCard, group: "Receita" },
+  { to: "/admin/cobranca", label: "Cobrança", module: "cobranca", icon: AlertTriangle, group: "Receita" },
+  { to: "/admin/cortesias", label: "Cortesias", module: "cortesias", icon: Gift, group: "Receita" },
+  { to: "/admin/produtos", label: "Produtos", module: "produtos", icon: Package, group: "Catálogo" },
+  { to: "/admin/conteudo", label: "Blog", module: "conteudo", icon: FileText, group: "Marketing" },
+  { to: "/admin/leads", label: "Leads", module: "leads", icon: Inbox, group: "Marketing" },
+  { to: "/admin/integracoes", label: "Integrações", module: "integracoes", icon: PlugZap, group: "Sistema" },
+  { to: "/admin/equipe", label: "Equipe", module: "equipe", icon: ShieldCheck, group: "Sistema" },
+  { to: "/admin/auditoria", label: "Auditoria", module: "auditoria", icon: ClipboardList, group: "Sistema" },
+];
+
+function AdminLayout() {
   const [loading, setLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
+  const [session, setSession] = useState<{ userId: string; email: string; roles: AdminRole[] } | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
-  const [activeTab, setActiveTab] = useState<Tab>("blog");
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const checkAdmin = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setIsAuth(false); setLoading(false); return; }
+  const refresh = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      setIsAuth(false);
+      setSession(null);
+      setLoading(false);
+      return;
+    }
     setIsAuth(true);
-    const { data } = await supabase.from("admin_users").select("id").eq("user_id", user.id).maybeSingle();
-    setIsAdmin(!!data);
+    try {
+      const result = await getAdminSession();
+      setSession(result);
+    } catch {
+      setSession(null);
+    }
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
-    checkAdmin();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { checkAdmin(); });
+    refresh();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { refresh(); });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [refresh]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,10 +98,12 @@ function AdminPage() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuth(false);
-    setIsAdmin(false);
+    setSession(null);
   };
 
-  if (loading) return <div className="flex h-screen items-center justify-center text-muted-foreground">Carregando...</div>;
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center text-muted-foreground">Carregando Control Center...</div>;
+  }
 
   if (!isAuth) {
     return (
@@ -70,8 +113,8 @@ function AdminPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <BookOpen className="h-6 w-6" />
             </div>
-            <h1 className="mt-4 text-xl font-bold text-foreground">Admin FLEXUS</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Entre com suas credenciais</p>
+            <h1 className="mt-4 text-xl font-bold text-foreground">XFTS Control Center</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Área restrita de gestão interna</p>
           </div>
           <Card className="mt-6 border-border bg-card shadow-lg"><CardContent className="p-6">
             <form onSubmit={handleLogin} className="grid gap-4">
@@ -86,105 +129,88 @@ function AdminPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!session || session.roles.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
         <h1 className="text-2xl font-bold text-foreground">Acesso Negado</h1>
-        <p className="mt-2 text-muted-foreground">Sua conta não tem permissão de administrador.</p>
+        <p className="mt-2 max-w-md text-muted-foreground">
+          Sua conta não tem perfil administrativo no Control Center.
+        </p>
         <Button onClick={handleLogout} variant="outline" className="mt-4">Sair</Button>
       </div>
     );
   }
 
-  const sidebarItems: { id: Tab; label: string; icon: typeof FileText }[] = [
-    { id: "blog", label: "Blog", icon: FileText },
-    { id: "subscriptions", label: "Assinaturas", icon: CreditCard },
-    { id: "dunning", label: "Cobrança", icon: AlertTriangle },
-    { id: "courtesy", label: "Cortesias", icon: Gift },
-    { id: "forms", label: "Formulários", icon: Inbox },
-    { id: "images", label: "Imagens", icon: ImageIcon },
-    { id: "crm", label: "Integração CRM", icon: PlugZap },
-    { id: "webhooks", label: "Webhooks Stripe", icon: Webhook },
-    { id: "settings", label: "Configurações", icon: Settings },
-  ];
+  const visible = NAV.filter((item) => canAccess(session.roles, item.module));
+  const groups = [...new Set(visible.map((i) => i.group))];
+  const current = visible.find((i) => pathname.startsWith(i.to));
 
   return (
-    <div className="flex min-h-screen bg-surface">
-      {/* Sidebar */}
-      <aside className="hidden w-56 shrink-0 border-r border-border bg-card md:block">
-        <div className="flex h-14 items-center border-b border-border px-5">
-          <span className="text-sm font-bold tracking-wide text-foreground">FLEXUS Admin</span>
-        </div>
-        <nav className="mt-2 space-y-0.5 px-3">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
-                activeTab === item.id
-                  ? "bg-primary/10 font-medium text-primary"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-              }`}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Main */}
-      <div className="min-w-0 flex-1">
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-6">
-          <div className="flex gap-2 md:hidden">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`rounded-lg p-2 ${activeTab === item.id ? "bg-primary/10 text-primary" : "text-muted-foreground"}`}
-              >
-                <item.icon className="h-4 w-4" />
-              </button>
-            ))}
+    <AdminContext.Provider value={session}>
+      <div className="flex min-h-screen bg-surface">
+        <aside className="hidden w-60 shrink-0 border-r border-border bg-card md:block">
+          <div className="flex h-14 items-center border-b border-border px-5">
+            <span className="text-sm font-bold tracking-wide text-foreground">Control Center</span>
           </div>
-          <h2 className="hidden text-sm font-medium text-foreground md:block">
-            {sidebarItems.find((s) => s.id === activeTab)?.label}
-          </h2>
-          <Button size="sm" variant="ghost" onClick={handleLogout} className="text-muted-foreground">
-            <LogOut className="mr-2 h-4 w-4" /> Sair
-          </Button>
-        </header>
+          <nav className="mt-3 space-y-4 px-3 pb-8">
+            {groups.map((group) => (
+              <div key={group}>
+                <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {group}
+                </p>
+                <div className="space-y-0.5">
+                  {visible.filter((i) => i.group === group).map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                      activeProps={{ className: "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm bg-primary/10 font-medium text-primary" }}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </aside>
 
-        <main className="p-6">
-          {activeTab === "blog" && <BlogPanel />}
-
-          {activeTab === "subscriptions" && <AdminSubscriptionsPanel />}
-
-          {activeTab === "dunning" && <DunningPanel />}
-
-          {activeTab === "courtesy" && <CourtesyPanel />}
-
-          {activeTab === "forms" && <FormSubmissionsPanel />}
-
-          {activeTab === "images" && <ProductImagesPanel />}
-
-          {activeTab === "crm" && <CrmIntegrationPanel />}
-
-          {activeTab === "webhooks" && <WebhooksPanel />}
-
-          {activeTab === "settings" && (
-            <div className="max-w-md">
-              <h3 className="text-lg font-semibold text-foreground">Configurações</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Configurações avançadas do painel administrativo.</p>
-              <Card className="mt-6 border-border bg-card">
-                <CardContent className="p-6 text-sm text-muted-foreground">
-                  Em breve: Gerenciamento de usuários admin, webhooks e integrações.
-                </CardContent>
-              </Card>
+        <div className="min-w-0 flex-1">
+          <header className="flex h-14 items-center justify-between gap-4 border-b border-border bg-card px-4 md:px-6">
+            <div className="flex gap-1 overflow-x-auto md:hidden">
+              {visible.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="rounded-lg p-2 text-muted-foreground"
+                  activeProps={{ className: "rounded-lg p-2 bg-primary/10 text-primary" }}
+                >
+                  <item.icon className="h-4 w-4" />
+                </Link>
+              ))}
             </div>
-          )}
-        </main>
+            <h2 className="hidden text-sm font-medium text-foreground md:block">
+              {current?.label ?? "Control Center"}
+            </h2>
+            <div className="flex items-center gap-3">
+              <div className="hidden text-right sm:block">
+                <p className="text-xs font-medium text-foreground">{session.email}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {session.roles.map((r) => ROLE_LABELS[r]).join(" · ")}
+                </p>
+              </div>
+              <Button size="sm" variant="ghost" onClick={handleLogout} className="text-muted-foreground">
+                <LogOut className="mr-2 h-4 w-4" /> Sair
+              </Button>
+            </div>
+          </header>
+
+          <main className="p-4 md:p-6">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </AdminContext.Provider>
   );
 }
