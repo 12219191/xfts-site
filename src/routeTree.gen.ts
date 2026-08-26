@@ -39,6 +39,7 @@ import { Route as AdminPromocoesRouteImport } from './routes/admin.promocoes'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
+import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
 import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
@@ -209,6 +210,11 @@ const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
   path: '/retorno',
   getParentRoute: () => CheckoutRoute,
 } as any)
+const ConviteTokenRoute = ConviteTokenRouteImport.update({
+  id: '/convite/$token',
+  path: '/convite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -387,6 +394,7 @@ export interface FileRoutesByTo {
   '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -492,6 +501,7 @@ export interface FileRouteTypes {
     | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -591,6 +602,7 @@ export interface FileRouteTypes {
     | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -628,6 +640,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  ConviteTokenRoute: typeof ConviteTokenRoute
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEmailQueueFlushRoute: typeof ApiPublicEmailQueueFlushRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
@@ -852,6 +865,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout/retorno'
       preLoaderRoute: typeof CheckoutRetornoRouteImport
       parentRoute: typeof CheckoutRoute
+    }
+    '/convite/$token': {
+      id: '/convite/$token'
+      path: '/convite/$token'
+      fullPath: '/convite/$token'
+      preLoaderRoute: typeof ConviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/produtos/': {
       id: '/produtos/'
@@ -1089,6 +1109,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  ConviteTokenRoute: ConviteTokenRoute,
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEmailQueueFlushRoute: ApiPublicEmailQueueFlushRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
