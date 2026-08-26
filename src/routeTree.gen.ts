@@ -22,6 +22,7 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -106,6 +107,11 @@ const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
   id: '/termos-de-uso',
   path: '/termos-de-uso',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
@@ -209,7 +215,7 @@ const LovableEmailTransactionalPreviewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
@@ -230,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -243,7 +250,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
   '/exclusao-de-dados': typeof ExclusaoDeDadosRoute
@@ -262,6 +268,7 @@ export interface FileRoutesByTo {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -276,7 +283,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
@@ -297,6 +304,7 @@ export interface FileRoutesById {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -333,6 +341,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin/'
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
@@ -346,7 +355,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/checkout'
     | '/contato'
     | '/exclusao-de-dados'
@@ -365,6 +373,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin'
     | '/blog'
     | '/produtos'
     | '/api/public/crm-retry'
@@ -399,6 +408,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin/'
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
@@ -413,7 +423,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   CheckoutRoute: typeof CheckoutRouteWithChildren
   ContatoRoute: typeof ContatoRoute
@@ -527,6 +537,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/termos-de-uso'
       preLoaderRoute: typeof TermosDeUsoRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -664,6 +681,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface BlogRouteChildren {
   BlogArticleIdRoute: typeof BlogArticleIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -716,7 +743,7 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   CheckoutRoute: CheckoutRouteWithChildren,
   ContatoRoute: ContatoRoute,
