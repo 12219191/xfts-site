@@ -30,6 +30,8 @@ export interface CatalogPlan {
   annualLookupKey: string | null;
   active: boolean;
   sortOrder: number;
+  /** Dias de teste grátis oferecidos na primeira contratação (0 = sem teste). */
+  trialDays: number;
   /** Recursos e limites liberados por este plano. */
   entitlements: EntitlementMap;
 }

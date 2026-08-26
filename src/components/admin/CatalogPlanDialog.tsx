@@ -43,6 +43,7 @@ const emptyForm = {
   annualLookupKey: "",
   active: true,
   sortOrder: "1",
+  trialDays: "0",
 };
 
 function toCents(value: string): number {
@@ -81,6 +82,7 @@ export function CatalogPlanDialog({
         annualLookupKey: plan.annualLookupKey ?? "",
         active: plan.active,
         sortOrder: plan.sortOrder.toString(),
+        trialDays: String(plan.trialDays ?? 0),
       });
     } else {
       setForm(emptyForm);
@@ -135,6 +137,7 @@ export function CatalogPlanDialog({
           annualLookupKey: form.annualLookupKey.trim() || null,
           active: form.active,
           sortOrder: Number(form.sortOrder) || 1,
+          trialDays: Number(form.trialDays) || 0,
           entitlements: ents,
           syncStripe: syncStripe && priceChanged,
           environment,
@@ -219,6 +222,19 @@ export function CatalogPlanDialog({
                   placeholder="ilimitado"
                 />
               </div>
+            </div>
+
+            <div className="grid gap-1.5 sm:max-w-[220px]">
+              <Label>Dias de teste grátis</Label>
+              <Input
+                value={form.trialDays}
+                onChange={(e) => setForm({ ...form, trialDays: e.target.value })}
+                inputMode="numeric"
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground">
+                Aplicado só na primeira contratação deste sistema. 0 desativa o teste.
+              </p>
             </div>
 
             <div className="grid gap-1.5">

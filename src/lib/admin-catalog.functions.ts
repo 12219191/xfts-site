@@ -24,6 +24,7 @@ export interface CatalogPlanInput {
   annualLookupKey: string | null;
   active: boolean;
   sortOrder: number;
+  trialDays: number;
   entitlements: EntitlementMap;
   /** Cria/atualiza os preços no provedor de pagamento ao salvar. */
   syncStripe: boolean;
@@ -174,6 +175,7 @@ export const saveCatalogPlan = createServerFn({ method: "POST" })
       annual_lookup_key: data.annualLookupKey,
       active: data.active,
       sort_order: data.sortOrder,
+      trial_days: Math.max(0, Math.min(90, Math.round(data.trialDays || 0))),
       entitlements: data.entitlements ?? {},
     };
 
