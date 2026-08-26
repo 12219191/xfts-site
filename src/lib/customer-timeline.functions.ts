@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { CustomerTimeline } from "@/lib/customer-timeline.server";
 
@@ -6,7 +7,7 @@ type TimelineResult = CustomerTimeline | { error: string };
 type MutationResult = { ok: true } | { error: string };
 
 async function guard(
-  supabase: Parameters<typeof requireGuard>[0],
+  supabase: SupabaseClient,
   userId: string,
   email: string,
 ): Promise<string | null> {
@@ -19,10 +20,7 @@ async function guard(
     throw e;
   }
 }
-// helper de tipo para o parâmetro do supabase acima
-declare function requireGuard(
-  supabase: import("@supabase/supabase-js").SupabaseClient,
-): void;
+
 
 /** Histórico unificado do cliente (assinaturas, faturas, e-mails, acessos, leads, ações internas). */
 export const getCustomerTimeline = createServerFn({ method: "POST" })
