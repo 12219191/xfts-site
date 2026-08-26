@@ -34,6 +34,7 @@ export type AdminModule =
   | "clientes"
   | "assinaturas"
   | "cobranca"
+  | "financeiro"
   | "cortesias"
   | "produtos"
   | "conteudo"
@@ -48,6 +49,7 @@ export const MODULE_ROLES: Record<AdminModule, AdminRole[]> = {
   clientes: ["superadmin", "comercial", "suporte"],
   assinaturas: ["superadmin", "financeiro", "comercial"],
   cobranca: ["superadmin", "financeiro"],
+  financeiro: ["superadmin", "financeiro"],
   cortesias: ["superadmin", "financeiro", "suporte"],
   produtos: ["superadmin", "produto"],
   conteudo: ["superadmin", "produto"],
