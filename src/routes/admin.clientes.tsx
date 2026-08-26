@@ -103,10 +103,16 @@ function ClientesPage() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-foreground">{row.email}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  cliente desde {fmtDate(row.createdAt)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    cliente desde {fmtDate(row.createdAt)}
+                  </span>
+                  <Button size="sm" variant="outline" onClick={() => setTimelineFor(row)}>
+                    <History className="mr-2 h-4 w-4" /> Histórico
+                  </Button>
+                </div>
               </div>
+
 
               <div className="mt-4 grid gap-3 lg:grid-cols-2">
                 {row.produtos.map((p) => (
