@@ -177,7 +177,7 @@ export async function createSupportAccess(params: {
   const token = await signSsoToken({
     sub: params.userId,
     email: params.email,
-    app: app.key as never,
+    app: app.key,
     plan: planTierFromPriceId(sub.price_id),
     role: "owner",
     seats: seatsFromPriceId(sub.price_id),
@@ -185,7 +185,7 @@ export async function createSupportAccess(params: {
     iat: now,
     exp,
     purpose: "support",
-  } as never);
+  });
 
   return { url: `${app.url}/sso?token=${encodeURIComponent(token)}` };
 }
