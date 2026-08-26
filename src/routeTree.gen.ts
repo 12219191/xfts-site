@@ -35,9 +35,11 @@ import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
+import { Route as AdminPromocoesRouteImport } from './routes/admin.promocoes'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
+import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
 import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
@@ -188,6 +190,11 @@ const AdminProdutosRoute = AdminProdutosRouteImport.update({
   path: '/produtos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPromocoesRoute = AdminPromocoesRouteImport.update({
+  id: '/promocoes',
+  path: '/promocoes',
+  getParentRoute: () => AdminRoute,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -202,6 +209,11 @@ const CheckoutRetornoRoute = CheckoutRetornoRouteImport.update({
   id: '/retorno',
   path: '/retorno',
   getParentRoute: () => CheckoutRoute,
+} as any)
+const ConviteTokenRoute = ConviteTokenRouteImport.update({
+  id: '/convite/$token',
+  path: '/convite/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutosIndexRoute = ProdutosIndexRouteImport.update({
   id: '/',
@@ -330,8 +342,10 @@ export interface FileRoutesByFullPath {
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -377,8 +391,10 @@ export interface FileRoutesByTo {
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -428,8 +444,10 @@ export interface FileRoutesById {
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/admin/promocoes': typeof AdminPromocoesRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
+  '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
@@ -480,8 +498,10 @@ export interface FileRouteTypes {
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
+    | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -527,8 +547,10 @@ export interface FileRouteTypes {
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
+    | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -577,8 +599,10 @@ export interface FileRouteTypes {
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
+    | '/admin/promocoes'
     | '/blog/$articleId'
     | '/checkout/retorno'
+    | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
     | '/produtos/flexus-casa360'
@@ -616,6 +640,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
+  ConviteTokenRoute: typeof ConviteTokenRoute
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEmailQueueFlushRoute: typeof ApiPublicEmailQueueFlushRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
@@ -813,6 +838,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/promocoes': {
+      id: '/admin/promocoes'
+      path: '/promocoes'
+      fullPath: '/admin/promocoes'
+      preLoaderRoute: typeof AdminPromocoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -833,6 +865,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout/retorno'
       preLoaderRoute: typeof CheckoutRetornoRouteImport
       parentRoute: typeof CheckoutRoute
+    }
+    '/convite/$token': {
+      id: '/convite/$token'
+      path: '/convite/$token'
+      fullPath: '/convite/$token'
+      preLoaderRoute: typeof ConviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/produtos/': {
       id: '/produtos/'
@@ -983,6 +1022,7 @@ interface AdminRouteChildren {
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
   AdminProdutosRoute: typeof AdminProdutosRoute
+  AdminPromocoesRoute: typeof AdminPromocoesRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -999,6 +1039,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminLeadsRoute: AdminLeadsRoute,
   AdminProdutosRoute: AdminProdutosRoute,
+  AdminPromocoesRoute: AdminPromocoesRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -1068,6 +1109,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
+  ConviteTokenRoute: ConviteTokenRoute,
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEmailQueueFlushRoute: ApiPublicEmailQueueFlushRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,

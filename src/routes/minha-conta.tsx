@@ -29,6 +29,8 @@ import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
 import { CancelSubscriptionFlow } from "@/components/CancelSubscriptionFlow";
 import { MeusSistemas, type SistemaSubscription } from "@/components/MeusSistemas";
 import { MeusRecursos } from "@/components/MeusRecursos";
+import { TeamInvites } from "@/components/TeamInvites";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -494,6 +496,11 @@ function MinhaContaPage() {
           <MeusRecursos />
 
           <Separator />
+
+          <TeamInvites />
+
+          <Separator />
+
 
           {/* Subscription status */}
           <div>

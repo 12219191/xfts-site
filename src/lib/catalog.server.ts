@@ -41,6 +41,7 @@ export function codeCatalog(): CatalogSnapshot {
         annualLookupKey: plan.annualPriceId ?? null,
         active: true,
         sortOrder: index + 1,
+        trialDays: 0,
         entitlements: {},
       });
     });
@@ -93,6 +94,7 @@ type PlanRow = {
   annual_lookup_key: string | null;
   active: boolean;
   sort_order: number;
+  trial_days?: number | null;
   entitlements?: unknown;
 };
 
@@ -124,6 +126,7 @@ export function mapPlan(row: PlanRow): CatalogPlan {
     annualLookupKey: row.annual_lookup_key,
     active: row.active,
     sortOrder: row.sort_order,
+    trialDays: row.trial_days ?? 0,
     entitlements: parseEntitlements(row.entitlements),
   };
 }

@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_user_id: string | null
+          app_key: string
+          created_at: string
+          email: string
+          environment: string
+          expires_at: string
+          id: string
+          note: string | null
+          owner_email: string | null
+          owner_user_id: string
+          revoked_at: string | null
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_user_id?: string | null
+          app_key: string
+          created_at?: string
+          email: string
+          environment?: string
+          expires_at?: string
+          id?: string
+          note?: string | null
+          owner_email?: string | null
+          owner_user_id: string
+          revoked_at?: string | null
+          status?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_user_id?: string | null
+          app_key?: string
+          created_at?: string
+          email?: string
+          environment?: string
+          expires_at?: string
+          id?: string
+          note?: string | null
+          owner_email?: string | null
+          owner_user_id?: string
+          revoked_at?: string | null
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_audit_log: {
         Row: {
           action: string
@@ -179,6 +233,7 @@ export type Database = {
           seats: number | null
           sort_order: number
           tier: string
+          trial_days: number
           updated_at: string
         }
         Insert: {
@@ -198,6 +253,7 @@ export type Database = {
           seats?: number | null
           sort_order?: number
           tier?: string
+          trial_days?: number
           updated_at?: string
         }
         Update: {
@@ -217,6 +273,7 @@ export type Database = {
           seats?: number | null
           sort_order?: number
           tier?: string
+          trial_days?: number
           updated_at?: string
         }
         Relationships: [

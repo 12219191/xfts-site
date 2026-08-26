@@ -43,9 +43,11 @@ export const Route = createFileRoute("/api/public/payments/dunning")({
         const run = await recordCronRun("dunning", async () => {
           const { runDunningSweep } = await import("@/lib/dunning.server");
           const { expireCourtesyAccess } = await import("@/lib/courtesy.server");
+          const { runTrialReminders } = await import("@/lib/onboarding.server");
           const result = await runDunningSweep();
           const courtesy = await expireCourtesyAccess();
-          return { ...result, courtesy };
+          const trials = await runTrialReminders();
+          return { ...result, courtesy, trials };
         });
 
         if (!run.ok) return Response.json({ error: run.error }, { status: 500 });

@@ -185,6 +185,19 @@ async function handleSubscriptionCreated(
     accessUntil: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     env,
   });
+  const { sendWelcomeEmail } = await import("@/lib/onboarding.server");
+  await sendWelcomeEmail({
+    userId,
+    subscriptionId: subscription.id,
+    priceId,
+    status: subscription.status,
+    trialEnd: subscription.trial_end
+      ? new Date(subscription.trial_end * 1000).toISOString()
+      : periodEnd
+        ? new Date(periodEnd * 1000).toISOString()
+        : null,
+    environment: env,
+  });
 }
 
 async function handleSubscriptionUpdated(

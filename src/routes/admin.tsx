@@ -21,6 +21,7 @@ import {
   Package,
   PlugZap,
   ShieldCheck,
+  Ticket,
   Users,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ const NAV: NavItem[] = [
   { to: "/admin/financeiro", label: "Financeiro", module: "financeiro", icon: Landmark, group: "Receita" },
   { to: "/admin/cobranca", label: "Cobrança", module: "cobranca", icon: AlertTriangle, group: "Receita" },
   { to: "/admin/cortesias", label: "Cortesias", module: "cortesias", icon: Gift, group: "Receita" },
+  { to: "/admin/promocoes", label: "Promoções", module: "promocoes", icon: Ticket, group: "Receita" },
   { to: "/admin/produtos", label: "Produtos", module: "produtos", icon: Package, group: "Catálogo" },
   { to: "/admin/conteudo", label: "Blog", module: "conteudo", icon: FileText, group: "Marketing" },
   { to: "/admin/leads", label: "Leads", module: "leads", icon: Inbox, group: "Marketing" },
