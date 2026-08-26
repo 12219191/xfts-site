@@ -47,6 +47,7 @@ import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.ges
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-retry'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
+import { Route as ApiPublicProvisionRetryRouteImport } from './routes/api/public/provision-retry'
 import { Route as ApiPublicSeatsUsageRouteImport } from './routes/api/public/seats-usage'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
 import { Route as ApiPublicPaymentsDunningRouteImport } from './routes/api/public/payments/dunning'
@@ -245,6 +246,11 @@ const ApiPublicEntitlementsRoute = ApiPublicEntitlementsRouteImport.update({
   path: '/api/public/entitlements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicProvisionRetryRoute = ApiPublicProvisionRetryRouteImport.update({
+  id: '/api/public/provision-retry',
+  path: '/api/public/provision-retry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSeatsUsageRoute = ApiPublicSeatsUsageRouteImport.update({
   id: '/api/public/seats-usage',
   path: '/api/public/seats-usage',
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
@@ -361,6 +368,7 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
@@ -408,6 +416,7 @@ export interface FileRoutesById {
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
@@ -456,6 +465,7 @@ export interface FileRouteTypes {
     | '/produtos/'
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
+    | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
@@ -499,6 +509,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
+    | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
@@ -545,6 +556,7 @@ export interface FileRouteTypes {
     | '/produtos/'
     | '/api/public/crm-retry'
     | '/api/public/entitlements'
+    | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
@@ -569,6 +581,7 @@ export interface RootRouteChildren {
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
+  ApiPublicProvisionRetryRoute: typeof ApiPublicProvisionRetryRoute
   ApiPublicSeatsUsageRoute: typeof ApiPublicSeatsUsageRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
   ApiPublicPaymentsDunningRoute: typeof ApiPublicPaymentsDunningRoute
@@ -845,6 +858,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicEntitlementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/provision-retry': {
+      id: '/api/public/provision-retry'
+      path: '/api/public/provision-retry'
+      fullPath: '/api/public/provision-retry'
+      preLoaderRoute: typeof ApiPublicProvisionRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/seats-usage': {
       id: '/api/public/seats-usage'
       path: '/api/public/seats-usage'
@@ -988,6 +1008,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermosDeUsoRoute: TermosDeUsoRoute,
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
+  ApiPublicProvisionRetryRoute: ApiPublicProvisionRetryRoute,
   ApiPublicSeatsUsageRoute: ApiPublicSeatsUsageRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
   ApiPublicPaymentsDunningRoute: ApiPublicPaymentsDunningRoute,
