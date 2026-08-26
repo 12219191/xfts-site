@@ -29,6 +29,7 @@ import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
 import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminEquipeRouteImport } from './routes/admin.equipe'
 import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
@@ -150,6 +151,11 @@ const AdminCortesiasRoute = AdminCortesiasRouteImport.update({
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEquipeRoute = AdminEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminIntegracoesRoute = AdminIntegracoesRouteImport.update({
@@ -287,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
@@ -373,6 +381,7 @@ export interface FileRoutesById {
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
@@ -419,6 +428,7 @@ export interface FileRouteTypes {
     | '/admin/conteudo'
     | '/admin/cortesias'
     | '/admin/dashboard'
+    | '/admin/equipe'
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
@@ -460,6 +470,7 @@ export interface FileRouteTypes {
     | '/admin/conteudo'
     | '/admin/cortesias'
     | '/admin/dashboard'
+    | '/admin/equipe'
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
@@ -504,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/conteudo'
     | '/admin/cortesias'
     | '/admin/dashboard'
+    | '/admin/equipe'
     | '/admin/integracoes'
     | '/admin/leads'
     | '/admin/produtos'
@@ -695,6 +707,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/equipe': {
+      id: '/admin/equipe'
+      path: '/equipe'
+      fullPath: '/admin/equipe'
+      preLoaderRoute: typeof AdminEquipeRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/integracoes': {
       id: '/admin/integracoes'
       path: '/integracoes'
@@ -859,6 +878,7 @@ interface AdminRouteChildren {
   AdminConteudoRoute: typeof AdminConteudoRoute
   AdminCortesiasRoute: typeof AdminCortesiasRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminEquipeRoute: typeof AdminEquipeRoute
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
   AdminProdutosRoute: typeof AdminProdutosRoute
@@ -872,6 +892,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminConteudoRoute: AdminConteudoRoute,
   AdminCortesiasRoute: AdminCortesiasRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminEquipeRoute: AdminEquipeRoute,
   AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminLeadsRoute: AdminLeadsRoute,
   AdminProdutosRoute: AdminProdutosRoute,
