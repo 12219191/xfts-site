@@ -660,6 +660,8 @@ export type Database = {
           granted_by: string | null
           id: string
           is_courtesy: boolean
+          last_event_created: string | null
+          last_event_id: string | null
           price_id: string
           product_id: string
           seats_override: number | null
@@ -681,6 +683,8 @@ export type Database = {
           granted_by?: string | null
           id?: string
           is_courtesy?: boolean
+          last_event_created?: string | null
+          last_event_id?: string | null
           price_id: string
           product_id: string
           seats_override?: number | null
@@ -702,6 +706,8 @@ export type Database = {
           granted_by?: string | null
           id?: string
           is_courtesy?: boolean
+          last_event_created?: string | null
+          last_event_id?: string | null
           price_id?: string
           product_id?: string
           seats_override?: number | null
@@ -717,34 +723,43 @@ export type Database = {
       }
       webhook_events: {
         Row: {
+          attempts: number
+          claimed_at: string
           created_at: string
           duration_ms: number
           environment: string
           error: string | null
           event_type: string
           id: string
+          processed_at: string | null
           status: string
           stripe_event_id: string | null
           summary: Json
         }
         Insert: {
+          attempts?: number
+          claimed_at?: string
           created_at?: string
           duration_ms?: number
           environment?: string
           error?: string | null
           event_type: string
           id?: string
+          processed_at?: string | null
           status?: string
           stripe_event_id?: string | null
           summary?: Json
         }
         Update: {
+          attempts?: number
+          claimed_at?: string
           created_at?: string
           duration_ms?: number
           environment?: string
           error?: string | null
           event_type?: string
           id?: string
+          processed_at?: string | null
           status?: string
           stripe_event_id?: string | null
           summary?: Json
