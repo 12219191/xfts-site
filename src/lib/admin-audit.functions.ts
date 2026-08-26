@@ -7,8 +7,8 @@ export interface AuditRow {
   action: string;
   target_type: string;
   target_id: string | null;
-  before: unknown;
-  after: unknown;
+  before: string | null;
+  after: string | null;
   reason: string | null;
   created_at: string;
 }
@@ -46,5 +46,17 @@ export const listAdminAudit = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await query;
     if (error) return { error: error.message };
-    return { entries: (rows ?? []) as AuditRow[] };
+    return {
+      entries: (rows ?? []).map((r) => ({
+        id: r.id,
+        actor_email: r.actor_email,
+        action: r.action,
+        target_type: r.target_type,
+        target_id: r.target_id,
+        before: r.before === null ? null : JSON.stringify(r.before),
+        after: r.after === null ? null : JSON.stringify(r.after),
+        reason: r.reason,
+        created_at: r.created_at,
+      })),
+    };
   });
