@@ -481,6 +481,54 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_refunds: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          created_by_email: string | null
+          currency: string
+          environment: string
+          id: string
+          reason: string
+          status: string
+          stripe_charge_id: string
+          stripe_invoice_id: string | null
+          stripe_refund_id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          currency?: string
+          environment?: string
+          id?: string
+          reason?: string
+          status?: string
+          stripe_charge_id: string
+          stripe_invoice_id?: string | null
+          stripe_refund_id: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          currency?: string
+          environment?: string
+          id?: string
+          reason?: string
+          status?: string
+          stripe_charge_id?: string
+          stripe_invoice_id?: string | null
+          stripe_refund_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       form_submissions: {
         Row: {
           assunto: string | null
