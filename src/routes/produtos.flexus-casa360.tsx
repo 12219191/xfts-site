@@ -9,10 +9,15 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
-import { casa360Plans as plans } from "@/lib/product-plans";
+import { casa360Plans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 
 export const Route = createFileRoute("/produtos/flexus-casa360")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "casa360"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | Casa360° - ERP Doméstico para sua Casa" },
       { name: "description", content: "ERP doméstico com estoque da despensa, lista de compras automática, controle de validade e finanças da casa. Planos a partir de R$ 99/mês." },
@@ -35,7 +40,7 @@ export const Route = createFileRoute("/produtos/flexus-casa360")({
         description: "ERP doméstico para estoque, compras e finanças da casa.",
         path: "/produtos/flexus-casa360",
         image: heroCasa360,
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -67,6 +72,7 @@ const testimonials = [
 
 
 function FlexusCasa360Page() {
+  const { plans } = Route.useLoaderData();
   const heroCasa360Live = useProductImage("casa360");
   const heroCasa360LiveAlt = useProductImageAlt("casa360");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

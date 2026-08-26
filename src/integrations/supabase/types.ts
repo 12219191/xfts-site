@@ -161,6 +161,107 @@ export type Database = {
         }
         Relationships: []
       }
+      catalog_plans: {
+        Row: {
+          active: boolean
+          annual_lookup_key: string | null
+          created_at: string
+          cta_label: string
+          description: string
+          features: Json
+          id: string
+          name: string
+          price_lookup_key: string | null
+          price_month_cents: number
+          price_year_cents: number | null
+          product_key: string
+          seats: number | null
+          sort_order: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          annual_lookup_key?: string | null
+          created_at?: string
+          cta_label?: string
+          description?: string
+          features?: Json
+          id?: string
+          name: string
+          price_lookup_key?: string | null
+          price_month_cents?: number
+          price_year_cents?: number | null
+          product_key: string
+          seats?: number | null
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          annual_lookup_key?: string | null
+          created_at?: string
+          cta_label?: string
+          description?: string
+          features?: Json
+          id?: string
+          name?: string
+          price_lookup_key?: string | null
+          price_month_cents?: number
+          price_year_cents?: number | null
+          product_key?: string
+          seats?: number | null
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalog_plans_product_key_fkey"
+            columns: ["product_key"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      catalog_products: {
+        Row: {
+          available: boolean
+          created_at: string
+          key: string
+          landing: string
+          name: string
+          price_prefix: string
+          sort_order: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          available?: boolean
+          created_at?: string
+          key: string
+          landing?: string
+          name: string
+          price_prefix: string
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Update: {
+          available?: boolean
+          created_at?: string
+          key?: string
+          landing?: string
+          name?: string
+          price_prefix?: string
+          sort_order?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       dunning_emails: {
         Row: {
           created_at: string

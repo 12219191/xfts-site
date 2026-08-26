@@ -18,6 +18,8 @@ import {
   seatsLabel,
 } from "@/lib/flexus-apps";
 import { PLANS_BY_APP, type ProductPlan } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SubscriptionSummary } from "@/components/SubscriptionSummary";
@@ -45,6 +47,7 @@ import {
 import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/minha-conta")({
+  loader: async () => ({ catalog: await getPublicCatalog() }),
   head: () => ({
     meta: [
       { title: "Minha Conta - XFTS Inteligência Analítica" },
@@ -89,6 +92,7 @@ function tierKeyFromPriceId(priceId: string | null | undefined): TierKey {
 
 
 function MinhaContaPage() {
+  const { catalog } = Route.useLoaderData();
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [subscriptions, setSubscriptions] = useState<SubscriptionRow[]>([]);
   const [selectedSubId, setSelectedSubId] = useState<string | null>(null);
@@ -257,8 +261,12 @@ function MinhaContaPage() {
   };
 
   /** Planos do catálogo do sistema da assinatura selecionada. */
-  const plansForCurrentApp: ProductPlan[] =
-    PLANS_BY_APP[appKeyFromPriceId(subscription?.price_id) ?? ""] ?? [];
+  const currentAppKey = appKeyFromPriceId(subscription?.price_id) ?? "";
+  const plansForCurrentApp: ProductPlan[] = currentAppKey
+    ? plansForProduct(catalog, currentAppKey).length > 0
+      ? plansForProduct(catalog, currentAppKey)
+      : (PLANS_BY_APP[currentAppKey] ?? [])
+    : [];
 
   /** Lookup key do plano de destino, respeitando o ciclo (mensal/anual). */
   const targetPriceId = (target: TierKey) => {

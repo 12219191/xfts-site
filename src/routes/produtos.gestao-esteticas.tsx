@@ -5,14 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
 import { productJsonLd } from "@/lib/product-schema";
-import { esteticasPlans as plans } from "@/lib/product-plans";
+import { esteticasPlans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 
 export const Route = createFileRoute("/produtos/gestao-esteticas")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "estetica"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | Estética - Gestão de Clínicas de Estética e Salões" },
       { name: "description", content: "Sistema SaaS para clínicas de estética e salões: estoque, PDV, pacotes e sessões, comissões e CRM. Planos a partir de R$ 99/mês." },
@@ -29,7 +34,7 @@ export const Route = createFileRoute("/produtos/gestao-esteticas")({
         name: "FLEXUS | Estética",
         description: "Sistema SaaS de gestão para clínicas de estética e salões de beleza.",
         path: "/produtos/gestao-esteticas",
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -55,6 +60,7 @@ const testimonials = [
 
 
 function GestaoEsteticasPage() {
+  const { plans } = Route.useLoaderData();
   const heroAestheticsLive = useProductImage("estetica");
   const heroAestheticsLiveAlt = useProductImageAlt("estetica");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

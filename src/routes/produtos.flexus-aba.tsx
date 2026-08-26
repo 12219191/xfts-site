@@ -9,10 +9,15 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
-import { abaPlans as plans } from "@/lib/product-plans";
+import { abaPlans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 
 export const Route = createFileRoute("/produtos/flexus-aba")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "aba"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | ABA - Sistema para Clínicas de Análise do Comportamento" },
       { name: "description", content: "Sistema SaaS para clínicas ABA / TEA: registro de tentativas, PTI, gráficos de evolução e relatórios para convênios. Planos a partir de R$ 99/mês." },
@@ -35,7 +40,7 @@ export const Route = createFileRoute("/produtos/flexus-aba")({
         description: "Sistema SaaS de gestão para clínicas de análise do comportamento aplicada (ABA/TEA).",
         path: "/produtos/flexus-aba",
         image: heroAba,
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -61,6 +66,7 @@ const testimonials = [
 
 
 function FlexusAbaPage() {
+  const { plans } = Route.useLoaderData();
   const heroAbaLive = useProductImage("aba");
   const heroAbaLiveAlt = useProductImageAlt("aba");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
