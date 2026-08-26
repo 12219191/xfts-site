@@ -31,22 +31,50 @@ export const Route = createFileRoute("/api/public/sso/verify")({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
       POST: async ({ request }) => {
+        const startedAt = Date.now();
+        const { logIntegrationEvent } = await import("@/lib/integration-log.server");
+        const log = async (
+          appKey: string,
+          status: "ok" | "denied" | "error",
+          httpStatus: number,
+          reason?: string,
+          userId?: string | null,
+        ) => {
+          await logIntegrationEvent({
+            appKey,
+            kind: "sso_verify",
+            status,
+            httpStatus,
+            reason: reason ?? null,
+            userId: userId ?? null,
+            durationMs: Date.now() - startedAt,
+          });
+        };
+
         const providedKey = request.headers.get("x-flexus-app-key") ?? "";
-        if (!providedKey) return json({ error: "Chave de API ausente" }, 401);
+        if (!providedKey) {
+          await log("", "denied", 401, "chave de API ausente");
+          return json({ error: "Chave de API ausente" }, 401);
+        }
 
         let parsed;
         try {
           parsed = bodySchema.parse(await request.json());
         } catch {
+          await log("", "denied", 400, "payload inválido");
           return json({ error: "Payload inválido" }, 400);
         }
 
         const payload = await verifySsoToken(parsed.token);
-        if (!payload) return json({ error: "Token inválido ou expirado" }, 401);
+        if (!payload) {
+          await log("", "denied", 401, "token inválido ou expirado");
+          return json({ error: "Token inválido ou expirado" }, 401);
+        }
 
         const app = getFlexusApp(payload.app);
         const expectedKey = appApiKey(payload.app);
         if (!app || !expectedKey || !safeEqual(providedKey, expectedKey)) {
+          await log(payload.app, "error", 401, "chave de API inválida", payload.sub);
           return json({ error: "Chave de API inválida para este sistema" }, 401);
         }
 
@@ -62,7 +90,10 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           .select("id")
           .maybeSingle();
 
-        if (!consumed) return json({ error: "Token já utilizado ou expirado" }, 401);
+        if (!consumed) {
+          await log(app.key, "denied", 401, "token já utilizado ou expirado", payload.sub);
+          return json({ error: "Token já utilizado ou expirado" }, 401);
+        }
 
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
@@ -85,6 +116,14 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           currentPeriodEnd: sub?.current_period_end ?? null,
           seatsOverride: (sub as { seats_override?: number | null } | undefined)?.seats_override ?? null,
         });
+
+        await log(
+          app.key,
+          "ok",
+          200,
+          active ? undefined : "assinatura inativa",
+          payload.sub,
+        );
 
         return json({
           user_id: payload.sub,
