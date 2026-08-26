@@ -105,6 +105,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
           seatsOverride: (sub as { seats_override?: number | null }).seats_override ?? null,
         });
 
+        await log("ok", 200, ativo ? undefined : "assinatura inativa");
+
         return json({
           ativo,
           status: sub.status,
