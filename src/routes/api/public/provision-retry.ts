@@ -23,14 +23,20 @@ export const Route = createFileRoute("/api/public/provision-retry")({
           return Response.json({ error: "unauthorized" }, { status: 401 });
         }
 
-        const { retryProvisionQueue, cleanupExpiredSsoTokens, sendDailyOperationalDigest } =
-          await import("@/lib/reliability.server");
+        const { recordCronRun } = await import("@/lib/cron-monitor.server");
+        const run = await recordCronRun("reliability", async () => {
+          const { retryProvisionQueue, cleanupExpiredSsoTokens, sendDailyOperationalDigest } =
+            await import("@/lib/reliability.server");
 
-        const fila = await retryProvisionQueue(25);
-        const tokensRemovidos = await cleanupExpiredSsoTokens();
-        const digest = await sendDailyOperationalDigest();
+          const fila = await retryProvisionQueue(25);
+          const tokensRemovidos = await cleanupExpiredSsoTokens();
+          const digest = await sendDailyOperationalDigest();
+          return { fila, tokensRemovidos, digest };
+        });
 
-        return Response.json({ fila, tokensRemovidos, digest });
+        if (!run.ok) return Response.json({ error: run.error }, { status: 500 });
+        return Response.json(run.result);
+
       },
     },
   },

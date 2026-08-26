@@ -18,6 +18,8 @@ interface AlertaOperacionalProps {
   webhooks?: number
   provisionamentos?: number
   sistemas?: string[]
+  emails?: number
+  rotinas?: string[]
   url?: string
 }
 
@@ -26,8 +28,11 @@ export function AlertaOperacional({
   webhooks = 0,
   provisionamentos = 0,
   sistemas = [],
+  emails = 0,
+  rotinas = [],
   url = 'https://xfts-flexus.com/admin/integracoes',
 }: AlertaOperacionalProps) {
+
   return (
     <Html>
       <Head />
@@ -60,7 +65,15 @@ export function AlertaOperacional({
               Sistemas com problema:{' '}
               <strong>{sistemas.length > 0 ? sistemas.join(', ') : 'nenhum'}</strong>
             </Text>
+            <Text style={{ fontSize: '14px', color: '#1f2937', margin: '4px 0' }}>
+              E-mails parados na fila: <strong>{emails}</strong>
+            </Text>
+            <Text style={{ fontSize: '14px', color: '#1f2937', margin: '4px 0' }}>
+              Rotinas automáticas com problema:{' '}
+              <strong>{rotinas.length > 0 ? rotinas.join(', ') : 'nenhuma'}</strong>
+            </Text>
           </Section>
+
 
           <Button
             href={url}

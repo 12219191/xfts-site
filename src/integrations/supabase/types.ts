@@ -265,6 +265,42 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_runs: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          error: string | null
+          finished_at: string | null
+          id: string
+          job: string
+          ok: boolean
+          result: Json
+          started_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          job: string
+          ok?: boolean
+          result?: Json
+          started_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          job?: string
+          ok?: boolean
+          result?: Json
+          started_at?: string
+        }
+        Relationships: []
+      }
       dunning_emails: {
         Row: {
           created_at: string
@@ -349,6 +385,60 @@ export type Database = {
           stripe_subscription_id?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      email_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          discard_reason: string | null
+          environment: string
+          id: string
+          idempotency_key: string
+          last_error: string | null
+          next_attempt_at: string
+          recipient: string
+          reply_to: string | null
+          sent_at: string | null
+          status: string
+          template: string
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          discard_reason?: string | null
+          environment?: string
+          id?: string
+          idempotency_key: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient: string
+          reply_to?: string | null
+          sent_at?: string | null
+          status?: string
+          template: string
+          template_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          discard_reason?: string | null
+          environment?: string
+          id?: string
+          idempotency_key?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          recipient?: string
+          reply_to?: string | null
+          sent_at?: string | null
+          status?: string
+          template?: string
+          template_data?: Json
+          updated_at?: string
         }
         Relationships: []
       }

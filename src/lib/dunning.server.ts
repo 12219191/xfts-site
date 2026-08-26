@@ -68,38 +68,43 @@ async function sendStage(state: any, stage: number) {
   }
 
   const { produto, plano } = planLabel(state.price_id);
-  try {
-    const result = await sendTemplateEmail("pagamento-falhou", email, {
-      idempotencyKey: `dunning-${state.stripe_subscription_id}-${stage}`,
-      templateData: {
-        nome: email.split("@")[0],
-        produto,
-        plano,
-        valor: brl(state.amount_due),
-        stage,
-        acessoAte: dateBR(state.grace_until),
-        url: "https://xfts-flexus.com/minha-conta",
-      },
-    });
-    await db().from("dunning_emails").insert({
-      stripe_subscription_id: state.stripe_subscription_id,
-      user_id: state.user_id,
+  const { enqueueEmail } = await import("@/lib/email-queue.server");
+
+  // A fila garante nova tentativa automática se o envio falhar agora.
+  const outcome = await enqueueEmail({
+    template: "pagamento-falhou",
+    recipient: email,
+    idempotencyKey: `dunning-${state.stripe_subscription_id}-${stage}`,
+    environment: state.environment,
+    templateData: {
+      nome: email.split("@")[0],
+      produto,
+      plano,
+      valor: brl(state.amount_due),
       stage,
-      email,
-      status: result.sent ? "sent" : "suppressed",
-      environment: state.environment,
-    } as never);
-  } catch (e) {
-    await db().from("dunning_emails").insert({
-      stripe_subscription_id: state.stripe_subscription_id,
-      user_id: state.user_id,
-      stage,
-      email,
-      status: "error",
-      error: e instanceof Error ? e.message : String(e),
-      environment: state.environment,
-    } as never);
-  }
+      acessoAte: dateBR(state.grace_until),
+      url: "https://xfts-flexus.com/minha-conta",
+    },
+  });
+
+  const statusMap: Record<string, string> = {
+    sent: "sent",
+    suppressed: "suppressed",
+    pending: "queued",
+    failed: "error",
+    discarded: "error",
+  };
+
+  await db().from("dunning_emails").insert({
+    stripe_subscription_id: state.stripe_subscription_id,
+    user_id: state.user_id,
+    stage,
+    email,
+    status: statusMap[outcome.status] ?? "queued",
+    error: outcome.error ?? null,
+    environment: state.environment,
+  } as never);
+
 
   await db()
     .from("dunning_state")
