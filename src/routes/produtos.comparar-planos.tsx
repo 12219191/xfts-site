@@ -15,6 +15,9 @@ import {
   crmPlans,
   casa360Plans,
 } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
+import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
 const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360"] as const;
@@ -24,6 +27,12 @@ export const Route = createFileRoute("/produtos/comparar-planos")({
   validateSearch: (search: Record<string, unknown>): { produto?: ProductKey } => {
     const produto = search.produto as ProductKey;
     return PRODUCT_KEYS.includes(produto) ? { produto } : {};
+  },
+  loader: async () => {
+    const snapshot = await getPublicCatalog();
+    const plansByProduct: Record<string, CatalogProductPlan[]> = {};
+    for (const key of PRODUCT_KEYS) plansByProduct[key] = plansForProduct(snapshot, key);
+    return { plansByProduct };
   },
   head: () => ({
     meta: [
@@ -202,6 +211,7 @@ const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
 
 function CompararPlanosPage() {
   const { produto } = Route.useSearch();
+  const { plansByProduct } = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
   const selected = products.find((p) => p.key === produto) ?? products[0];
   const [annual, setAnnual] = useState(false);
@@ -213,8 +223,18 @@ function CompararPlanosPage() {
     return `R$ ${final}`;
   };
 
+  /** Valor mensal vindo do catálogo do banco, com fallback para a tabela local. */
+  const priceOf = (productKey: ProductKey, tier: "basico" | "pro" | "enterprise") => {
+    const plan = plansByProduct[productKey]?.find((p) => p.tier === tier);
+    const parsed = plan ? Number(plan.price.replace(/[^\d]/g, "")) : 0;
+    if (parsed > 0) return parsed;
+    return products.find((p) => p.key === productKey)?.prices[tier] ?? 0;
+  };
+
   const priceIdFor = (productKey: ProductKey, tier: "basico" | "pro") => {
-    const plan = PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
+    const plan =
+      plansByProduct[productKey]?.find((p) => p.tier === tier) ??
+      PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
     if (!plan) return undefined;
     return (annual && plan.annualPriceId) || plan.priceId;
   };
@@ -312,24 +332,24 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-sm font-semibold text-foreground">Funcionalidade</th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="text-sm font-semibold text-foreground">Básico</div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(product.prices.basico)}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {product.prices.basico}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "basico"))}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
+                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "basico")}/mês</div>}
                       </th>
                       <th className="sticky top-0 z-10 border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-sm font-semibold text-foreground">Pro</span>
                           <span className="rounded-full bg-cta px-2.5 py-0.5 text-[10px] font-bold text-cta-foreground uppercase tracking-wide">Mais Popular</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(product.prices.pro)}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {product.prices.pro}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "pro"))}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
+                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "pro")}/mês</div>}
                       </th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-sm font-semibold text-foreground">Enterprise</span>
                           <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-gold-foreground uppercase tracking-wide">Premium</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(product.prices.enterprise)}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {product.prices.enterprise}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "enterprise"))}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
+                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "enterprise")}/mês</div>}
                       </th>
                     </tr>
                   </thead>
