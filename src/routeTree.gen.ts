@@ -29,6 +29,7 @@ import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
 import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -147,6 +148,11 @@ const AdminIntegracoesRoute = AdminIntegracoesRouteImport.update({
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProdutosRoute = AdminProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
   getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/admin/cortesias': typeof AdminCortesiasRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/admin/cortesias'
     | '/admin/integracoes'
     | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -430,6 +440,7 @@ export interface FileRouteTypes {
     | '/admin/cortesias'
     | '/admin/integracoes'
     | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/admin/cortesias'
     | '/admin/integracoes'
     | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -659,6 +671,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/produtos': {
+      id: '/admin/produtos'
+      path: '/produtos'
+      fullPath: '/admin/produtos'
+      preLoaderRoute: typeof AdminProdutosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -802,6 +821,7 @@ interface AdminRouteChildren {
   AdminCortesiasRoute: typeof AdminCortesiasRoute
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminProdutosRoute: typeof AdminProdutosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -812,6 +832,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCortesiasRoute: AdminCortesiasRoute,
   AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminLeadsRoute: AdminLeadsRoute,
+  AdminProdutosRoute: AdminProdutosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
