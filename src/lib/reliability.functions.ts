@@ -151,13 +151,13 @@ export const reprocessWebhookEvent = createServerFn({ method: "POST" })
       const started = Date.now();
       await handleStripeEvent(event as never, data.environment);
       await logWebhookEvent({
-        stripeEventId: `${data.eventId}:reprocess:${Date.now()}`,
-        eventType: (event as { type: string }).type,
+        stripe_event_id: `${data.eventId}:reprocess:${Date.now()}`,
+        event_type: (event as { type: string }).type,
         environment: data.environment,
         status: "processed",
-        durationMs: Date.now() - started,
-        summary: eventSummary(event as never) as never,
-      } as never);
+        duration_ms: Date.now() - started,
+        summary: eventSummary(event as never),
+      });
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin
