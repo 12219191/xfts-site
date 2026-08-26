@@ -24,6 +24,10 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
+import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
+import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
+import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -117,6 +121,26 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
   id: '/assinaturas',
   path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCobrancaRoute = AdminCobrancaRouteImport.update({
+  id: '/cobranca',
+  path: '/cobranca',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConteudoRoute = AdminConteudoRouteImport.update({
+  id: '/conteudo',
+  path: '/conteudo',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCortesiasRoute = AdminCortesiasRouteImport.update({
+  id: '/cortesias',
+  path: '/cortesias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
   getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -234,6 +258,10 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -267,6 +295,10 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -304,6 +336,10 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -342,6 +378,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -375,6 +415,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -411,6 +455,10 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -564,6 +612,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAssinaturasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/cobranca': {
+      id: '/admin/cobranca'
+      path: '/cobranca'
+      fullPath: '/admin/cobranca'
+      preLoaderRoute: typeof AdminCobrancaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/conteudo': {
+      id: '/admin/conteudo'
+      path: '/conteudo'
+      fullPath: '/admin/conteudo'
+      preLoaderRoute: typeof AdminConteudoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cortesias': {
+      id: '/admin/cortesias'
+      path: '/cortesias'
+      fullPath: '/admin/cortesias'
+      preLoaderRoute: typeof AdminCortesiasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -702,11 +778,19 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAssinaturasRoute: typeof AdminAssinaturasRoute
+  AdminCobrancaRoute: typeof AdminCobrancaRoute
+  AdminConteudoRoute: typeof AdminConteudoRoute
+  AdminCortesiasRoute: typeof AdminCortesiasRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAssinaturasRoute: AdminAssinaturasRoute,
+  AdminCobrancaRoute: AdminCobrancaRoute,
+  AdminConteudoRoute: AdminConteudoRoute,
+  AdminCortesiasRoute: AdminCortesiasRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
