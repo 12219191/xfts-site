@@ -5,14 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check, ArrowRight, Star, X } from "lucide-react";
 import { productJsonLd } from "@/lib/product-schema";
-import { clinicaPlans as plans } from "@/lib/product-plans";
+import { clinicaPlans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 
 export const Route = createFileRoute("/produtos/gestao-clinica")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "clinica"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
       { name: "description", content: "Sistema SaaS completo para gestão de consultórios e clínicas: agendamento online, prontuário eletrônico, finanças e relatórios. Planos a partir de R$ 99/mês." },
@@ -33,7 +38,7 @@ export const Route = createFileRoute("/produtos/gestao-clinica")({
         description: "Sistema SaaS de gestão para consultórios e clínicas.",
         path: "/produtos/gestao-clinica",
         image: heroClinic,
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -59,6 +64,7 @@ const testimonials = [
 
 
 function GestaoClinicaPage() {
+  const { plans } = Route.useLoaderData();
   const heroClinicLive = useProductImage("clinica");
   const heroClinicLiveAlt = useProductImageAlt("clinica");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

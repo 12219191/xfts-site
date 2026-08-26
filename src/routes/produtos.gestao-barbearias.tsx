@@ -9,10 +9,15 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
-import { barbeariasPlans as plans } from "@/lib/product-plans";
+import { barbeariasPlans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 
 export const Route = createFileRoute("/produtos/gestao-barbearias")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "barbearia"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
       { name: "description", content: "Sistema SaaS para barbearias e salões: PDV, estoque, agendamento online, comissões e CRM. Planos a partir de R$ 89/mês." },
@@ -33,7 +38,7 @@ export const Route = createFileRoute("/produtos/gestao-barbearias")({
         description: "Sistema SaaS de gestão para barbearias e salões masculinos.",
         path: "/produtos/gestao-barbearias",
         image: heroBarbershop,
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -59,6 +64,7 @@ const testimonials = [
 
 
 function GestaoBarbeariasPage() {
+  const { plans } = Route.useLoaderData();
   const heroBarbershopLive = useProductImage("barbearia");
   const heroBarbershopLiveAlt = useProductImageAlt("barbearia");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();

@@ -9,10 +9,15 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { productJsonLd } from "@/lib/product-schema";
-import { crmPlans as plans } from "@/lib/product-plans";
+import { crmPlans as fallbackPlans } from "@/lib/product-plans";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { plansForProduct } from "@/lib/catalog";
 
 export const Route = createFileRoute("/produtos/flexus-crm")({
-  head: () => ({
+  loader: async () => ({
+    plans: plansForProduct(await getPublicCatalog(), "crm"),
+  }),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "FLEXUS | CRM - CRM de Vendas Multi-segmento" },
       { name: "description", content: "CRM SaaS de vendas com pipeline kanban, automações de follow-up, WhatsApp integrado e relatórios de conversão. Planos a partir de R$ 99/mês." },
@@ -35,7 +40,7 @@ export const Route = createFileRoute("/produtos/flexus-crm")({
         description: "CRM SaaS de vendas multi-segmento com pipeline kanban e automações.",
         path: "/produtos/flexus-crm",
         image: heroCrm,
-        plans,
+        plans: loaderData?.plans ?? fallbackPlans,
       }),
     ],
   }),
@@ -61,6 +66,7 @@ const testimonials = [
 
 
 function FlexusCrmPage() {
+  const { plans } = Route.useLoaderData();
   const heroCrmLive = useProductImage("crm");
   const heroCrmLiveAlt = useProductImageAlt("crm");
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
