@@ -36,6 +36,7 @@ export type AdminModule =
   | "cobranca"
   | "financeiro"
   | "cortesias"
+  | "promocoes"
   | "produtos"
   | "conteudo"
   | "leads"
@@ -51,6 +52,7 @@ export const MODULE_ROLES: Record<AdminModule, AdminRole[]> = {
   cobranca: ["superadmin", "financeiro"],
   financeiro: ["superadmin", "financeiro"],
   cortesias: ["superadmin", "financeiro", "suporte"],
+  promocoes: ["superadmin", "financeiro", "comercial"],
   produtos: ["superadmin", "produto"],
   conteudo: ["superadmin", "produto"],
   leads: ["superadmin", "comercial"],
