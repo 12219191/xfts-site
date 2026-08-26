@@ -19,13 +19,14 @@ import {
   type WebhookEventsResult,
 } from "@/lib/webhook-events.functions";
 
-type StatusFilter = "todos" | "processed" | "ignored" | "failed";
+type StatusFilter = "todos" | "processed" | "ignored" | "failed" | "processing";
 type EnvFilter = "todos" | "sandbox" | "live";
 
 const STATUS_LABEL: Record<string, string> = {
   processed: "Processado",
   ignored: "Ignorado",
   failed: "Falha",
+  processing: "Em processamento",
 };
 
 function dateTimeBR(iso: string | null) {
@@ -37,6 +38,13 @@ function StatusBadge({ status }: { status: string }) {
     return (
       <Badge className="gap-1 bg-destructive/10 text-destructive hover:bg-destructive/10">
         <AlertTriangle className="h-3 w-3" /> Falha
+      </Badge>
+    );
+  }
+  if (status === "processing") {
+    return (
+      <Badge variant="outline" className="gap-1">
+        <MinusCircle className="h-3 w-3" /> Em processamento
       </Badge>
     );
   }
@@ -176,7 +184,7 @@ export function WebhooksPanel() {
 
       {/* Filtros */}
       <div className="flex flex-wrap items-center gap-2">
-        {(["todos", "failed", "processed", "ignored"] as StatusFilter[]).map((s) => (
+        {(["todos", "failed", "processed", "ignored", "processing"] as StatusFilter[]).map((s) => (
           <Button
             key={s}
             size="sm"
