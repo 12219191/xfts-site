@@ -14,11 +14,26 @@ export const createSsoLink = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }): Promise<SsoResult> => {
+    const startedAt = Date.now();
+    const { logIntegrationEvent } = await import("@/lib/integration-log.server");
+    const deny = async (reason: string, message?: string): Promise<SsoResult> => {
+      await logIntegrationEvent({
+        appKey: data.app,
+        kind: "sso_issue",
+        status: "denied",
+        reason,
+        userId: context.userId,
+        durationMs: Date.now() - startedAt,
+        environment: data.environment ?? "sandbox",
+      });
+      return { error: message ?? reason };
+    };
     const { getFlexusApp, appKeyFromPriceId, ACTIVE_STATUSES, planTierFromPriceId, seatsFromPriceId } =
       await import("@/lib/flexus-apps");
     const app = getFlexusApp(data.app);
-    if (!app) return { error: "Sistema não encontrado" };
-    if (!app.available || !app.url) return { error: `${app.name} ainda não está disponível.` };
+    if (!app) return deny("sistema inexistente", "Sistema não encontrado");
+    if (!app.available || !app.url)
+      return deny("sistema indisponível", `${app.name} ainda não está disponível.`);
 
     const env = data.environment ?? "sandbox";
     const { supabase, userId, claims } = context;
@@ -33,7 +48,8 @@ export const createSsoLink = createServerFn({ method: "POST" })
     const sub = (subs ?? []).find(
       (s) => appKeyFromPriceId(s.price_id) === app.key,
     );
-    if (!sub) return { error: `Você ainda não tem uma assinatura do ${app.name}.` };
+    if (!sub)
+      return deny("sem assinatura", `Você ainda não tem uma assinatura do ${app.name}.`);
 
     const periodOk =
       !sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
@@ -41,7 +57,10 @@ export const createSsoLink = createServerFn({ method: "POST" })
       (ACTIVE_STATUSES.includes(sub.status) && periodOk) ||
       (sub.status === "canceled" && periodOk);
     if (!allowed) {
-      return { error: `Seu acesso ao ${app.name} está bloqueado. Regularize o pagamento.` };
+      return deny(
+        "acesso bloqueado",
+        `Seu acesso ao ${app.name} está bloqueado. Regularize o pagamento.`,
+      );
     }
 
     const { signSsoToken } = await import("@/lib/sso.server");
@@ -57,7 +76,8 @@ export const createSsoLink = createServerFn({ method: "POST" })
       app_key: app.key,
       expires_at: new Date(exp * 1000).toISOString(),
     });
-    if (insertError) return { error: "Não foi possível gerar o acesso. Tente novamente." };
+    if (insertError)
+      return deny("falha ao registrar token", "Não foi possível gerar o acesso. Tente novamente.");
 
     const token = await signSsoToken({
       sub: userId,
@@ -69,6 +89,15 @@ export const createSsoLink = createServerFn({ method: "POST" })
       jti,
       iat: now,
       exp,
+    });
+
+    await logIntegrationEvent({
+      appKey: app.key,
+      kind: "sso_issue",
+      status: "ok",
+      userId: userId,
+      durationMs: Date.now() - startedAt,
+      environment: env,
     });
 
     return { ok: true, url: `${app.url}/sso?token=${encodeURIComponent(token)}` };
