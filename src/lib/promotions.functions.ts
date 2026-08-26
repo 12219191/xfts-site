@@ -51,13 +51,13 @@ export const listPromotions = createServerFn({ method: "POST" })
     try {
       const { createStripeClient } = await import("@/lib/stripe.server");
       const stripe = createStripeClient(data.environment);
-      const list = await stripe.promotionCodes.list({ limit: 100, expand: ["data.coupon"] });
+      const list = await stripe.promotionCodes.list({ limit: 100 });
 
       const rows: PromotionRow[] = (list.data ?? []).map((promo: any) => ({
         id: promo.id,
         code: promo.code,
         active: Boolean(promo.active),
-        ...describeCoupon(promo.coupon ?? {}),
+        ...describeCoupon(promo.coupon ?? promo.promotion?.coupon ?? {}),
         maxRedemptions: promo.max_redemptions ?? null,
         timesRedeemed: promo.times_redeemed ?? 0,
         expiresAt: promo.expires_at ? new Date(promo.expires_at * 1000).toISOString() : null,
@@ -122,7 +122,7 @@ export const createPromotion = createServerFn({ method: "POST" })
       });
 
       await stripe.promotionCodes.create({
-        coupon: coupon.id,
+        promotion: { type: "coupon", coupon: coupon.id },
         code,
         ...(data.maxRedemptions ? { max_redemptions: data.maxRedemptions } : {}),
         ...(data.expiresInDays
