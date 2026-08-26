@@ -12,7 +12,8 @@ import {
   updateCustomerSeats,
 } from "@/lib/admin-customers.functions";
 import type { CustomerProduct, CustomerRow } from "@/lib/admin-customers.server";
-import { LifeBuoy, Search, Users } from "lucide-react";
+import { History, LifeBuoy, Search, Users } from "lucide-react";
+import { CustomerTimelineDialog } from "@/components/admin/CustomerTimelineDialog";
 
 export const Route = createFileRoute("/admin/clientes")({
   component: () => (
@@ -29,6 +30,7 @@ function ClientesPage() {
   const [environment, setEnvironment] = useState<"live" | "sandbox">("live");
   const [rows, setRows] = useState<CustomerRow[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [timelineFor, setTimelineFor] = useState<CustomerRow | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -103,10 +105,16 @@ function ClientesPage() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-foreground">{row.email}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  cliente desde {fmtDate(row.createdAt)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    cliente desde {fmtDate(row.createdAt)}
+                  </span>
+                  <Button size="sm" variant="outline" onClick={() => setTimelineFor(row)}>
+                    <History className="mr-2 h-4 w-4" /> Histórico
+                  </Button>
+                </div>
               </div>
+
 
               <div className="mt-4 grid gap-3 lg:grid-cols-2">
                 {row.produtos.map((p) => (
@@ -120,6 +128,16 @@ function ClientesPage() {
           </Card>
         ))}
       </div>
+
+      {timelineFor && (
+        <CustomerTimelineDialog
+          open={!!timelineFor}
+          onOpenChange={(open) => !open && setTimelineFor(null)}
+          userId={timelineFor.userId}
+          email={timelineFor.email}
+          environment={environment}
+        />
+      )}
     </div>
   );
 }

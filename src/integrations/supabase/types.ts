@@ -301,6 +301,45 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_notes: {
+        Row: {
+          author_email: string | null
+          author_id: string | null
+          body: string
+          created_at: string
+          customer_email: string
+          customer_user_id: string
+          id: string
+          kind: string
+          pinned: boolean
+          updated_at: string
+        }
+        Insert: {
+          author_email?: string | null
+          author_id?: string | null
+          body: string
+          created_at?: string
+          customer_email?: string
+          customer_user_id: string
+          id?: string
+          kind?: string
+          pinned?: boolean
+          updated_at?: string
+        }
+        Update: {
+          author_email?: string | null
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          customer_email?: string
+          customer_user_id?: string
+          id?: string
+          kind?: string
+          pinned?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dunning_emails: {
         Row: {
           created_at: string
