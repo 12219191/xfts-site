@@ -3,6 +3,7 @@
  * A escrita acontece só no Control Center; aqui é leitura/apresentação.
  */
 import type { ProductPlan } from "@/lib/product-plans";
+import type { EntitlementMap } from "@/lib/entitlements";
 
 export interface CatalogProduct {
   key: string;
@@ -29,6 +30,8 @@ export interface CatalogPlan {
   annualLookupKey: string | null;
   active: boolean;
   sortOrder: number;
+  /** Recursos e limites liberados por este plano. */
+  entitlements: EntitlementMap;
 }
 
 export interface CatalogSnapshot {

@@ -28,6 +28,7 @@ import { InvoicesSection } from "@/components/InvoicesSection";
 import { PlanUpgradeCard } from "@/components/PlanUpgradeCard";
 import { CancelSubscriptionFlow } from "@/components/CancelSubscriptionFlow";
 import { MeusSistemas, type SistemaSubscription } from "@/components/MeusSistemas";
+import { MeusRecursos } from "@/components/MeusRecursos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -487,6 +488,10 @@ function MinhaContaPage() {
       <section className="section-padding">
         <div className="container-wide mx-auto max-w-4xl space-y-8 px-4 md:px-8">
           <MeusSistemas subscriptions={allSubscriptions} />
+
+          <Separator />
+
+          <MeusRecursos />
 
           <Separator />
 

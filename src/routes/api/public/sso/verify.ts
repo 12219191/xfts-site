@@ -66,7 +66,9 @@ export const Route = createFileRoute("/api/public/sso/verify")({
 
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
-          .select("price_id, status, current_period_end, cancel_at_period_end, environment")
+          .select(
+            "price_id, status, current_period_end, cancel_at_period_end, environment, seats_override",
+          )
           .eq("user_id", payload.sub)
           .order("created_at", { ascending: false });
 
@@ -76,13 +78,25 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         const active = !!sub && periodOk &&
           (ACTIVE_STATUSES.includes(sub.status) || sub.status === "canceled");
 
+        const { resolveEntitlements } = await import("@/lib/entitlements.server");
+        const ent = await resolveEntitlements({
+          priceId: sub?.price_id ?? null,
+          status: sub?.status ?? "none",
+          currentPeriodEnd: sub?.current_period_end ?? null,
+          seatsOverride: (sub as { seats_override?: number | null } | undefined)?.seats_override ?? null,
+        });
+
         return json({
           user_id: payload.sub,
           email: payload.email,
           produto: app.key,
           plano: payload.plan,
           papel: payload.role ?? "owner",
-          limite_usuarios: payload.seats ?? seatsFromPriceId(sub?.price_id),
+          limite_usuarios: active
+            ? (ent.limites["usuarios"] ?? payload.seats ?? seatsFromPriceId(sub?.price_id))
+            : 0,
+          recursos: ent.features,
+          limites: ent.limites,
           status: sub?.status ?? "none",
           ativo: active,
           acesso_ate: sub?.current_period_end ?? null,
