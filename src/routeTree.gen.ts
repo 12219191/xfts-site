@@ -27,6 +27,7 @@ import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas
 import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
 import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
+import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
@@ -136,6 +137,11 @@ const AdminConteudoRoute = AdminConteudoRouteImport.update({
 const AdminCortesiasRoute = AdminCortesiasRouteImport.update({
   id: '/cortesias',
   path: '/cortesias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIntegracoesRoute = AdminIntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -339,6 +347,7 @@ export interface FileRoutesById {
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
+    | '/admin/integracoes'
     | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -418,6 +428,7 @@ export interface FileRouteTypes {
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
+    | '/admin/integracoes'
     | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -458,6 +469,7 @@ export interface FileRouteTypes {
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
+    | '/admin/integracoes'
     | '/admin/leads'
     | '/blog/$articleId'
     | '/checkout/retorno'
@@ -633,6 +645,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCortesiasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/integracoes': {
+      id: '/admin/integracoes'
+      path: '/integracoes'
+      fullPath: '/admin/integracoes'
+      preLoaderRoute: typeof AdminIntegracoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/leads': {
       id: '/admin/leads'
       path: '/leads'
@@ -781,6 +800,7 @@ interface AdminRouteChildren {
   AdminCobrancaRoute: typeof AdminCobrancaRoute
   AdminConteudoRoute: typeof AdminConteudoRoute
   AdminCortesiasRoute: typeof AdminCortesiasRoute
+  AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -790,6 +810,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCobrancaRoute: AdminCobrancaRoute,
   AdminConteudoRoute: AdminConteudoRoute,
   AdminCortesiasRoute: AdminCortesiasRoute,
+  AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminLeadsRoute: AdminLeadsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
