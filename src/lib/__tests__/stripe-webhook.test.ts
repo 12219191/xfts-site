@@ -198,7 +198,17 @@ describe("customer.subscription.updated", () => {
 });
 
 describe("customer.subscription.deleted", () => {
-  it("encerra a assinatura e bloqueia todos os entitlements", async () => {
+  it("bloqueia todos os entitlements quando o período pago acabou", async () => {
+    resetDb({
+      entitlement_definitions: DEFINITIONS,
+      catalog_plans: PLANS,
+      subscriptions: [
+        subscriptionRow({
+          current_period_end: new Date(Date.now() - 3600 * 1000).toISOString(),
+        }),
+      ],
+    });
+
     await handleStripeEvent(
       event("customer.subscription.deleted", { id: SUB_ID, customer: "cus_1" }),
       "sandbox",
@@ -212,6 +222,19 @@ describe("customer.subscription.deleted", () => {
     expect(ent.features["relatorios_avancados"]).toBe(false);
     expect(ent.limites["usuarios"]).toBe(0);
   });
+
+  it("mantém o acesso até o fim do período quando o cancelamento é no meio do ciclo", async () => {
+    await handleStripeEvent(
+      event("customer.subscription.deleted", { id: SUB_ID, customer: "cus_1" }),
+      "sandbox",
+    );
+
+    expect(db.subscriptions[0]!["status"]).toBe("canceled");
+    const ent = await resolveUserEntitlements(USER, "casa360");
+    expect(ent.ativo).toBe(true);
+    expect(ent.limites["usuarios"]).toBe(6);
+  });
+
 
   it("avisa o sistema do produto para revogar o acesso", async () => {
     await handleStripeEvent(
