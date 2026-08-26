@@ -495,6 +495,11 @@ function MinhaContaPage() {
 
           <Separator />
 
+          <TeamInvites />
+
+          <Separator />
+
+
           {/* Subscription status */}
           <div>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
