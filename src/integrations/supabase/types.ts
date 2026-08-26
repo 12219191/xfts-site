@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          after: Json | null
+          before: Json | null
+          created_at: string
+          id: string
+          reason: string | null
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          after?: Json | null
+          before?: Json | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          after?: Json | null
+          before?: Json | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
+      admin_roles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -378,27 +441,33 @@ export type Database = {
         Row: {
           app_key: string
           created_at: string
+          created_by_admin: string | null
           expires_at: string
           id: string
           jti: string
+          purpose: string
           used_at: string | null
           user_id: string
         }
         Insert: {
           app_key: string
           created_at?: string
+          created_by_admin?: string | null
           expires_at: string
           id?: string
           jti: string
+          purpose?: string
           used_at?: string | null
           user_id: string
         }
         Update: {
           app_key?: string
           created_at?: string
+          created_by_admin?: string | null
           expires_at?: string
           id?: string
           jti?: string
+          purpose?: string
           used_at?: string | null
           user_id?: string
         }
@@ -450,6 +519,7 @@ export type Database = {
           is_courtesy: boolean
           price_id: string
           product_id: string
+          seats_override: number | null
           seats_reported_at: string | null
           seats_used: number | null
           status: string
@@ -470,6 +540,7 @@ export type Database = {
           is_courtesy?: boolean
           price_id: string
           product_id: string
+          seats_override?: number | null
           seats_reported_at?: string | null
           seats_used?: number | null
           status?: string
@@ -490,6 +561,7 @@ export type Database = {
           is_courtesy?: boolean
           price_id?: string
           product_id?: string
+          seats_override?: number | null
           seats_reported_at?: string | null
           seats_used?: number | null
           status?: string
@@ -548,7 +620,12 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      admin_role:
+        | "superadmin"
+        | "financeiro"
+        | "comercial"
+        | "suporte"
+        | "produto"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -675,6 +752,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      admin_role: [
+        "superadmin",
+        "financeiro",
+        "comercial",
+        "suporte",
+        "produto",
+      ],
+    },
   },
 } as const

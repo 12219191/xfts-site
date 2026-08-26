@@ -22,6 +22,18 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
+import { Route as AdminAuditoriaRouteImport } from './routes/admin.auditoria'
+import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
+import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
+import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
+import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminEquipeRouteImport } from './routes/admin.equipe'
+import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -106,6 +118,66 @@ const TermosDeUsoRoute = TermosDeUsoRouteImport.update({
   id: '/termos-de-uso',
   path: '/termos-de-uso',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
+  id: '/assinaturas',
+  path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditoriaRoute = AdminAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCobrancaRoute = AdminCobrancaRouteImport.update({
+  id: '/cobranca',
+  path: '/cobranca',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminConteudoRoute = AdminConteudoRouteImport.update({
+  id: '/conteudo',
+  path: '/conteudo',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCortesiasRoute = AdminCortesiasRouteImport.update({
+  id: '/cortesias',
+  path: '/cortesias',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEquipeRoute = AdminEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIntegracoesRoute = AdminIntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProdutosRoute = AdminProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
@@ -209,7 +281,7 @@ const LovableEmailTransactionalPreviewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
@@ -221,6 +293,17 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -230,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -243,7 +327,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
   '/exclusao-de-dados': typeof ExclusaoDeDadosRoute
@@ -253,6 +336,17 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -262,6 +356,7 @@ export interface FileRoutesByTo {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -276,7 +371,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
   '/checkout': typeof CheckoutRouteWithChildren
   '/contato': typeof ContatoRoute
@@ -288,6 +383,17 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
+  '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/auditoria': typeof AdminAuditoriaRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/cobranca': typeof AdminCobrancaRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/cortesias': typeof AdminCortesiasRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/equipe': typeof AdminEquipeRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
+  '/admin/leads': typeof AdminLeadsRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
@@ -297,6 +403,7 @@ export interface FileRoutesById {
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
@@ -324,6 +431,17 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
+    | '/admin/auditoria'
+    | '/admin/clientes'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/dashboard'
+    | '/admin/equipe'
+    | '/admin/integracoes'
+    | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -333,6 +451,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin/'
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
@@ -346,7 +465,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/checkout'
     | '/contato'
     | '/exclusao-de-dados'
@@ -356,6 +474,17 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
+    | '/admin/auditoria'
+    | '/admin/clientes'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/dashboard'
+    | '/admin/equipe'
+    | '/admin/integracoes'
+    | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -365,6 +494,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin'
     | '/blog'
     | '/produtos'
     | '/api/public/crm-retry'
@@ -390,6 +520,17 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/termos-de-uso'
+    | '/admin/assinaturas'
+    | '/admin/auditoria'
+    | '/admin/clientes'
+    | '/admin/cobranca'
+    | '/admin/conteudo'
+    | '/admin/cortesias'
+    | '/admin/dashboard'
+    | '/admin/equipe'
+    | '/admin/integracoes'
+    | '/admin/leads'
+    | '/admin/produtos'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/produtos/comparar-planos'
@@ -399,6 +540,7 @@ export interface FileRouteTypes {
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
+    | '/admin/'
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
@@ -413,7 +555,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
   CheckoutRoute: typeof CheckoutRouteWithChildren
   ContatoRoute: typeof ContatoRoute
@@ -527,6 +669,90 @@ declare module '@tanstack/react-router' {
       fullPath: '/termos-de-uso'
       preLoaderRoute: typeof TermosDeUsoRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/assinaturas': {
+      id: '/admin/assinaturas'
+      path: '/assinaturas'
+      fullPath: '/admin/assinaturas'
+      preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/auditoria': {
+      id: '/admin/auditoria'
+      path: '/auditoria'
+      fullPath: '/admin/auditoria'
+      preLoaderRoute: typeof AdminAuditoriaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cobranca': {
+      id: '/admin/cobranca'
+      path: '/cobranca'
+      fullPath: '/admin/cobranca'
+      preLoaderRoute: typeof AdminCobrancaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/conteudo': {
+      id: '/admin/conteudo'
+      path: '/conteudo'
+      fullPath: '/admin/conteudo'
+      preLoaderRoute: typeof AdminConteudoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cortesias': {
+      id: '/admin/cortesias'
+      path: '/cortesias'
+      fullPath: '/admin/cortesias'
+      preLoaderRoute: typeof AdminCortesiasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/equipe': {
+      id: '/admin/equipe'
+      path: '/equipe'
+      fullPath: '/admin/equipe'
+      preLoaderRoute: typeof AdminEquipeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/integracoes': {
+      id: '/admin/integracoes'
+      path: '/integracoes'
+      fullPath: '/admin/integracoes'
+      preLoaderRoute: typeof AdminIntegracoesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/produtos': {
+      id: '/admin/produtos'
+      path: '/produtos'
+      fullPath: '/admin/produtos'
+      preLoaderRoute: typeof AdminProdutosRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -664,6 +890,38 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminAssinaturasRoute: typeof AdminAssinaturasRoute
+  AdminAuditoriaRoute: typeof AdminAuditoriaRoute
+  AdminClientesRoute: typeof AdminClientesRoute
+  AdminCobrancaRoute: typeof AdminCobrancaRoute
+  AdminConteudoRoute: typeof AdminConteudoRoute
+  AdminCortesiasRoute: typeof AdminCortesiasRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminEquipeRoute: typeof AdminEquipeRoute
+  AdminIntegracoesRoute: typeof AdminIntegracoesRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminProdutosRoute: typeof AdminProdutosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAssinaturasRoute: AdminAssinaturasRoute,
+  AdminAuditoriaRoute: AdminAuditoriaRoute,
+  AdminClientesRoute: AdminClientesRoute,
+  AdminCobrancaRoute: AdminCobrancaRoute,
+  AdminConteudoRoute: AdminConteudoRoute,
+  AdminCortesiasRoute: AdminCortesiasRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminEquipeRoute: AdminEquipeRoute,
+  AdminIntegracoesRoute: AdminIntegracoesRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
+  AdminProdutosRoute: AdminProdutosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface BlogRouteChildren {
   BlogArticleIdRoute: typeof BlogArticleIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -716,7 +974,7 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
   CheckoutRoute: CheckoutRouteWithChildren,
   ContatoRoute: ContatoRoute,
