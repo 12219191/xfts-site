@@ -88,10 +88,53 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   });
 }
 
-async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
+/** Identidade do evento do Stripe, usada para idempotência e ordenação. */
+export type EventMeta = { id: string | null; created: number | null };
+
+export function metaOf(event: any): EventMeta {
+  return {
+    id: event?.id ?? null,
+    created: typeof event?.created === "number" ? event.created : null,
+  };
+}
+
+function eventStamp(meta: EventMeta) {
+  return {
+    last_event_id: meta.id,
+    last_event_created: meta.created ? new Date(meta.created * 1000).toISOString() : null,
+  };
+}
+
+/**
+ * Evita reprocessar o mesmo evento e aplicar eventos que chegaram fora de ordem
+ * (o Stripe pode reenviar e entregar eventos antigos depois dos novos).
+ */
+async function isStaleEvent(subscriptionId: string, meta: EventMeta) {
+  if (!subscriptionId) return false;
+  const { data } = await getSupabase()
+    .from("subscriptions")
+    .select("last_event_id, last_event_created")
+    .eq("stripe_subscription_id", subscriptionId)
+    .maybeSingle();
+  const row = data as any;
+  if (!row) return false;
+  if (meta.id && row.last_event_id && row.last_event_id === meta.id) return true;
+  if (!meta.created || !row.last_event_created) return false;
+  return new Date(row.last_event_created).getTime() > meta.created * 1000;
+}
+
+async function handleSubscriptionCreated(
+  subscription: any,
+  env: StripeEnv,
+  meta: EventMeta,
+) {
   const userId = subscription.metadata?.userId;
   if (!userId) {
     console.error("No userId in subscription metadata");
+    return;
+  }
+  if (await isStaleEvent(subscription.id, meta)) {
+    console.log("Evento ignorado (fora de ordem/duplicado):", meta.id, subscription.id);
     return;
   }
   const item = subscription.items?.data?.[0];
@@ -114,6 +157,7 @@ async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
           : null,
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         environment: env,
+        ...eventStamp(meta),
         updated_at: new Date().toISOString(),
       } as never,
       { onConflict: "stripe_subscription_id" },
@@ -143,7 +187,15 @@ async function handleSubscriptionCreated(subscription: any, env: StripeEnv) {
   });
 }
 
-async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
+async function handleSubscriptionUpdated(
+  subscription: any,
+  env: StripeEnv,
+  meta: EventMeta,
+) {
+  if (await isStaleEvent(subscription.id, meta)) {
+    console.log("Evento ignorado (fora de ordem/duplicado):", meta.id, subscription.id);
+    return;
+  }
   const item = subscription.items?.data?.[0];
   const priceId = resolvePriceId(item);
   const periodStart = item?.current_period_start ?? subscription.current_period_start;
@@ -164,6 +216,7 @@ async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
       current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
       current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
       cancel_at_period_end: subscription.cancel_at_period_end || false,
+      ...eventStamp(meta),
       updated_at: new Date().toISOString(),
     } as never)
     .eq("stripe_subscription_id", subscription.id)
@@ -233,7 +286,15 @@ async function handleSubscriptionUpdated(subscription: any, env: StripeEnv) {
   });
 }
 
-async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
+async function handleSubscriptionDeleted(
+  subscription: any,
+  env: StripeEnv,
+  meta: EventMeta,
+) {
+  if (await isStaleEvent(subscription.id, meta)) {
+    console.log("Evento ignorado (fora de ordem/duplicado):", meta.id, subscription.id);
+    return;
+  }
   const { data } = await getSupabase()
     .from("subscriptions")
     .select("user_id, price_id")
@@ -243,7 +304,11 @@ async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
 
   await getSupabase()
     .from("subscriptions")
-    .update({ status: "canceled", updated_at: new Date().toISOString() } as never)
+    .update({
+      status: "canceled",
+      ...eventStamp(meta),
+      updated_at: new Date().toISOString(),
+    } as never)
     .eq("stripe_subscription_id", subscription.id)
     .eq("environment", env);
 
@@ -376,18 +441,19 @@ export function eventSummary(event: any): Record<string, unknown> {
 
 /** Roteia um evento do Stripe para o handler correspondente. */
 export async function handleStripeEvent(event: any, env: StripeEnv) {
+  const meta = metaOf(event);
   switch (event.type) {
     case "checkout.session.completed":
       await handleCheckoutCompleted(event.data.object, env);
       break;
     case "customer.subscription.created":
-      await handleSubscriptionCreated(event.data.object, env);
+      await handleSubscriptionCreated(event.data.object, env, meta);
       break;
     case "customer.subscription.updated":
-      await handleSubscriptionUpdated(event.data.object, env);
+      await handleSubscriptionUpdated(event.data.object, env, meta);
       break;
     case "customer.subscription.deleted":
-      await handleSubscriptionDeleted(event.data.object, env);
+      await handleSubscriptionDeleted(event.data.object, env, meta);
       break;
     case "invoice.payment_failed":
       await handlePaymentFailed(event.data.object, env);
@@ -398,5 +464,95 @@ export async function handleStripeEvent(event: any, env: StripeEnv) {
       break;
     default:
       console.log("Unhandled event:", event.type);
+  }
+}
+
+/**
+ * Reserva o evento antes de processar. Garante que cada stripe_event_id seja
+ * processado uma única vez, mesmo com reentregas simultâneas do Stripe.
+ */
+export async function claimWebhookEvent(args: {
+  eventId: string | null;
+  eventType: string;
+  environment: string;
+}): Promise<{ proceed: boolean; reason?: "duplicate" | "in_flight" | "no_id"; attempts: number }> {
+  if (!args.eventId) return { proceed: true, reason: "no_id", attempts: 1 };
+  const now = new Date().toISOString();
+  const { error } = await getSupabase().from("webhook_events").insert({
+    stripe_event_id: args.eventId,
+    event_type: args.eventType,
+    environment: args.environment,
+    status: "processing",
+    claimed_at: now,
+    attempts: 1,
+  } as never);
+
+  if (!error) return { proceed: true, attempts: 1 };
+  if (error.code !== "23505") {
+    // Falha inesperada ao reservar: processa mesmo assim para não perder o evento.
+    console.error("Falha ao reservar webhook_event:", error.message);
+    return { proceed: true, attempts: 1 };
+  }
+
+  const { data } = await getSupabase()
+    .from("webhook_events")
+    .select("status, attempts, claimed_at")
+    .eq("stripe_event_id", args.eventId)
+    .maybeSingle();
+  const row = data as any;
+  if (!row) return { proceed: true, attempts: 1 };
+
+  if (row.status === "processed" || row.status === "ignored") {
+    return { proceed: false, reason: "duplicate", attempts: row.attempts ?? 1 };
+  }
+  if (row.status === "processing") {
+    const claimedAt = row.claimed_at ? new Date(row.claimed_at).getTime() : 0;
+    if (Date.now() - claimedAt < 5 * 60 * 1000) {
+      return { proceed: false, reason: "in_flight", attempts: row.attempts ?? 1 };
+    }
+  }
+
+  const attempts = (row.attempts ?? 1) + 1;
+  await getSupabase()
+    .from("webhook_events")
+    .update({ status: "processing", claimed_at: now, attempts, error: null } as never)
+    .eq("stripe_event_id", args.eventId);
+  return { proceed: true, attempts };
+}
+
+/** Fecha o registro do evento com o resultado do processamento. */
+export async function finalizeWebhookEvent(row: {
+  stripe_event_id: string | null;
+  event_type: string;
+  environment: string;
+  status: "processed" | "ignored" | "failed";
+  error?: string | null;
+  duration_ms: number;
+  summary?: Record<string, unknown>;
+  attempts?: number;
+}) {
+  const payload = {
+    stripe_event_id: row.stripe_event_id,
+    event_type: row.event_type,
+    environment: row.environment,
+    status: row.status,
+    error: row.error ?? null,
+    duration_ms: row.duration_ms,
+    summary: row.summary ?? {},
+    processed_at: new Date().toISOString(),
+    ...(row.attempts ? { attempts: row.attempts } : {}),
+  };
+  try {
+    if (row.stripe_event_id) {
+      const { error } = await getSupabase()
+        .from("webhook_events")
+        .update(payload as never)
+        .eq("stripe_event_id", row.stripe_event_id);
+      if (error) console.error("Falha ao finalizar webhook_event:", error.message);
+      return;
+    }
+    await logWebhookEvent(row as any);
+  } catch (e) {
+    console.error("Falha ao finalizar webhook_event:", e);
   }
 }
