@@ -24,6 +24,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosDeUsoRouteImport } from './routes/termos-de-uso'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAssinaturasRouteImport } from './routes/admin.assinaturas'
+import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AdminCobrancaRouteImport } from './routes/admin.cobranca'
 import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminCortesiasRouteImport } from './routes/admin.cortesias'
@@ -124,6 +125,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAssinaturasRoute = AdminAssinaturasRouteImport.update({
   id: '/assinaturas',
   path: '/assinaturas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCobrancaRoute = AdminCobrancaRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
@@ -316,6 +323,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
@@ -360,6 +368,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos-de-uso': typeof TermosDeUsoRoute
   '/admin/assinaturas': typeof AdminAssinaturasRoute
+  '/admin/clientes': typeof AdminClientesRoute
   '/admin/cobranca': typeof AdminCobrancaRoute
   '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/cortesias': typeof AdminCortesiasRoute
@@ -405,6 +414,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
@@ -445,6 +455,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
@@ -488,6 +499,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termos-de-uso'
     | '/admin/assinaturas'
+    | '/admin/clientes'
     | '/admin/cobranca'
     | '/admin/conteudo'
     | '/admin/cortesias'
@@ -646,6 +658,13 @@ declare module '@tanstack/react-router' {
       path: '/assinaturas'
       fullPath: '/admin/assinaturas'
       preLoaderRoute: typeof AdminAssinaturasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/cobranca': {
@@ -835,6 +854,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAssinaturasRoute: typeof AdminAssinaturasRoute
+  AdminClientesRoute: typeof AdminClientesRoute
   AdminCobrancaRoute: typeof AdminCobrancaRoute
   AdminConteudoRoute: typeof AdminConteudoRoute
   AdminCortesiasRoute: typeof AdminCortesiasRoute
@@ -847,6 +867,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAssinaturasRoute: AdminAssinaturasRoute,
+  AdminClientesRoute: AdminClientesRoute,
   AdminCobrancaRoute: AdminCobrancaRoute,
   AdminConteudoRoute: AdminConteudoRoute,
   AdminCortesiasRoute: AdminCortesiasRoute,
