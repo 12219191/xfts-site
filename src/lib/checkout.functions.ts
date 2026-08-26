@@ -102,6 +102,28 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           }
         }
 
+        // Teste grátis: só na primeira contratação do sistema, se o plano oferecer.
+        let trialDays = 0;
+        if (isRecurring) {
+          const jaTeveEsteSistema = subs.some(
+            (s) => appKeyFromPriceId(s.price_id) === appKey,
+          );
+          if (!jaTeveEsteSistema) {
+            const { data: planRow } = await supabase
+              .from("catalog_plans")
+              .select("trial_days")
+              .or(
+                `price_lookup_key.eq.${data.priceId},annual_lookup_key.eq.${data.priceId}`,
+              )
+              .limit(1)
+              .maybeSingle();
+            trialDays = Math.max(
+              0,
+              Math.min(90, Number((planRow as { trial_days?: number } | null)?.trial_days ?? 0)),
+            );
+          }
+        }
+
         const session = await stripe.checkout.sessions.create({
           line_items: [{ price: stripePrice.id, quantity: data.quantity || 1 }],
           mode: isRecurring ? "subscription" : "payment",
@@ -114,6 +136,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           ...(isRecurring && {
             subscription_data: {
               metadata: { userId, appKey: appKey ?? "", lookupKey: data.priceId },
+              ...(trialDays > 0 && { trial_period_days: trialDays }),
             },
           }),
         });
