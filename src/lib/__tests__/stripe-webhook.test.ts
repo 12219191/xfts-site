@@ -335,3 +335,61 @@ describe("expiração de período", () => {
     expect(ent.limites["usuarios"]).toBe(0);
   });
 });
+
+describe("idempotência e deduplicação", () => {
+  const at = (type: string, object: unknown, id: string, created: number) => ({
+    id,
+    type,
+    created,
+    data: { object },
+  });
+  const now = Math.floor(Date.now() / 1000);
+
+  it("ignora a reentrega do mesmo evento (sem duplicar trilha nem provisionamento)", async () => {
+    const evt = at("customer.subscription.updated", stripeSubscription(BASICO), "evt_dup_1", now);
+
+    await handleStripeEvent(evt, "sandbox");
+    await handleStripeEvent(evt, "sandbox");
+
+    expect(events("plano_alterado")).toHaveLength(1);
+    expect(provisionApp).toHaveBeenCalledTimes(1);
+    expect(db.subscriptions[0]!["price_id"]).toBe(BASICO);
+  });
+
+  it("descarta evento antigo que chega depois do mais recente", async () => {
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(BASICO), "evt_novo", now),
+      "sandbox",
+    );
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(PRO), "evt_antigo", now - 600),
+      "sandbox",
+    );
+
+    expect(db.subscriptions[0]!["price_id"]).toBe(BASICO);
+    const ent = await resolveUserEntitlements(USER, "casa360");
+    expect(ent.limites["usuarios"]).toBe(1);
+  });
+
+  it("aceita evento posterior ao último aplicado", async () => {
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(BASICO), "evt_1", now - 600),
+      "sandbox",
+    );
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(PRO), "evt_2", now),
+      "sandbox",
+    );
+
+    expect(db.subscriptions[0]!["price_id"]).toBe(PRO);
+  });
+
+  it("não reprocessa cancelamento reentregue", async () => {
+    const evt = at("customer.subscription.deleted", stripeSubscription(PRO), "evt_del", now);
+    await handleStripeEvent(evt, "sandbox");
+    await handleStripeEvent(evt, "sandbox");
+
+    expect(events("assinatura_encerrada")).toHaveLength(1);
+    expect(db.subscriptions[0]!["status"]).toBe("canceled");
+  });
+});
