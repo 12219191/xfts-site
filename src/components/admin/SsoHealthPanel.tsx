@@ -73,8 +73,10 @@ export function SsoHealthPanel() {
       toast.error(result.error);
       return;
     }
-    if (result.result.ok) toast.success(result.result.detalhe);
+    if (result.result.nivel === "ok") toast.success(result.result.detalhe);
+    else if (result.result.nivel === "parcial") toast.warning(result.result.detalhe);
     else toast.error(result.result.detalhe);
+
     void load();
   };
 
