@@ -369,6 +369,8 @@ export async function discardProvisionItem(id: string): Promise<{ ok: boolean }>
 export interface ConnectionTestResult {
   app: string;
   ok: boolean;
+  /** ok = tudo certo; parcial = chave aceita mas ping não tratado; erro = falha real. */
+  nivel: "ok" | "parcial" | "erro";
   httpStatus: number | null;
   durationMs: number;
   detalhe: string;
@@ -378,25 +380,36 @@ export interface ConnectionTestResult {
 export async function testAppConnection(appKey: string): Promise<ConnectionTestResult> {
   const app = getFlexusApp(appKey);
   const started = Date.now();
-  const fail = async (detalhe: string, httpStatus: number | null = null) => {
+  const finish = async (
+    nivel: "ok" | "parcial" | "erro",
+    detalhe: string,
+    httpStatus: number | null = null,
+  ): Promise<ConnectionTestResult> => {
+    const durationMs = Date.now() - started;
     await logIntegrationEvent({
       appKey,
       kind: "test" as IntegrationKind,
-      status: "error",
+      status: nivel === "ok" ? "ok" : nivel === "parcial" ? "denied" : "error",
       httpStatus,
-      reason: detalhe,
-      durationMs: Date.now() - started,
+      reason: nivel === "ok" ? undefined : detalhe,
+      durationMs,
     });
-    return { app: appKey, ok: false, httpStatus, durationMs: Date.now() - started, detalhe };
+    return { app: appKey, ok: nivel === "ok", nivel, httpStatus, durationMs, detalhe };
   };
 
-  if (!app || !app.available || !app.url) return fail("Sistema indisponível ou sem domínio.");
+  if (!app || !app.available || !app.url) return finish("erro", "Sistema indisponível ou sem domínio.");
   const secret = appApiKey(app.key);
-  if (!secret) return fail("Chave de API não configurada para este sistema.");
+  if (!secret) return finish("erro", "Chave de API não configurada para este sistema.");
 
   const body = JSON.stringify({
     event: "ping",
+    dry_run: true,
     produto: appKey,
+    user_id: "00000000-0000-0000-0000-000000000000",
+    email: "teste-integracao@xfts.com.br",
+    plano: "teste",
+    limite_usuarios: 1,
+    status: "ping",
     timestamp: new Date().toISOString(),
   });
 
@@ -409,30 +422,36 @@ export async function testAppConnection(appKey: string): Promise<ConnectionTestR
       body,
       signal: AbortSignal.timeout(10_000),
     });
-    const durationMs = Date.now() - started;
     const contentType = res.headers.get("content-type") ?? "";
-    if (!res.ok) return fail(`O sistema respondeu HTTP ${res.status}.`, res.status);
-    if (!contentType.includes("application/json")) {
-      return fail("O endpoint respondeu, mas não em formato JSON.", res.status);
+    const raw = (await res.text().catch(() => "")).replace(/\s+/g, " ").trim().slice(0, 200);
+    const trecho = raw ? ` — ${raw}` : "";
+
+    if (res.status === 401 || res.status === 403) {
+      return finish(
+        "erro",
+        `Chave recusada (HTTP ${res.status})${trecho} — confira se a chave compartilhada é idêntica nos dois projetos.`,
+        res.status,
+      );
     }
-    await logIntegrationEvent({
-      appKey,
-      kind: "test",
-      status: "ok",
-      httpStatus: res.status,
-      durationMs,
-    });
-    return {
-      app: appKey,
-      ok: true,
-      httpStatus: res.status,
-      durationMs,
-      detalhe: "Conexão saudável: chave aceita e resposta válida.",
-    };
+    if (!res.ok) {
+      const naoTrataPing = res.status === 400 || res.status === 404 || res.status === 422;
+      return finish(
+        naoTrataPing ? "parcial" : "erro",
+        naoTrataPing
+          ? `Endpoint alcançado e chave aceita, mas o sistema ainda não trata o evento de teste (HTTP ${res.status})${trecho}.`
+          : `O sistema respondeu HTTP ${res.status}${trecho}.`,
+        res.status,
+      );
+    }
+    if (!contentType.includes("application/json")) {
+      return finish("parcial", `O endpoint respondeu, mas não em formato JSON${trecho}.`, res.status);
+    }
+    return finish("ok", "Conexão saudável: chave aceita e resposta válida.", res.status);
   } catch (e) {
-    return fail(e instanceof Error ? e.message : "Falha de rede.");
+    return finish("erro", e instanceof Error ? e.message : "Falha de rede.");
   }
 }
+
 
 // -------------------------------------------------------------------- alertas
 
