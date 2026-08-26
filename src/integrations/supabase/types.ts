@@ -535,6 +535,51 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_events: {
+        Row: {
+          app_key: string
+          created_at: string
+          detail: Json
+          duration_ms: number
+          environment: string
+          error: string | null
+          http_status: number | null
+          id: string
+          kind: string
+          reason: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          app_key?: string
+          created_at?: string
+          detail?: Json
+          duration_ms?: number
+          environment?: string
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          kind: string
+          reason?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          app_key?: string
+          created_at?: string
+          detail?: Json
+          duration_ms?: number
+          environment?: string
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          kind?: string
+          reason?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       integration_settings: {
         Row: {
           key: string
@@ -577,6 +622,57 @@ export type Database = {
           slug?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      provision_queue: {
+        Row: {
+          app_key: string
+          attempts: number
+          created_at: string
+          delivered_at: string | null
+          environment: string
+          event: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          price_id: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          app_key: string
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          environment?: string
+          event: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          price_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          app_key?: string
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          environment?: string
+          event?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          price_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
