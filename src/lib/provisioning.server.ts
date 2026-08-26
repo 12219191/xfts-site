@@ -19,20 +19,65 @@ interface ProvisionInput {
   status?: string | null;
   accessUntil?: string | null;
   environment: string;
+  /** True quando a chamada vem da fila de reenvio (não reenfileira). */
+  fromQueue?: boolean;
+}
+
+/** Registra o resultado e, quando falha, agenda nova tentativa automática. */
+async function finish(
+  input: ProvisionInput,
+  appKey: string | null,
+  outcome: { ok: boolean; error?: string },
+  startedAt: number,
+  httpStatus: number | null = null,
+): Promise<{ ok: boolean; app: string | null; error?: string }> {
+  const { logIntegrationEvent } = await import("@/lib/integration-log.server");
+  await logIntegrationEvent({
+    appKey: appKey ?? "",
+    kind: "provision",
+    status: outcome.ok ? "ok" : "error",
+    httpStatus,
+    reason: outcome.error ?? null,
+    userId: input.userId ?? null,
+    durationMs: Date.now() - startedAt,
+    environment: input.environment,
+    detail: { event: input.event, price_id: input.priceId ?? null },
+  });
+
+  if (appKey && !input.fromQueue) {
+    const reliability = await import("@/lib/reliability.server");
+    const payload = {
+      priceId: input.priceId ?? null,
+      userId: input.userId ?? null,
+      event: input.event,
+      status: input.status ?? null,
+      accessUntil: input.accessUntil ?? null,
+      environment: input.environment,
+    };
+    if (outcome.ok) await reliability.resolveProvisionQueue(appKey, payload.userId);
+    else await reliability.enqueueProvision(appKey, payload, outcome.error ?? "falha");
+  }
+
+  return { ok: outcome.ok, app: appKey, error: outcome.error };
 }
 
 /** Nunca lança: falhas são registradas e não derrubam o webhook do pagamento. */
 export async function provisionApp(
   input: ProvisionInput,
 ): Promise<{ ok: boolean; app: string | null; error?: string }> {
+  const startedAt = Date.now();
   const appKey = appKeyFromPriceId(input.priceId);
   if (!appKey || !input.userId) return { ok: false, app: appKey, error: "sem app/usuário" };
 
   const app = getFlexusApp(appKey);
-  if (!app?.available || !app.url) return { ok: false, app: appKey, error: "app indisponível" };
+  if (!app?.available || !app.url) {
+    return finish(input, appKey, { ok: false, error: "app indisponível" }, startedAt);
+  }
 
   const secret = appApiKey(appKey);
-  if (!secret) return { ok: false, app: appKey, error: "chave do app não configurada" };
+  if (!secret) {
+    return finish(input, appKey, { ok: false, error: "chave do app não configurada" }, startedAt);
+  }
 
   const { resolveEntitlements } = await import("@/lib/entitlements.server");
   const ent = await resolveEntitlements({
@@ -71,15 +116,26 @@ export async function provisionApp(
       signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
-      return { ok: false, app: appKey, error: `HTTP ${res.status}` };
+      return finish(input, appKey, { ok: false, error: `HTTP ${res.status}` }, startedAt, res.status);
     }
     // Um SPA devolve o HTML da página para qualquer rota: isso não é sucesso.
     const contentType = res.headers.get("content-type") ?? "";
     if (!contentType.includes("application/json")) {
-      return { ok: false, app: appKey, error: "endpoint /api/provision não implementado no sistema" };
+      return finish(
+        input,
+        appKey,
+        { ok: false, error: "endpoint /api/provision não implementado no sistema" },
+        startedAt,
+        res.status,
+      );
     }
-    return { ok: true, app: appKey };
+    return finish(input, appKey, { ok: true }, startedAt, res.status);
   } catch (e) {
-    return { ok: false, app: appKey, error: e instanceof Error ? e.message : "falha de rede" };
+    return finish(
+      input,
+      appKey,
+      { ok: false, error: e instanceof Error ? e.message : "falha de rede" },
+      startedAt,
+    );
   }
 }
