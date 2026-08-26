@@ -54,7 +54,7 @@ function makeQuery(name: string) {
   }
 
   function rows(): Row[] {
-    const out = table(name).filter(matches);
+    const out = table(name).filter(matches).map((row) => ({ ...row }));
     return limitCount == null ? out : out.slice(0, limitCount);
   }
 
