@@ -90,7 +90,7 @@ export async function retryProvisionQueue(limit = 25): Promise<RetryResult> {
     .order("next_attempt_at", { ascending: true })
     .limit(limit);
 
-  const rows = (data ?? []) as Array<{
+  const rows = (data ?? []) as unknown as Array<{
     id: string;
     app_key: string;
     attempts: number;
@@ -326,7 +326,7 @@ export async function retryProvisionItem(
     .maybeSingle();
   if (!data) return { ok: false, error: "Item não encontrado." };
 
-  const row = data as { attempts: number; payload: ProvisionPayload };
+  const row = data as unknown as { attempts: number; payload: ProvisionPayload };
   const { provisionApp } = await import("@/lib/provisioning.server");
   const outcome = await provisionApp({ ...row.payload, fromQueue: true });
   const attempts = row.attempts + 1;
@@ -391,7 +391,7 @@ export async function testAppConnection(appKey: string): Promise<ConnectionTestR
   };
 
   if (!app || !app.available || !app.url) return fail("Sistema indisponível ou sem domínio.");
-  const secret = appApiKey(appKey);
+  const secret = appApiKey(app.key);
   if (!secret) return fail("Chave de API não configurada para este sistema.");
 
   const body = JSON.stringify({
