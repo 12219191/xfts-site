@@ -103,3 +103,17 @@ como `pending` para nova tentativa.
   reenvio manual no `/admin`).
 - Demais erros/timeout → `pending`, reprocessado pelo retry automático
   (`POST /api/public/crm-retry`, autenticado com a `FLEXUS_APP_KEY_CRM`).
+
+## Teste de conexão do hub (evento `ping`)
+
+O botão "Testar conexão" do `/admin` envia à função `flexus-provision` um payload assinado
+com `event: "ping"` e `dry_run: true`. Depois de validar a assinatura, responder de imediato:
+
+```ts
+if (p.event === "ping" || p.dry_run === true) {
+  return json({ ok: true, pong: true });
+}
+```
+
+Enquanto isso não existir, o CRM responde HTTP 400 ao ping e o hub classifica o teste como
+**Parcial** — a `FLEXUS_APP_KEY_CRM` está correta; falta apenas tratar o evento.

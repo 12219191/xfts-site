@@ -91,3 +91,16 @@ Recomendado a cada login e uma vez por dia; `ativo === false` → bloquear.
 - [Barbearia](./barbearia.md) — SPA (Vite) + funções de backend
 - [CRM](./crm.md) — SPA (Vite) + funções de backend
 - [Casa360°](./casa360.md) — TanStack Start (rotas nativas)
+
+## Teste de conexão (evento `ping`)
+
+Todos os sistemas devem tratar, no endpoint de provisionamento, o evento de teste enviado
+pelo hub: payload assinado com `event: "ping"` e `dry_run: true`. Resposta esperada:
+`{ "ok": true, "pong": true }` em JSON, sem gravar dados.
+
+Classificação no `/admin`:
+
+- `2xx` JSON → conexão saudável;
+- `401/403` → chave/assinatura recusada;
+- `400/404/422` → chave aceita, evento de teste ainda não tratado (**Parcial**);
+- timeout/erro de rede → falha.

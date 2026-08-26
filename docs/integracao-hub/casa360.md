@@ -215,3 +215,10 @@ export const Route = createFileRoute("/api/public/provision")({
 - No layout `_authenticated`, carregar `hub_accounts` do usuário; `ativo === false`
   → tela de bloqueio + `signOut()` + link para `https://xfts-flexus.com/minha-conta`.
 - Convite de membros: recusar acima de `limite_usuarios` (`null` = ilimitado).
+
+## Teste de conexão do hub (evento `ping`)
+
+O endpoint de provisionamento recebe, no teste do `/admin`, um payload assinado com
+`event: "ping"` e `dry_run: true`. Após validar a assinatura, responder
+`{ ok: true, pong: true }` sem gravar nada. Se responder 400/404/422, o hub marca o teste
+como **Parcial** (chave aceita, evento não tratado).
