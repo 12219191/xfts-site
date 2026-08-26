@@ -48,9 +48,10 @@ function makeQuery(table: string) {
       return api;
     },
     insert: (values: Record<string, unknown>) => {
-      queue.push({ id: `q${queue.length + 1}`, ...(values as unknown as QueueRow) });
+      queue.push({ ...(values as unknown as QueueRow), id: `q${queue.length + 1}` });
       return Promise.resolve({ error: null });
     },
+
     then: (resolve: (v: unknown) => unknown) => {
       if (update) for (const r of rows()) Object.assign(r, update);
       return Promise.resolve({ data: rows(), error: null }).then(resolve);
