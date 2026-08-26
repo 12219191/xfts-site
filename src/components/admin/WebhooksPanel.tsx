@@ -13,6 +13,7 @@ import {
   RefreshCw,
   Webhook,
 } from "lucide-react";
+import { reprocessWebhookEvent } from "@/lib/reliability.functions";
 import {
   listWebhookEvents,
   type WebhookEventRow,
@@ -70,6 +71,7 @@ export function WebhooksPanel() {
   const [env, setEnv] = useState<EnvFilter>("todos");
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [reprocessing, setReprocessing] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -90,6 +92,24 @@ export function WebhooksPanel() {
     const timer = setInterval(() => void load(), 60_000);
     return () => clearInterval(timer);
   }, [load]);
+
+  const doReprocess = async (row: WebhookEventRow) => {
+    if (!row.stripe_event_id) {
+      toast.error("Este registro não tem identificador do Stripe para reprocessar.");
+      return;
+    }
+    setReprocessing(row.id);
+    const result = await reprocessWebhookEvent({
+      data: {
+        eventId: row.stripe_event_id,
+        environment: row.environment === "live" ? "live" : "sandbox",
+      },
+    });
+    setReprocessing(null);
+    if ("error" in result) toast.error(result.error);
+    else toast.success("Evento reprocessado com sucesso.");
+    void load();
+  };
 
   const stats = data?.stats;
   const rows: WebhookEventRow[] = data?.rows ?? [];
@@ -244,6 +264,23 @@ export function WebhooksPanel() {
                     </div>
                     <StatusBadge status={row.status} />
                   </button>
+
+                  {row.status === "failed" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2"
+                      onClick={() => void doReprocess(row)}
+                      disabled={reprocessing === row.id}
+                    >
+                      {reprocessing === row.id ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                      )}
+                      Reprocessar
+                    </Button>
+                  )}
 
                   {row.error && (
                     <p className="mt-2 rounded-md bg-destructive/5 p-2 text-xs text-destructive">

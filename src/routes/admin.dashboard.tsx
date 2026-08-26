@@ -122,7 +122,48 @@ function DashboardPage() {
             </CardContent>
           </Card>
 
+          {(data.operacional.webhooksFalhos24h > 0 ||
+            data.operacional.provisionamentosEsgotados > 0 ||
+            data.operacional.sistemasComProblema.length > 0) && (
+            <Card className="border-destructive/30 bg-destructive/5">
+              <CardContent className="p-5">
+                <h2 className="text-sm font-semibold text-destructive">
+                  Atenção — integrações
+                </h2>
+                <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                  {data.operacional.webhooksFalhos24h > 0 && (
+                    <li>
+                      {data.operacional.webhooksFalhos24h} webhook(s) de pagamento com falha nas
+                      últimas 24h ·{" "}
+                      <Link to="/admin/integracoes" className="text-primary underline">
+                        abrir Webhooks
+                      </Link>
+                    </li>
+                  )}
+                  {data.operacional.provisionamentosEsgotados > 0 && (
+                    <li>
+                      {data.operacional.provisionamentosEsgotados} aviso(s) de provisionamento com
+                      tentativas esgotadas ·{" "}
+                      <Link to="/admin/integracoes" className="text-primary underline">
+                        abrir Provisionamento
+                      </Link>
+                    </li>
+                  )}
+                  {data.operacional.sistemasComProblema.length > 0 && (
+                    <li>
+                      Sistema(s) com problema: {data.operacional.sistemasComProblema.join(", ")} ·{" "}
+                      <Link to="/admin/integracoes" className="text-primary underline">
+                        abrir Saúde do SSO
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="grid gap-4 lg:grid-cols-3">
+
             <AlertList
               title="Assinaturas com problema"
               rows={data.assinaturasComProblema}

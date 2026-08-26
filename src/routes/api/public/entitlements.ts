@@ -35,12 +35,37 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const userId = url.searchParams.get("user_id") ?? "";
         const providedKey = request.headers.get("x-flexus-app-key") ?? "";
 
+        const startedAt = Date.now();
+        const { logIntegrationEvent } = await import("@/lib/integration-log.server");
+        const log = async (
+          status: "ok" | "denied" | "error",
+          httpStatus: number,
+          reason?: string,
+        ) => {
+          await logIntegrationEvent({
+            appKey: appParam,
+            kind: "entitlements",
+            status,
+            httpStatus,
+            reason: reason ?? null,
+            userId: UUID_RE.test(userId) ? userId : null,
+            durationMs: Date.now() - startedAt,
+          });
+        };
+
         const app = getFlexusApp(appParam);
-        if (!app) return json({ error: "Sistema inválido" }, 400);
-        if (!UUID_RE.test(userId)) return json({ error: "user_id inválido" }, 400);
+        if (!app) {
+          await log("denied", 400, "sistema inválido");
+          return json({ error: "Sistema inválido" }, 400);
+        }
+        if (!UUID_RE.test(userId)) {
+          await log("denied", 400, "user_id inválido");
+          return json({ error: "user_id inválido" }, 400);
+        }
 
         const expectedKey = appApiKey(app.key as FlexusAppKey);
         if (!providedKey || !expectedKey || !safeEqual(providedKey, expectedKey)) {
+          await log("error", 401, "chave de API inválida");
           return json({ error: "Chave de API inválida" }, 401);
         }
 
@@ -54,7 +79,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const { resolveEntitlements } = await import("@/lib/entitlements.server");
 
         const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
-        if (!sub)
+        if (!sub) {
+          await log("ok", 200, "sem assinatura");
           return json({
             ativo: false,
             status: "none",
@@ -65,6 +91,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             recursos: {},
             limites: {},
           });
+        }
 
         const periodOk =
           !sub.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
@@ -77,6 +104,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
           currentPeriodEnd: sub.current_period_end,
           seatsOverride: (sub as { seats_override?: number | null }).seats_override ?? null,
         });
+
+        await log("ok", 200, ativo ? undefined : "assinatura inativa");
 
         return json({
           ativo,
