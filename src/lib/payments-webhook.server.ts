@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
+import type { StripeEnv } from "@/lib/stripe.server";
 import { provisionApp, type ProvisionEvent } from "@/lib/provisioning.server";
 
 /** Avisa o sistema do produto (outro domínio) e registra falhas para retry. */
