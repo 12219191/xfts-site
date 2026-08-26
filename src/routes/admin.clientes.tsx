@@ -12,7 +12,8 @@ import {
   updateCustomerSeats,
 } from "@/lib/admin-customers.functions";
 import type { CustomerProduct, CustomerRow } from "@/lib/admin-customers.server";
-import { LifeBuoy, Search, Users } from "lucide-react";
+import { History, LifeBuoy, Search, Users } from "lucide-react";
+import { CustomerTimelineDialog } from "@/components/admin/CustomerTimelineDialog";
 
 export const Route = createFileRoute("/admin/clientes")({
   component: () => (
@@ -29,6 +30,7 @@ function ClientesPage() {
   const [environment, setEnvironment] = useState<"live" | "sandbox">("live");
   const [rows, setRows] = useState<CustomerRow[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [timelineFor, setTimelineFor] = useState<CustomerRow | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -126,6 +128,16 @@ function ClientesPage() {
           </Card>
         ))}
       </div>
+
+      {timelineFor && (
+        <CustomerTimelineDialog
+          open={!!timelineFor}
+          onOpenChange={(open) => !open && setTimelineFor(null)}
+          userId={timelineFor.userId}
+          email={timelineFor.email}
+          environment={environment}
+        />
+      )}
     </div>
   );
 }
