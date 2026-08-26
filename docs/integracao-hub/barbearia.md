@@ -241,3 +241,20 @@ Deno.serve(async (req) => {
   → tela de bloqueio com link para `https://xfts-flexus.com/minha-conta` e `signOut()`.
 - No convite de equipe, comparar o total de usuários ativos com `limite_usuarios`
   (`null` = ilimitado) e recusar acima do limite, indicando upgrade no hub.
+
+## 6. Responder ao teste de conexão do hub (evento `ping`)
+
+O painel `/admin` do hub tem um botão "Testar conexão" que envia um provisionamento
+simulado, devidamente assinado, com `event: "ping"` e `dry_run: true`.
+
+Logo após validar a assinatura (e antes de gravar qualquer coisa), a função
+`flexus-provision` deve responder:
+
+```ts
+if (p.event === "ping" || p.dry_run === true) {
+  return json({ ok: true, pong: true });
+}
+```
+
+Sem esse trecho, o sistema costuma responder HTTP 400 ao ping. Nesse caso o hub mostra o
+teste como **Parcial** (chave aceita, evento não tratado) — não é erro de credencial.
