@@ -22,7 +22,12 @@ export interface DashboardOpsAlerts {
   webhooksFalhos24h: number;
   provisionamentosEsgotados: number;
   sistemasComProblema: string[];
+  emailsPresos: number;
+  emailsEsgotados: number;
+  rotinasAtrasadas: string[];
+  rotinasComFalha: string[];
 }
+
 
 export interface DashboardData {
   mrr: number;

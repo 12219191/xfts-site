@@ -124,7 +124,11 @@ function DashboardPage() {
 
           {(data.operacional.webhooksFalhos24h > 0 ||
             data.operacional.provisionamentosEsgotados > 0 ||
-            data.operacional.sistemasComProblema.length > 0) && (
+            data.operacional.sistemasComProblema.length > 0 ||
+            data.operacional.emailsPresos > 0 ||
+            data.operacional.emailsEsgotados > 0 ||
+            data.operacional.rotinasAtrasadas.length > 0 ||
+            data.operacional.rotinasComFalha.length > 0) && (
             <Card className="border-destructive/30 bg-destructive/5">
               <CardContent className="p-5">
                 <h2 className="text-sm font-semibold text-destructive">
@@ -157,10 +161,36 @@ function DashboardPage() {
                       </Link>
                     </li>
                   )}
+                  {(data.operacional.emailsPresos > 0 || data.operacional.emailsEsgotados > 0) && (
+                    <li>
+                      {data.operacional.emailsPresos} e-mail(s) parado(s) na fila e{" "}
+                      {data.operacional.emailsEsgotados} com tentativas esgotadas ·{" "}
+                      <Link to="/admin/integracoes" className="text-primary underline">
+                        abrir Fila de e-mails
+                      </Link>
+                    </li>
+                  )}
+                  {(data.operacional.rotinasAtrasadas.length > 0 ||
+                    data.operacional.rotinasComFalha.length > 0) && (
+                    <li>
+                      Rotina(s) com problema:{" "}
+                      {[
+                        ...new Set([
+                          ...data.operacional.rotinasAtrasadas,
+                          ...data.operacional.rotinasComFalha,
+                        ]),
+                      ].join(", ")}{" "}
+                      ·{" "}
+                      <Link to="/admin/integracoes" className="text-primary underline">
+                        abrir Rotinas automáticas
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </CardContent>
             </Card>
           )}
+
 
           <div className="grid gap-4 lg:grid-cols-3">
 

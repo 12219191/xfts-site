@@ -46,7 +46,9 @@ import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
 import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-retry'
+import { Route as ApiPublicEmailQueueFlushRouteImport } from './routes/api/public/email-queue-flush'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiPublicProvisionRetryRouteImport } from './routes/api/public/provision-retry'
 import { Route as ApiPublicSeatsUsageRouteImport } from './routes/api/public/seats-usage'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
@@ -241,9 +243,20 @@ const ApiPublicCrmRetryRoute = ApiPublicCrmRetryRouteImport.update({
   path: '/api/public/crm-retry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicEmailQueueFlushRoute =
+  ApiPublicEmailQueueFlushRouteImport.update({
+    id: '/api/public/email-queue-flush',
+    path: '/api/public/email-queue-flush',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicEntitlementsRoute = ApiPublicEntitlementsRouteImport.update({
   id: '/api/public/entitlements',
   path: '/api/public/entitlements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicProvisionRetryRoute = ApiPublicProvisionRetryRouteImport.update({
@@ -323,7 +336,9 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
+  '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -367,7 +382,9 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
+  '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -415,7 +432,9 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
+  '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -464,7 +483,9 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
+    | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
+    | '/api/public/health'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -508,7 +529,9 @@ export interface FileRouteTypes {
     | '/blog'
     | '/produtos'
     | '/api/public/crm-retry'
+    | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
+    | '/api/public/health'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -555,7 +578,9 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/produtos/'
     | '/api/public/crm-retry'
+    | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
+    | '/api/public/health'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -580,7 +605,9 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
+  ApiPublicEmailQueueFlushRoute: typeof ApiPublicEmailQueueFlushRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicProvisionRetryRoute: typeof ApiPublicProvisionRetryRoute
   ApiPublicSeatsUsageRoute: typeof ApiPublicSeatsUsageRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
@@ -851,11 +878,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCrmRetryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/email-queue-flush': {
+      id: '/api/public/email-queue-flush'
+      path: '/api/public/email-queue-flush'
+      fullPath: '/api/public/email-queue-flush'
+      preLoaderRoute: typeof ApiPublicEmailQueueFlushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/entitlements': {
       id: '/api/public/entitlements'
       path: '/api/public/entitlements'
       fullPath: '/api/public/entitlements'
       preLoaderRoute: typeof ApiPublicEntitlementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/provision-retry': {
@@ -1007,7 +1048,9 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
+  ApiPublicEmailQueueFlushRoute: ApiPublicEmailQueueFlushRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicProvisionRetryRoute: ApiPublicProvisionRetryRoute,
   ApiPublicSeatsUsageRoute: ApiPublicSeatsUsageRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,

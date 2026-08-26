@@ -440,13 +440,20 @@ export interface OperationalAlerts {
   webhooksFalhos24h: number;
   provisionamentosEsgotados: number;
   sistemasComProblema: string[];
+  emailsPresos: number;
+  emailsEsgotados: number;
+  rotinasAtrasadas: string[];
+  rotinasComFalha: string[];
 }
 
 export async function buildOperationalAlerts(): Promise<OperationalAlerts> {
   const supabase = await db();
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-  const [{ data: webhooks }, { data: queue }, { apps }] = await Promise.all([
+  const { buildEmailQueueStats } = await import("@/lib/email-queue.server");
+  const { buildCronHealth } = await import("@/lib/cron-monitor.server");
+
+  const [{ data: webhooks }, { data: queue }, { apps }, emails, cron] = await Promise.all([
     supabase
       .from("webhook_events")
       .select("id")
@@ -455,12 +462,18 @@ export async function buildOperationalAlerts(): Promise<OperationalAlerts> {
       .limit(500),
     supabase.from("provision_queue").select("id").eq("status", "failed").limit(500),
     buildSsoHealth("todos"),
+    buildEmailQueueStats(),
+    buildCronHealth(),
   ]);
 
   return {
     webhooksFalhos24h: (webhooks ?? []).length,
     provisionamentosEsgotados: (queue ?? []).length,
     sistemasComProblema: apps.filter((a) => a.semaforo === "vermelho").map((a) => a.name),
+    emailsPresos: emails.presos,
+    emailsEsgotados: emails.esgotados,
+    rotinasAtrasadas: cron.jobs.filter((j) => j.atrasada).map((j) => j.name),
+    rotinasComFalha: cron.jobs.filter((j) => j.ultimaOk === false).map((j) => j.name),
   };
 }
 
@@ -471,7 +484,11 @@ export async function sendDailyOperationalDigest(): Promise<{ sent: boolean }> {
   const hasIssue =
     alerts.webhooksFalhos24h > 0 ||
     alerts.provisionamentosEsgotados > 0 ||
-    alerts.sistemasComProblema.length > 0;
+    alerts.sistemasComProblema.length > 0 ||
+    alerts.emailsPresos > 0 ||
+    alerts.emailsEsgotados > 0 ||
+    alerts.rotinasAtrasadas.length > 0 ||
+    alerts.rotinasComFalha.length > 0;
   if (!hasIssue) return { sent: false };
 
   const today = new Date().toISOString().slice(0, 10);
@@ -486,21 +503,28 @@ export async function sendDailyOperationalDigest(): Promise<{ sent: boolean }> {
   const recipients = value.recipients?.length ? value.recipients : ["xfts@xfts.com.br"];
 
   try {
-    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    // O alerta interno também passa pela fila: se o e-mail falhar agora,
+    // ele é reenviado automaticamente na próxima varredura.
+    const { enqueueEmail } = await import("@/lib/email-queue.server");
     for (const to of recipients) {
-      await sendTemplateEmail("alerta-operacional", to, {
+      await enqueueEmail({
+        template: "alerta-operacional",
+        recipient: to,
         idempotencyKey: `ops-digest-${today}-${to}`,
         templateData: {
           data: new Date().toLocaleDateString("pt-BR"),
           webhooks: alerts.webhooksFalhos24h,
           provisionamentos: alerts.provisionamentosEsgotados,
           sistemas: alerts.sistemasComProblema,
+          emails: alerts.emailsPresos + alerts.emailsEsgotados,
+          rotinas: [...alerts.rotinasAtrasadas, ...alerts.rotinasComFalha],
         },
       });
     }
   } catch {
     return { sent: false };
   }
+
 
   await supabase
     .from("app_settings")
