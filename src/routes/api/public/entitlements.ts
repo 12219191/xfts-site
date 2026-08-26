@@ -47,9 +47,11 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
-          .select("price_id, status, current_period_end, cancel_at_period_end, seats_used")
+          .select("price_id, status, current_period_end, cancel_at_period_end, seats_used, seats_override")
           .eq("user_id", userId)
           .order("created_at", { ascending: false });
+
+        const { resolveEntitlements } = await import("@/lib/entitlements.server");
 
         const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
         if (!sub)
@@ -60,6 +62,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
             papel: "owner",
             limite_usuarios: 0,
             usuarios_em_uso: 0,
+            recursos: {},
+            limites: {},
           });
 
         const periodOk =
@@ -67,12 +71,23 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const ativo =
           periodOk && (ACTIVE_STATUSES.includes(sub.status) || sub.status === "canceled");
 
+        const ent = await resolveEntitlements({
+          priceId: sub.price_id,
+          status: sub.status,
+          currentPeriodEnd: sub.current_period_end,
+          seatsOverride: (sub as { seats_override?: number | null }).seats_override ?? null,
+        });
+
         return json({
           ativo,
           status: sub.status,
           plano: planTierFromPriceId(sub.price_id),
           papel: "owner",
-          limite_usuarios: ativo ? seatsFromPriceId(sub.price_id) : 0,
+          limite_usuarios: ativo
+            ? (ent.limites["usuarios"] ?? seatsFromPriceId(sub.price_id))
+            : 0,
+          recursos: ent.features,
+          limites: ent.limites,
           usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,

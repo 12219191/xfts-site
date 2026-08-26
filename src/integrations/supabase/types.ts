@@ -168,6 +168,7 @@ export type Database = {
           created_at: string
           cta_label: string
           description: string
+          entitlements: Json
           features: Json
           id: string
           name: string
@@ -186,6 +187,7 @@ export type Database = {
           created_at?: string
           cta_label?: string
           description?: string
+          entitlements?: Json
           features?: Json
           id?: string
           name: string
@@ -204,6 +206,7 @@ export type Database = {
           created_at?: string
           cta_label?: string
           description?: string
+          entitlements?: Json
           features?: Json
           id?: string
           name?: string
@@ -346,6 +349,45 @@ export type Database = {
           stripe_subscription_id?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      entitlement_definitions: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          key: string
+          kind: string
+          label: string
+          product_key: string
+          sort_order: number
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          key: string
+          kind?: string
+          label: string
+          product_key: string
+          sort_order?: number
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          key?: string
+          kind?: string
+          label?: string
+          product_key?: string
+          sort_order?: number
+          unit?: string
+          updated_at?: string
         }
         Relationships: []
       }

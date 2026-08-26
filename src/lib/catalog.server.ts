@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { CatalogPlan, CatalogProduct, CatalogSnapshot } from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
 import { PLANS_BY_APP } from "@/lib/product-plans";
+import { parseEntitlements } from "@/lib/entitlements";
 
 function parseBRL(value?: string): number {
   if (!value) return 0;
@@ -40,6 +41,7 @@ export function codeCatalog(): CatalogSnapshot {
         annualLookupKey: plan.annualPriceId ?? null,
         active: true,
         sortOrder: index + 1,
+        entitlements: {},
       });
     });
   }
@@ -91,6 +93,7 @@ type PlanRow = {
   annual_lookup_key: string | null;
   active: boolean;
   sort_order: number;
+  entitlements?: unknown;
 };
 
 export function mapProduct(row: ProductRow): CatalogProduct {
@@ -121,6 +124,7 @@ export function mapPlan(row: PlanRow): CatalogPlan {
     annualLookupKey: row.annual_lookup_key,
     active: row.active,
     sortOrder: row.sort_order,
+    entitlements: parseEntitlements(row.entitlements),
   };
 }
 

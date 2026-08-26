@@ -34,6 +34,13 @@ export async function provisionApp(
   const secret = appApiKey(appKey);
   if (!secret) return { ok: false, app: appKey, error: "chave do app não configurada" };
 
+  const { resolveEntitlements } = await import("@/lib/entitlements.server");
+  const ent = await resolveEntitlements({
+    priceId: input.priceId,
+    status: input.event === "canceled" ? "canceled_now" : (input.status ?? "active"),
+    currentPeriodEnd: input.accessUntil ?? null,
+  });
+
   const body = JSON.stringify({
     event: input.event,
     user_id: input.userId,
@@ -41,6 +48,8 @@ export async function provisionApp(
     plano: planTierFromPriceId(input.priceId),
     limite_usuarios:
       input.event === "canceled" ? 0 : seatsFromPriceId(input.priceId),
+    recursos: input.event === "canceled" ? {} : ent.features,
+    limites: input.event === "canceled" ? {} : ent.limites,
     price_id: input.priceId,
     status: input.status ?? null,
     acesso_ate: input.accessUntil ?? null,

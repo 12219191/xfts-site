@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Loader2 } from "lucide-react";
 import { formatBRL, type CatalogPlan } from "@/lib/catalog";
 import { saveCatalogPlan } from "@/lib/admin-catalog.functions";
+import { getEntitlementDefinitions } from "@/lib/admin-entitlements.functions";
+import type { EntitlementDefinition, EntitlementMap } from "@/lib/entitlements";
 
 interface Props {
   open: boolean;
@@ -59,6 +61,8 @@ export function CatalogPlanDialog({
 }: Props) {
   const [form, setForm] = useState(emptyForm);
   const [syncStripe, setSyncStripe] = useState(true);
+  const [defs, setDefs] = useState<EntitlementDefinition[]>([]);
+  const [ents, setEnts] = useState<EntitlementMap>({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -81,8 +85,22 @@ export function CatalogPlanDialog({
     } else {
       setForm(emptyForm);
     }
+    setEnts({ ...(plan?.entitlements ?? {}) });
     setSyncStripe(true);
   }, [open, plan]);
+
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    getEntitlementDefinitions()
+      .then((all) => {
+        if (alive) setDefs(all.filter((d) => d.productKey === productKey));
+      })
+      .catch(() => setDefs([]));
+    return () => {
+      alive = false;
+    };
+  }, [open, productKey]);
 
   const priceMonthCents = toCents(form.priceMonth);
   const priceYearCents = form.priceYear ? toCents(form.priceYear) : null;
@@ -117,6 +135,7 @@ export function CatalogPlanDialog({
           annualLookupKey: form.annualLookupKey.trim() || null,
           active: form.active,
           sortOrder: Number(form.sortOrder) || 1,
+          entitlements: ents,
           syncStripe: syncStripe && priceChanged,
           environment,
         },
@@ -209,6 +228,73 @@ export function CatalogPlanDialog({
                 value={form.features}
                 onChange={(e) => setForm({ ...form, features: e.target.value })}
               />
+            </div>
+
+            <div className="rounded-lg border border-border p-4">
+              <p className="text-sm font-semibold text-foreground">Entitlements do plano</p>
+              <p className="text-xs text-muted-foreground">
+                Define o que este plano libera. É aplicado automaticamente no acesso do cliente
+                (hub, SSO e sistemas FLEXUS).
+              </p>
+              {defs.length === 0 ? (
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Nenhum recurso configurado para este produto. Cadastre em Produtos → Entitlements.
+                </p>
+              ) : (
+                <div className="mt-3 space-y-3">
+                  {defs.map((def) => {
+                    const value = ents[def.key];
+                    if (def.kind === "feature") {
+                      return (
+                        <div key={def.key} className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-sm text-foreground">{def.label}</p>
+                            <p className="text-xs text-muted-foreground">{def.key}</p>
+                          </div>
+                          <Switch
+                            checked={value === true}
+                            onCheckedChange={(v) => setEnts({ ...ents, [def.key]: v })}
+                          />
+                        </div>
+                      );
+                    }
+                    const unlimited = value === null;
+                    return (
+                      <div key={def.key} className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-sm text-foreground">{def.label}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {def.key}
+                            {def.unit ? ` · ${def.unit}` : ""}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            className="w-24"
+                            inputMode="numeric"
+                            disabled={unlimited}
+                            value={unlimited || value === undefined ? "" : String(value)}
+                            onChange={(e) =>
+                              setEnts({
+                                ...ents,
+                                [def.key]: e.target.value === "" ? 0 : Number(e.target.value),
+                              })
+                            }
+                            placeholder="0"
+                          />
+                          <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Switch
+                              checked={unlimited}
+                              onCheckedChange={(v) => setEnts({ ...ents, [def.key]: v ? null : 0 })}
+                            />
+                            ilimitado
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

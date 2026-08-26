@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { CatalogPlan, CatalogProduct } from "@/lib/catalog";
 import type { PriceCheck } from "@/lib/catalog-stripe.server";
+import type { EntitlementMap } from "@/lib/entitlements";
 
 export interface AdminCatalog {
   products: CatalogProduct[];
@@ -23,6 +24,7 @@ export interface CatalogPlanInput {
   annualLookupKey: string | null;
   active: boolean;
   sortOrder: number;
+  entitlements: EntitlementMap;
   /** Cria/atualiza os preços no provedor de pagamento ao salvar. */
   syncStripe: boolean;
   environment: "sandbox" | "live";
@@ -172,6 +174,7 @@ export const saveCatalogPlan = createServerFn({ method: "POST" })
       annual_lookup_key: data.annualLookupKey,
       active: data.active,
       sort_order: data.sortOrder,
+      entitlements: data.entitlements ?? {},
     };
 
     if (data.id) {
