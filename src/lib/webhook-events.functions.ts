@@ -39,7 +39,7 @@ async function assertAdmin(context: {
 
 type ListInput = {
   environment?: "sandbox" | "live" | "todos";
-  status?: "processed" | "ignored" | "failed" | "todos";
+  status?: "processed" | "ignored" | "failed" | "processing" | "todos";
   eventType?: string;
   limit?: number;
 };
