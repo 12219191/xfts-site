@@ -275,7 +275,6 @@ export async function acceptInvite(
       status: String(sub["status"] ?? "active"),
       accessUntil: sub["current_period_end"] ?? null,
       environment: String(sub["environment"] ?? "live"),
-      extra: { convidadoPor: ownerUserId, papel: "membro" },
     });
   }
 
