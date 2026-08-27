@@ -42,10 +42,16 @@ function statusInfo(sub: SistemaSubscription | undefined) {
 export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscription[] }) {
   return (
     <div>
-      <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+      <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-foreground">
         <LayoutGrid className="h-5 w-5 text-primary" />
         Meus Sistemas
       </h2>
+      <p className="mb-4 text-sm text-muted-foreground">
+        O acesso como titular é sempre por aqui: clique em “Abrir sistema” e entramos com
+        você, sem digitar senha de novo. Sua equipe entra pelo login do próprio sistema,
+        somente por convite.
+      </p>
+
 
       <div className="grid gap-4 sm:grid-cols-2">
         {FLEXUS_APPS.map((app) => {
