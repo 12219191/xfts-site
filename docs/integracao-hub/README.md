@@ -104,3 +104,31 @@ Classificação no `/admin`:
 - `401/403` → chave/assinatura recusada;
 - `400/404/422` → chave aceita, evento de teste ainda não tratado (**Parcial**);
 - timeout/erro de rede → falha.
+
+## Política de entrada (a partir de 08/2026)
+
+Toda a cobrança e a titularidade vivem no hub (`xfts-flexus.com`). Por isso os sistemas
+**não têm autocadastro**: criar conta direto no sistema gera usuário sem assinatura,
+sem plano e sem assento.
+
+Três blocos na tela de login de cada sistema:
+
+1. **Entrar pelo hub** (botão primário — titular):
+   `https://xfts-flexus.com/login?redirect=%2Fminha-conta&app=<key>`
+   O hub autentica e, quando a assinatura está ativa, redireciona de volta ao sistema
+   já com o token de SSO. `<key>` = `barbearia` | `crm` | `casa360`; valores desconhecidos
+   são ignorados pelo hub.
+2. **Entrar como equipe** (e-mail + senha local): mantido, **sem link de "criar conta"**.
+   Contas de equipe só nascem por convite do titular dentro do sistema, respeitando
+   `limite_usuarios` devolvido pelo hub.
+3. **Quero assinar** (visitante sem conta): link para a landing do produto no hub.
+
+Regras complementares:
+
+- Remover o `signUp` público (UI e backend). Criação de usuário apenas por service role,
+  no fluxo `/sso` e no aceite de convite.
+- Recuperação de senha local continua para a equipe; o titular recupera no hub.
+- `ativo !== true` vindo do hub bloqueia titular **e** equipe, com link para
+  `https://xfts-flexus.com/minha-conta`.
+- O portal do cliente final por token (WhatsApp) segue local ao sistema, fora do SSO,
+  e nunca pode ser trocado por sessão administrativa.

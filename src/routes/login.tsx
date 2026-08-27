@@ -6,20 +6,32 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LogIn, UserPlus, Loader2, Mail } from "lucide-react";
 import { lovable } from "@/integrations/lovable/index";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Logo } from "@/components/Logo";
+import { getFlexusApp, type FlexusAppKey } from "@/lib/flexus-apps";
+import { createSsoLink } from "@/lib/sso.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
+
 
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; app?: FlexusAppKey } => {
     const value = search["redirect"];
+    const rawApp = search["app"];
+    const out: { redirect?: string; app?: FlexusAppKey } = {};
     // Apenas caminhos internos (mesma origem) são aceitos.
-    return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
-      ? { redirect: value }
-      : {};
+    if (typeof value === "string" && value.startsWith("/") && !value.startsWith("//")) {
+      out.redirect = value;
+    }
+    // Sistema de origem (xfts-flexus6/7/8) — validado contra o catálogo.
+    if (typeof rawApp === "string") {
+      const meta = getFlexusApp(rawApp as FlexusAppKey);
+      if (meta?.available) out.app = meta.key;
+    }
+    return out;
   },
   head: () => ({
     meta: [
@@ -37,14 +49,17 @@ export const Route = createFileRoute("/login")({
 });
 
 
-function GoogleButton({ redirect }: { redirect?: string }) {
+function GoogleButton({ redirect, app }: { redirect?: string; app?: FlexusAppKey }) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = async () => {
     setLoading(true);
+    const params = new URLSearchParams();
+    if (redirect) params.set("redirect", redirect);
+    if (app) params.set("app", app);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: redirect
-        ? `${window.location.origin}/login?redirect=${encodeURIComponent(redirect)}`
+      redirect_uri: params.toString()
+        ? `${window.location.origin}/login?${params.toString()}`
         : window.location.origin,
     });
     if (result.error) {
@@ -54,6 +69,7 @@ function GoogleButton({ redirect }: { redirect?: string }) {
     if (result.redirected) return;
     setLoading(false);
   };
+
 
   return (
     <Button
@@ -80,21 +96,40 @@ function GoogleButton({ redirect }: { redirect?: string }) {
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { redirect } = Route.useSearch();
+  const { redirect, app } = Route.useSearch();
+  const appMeta = app ? getFlexusApp(app) : undefined;
   const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const redirected = useRef(false);
 
-  const goAfterAuth = () => {
+  const goAfterAuth = async () => {
+    // Veio de um sistema FLEXUS: abre o sistema direto por SSO.
+    if (app) {
+      try {
+        const env = getStripeEnvironment() === "live" ? "live" : "sandbox";
+        const result = await createSsoLink({ data: { app, environment: env } });
+        if (!("error" in result)) {
+          window.location.href = result.url;
+          return;
+        }
+        toast.info(result.error);
+      } catch {
+        toast.error("Não foi possível abrir o sistema. Use Meus Sistemas.");
+      }
+      navigate({ to: "/minha-conta" });
+      return;
+    }
     if (redirect) {
       navigate({ to: redirect });
     } else {
       navigate({ to: "/minha-conta" });
     }
   };
+
 
   // Redirect if already logged in
   if (authLoading) {
@@ -106,7 +141,10 @@ function LoginPage() {
   }
 
   if (user) {
-    goAfterAuth();
+    if (!redirected.current) {
+      redirected.current = true;
+      void goAfterAuth();
+    }
     return null;
   }
 
@@ -121,7 +159,7 @@ function LoginPage() {
         : error.message);
     } else {
       toast.success("Login realizado com sucesso!");
-      goAfterAuth();
+      void goAfterAuth();
     }
   };
 
@@ -186,7 +224,13 @@ function LoginPage() {
             {mode === "signup" && "Cadastre-se para começar a usar o FLEXUS."}
             {mode === "forgot" && "Enviaremos um link para redefinir sua senha."}
           </p>
+          {appMeta && (
+            <p className="mx-auto mt-4 max-w-lg rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground">
+              Você veio do <strong>{appMeta.name}</strong>. Entre aqui e abriremos o sistema automaticamente.
+            </p>
+          )}
         </div>
+
       </section>
 
       <section className="section-padding">
@@ -236,7 +280,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton redirect={redirect} />
+                  <GoogleButton redirect={redirect} app={app} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Não tem conta?{" "}
@@ -298,7 +342,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton redirect={redirect} />
+                  <GoogleButton redirect={redirect} app={app} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Já tem conta?{" "}
