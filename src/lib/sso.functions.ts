@@ -42,7 +42,8 @@ export const createSsoLink = createServerFn({ method: "POST" })
       .from("subscriptions")
       .select("price_id, status, current_period_end, cancel_at_period_end")
       .eq("user_id", userId)
-      .eq("environment", env)
+      // Cortesias não pertencem a um ambiente de pagamento: valem em ambos.
+      .or(`environment.eq.${env},is_courtesy.is.true`)
       .order("created_at", { ascending: false });
 
     const sub = (subs ?? []).find(
