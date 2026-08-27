@@ -268,6 +268,8 @@ export async function buildSsoHealth(
         : 0,
       ultimoSucessoAt: lastOk,
       ultimaFalhaAt: lastFail,
+      ultimoErroAt: lastError,
+      recuperadoEm,
       motivos: [...motivos.entries()]
         .map(([reason, total]) => ({ reason, total }))
         .sort((a, b) => b.total - a.total),
