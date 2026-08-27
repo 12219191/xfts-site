@@ -149,6 +149,13 @@ export function SsoHealthPanel() {
                 </p>
               )}
 
+              {app.recuperadoEm && app.ultimoErroAt && (
+                <p className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
+                  Falha às {dateTimeBR(app.ultimoErroAt)} · recuperado às{" "}
+                  {dateTimeBR(app.recuperadoEm)}.
+                </p>
+              )}
+
               {app.motivos.length > 0 && (
                 <div className="space-y-1">
                   {app.motivos.slice(0, 3).map((m) => (
