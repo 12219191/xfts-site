@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { LogIn, UserPlus, Loader2, Mail } from "lucide-react";
 import { lovable } from "@/integrations/lovable/index";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -104,6 +104,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const redirected = useRef(false);
 
   const goAfterAuth = async () => {
     // Veio de um sistema FLEXUS: abre o sistema direto por SSO.
@@ -140,7 +141,10 @@ function LoginPage() {
   }
 
   if (user) {
-    goAfterAuth();
+    if (!redirected.current) {
+      redirected.current = true;
+      void goAfterAuth();
+    }
     return null;
   }
 
@@ -155,7 +159,7 @@ function LoginPage() {
         : error.message);
     } else {
       toast.success("Login realizado com sucesso!");
-      goAfterAuth();
+      void goAfterAuth();
     }
   };
 
@@ -270,7 +274,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton redirect={redirect} />
+                  <GoogleButton redirect={redirect} app={app} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Não tem conta?{" "}
@@ -332,7 +336,7 @@ function LoginPage() {
                       <span className="bg-card px-2 text-muted-foreground">ou</span>
                     </div>
                   </div>
-                  <GoogleButton redirect={redirect} />
+                  <GoogleButton redirect={redirect} app={app} />
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Já tem conta?{" "}
