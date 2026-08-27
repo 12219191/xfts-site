@@ -176,6 +176,10 @@ export interface SsoAppHealth {
   tempoMedioMs: number;
   ultimoSucessoAt: string | null;
   ultimaFalhaAt: string | null;
+  /** Última falha real (status "error"), ignorando recusas legítimas. */
+  ultimoErroAt: string | null;
+  /** Quando houve erro nas 24h mas já se recuperou, a hora do sucesso seguinte. */
+  recuperadoEm: string | null;
   motivos: Array<{ reason: string; total: number }>;
 }
 
@@ -233,16 +237,26 @@ export async function buildSsoHealth(
       motivos.set(key, (motivos.get(key) ?? 0) + 1);
     }
     const durations = rows.map((r) => r.duration_ms ?? 0).filter((d) => d > 0);
-    const lastOk = ok[0]?.created_at ?? null;
-    const lastFail = [...denied, ...errored].sort((a, b) =>
-      a.created_at < b.created_at ? 1 : -1,
-    )[0]?.created_at ?? null;
+    const maxAt = (list: Array<{ created_at: string }>) =>
+      list.reduce<string | null>((acc, r) => (!acc || r.created_at > acc ? r.created_at : acc), null);
+    const lastOk = maxAt(ok);
+    // Só erros reais contam como falha do sistema; recusas ("sem assinatura")
+    // são resposta correta do hub, não indisponibilidade.
+    const lastError = maxAt(errored);
+    const lastFail = maxAt([...denied, ...errored]);
 
     const keyConfigured = !!appApiKey(app.key);
+    // Semáforo por recência: uma falha já recuperada não pinta o sistema de
+    // vermelho — vira amarelo com a hora da recuperação.
     let semaforo: SsoAppHealth["semaforo"] = "cinza";
-    if (!keyConfigured || errored.length > 0) semaforo = "vermelho";
+    let recuperadoEm: string | null = null;
+    if (!keyConfigured) semaforo = "vermelho";
+    else if (lastError && (!lastOk || lastError > lastOk)) semaforo = "vermelho";
+    else if (lastError) {
+      semaforo = "amarelo";
+      recuperadoEm = lastOk;
+    } else if (denied.length > 0 && ok.length === 0) semaforo = "amarelo";
     else if (ok.length > 0) semaforo = "verde";
-    else if (denied.length > 0) semaforo = "amarelo";
 
     return {
       key: app.key,
@@ -258,6 +272,8 @@ export async function buildSsoHealth(
         : 0,
       ultimoSucessoAt: lastOk,
       ultimaFalhaAt: lastFail,
+      ultimoErroAt: lastError,
+      recuperadoEm,
       motivos: [...motivos.entries()]
         .map(([reason, total]) => ({ reason, total }))
         .sort((a, b) => b.total - a.total),
