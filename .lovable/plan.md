@@ -39,11 +39,11 @@ Observações:
 ## O que eu executo
 
 1. Criar a conta no hub para cada e-mail que ainda não existe (sem envio de e-mail).
-2. Para cada titular: gravar a cortesia Pro de 365 dias no sistema correspondente, marcada como importação de base existente na nota.
-3. Para cada usuário comum: gravar o vínculo de equipe já como aceito, na conta do titular do sistema, sem envio de convite.
+2. Para cada titular: gravar a cortesia Pro de 365 dias no produto correspondente, com o nome da conta na nota.
+3. Para cada usuário comum: gravar o vínculo de equipe já como aceito, na conta do titular daquela conta, sem envio de convite.
 4. Ajustar o limite de assentos da cortesia quando a equipe passar do limite do plano.
 5. Registrar tudo na auditoria e no histórico do cliente, para a timeline mostrar de onde vieram.
-6. Conferir no Control Center: `/admin/clientes` mostrando 3 titulares com produtos e vagas corretas, e `/admin/cortesias` listando as 3 cortesias com vencimento em 365 dias.
+6. Conferir no Control Center: `/admin/clientes` mostrando os 4 titulares (3 barbearias + luciano.bruttin com Casa360 e CRM) com produtos e vagas corretas, e `/admin/cortesias` listando as 5 cortesias com vencimento em 365 dias.
 
 ## Detalhes técnicos
 
