@@ -176,6 +176,10 @@ export interface SsoAppHealth {
   tempoMedioMs: number;
   ultimoSucessoAt: string | null;
   ultimaFalhaAt: string | null;
+  /** Última falha real (status "error"), ignorando recusas legítimas. */
+  ultimoErroAt: string | null;
+  /** Quando houve erro nas 24h mas já se recuperou, a hora do sucesso seguinte. */
+  recuperadoEm: string | null;
   motivos: Array<{ reason: string; total: number }>;
 }
 
