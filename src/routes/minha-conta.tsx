@@ -141,7 +141,8 @@ function MinhaContaPage() {
         .from("subscriptions")
         .select("*")
         .eq("user_id", userId)
-        .eq("environment", env)
+        // Cortesias não pertencem a um ambiente de pagamento: valem em ambos.
+        .or(`environment.eq.${env},is_courtesy.is.true`)
         .order("created_at", { ascending: false });
 
       if (error) {

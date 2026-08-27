@@ -33,7 +33,8 @@ export async function resolveSubscription(
       "id, stripe_subscription_id, stripe_customer_id, price_id, status, environment, current_period_end, cancel_at_period_end, seats_used",
     )
     .eq("user_id", userId)
-    .eq("environment", environment);
+    // Cortesias não pertencem a um ambiente de pagamento: valem em ambos.
+    .or(`environment.eq.${environment},is_courtesy.is.true`);
 
   if (subscriptionId) query = query.eq("stripe_subscription_id", subscriptionId);
 
