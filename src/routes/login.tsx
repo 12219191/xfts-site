@@ -96,7 +96,8 @@ function GoogleButton({ redirect, app }: { redirect?: string; app?: FlexusAppKey
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { redirect } = Route.useSearch();
+  const { redirect, app } = Route.useSearch();
+  const appMeta = app ? getFlexusApp(app) : undefined;
   const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
@@ -104,13 +105,30 @@ function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const goAfterAuth = () => {
+  const goAfterAuth = async () => {
+    // Veio de um sistema FLEXUS: abre o sistema direto por SSO.
+    if (app) {
+      try {
+        const env = getStripeEnvironment() === "live" ? "live" : "sandbox";
+        const result = await createSsoLink({ data: { app, environment: env } });
+        if (!("error" in result)) {
+          window.location.href = result.url;
+          return;
+        }
+        toast.info(result.error);
+      } catch {
+        toast.error("Não foi possível abrir o sistema. Use Meus Sistemas.");
+      }
+      navigate({ to: "/minha-conta" });
+      return;
+    }
     if (redirect) {
       navigate({ to: redirect });
     } else {
       navigate({ to: "/minha-conta" });
     }
   };
+
 
   // Redirect if already logged in
   if (authLoading) {
