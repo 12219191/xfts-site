@@ -14,12 +14,20 @@ import { Logo } from "@/components/Logo";
 
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+  validateSearch: (search: Record<string, unknown>): { redirect?: string; app?: FlexusAppKey } => {
     const value = search["redirect"];
+    const rawApp = search["app"];
+    const out: { redirect?: string; app?: FlexusAppKey } = {};
     // Apenas caminhos internos (mesma origem) são aceitos.
-    return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
-      ? { redirect: value }
-      : {};
+    if (typeof value === "string" && value.startsWith("/") && !value.startsWith("//")) {
+      out.redirect = value;
+    }
+    // Sistema de origem (xfts-flexus6/7/8) — validado contra o catálogo.
+    if (typeof rawApp === "string") {
+      const meta = getFlexusApp(rawApp as FlexusAppKey);
+      if (meta?.available) out.app = meta.key;
+    }
+    return out;
   },
   head: () => ({
     meta: [
@@ -37,14 +45,17 @@ export const Route = createFileRoute("/login")({
 });
 
 
-function GoogleButton({ redirect }: { redirect?: string }) {
+function GoogleButton({ redirect, app }: { redirect?: string; app?: FlexusAppKey }) {
   const [loading, setLoading] = useState(false);
 
   const handleGoogle = async () => {
     setLoading(true);
+    const params = new URLSearchParams();
+    if (redirect) params.set("redirect", redirect);
+    if (app) params.set("app", app);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: redirect
-        ? `${window.location.origin}/login?redirect=${encodeURIComponent(redirect)}`
+      redirect_uri: params.toString()
+        ? `${window.location.origin}/login?${params.toString()}`
         : window.location.origin,
     });
     if (result.error) {
@@ -54,6 +65,7 @@ function GoogleButton({ redirect }: { redirect?: string }) {
     if (result.redirected) return;
     setLoading(false);
   };
+
 
   return (
     <Button
