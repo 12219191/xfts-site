@@ -8,26 +8,33 @@ Hoje o hub tem só 4 contas (lbruttin@xfts.com.br, luciano.bruttin@gmail.com, is
 - **Usuário comum** → não vira titular: entra como membro já aceito na conta do admin daquele sistema, ocupando uma vaga do plano.
 - **Sem e-mail**: nenhum convite ou notificação é disparado. As contas são criadas silenciosamente e todos continuam entrando direto pelo sistema como hoje.
 
-## O que preciso de você antes de executar
+## As 5 contas a importar
 
-Para cada sistema, quem é o admin (titular) e quais e-mails são vagas dele. Minha leitura provisória, para você confirmar ou corrigir:
+São 5 contas (3 barbearias, 1 CRM, 1 Casa360). Cada titular recebe uma cortesia Pro do produto correspondente; as vagas entram como membros já aceitos na conta do titular.
 
 ```text
-Barbearia  → titular: jose_dias11@hotmail.com
-             vagas: joaopedrosturchiodeoliveira@gmail.com, mkt@bruttin.com.br,
-                    isabela.fernanda.buosi@gmail.com, luciano@bruttin.com.br,
-                    emanuelerondani311@gmail.com, dondiegobarber07@gmail.com,
-                    lbruttin@xfts.com.br, isabela@bruttin.com.br,
-                    luciano.bruttin@gmail.com
+Barbearia · O Zé Barbearia → titular: jose_dias11@hotmail.com
+   vagas: joaopedrosturchiodeoliveira@gmail.com, dondiegobarber07@gmail.com,
+          isabela.fernanda.buosi@gmail.com, emanuelerondani311@gmail.com
 
-Casa360    → titular: lbruttin@xfts.com.br
-             vagas: isabela.fernanda.buosi@gmail.com, luciano.bruttin@gmail.com
+Barbearia · Default        → titular: lbruttin@xfts.com.br
+   vagas: mkt@bruttin.com.br, financeiro@xfts.com.br
 
-CRM        → titular: lbruttin@xfts.com.br
-             vagas: isabela.fernanda.buosi@gmail.com, luciano.bruttin@gmail.com
+Barbearia · Petunga        → titular: isabela@bruttin.com.br
+   vagas: (nenhuma)
+
+Casa360                    → titular: luciano.bruttin@gmail.com
+   vagas: isabela.fernanda.buosi@gmail.com
+
+CRM                        → titular: luciano.bruttin@gmail.com
+   vagas: isabela.fernanda.buosi@gmail.com
 ```
 
-Se o plano Pro da Barbearia não comportar 10 vagas, eu aumento o limite de assentos daquela cortesia (com motivo registrado em auditoria) em vez de deixar convites fora do limite.
+Observações:
+- O titular já ocupa uma vaga da própria conta, então não repito `lbruttin@xfts.com.br` na lista de vagas da Barbearia Default.
+- `isabela.fernanda.buosi@gmail.com` aparece em três contas diferentes (O Zé, Casa360 e CRM) — é a mesma conta de usuário do hub, com um vínculo por conta.
+- Se o Pro de alguma conta não comportar as vagas listadas, eu aumento o limite de assentos daquela cortesia (com motivo registrado em auditoria) em vez de deixar vínculos fora do limite.
+- Nome da conta (O Zé, Default, Petunga) vai na nota da cortesia, para distinguir as três barbearias no `/admin/clientes`.
 
 ## O que eu executo
 
