@@ -224,7 +224,13 @@ function LoginPage() {
             {mode === "signup" && "Cadastre-se para começar a usar o FLEXUS."}
             {mode === "forgot" && "Enviaremos um link para redefinir sua senha."}
           </p>
+          {appMeta && (
+            <p className="mx-auto mt-4 max-w-lg rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground">
+              Você veio do <strong>{appMeta.name}</strong>. Entre aqui e abriremos o sistema automaticamente.
+            </p>
+          )}
         </div>
+
       </section>
 
       <section className="section-padding">
