@@ -13,10 +13,10 @@ Hoje o hub tem só 4 contas (lbruttin@xfts.com.br, luciano.bruttin@gmail.com, is
 Para cada sistema, quem é o admin (titular) e quais e-mails são vagas dele. Minha leitura provisória, para você confirmar ou corrigir:
 
 ```text
-Barbearia  → titular: dondiegobarber07@gmail.com
+Barbearia  → titular: jose_dias11@hotmail.com
              vagas: joaopedrosturchiodeoliveira@gmail.com, mkt@bruttin.com.br,
                     isabela.fernanda.buosi@gmail.com, luciano@bruttin.com.br,
-                    emanuelerondani311@gmail.com, jose_dias11@hotmail.com,
+                    emanuelerondani311@gmail.com, dondiegobarber07@gmail.com,
                     lbruttin@xfts.com.br, isabela@bruttin.com.br,
                     luciano.bruttin@gmail.com
 
