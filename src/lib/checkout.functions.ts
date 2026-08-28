@@ -69,11 +69,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         const flags = await productFlagsOf(appKey);
         if (!canPurchase(flags)) {
           const appName = getFlexusApp(appKey)?.name ?? "Este sistema";
-          return {
-            error: `${appName} não está disponível para contratação no momento (${statusLabel(
+          return refuse(
+            `${appName} não está disponível para contratação no momento (${statusLabel(
               flags.status,
             ).toLowerCase()}).`,
-          };
+          );
         }
       }
 
@@ -96,12 +96,13 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       });
       if (duplicate) {
         const appName = appKey ? getFlexusApp(appKey)?.name : null;
-        return {
-          error: `Você já tem uma assinatura ativa${appName ? ` do ${appName}` : ""} (plano ${planTierFromPriceId(
+        return refuse(
+          `Você já tem uma assinatura ativa${appName ? ` do ${appName}` : ""} (plano ${planTierFromPriceId(
             duplicate.price_id,
           )}). Use "Minha conta" para trocar de plano em vez de comprar novamente.`,
-        };
+        );
       }
+
 
       const existingCustomer = subs.find((s) =>
         isRealStripeId(s.stripe_customer_id, "cus_"),
