@@ -99,6 +99,18 @@ type ProductRow = {
   price_prefix: string;
   available: boolean;
   sort_order: number;
+  status?: string | null;
+  show_on_website?: boolean | null;
+  beta_note?: string | null;
+  display_name?: string | null;
+  short_description?: string | null;
+  headline?: string | null;
+  subheadline?: string | null;
+  icon?: string | null;
+  cta_label?: string | null;
+  cta_href?: string | null;
+  image_url?: string | null;
+  image_alt?: string | null;
 };
 
 type PlanRow = {
@@ -121,16 +133,32 @@ type PlanRow = {
 };
 
 export function mapProduct(row: ProductRow): CatalogProduct {
+  const content = productContent(row.key);
+  const status = ((row.status as ProductStatus) ??
+    (row.available ? "active" : "development")) as ProductStatus;
   return {
     key: row.key,
     name: row.name,
     url: row.url ?? "",
     landing: row.landing ?? "",
     pricePrefix: row.price_prefix,
-    available: row.available,
+    available: status === "active" || status === "beta",
     sortOrder: row.sort_order,
+    status,
+    showOnWebsite: row.show_on_website ?? true,
+    betaNote: row.beta_note ?? "",
+    displayName: row.display_name?.trim() || row.name,
+    shortDescription: row.short_description?.trim() || content.shortDescription,
+    headline: row.headline ?? "",
+    subheadline: row.subheadline ?? "",
+    icon: row.icon?.trim() || content.icon,
+    ctaLabel: row.cta_label?.trim() || "Saiba Mais",
+    ctaHref: row.cta_href?.trim() || row.landing || "",
+    imageUrl: row.image_url?.trim() || content.imageUrl,
+    imageAlt: row.image_alt?.trim() || content.imageAlt,
   };
 }
+
 
 export function mapPlan(row: PlanRow): CatalogPlan {
   return {
