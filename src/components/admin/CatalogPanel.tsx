@@ -374,7 +374,10 @@ function ProductDialog({
           sortOrder: form.sortOrder,
           status: form.status,
           showOnWebsite: form.showOnWebsite,
+          availableForPurchase: form.availableForPurchase,
+          availableInHub: form.availableInHub,
           betaNote: form.betaNote,
+
           displayName: form.displayName,
           shortDescription: form.shortDescription,
           headline: form.headline,
