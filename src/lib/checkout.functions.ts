@@ -50,6 +50,21 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const email = (claims as { email?: string } | null)?.email;
       const appKey = appKeyFromPriceId(data.priceId);
 
+      if (appKey) {
+        const { productStatusOf } = await import("@/lib/catalog.server");
+        const { canPurchase, statusLabel } = await import("@/lib/catalog");
+        const status = await productStatusOf(appKey);
+        if (!canPurchase(status)) {
+          const appName = getFlexusApp(appKey)?.name ?? "Este sistema";
+          return {
+            error: `${appName} não está disponível para contratação no momento (${statusLabel(
+              status,
+            ).toLowerCase()}).`,
+          };
+        }
+      }
+
+
       const { data: rows } = await supabase
         .from("subscriptions")
         .select("stripe_customer_id, price_id, status, current_period_end")
