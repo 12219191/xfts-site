@@ -113,7 +113,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
         const prices = await stripe.prices.list({ lookup_keys: [data.priceId] });
         const stripePrice = prices?.data?.[0];
-        if (!stripePrice) return { error: "Plano não encontrado no provedor de pagamento." };
+        if (!stripePrice) return refuse("Plano não encontrado no provedor de pagamento.");
 
         const isRecurring = stripePrice.type === "recurring";
 
