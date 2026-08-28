@@ -1,9 +1,15 @@
 /** Leitura do catálogo no banco, com fallback para o catálogo em código. */
 import { createClient } from "@supabase/supabase-js";
-import type { CatalogPlan, CatalogProduct, CatalogSnapshot } from "@/lib/catalog";
+import type {
+  CatalogPlan,
+  CatalogProduct,
+  CatalogSnapshot,
+  ProductStatus,
+} from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
 import { PLANS_BY_APP } from "@/lib/product-plans";
 import { parseEntitlements } from "@/lib/entitlements";
+import { productContent } from "@/lib/product-content";
 
 function parseBRL(value?: string): number {
   if (!value) return 0;
@@ -13,15 +19,31 @@ function parseBRL(value?: string): number {
 
 /** Catálogo montado a partir dos arquivos de código (rede de segurança). */
 export function codeCatalog(): CatalogSnapshot {
-  const products: CatalogProduct[] = FLEXUS_APPS.map((app, index) => ({
-    key: app.key,
-    name: app.name,
-    url: app.url,
-    landing: app.landing,
-    pricePrefix: app.pricePrefix,
-    available: app.available,
-    sortOrder: index + 1,
-  }));
+  const products: CatalogProduct[] = FLEXUS_APPS.map((app, index) => {
+    const content = productContent(app.key);
+    return {
+      key: app.key,
+      name: app.name,
+      url: app.url,
+      landing: app.landing,
+      pricePrefix: app.pricePrefix,
+      available: app.available,
+      sortOrder: index + 1,
+      status: (app.available ? "active" : "development") as ProductStatus,
+      showOnWebsite: true,
+      betaNote: "",
+      displayName: app.name,
+      shortDescription: content.shortDescription,
+      headline: "",
+      subheadline: "",
+      icon: content.icon,
+      ctaLabel: "Saiba Mais",
+      ctaHref: app.landing,
+      imageUrl: content.imageUrl,
+      imageAlt: content.imageAlt,
+    };
+  });
+
 
   const plans: CatalogPlan[] = [];
   for (const app of FLEXUS_APPS) {
