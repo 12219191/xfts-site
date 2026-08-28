@@ -511,15 +511,28 @@ function ProductDialog({
               />
             </div>
 
-            {coherenceWarnings.length > 0 && (
-              <ul className="space-y-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
-                {coherenceWarnings.map((w) => (
+            {blockingErrors.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                <li className="font-semibold">Corrija para poder salvar:</li>
+                {blockingErrors.map((w: string) => (
                   <li key={w} className="flex items-start gap-1.5">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     {w}
                   </li>
                 ))}
               </ul>
+            )}
+
+            {coherenceWarnings.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-gold/40 bg-gold/10 p-3 text-xs text-gold-deep">
+                {coherenceWarnings.map((w: string) => (
+                  <li key={w} className="flex items-start gap-1.5">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+
             )}
 
             <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
