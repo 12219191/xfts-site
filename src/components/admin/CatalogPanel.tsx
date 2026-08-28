@@ -366,10 +366,12 @@ export function emptyProduct(sortOrder: number): CatalogProduct {
 
 function ProductDialog({
   product,
+  hasActivePlan,
   onClose,
   onSaved,
 }: {
   product: CatalogProduct | null;
+  hasActivePlan: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
