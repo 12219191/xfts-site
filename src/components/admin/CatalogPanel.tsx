@@ -715,7 +715,7 @@ function ProductDialog({
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>
-          <Button onClick={save} disabled={saving}>
+          <Button onClick={save} disabled={saving || blockingErrors.length > 0}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
           </Button>
         </DialogFooter>
