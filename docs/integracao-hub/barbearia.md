@@ -286,3 +286,12 @@ Regras complementares:
   `https://xfts-flexus.com/minha-conta`.
 - O portal do cliente final por token (WhatsApp) segue local ao sistema, fora do SSO,
   e nunca pode ser trocado por sessão administrativa.
+
+### Recuperação de senha
+
+- **Titular:** sempre no hub — `https://xfts-flexus.com/login?app=<key>` → "Esqueci minha senha".
+  O link do e-mail volta para `https://xfts-flexus.com/reset-password?app=<key>` e, depois de
+  salvar a nova senha, o hub abre o sistema por SSO automaticamente.
+- **Equipe:** recuperação local do próprio sistema (e-mail + senha), sem passar pelo hub.
+- **Primeiro acesso de conta criada pela empresa:** usar o mesmo fluxo de "Esqueci minha senha"
+  para definir a primeira senha.
