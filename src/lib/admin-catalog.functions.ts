@@ -91,8 +91,13 @@ export const saveCatalogProduct = createServerFn({ method: "POST" })
       throw new Error("Chave inválida: use apenas letras minúsculas e números.");
     }
     if (!data.name?.trim()) throw new Error("Informe o nome do produto.");
+    const { errors } = validateProduct(data as never);
+    if (errors.length > 0) {
+      throw new Error(`Configuração incoerente: ${errors.join(" ")}`);
+    }
     return data;
   })
+
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const email = (context.claims as { email?: string })?.email ?? "";
     const { requireAdminModule } = await import("@/lib/admin-rbac.server");
