@@ -400,6 +400,25 @@ function ProductDialog({
   };
 
   const statusHelp = STATUS_OPTIONS.find((o) => o.value === form.status)?.help ?? "";
+  const preview = siteCta(form);
+  const coherenceWarnings: string[] = [];
+  if (form.availableForPurchase && !statusAllowsPurchase(form.status)) {
+    coherenceWarnings.push(
+      `“Pode ser contratado” está ligado, mas o status “${statusLabel(
+        form.status,
+      )}” não permite vender — o status vence e a venda continua bloqueada.`,
+    );
+  }
+  if (form.availableInHub && !statusAllowsAccess(form.status)) {
+    coherenceWarnings.push(
+      "“Aparece no Hub” está ligado, mas produtos em desenvolvimento não liberam acesso.",
+    );
+  }
+  if (canPurchase(form) && !form.availableInHub) {
+    coherenceWarnings.push(
+      "O produto pode ser contratado mas não aparece no Hub: quem comprar ficará sem porta de entrada.",
+    );
+  }
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
