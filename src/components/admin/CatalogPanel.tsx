@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -24,7 +25,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle, Check, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
-import { formatBRL, type CatalogPlan, type CatalogProduct } from "@/lib/catalog";
+import {
+  formatBRL,
+  statusLabel,
+  type CatalogPlan,
+  type CatalogProduct,
+  type ProductStatus,
+} from "@/lib/catalog";
 import {
   checkCatalogPrices,
   deleteCatalogPlan,
@@ -123,6 +130,9 @@ export function CatalogPanel() {
             )}
             Conferir preços
           </Button>
+          <Button size="sm" onClick={() => setProductDialog(emptyProduct(products.length + 1))}>
+            <Plus className="mr-2 h-4 w-4" /> Novo produto
+          </Button>
         </div>
       </div>
 
@@ -170,12 +180,22 @@ export function CatalogPanel() {
             <CardContent className="p-5">
               <div className="flex flex-wrap items-center gap-3">
                 <h3 className="text-base font-semibold text-foreground">{product.name}</h3>
-                <Badge variant={product.available ? "default" : "secondary"}>
-                  {product.available ? "Disponível" : "Em breve"}
+                <Badge variant={product.status === "active" ? "default" : "secondary"}>
+                  {statusLabel(product.status)}
+                </Badge>
+                <Badge variant={product.showOnWebsite ? "outline" : "destructive"}>
+                  {product.showOnWebsite ? "No site" : "Oculto no site"}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   {productPlans.length} plano(s)
                 </span>
+                {product.showOnWebsite &&
+                  product.status !== "development" &&
+                  productPlans.filter((p) => p.active).length === 0 && (
+                    <span className="flex items-center gap-1 text-xs text-destructive">
+                      <AlertTriangle className="h-3.5 w-3.5" /> visível no site sem plano ativo
+                    </span>
+                  )}
                 {product.url && (
                   <span className="text-xs text-muted-foreground">{product.url}</span>
                 )}
