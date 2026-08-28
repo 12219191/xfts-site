@@ -34,10 +34,8 @@ export function AcessarSistemaButton({
   const meta = getFlexusApp(app);
 
   const handleClick = async () => {
-    if (!meta?.available) {
-      toast.info(`${meta?.name ?? "Este sistema"} chega em breve.`);
-      return;
-    }
+    if (!meta) return;
+
     setLoading(true);
     try {
       const { data } = await supabase.auth.getSession();
