@@ -78,9 +78,7 @@ export function MeusSistemas({
                   <div>
                     <p className="font-semibold text-foreground">{app.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {app.available
-                        ? app.url.replace("https://", "")
-                        : "Disponível em breve"}
+                      {noHub ? "Disponível em breve" : app.url.replace("https://", "")}
                     </p>
                   </div>
                   <Badge
@@ -107,7 +105,7 @@ export function MeusSistemas({
                 )}
 
                 <div className="mt-auto pt-2">
-                  {!app.available ? (
+                  {noHub ? (
                     <Button variant="outline" size="sm" disabled className="w-full">
                       <Clock className="mr-2 h-4 w-4" />
                       Em breve
