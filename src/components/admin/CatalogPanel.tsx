@@ -190,16 +190,26 @@ export function CatalogPanel() {
                 <Badge variant={product.showOnWebsite ? "outline" : "destructive"}>
                   {product.showOnWebsite ? "No site" : "Oculto no site"}
                 </Badge>
+                <Badge variant={canPurchase(product) ? "outline" : "secondary"}>
+                  {canPurchase(product) ? "Vende" : "Não vende"}
+                </Badge>
+                <Badge variant={canAccess(product) ? "outline" : "secondary"}>
+                  {canAccess(product) ? "No Hub" : "Fora do Hub"}
+                </Badge>
                 <span className="text-xs text-muted-foreground">
                   {productPlans.length} plano(s)
                 </span>
-                {product.showOnWebsite &&
-                  product.status !== "development" &&
-                  productPlans.filter((p) => p.active).length === 0 && (
-                    <span className="flex items-center gap-1 text-xs text-destructive">
-                      <AlertTriangle className="h-3.5 w-3.5" /> visível no site sem plano ativo
-                    </span>
-                  )}
+                {canPurchase(product) && productPlans.filter((p) => p.active).length === 0 && (
+                  <span className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertTriangle className="h-3.5 w-3.5" /> vendável sem plano ativo
+                  </span>
+                )}
+                {canPurchase(product) && !canAccess(product) && (
+                  <span className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertTriangle className="h-3.5 w-3.5" /> vende mas não aparece no Hub
+                  </span>
+                )}
+
                 {product.url && (
                   <span className="text-xs text-muted-foreground">{product.url}</span>
                 )}
