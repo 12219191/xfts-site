@@ -31,7 +31,10 @@ export function codeCatalog(): CatalogSnapshot {
       sortOrder: index + 1,
       status: (app.available ? "active" : "development") as ProductStatus,
       showOnWebsite: true,
+      availableForPurchase: app.available,
+      availableInHub: app.available,
       betaNote: "",
+
       displayName: app.name,
       shortDescription: content.shortDescription,
       headline: "",
