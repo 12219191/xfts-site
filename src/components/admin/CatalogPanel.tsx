@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle, Check, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import {
+  canAccess,
   canPurchase,
   formatBRL,
   siteCta,
