@@ -39,7 +39,17 @@ function statusInfo(sub: SistemaSubscription | undefined) {
   return { label: "Bloqueado", tone: "muted" as const, liberado: false };
 }
 
-export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscription[] }) {
+export function MeusSistemas({
+  subscriptions,
+  products = [],
+}: {
+  subscriptions: SistemaSubscription[];
+  products?: CatalogProduct[];
+}) {
+  const hubOpen = (key: string) => {
+    const product = products.find((p) => p.key === key);
+    return product ? canAccess(product) : false;
+  };
   return (
     <div>
       <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-foreground">
