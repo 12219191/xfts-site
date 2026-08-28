@@ -50,6 +50,19 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const email = (claims as { email?: string } | null)?.email;
       const appKey = appKeyFromPriceId(data.priceId);
 
+      /** Deixa o motivo real da recusa visível nos logs do servidor. */
+      const refuse = (reason: string): { error: string } => {
+        console.error("[checkout] recusado", {
+          userId,
+          priceId: data.priceId,
+          appKey,
+          environment: data.environment,
+          reason,
+        });
+        return { error: reason };
+      };
+
+
       if (appKey) {
         const { productFlagsOf } = await import("@/lib/catalog.server");
         const { canPurchase, statusLabel } = await import("@/lib/catalog");
