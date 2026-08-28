@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackCTAClick } from "@/lib/tracking";
-import { statusLabel, type CatalogProduct } from "@/lib/catalog";
+import { siteCta, type CatalogProduct } from "@/lib/catalog";
 import {
   Stethoscope,
   Scissors,
