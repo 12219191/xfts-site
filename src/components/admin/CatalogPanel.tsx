@@ -309,6 +309,38 @@ export function CatalogPanel() {
   );
 }
 
+const STATUS_OPTIONS: { value: ProductStatus; help: string }[] = [
+  { value: "active", help: "Disponível normalmente: aparece, vende e libera acesso." },
+  { value: "beta", help: "Disponível com selo Beta: vende e libera acesso." },
+  { value: "development", help: "Em desenvolvimento: aparece como “Em breve”, sem preço, sem acesso." },
+  { value: "paused", help: "Temporariamente indisponível: não vende; assinantes atuais continuam entrando." },
+  { value: "discontinued", help: "Descontinuado: não vende; assinantes atuais continuam entrando." },
+];
+
+export function emptyProduct(sortOrder: number): CatalogProduct {
+  return {
+    key: "",
+    name: "",
+    url: "",
+    landing: "",
+    pricePrefix: "",
+    available: false,
+    sortOrder,
+    status: "development",
+    showOnWebsite: false,
+    betaNote: "",
+    displayName: "",
+    shortDescription: "",
+    headline: "",
+    subheadline: "",
+    icon: "Sparkles",
+    ctaLabel: "Saiba Mais",
+    ctaHref: "",
+    imageUrl: "",
+    imageAlt: "",
+  };
+}
+
 function ProductDialog({
   product,
   onClose,
@@ -324,11 +356,33 @@ function ProductDialog({
   useEffect(() => setForm(product), [product]);
 
   if (!form) return null;
+  const isNew = !product?.key;
 
   const save = async () => {
     setSaving(true);
     try {
-      await saveCatalogProduct({ data: form });
+      await saveCatalogProduct({
+        data: {
+          key: form.key.trim(),
+          name: form.name.trim(),
+          url: form.url.trim(),
+          landing: form.landing.trim(),
+          pricePrefix: form.pricePrefix.trim(),
+          sortOrder: form.sortOrder,
+          status: form.status,
+          showOnWebsite: form.showOnWebsite,
+          betaNote: form.betaNote,
+          displayName: form.displayName,
+          shortDescription: form.shortDescription,
+          headline: form.headline,
+          subheadline: form.subheadline,
+          icon: form.icon,
+          ctaLabel: form.ctaLabel,
+          ctaHref: form.ctaHref,
+          imageUrl: form.imageUrl,
+          imageAlt: form.imageAlt,
+        },
+      });
       toast.success("Produto salvo.");
       onClose();
       onSaved();
@@ -339,41 +393,222 @@ function ProductDialog({
     }
   };
 
+  const statusHelp = STATUS_OPTIONS.find((o) => o.value === form.status)?.help ?? "";
+
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Editar produto</DialogTitle>
+          <DialogTitle>{isNew ? "Novo produto" : "Editar produto"}</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4">
-          <div className="grid gap-1.5">
-            <Label>Nome</Label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        <div className="grid gap-4 md:grid-cols-[1fr_260px]">
+          <div className="grid gap-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Chave do sistema</Label>
+                <Input
+                  value={form.key}
+                  disabled={!isNew}
+                  placeholder="ex.: barbearia"
+                  onChange={(e) => setForm({ ...form, key: e.target.value.toLowerCase() })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Nome interno</Label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label>Status do produto</Label>
+              <select
+                className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as ProductStatus })}
+              >
+                {STATUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {statusLabel(o.value)}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">{statusHelp}</p>
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <p className="text-sm text-foreground">Mostrar no site</p>
+                <p className="text-xs text-muted-foreground">
+                  Independente do status. Desligado, o produto some das páginas públicas.
+                </p>
+              </div>
+              <Switch
+                checked={form.showOnWebsite}
+                onCheckedChange={(v) => setForm({ ...form, showOnWebsite: v })}
+              />
+            </div>
+
+            {form.status === "beta" && (
+              <div className="grid gap-1.5">
+                <Label>Aviso do beta</Label>
+                <Input
+                  value={form.betaNote}
+                  placeholder="Ex.: vagas limitadas para o grupo beta"
+                  onChange={(e) => setForm({ ...form, betaNote: e.target.value })}
+                />
+              </div>
+            )}
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Título no site</Label>
+                <Input
+                  value={form.displayName}
+                  onChange={(e) => setForm({ ...form, displayName: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Ícone (lucide)</Label>
+                <Input
+                  value={form.icon}
+                  onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label>Descrição curta (card)</Label>
+              <Textarea
+                rows={3}
+                value={form.shortDescription}
+                onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
+              />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Headline da landing</Label>
+                <Input
+                  value={form.headline}
+                  onChange={(e) => setForm({ ...form, headline: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Subtítulo da landing</Label>
+                <Input
+                  value={form.subheadline}
+                  onChange={(e) => setForm({ ...form, subheadline: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Rótulo do botão</Label>
+                <Input
+                  value={form.ctaLabel}
+                  onChange={(e) => setForm({ ...form, ctaLabel: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Destino do botão</Label>
+                <Input
+                  value={form.ctaHref}
+                  placeholder="/produtos/..."
+                  onChange={(e) => setForm({ ...form, ctaHref: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Imagem (URL)</Label>
+                <Input
+                  value={form.imageUrl}
+                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Texto alternativo</Label>
+                <Input
+                  value={form.imageAlt}
+                  onChange={(e) => setForm({ ...form, imageAlt: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Domínio do sistema</Label>
+                <Input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Rota da landing</Label>
+                <Input
+                  value={form.landing}
+                  onChange={(e) => setForm({ ...form, landing: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label>Prefixo de preço</Label>
+                <Input
+                  value={form.pricePrefix}
+                  onChange={(e) => setForm({ ...form, pricePrefix: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Ordem</Label>
+                <Input
+                  type="number"
+                  value={form.sortOrder}
+                  onChange={(e) =>
+                    setForm({ ...form, sortOrder: Number(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </div>
           </div>
-          <div className="grid gap-1.5">
-            <Label>Domínio do sistema</Label>
-            <Input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Rota da landing</Label>
-            <Input
-              value={form.landing}
-              onChange={(e) => setForm({ ...form, landing: e.target.value })}
-            />
-          </div>
-          <div className="grid gap-1.5">
-            <Label>Prefixo de preço</Label>
-            <Input
-              value={form.pricePrefix}
-              onChange={(e) => setForm({ ...form, pricePrefix: e.target.value })}
-            />
-          </div>
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <span className="text-sm text-foreground">Disponível</span>
-            <Switch
-              checked={form.available}
-              onCheckedChange={(v) => setForm({ ...form, available: v })}
-            />
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Prévia do card</p>
+            <Card className="overflow-hidden border-border bg-card">
+              {form.imageUrl ? (
+                <div className="aspect-video overflow-hidden">
+                  <img src={form.imageUrl} alt={form.imageAlt} className="h-full w-full object-cover" />
+                </div>
+              ) : (
+                <div className="flex aspect-video items-center justify-center bg-muted text-xs text-muted-foreground">
+                  imagem padrão do sistema
+                </div>
+              )}
+              <CardContent className="p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h4 className="text-sm font-semibold text-card-foreground">
+                    {form.displayName || form.name || "Nome do produto"}
+                  </h4>
+                  {form.status !== "active" && (
+                    <Badge variant="secondary">{statusLabel(form.status)}</Badge>
+                  )}
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {form.shortDescription || "Descrição curta do produto."}
+                </p>
+                <Button size="sm" className="mt-3 bg-cta text-cta-foreground hover:bg-cta/90">
+                  {form.ctaLabel || "Saiba Mais"}
+                </Button>
+              </CardContent>
+            </Card>
+            {!form.showOnWebsite && (
+              <p className="text-xs text-muted-foreground">
+                Este produto não aparece no site enquanto “Mostrar no site” estiver desligado.
+              </p>
+            )}
           </div>
         </div>
         <DialogFooter>
