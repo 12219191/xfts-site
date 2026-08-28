@@ -145,6 +145,89 @@ export function siteCta(product: ProductFlags & { ctaLabel?: string }): SiteCta 
   }
 }
 
+/** Campos considerados na validação de coerência de um produto. */
+export interface ProductValidationInput extends ProductFlags {
+  key?: string;
+  name?: string;
+  url?: string;
+  landing?: string;
+  showOnWebsite: boolean;
+  shortDescription?: string;
+  imageUrl?: string;
+  ctaHref?: string;
+  betaNote?: string;
+  hasActivePlan?: boolean;
+}
+
+export interface ProductValidation {
+  /** Combinações conflitantes: impedem salvar. */
+  errors: string[];
+  /** Configurações permitidas, mas suspeitas. */
+  warnings: string[];
+}
+
+/**
+ * Valida a coerência entre status e as três chaves independentes
+ * (site, contratação, Hub). Usada no Control Center e no servidor.
+ */
+export function validateProduct(product: ProductValidationInput): ProductValidation {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const label = statusLabel(product.status);
+
+  if (product.availableForPurchase && !statusAllowsPurchase(product.status)) {
+    errors.push(
+      `“Pode ser contratado” não funciona com o status “${label}”. Mude o status para Disponível/Acesso antecipado ou desligue a contratação.`,
+    );
+  }
+  if (product.availableInHub && !statusAllowsAccess(product.status)) {
+    errors.push(
+      "“Aparece no Hub” não funciona com produtos em desenvolvimento. Mude o status ou desligue o acesso no Hub.",
+    );
+  }
+  if (canPurchase(product) && !product.availableInHub) {
+    errors.push(
+      "O produto pode ser contratado mas não aparece no Hub: quem comprar ficaria sem porta de entrada. Ligue “Aparece no Hub” ou desligue a contratação.",
+    );
+  }
+  if (canPurchase(product) && !product.showOnWebsite) {
+    errors.push(
+      "O produto pode ser contratado mas está oculto no site: não haveria página para comprar. Ligue “Mostrar no site” ou desligue a contratação.",
+    );
+  }
+  if (product.availableInHub && !product.url?.trim()) {
+    errors.push(
+      "Para aparecer no Hub o produto precisa do endereço do sistema (URL).",
+    );
+  }
+  if (canPurchase(product) && product.hasActivePlan === false) {
+    errors.push("O produto pode ser contratado, mas não tem nenhum plano ativo.");
+  }
+  if (product.showOnWebsite && !product.landing?.trim() && !product.ctaHref?.trim()) {
+    errors.push("Produto visível no site precisa de uma página de destino (landing ou CTA).");
+  }
+
+  if (product.showOnWebsite && !product.shortDescription?.trim()) {
+    warnings.push("Sem descrição curta: o card no site ficará vazio.");
+  }
+  if (product.showOnWebsite && !product.imageUrl?.trim()) {
+    warnings.push("Sem imagem: o card usará a imagem padrão do código.");
+  }
+  if (product.status === "beta" && !product.betaNote?.trim()) {
+    warnings.push("Produto em acesso antecipado sem aviso de beta.");
+  }
+  if (product.status === "discontinued" && product.showOnWebsite) {
+    warnings.push("Produto descontinuado continua aparecendo no site.");
+  }
+  if (product.status === "active" && !product.availableForPurchase) {
+    warnings.push("Produto ativo sem contratação: o site mostrará apenas “Saiba mais”.");
+  }
+
+  return { errors, warnings };
+}
+
+
+
 
 
 export interface CatalogPlan {
