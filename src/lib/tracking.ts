@@ -189,7 +189,52 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
 }
 
 
+/**
+ * Clique de um CTA de produto ("Comece agora" / "Saiba mais" / "Em breve").
+ * Emite `product_cta_click` com o produto e a intenção, além do cta_click padrão.
+ */
+export function trackProductCta(input: {
+  /** chave do produto no catálogo (crm, casa360...) */
+  productKey: string;
+  /** nome exibido do produto */
+  productName: string;
+  /** buy | learn | none */
+  ctaAction: string;
+  /** status do produto no catálogo */
+  productStatus?: string;
+  label: string;
+  section: string;
+  destination?: string;
+  placement?: CtaPlacement;
+}) {
+  const params = {
+    product_key: input.productKey,
+    product_name: input.productName,
+    product_status: input.productStatus ?? "",
+    cta_action: input.ctaAction,
+    cta_label: input.label,
+    cta_section: input.section,
+    cta_destination: input.destination ?? "",
+  };
+  pushGTM("product_cta_click", params);
+  pushGA4("product_cta_click", params);
+  pushMeta("ViewContent", {
+    content_name: input.productName,
+    content_type: "product",
+    content_category: input.ctaAction,
+  });
+
+  trackCTAClick({
+    section: input.section,
+    action: `${input.ctaAction}-${input.productKey}`,
+    label: `${input.label} — ${input.productName}`,
+    destination: input.destination,
+    placement: input.placement,
+  });
+}
+
 /** Track a "Saiba Mais" / product link click */
+
 export function trackProductClick(productName: string) {
   const params = { product_name: productName };
   pushGTM("product_click", params);
