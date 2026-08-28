@@ -457,6 +457,60 @@ function ProductDialog({
               />
             </div>
 
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <p className="text-sm text-foreground">Pode ser contratado</p>
+                <p className="text-xs text-muted-foreground">
+                  Libera o botão de compra e o checkout. Só vale em produtos disponíveis
+                  ou em acesso antecipado.
+                </p>
+              </div>
+              <Switch
+                checked={form.availableForPurchase}
+                onCheckedChange={(v) => setForm({ ...form, availableForPurchase: v })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <p className="text-sm text-foreground">Aparece no Hub</p>
+                <p className="text-xs text-muted-foreground">
+                  Mostra o sistema em “Meus Sistemas” e libera SSO e provisionamento.
+                </p>
+              </div>
+              <Switch
+                checked={form.availableInHub}
+                onCheckedChange={(v) => setForm({ ...form, availableInHub: v })}
+              />
+            </div>
+
+            {coherenceWarnings.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                {coherenceWarnings.map((w) => (
+                  <li key={w} className="flex items-start gap-1.5">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Prévia no site: </span>
+              {form.showOnWebsite ? (
+                <>
+                  {preview.badge ? `selo “${preview.badge}” · ` : ""}
+                  botão “{preview.label}”
+                  {preview.showPricing ? " com preços" : " sem preços"}
+                  {preview.notice ? ` · ${preview.notice}` : ""}
+                </>
+              ) : (
+                "oculto nas páginas públicas."
+              )}
+            </div>
+
+
+
             {form.status === "beta" && (
               <div className="grid gap-1.5">
                 <Label>Aviso do beta</Label>
