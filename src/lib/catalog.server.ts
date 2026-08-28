@@ -4,6 +4,7 @@ import type {
   CatalogPlan,
   CatalogProduct,
   CatalogSnapshot,
+  ProductFlags,
   ProductStatus,
 } from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
