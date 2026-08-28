@@ -50,17 +50,30 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const email = (claims as { email?: string } | null)?.email;
       const appKey = appKeyFromPriceId(data.priceId);
 
+      /** Deixa o motivo real da recusa visível nos logs do servidor. */
+      const refuse = (reason: string): { error: string } => {
+        console.error("[checkout] recusado", {
+          userId,
+          priceId: data.priceId,
+          appKey,
+          environment: data.environment,
+          reason,
+        });
+        return { error: reason };
+      };
+
+
       if (appKey) {
         const { productFlagsOf } = await import("@/lib/catalog.server");
         const { canPurchase, statusLabel } = await import("@/lib/catalog");
         const flags = await productFlagsOf(appKey);
         if (!canPurchase(flags)) {
           const appName = getFlexusApp(appKey)?.name ?? "Este sistema";
-          return {
-            error: `${appName} não está disponível para contratação no momento (${statusLabel(
+          return refuse(
+            `${appName} não está disponível para contratação no momento (${statusLabel(
               flags.status,
             ).toLowerCase()}).`,
-          };
+          );
         }
       }
 
@@ -83,12 +96,13 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       });
       if (duplicate) {
         const appName = appKey ? getFlexusApp(appKey)?.name : null;
-        return {
-          error: `Você já tem uma assinatura ativa${appName ? ` do ${appName}` : ""} (plano ${planTierFromPriceId(
+        return refuse(
+          `Você já tem uma assinatura ativa${appName ? ` do ${appName}` : ""} (plano ${planTierFromPriceId(
             duplicate.price_id,
           )}). Use "Minha conta" para trocar de plano em vez de comprar novamente.`,
-        };
+        );
       }
+
 
       const existingCustomer = subs.find((s) =>
         isRealStripeId(s.stripe_customer_id, "cus_"),
@@ -99,7 +113,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
         const prices = await stripe.prices.list({ lookup_keys: [data.priceId] });
         const stripePrice = prices?.data?.[0];
-        if (!stripePrice) return { error: "Plano não encontrado no provedor de pagamento." };
+        if (!stripePrice) return refuse("Plano não encontrado no provedor de pagamento.");
 
         const isRecurring = stripePrice.type === "recurring";
 
@@ -156,11 +170,19 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           }),
         });
 
-        if (!session.client_secret) return { error: "Não foi possível iniciar o checkout." };
+        if (!session.client_secret) return refuse("Não foi possível iniciar o checkout.");
         return { clientSecret: session.client_secret };
       } catch (error) {
+        console.error("[checkout] erro do provedor", {
+          userId,
+          priceId: data.priceId,
+          appKey,
+          environment: data.environment,
+          error: error instanceof Error ? error.message : String(error),
+        });
         return { error: friendlyStripeError(error) };
       }
+
     },
   );
 
