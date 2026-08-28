@@ -170,11 +170,19 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           }),
         });
 
-        if (!session.client_secret) return { error: "Não foi possível iniciar o checkout." };
+        if (!session.client_secret) return refuse("Não foi possível iniciar o checkout.");
         return { clientSecret: session.client_secret };
       } catch (error) {
+        console.error("[checkout] erro do provedor", {
+          userId,
+          priceId: data.priceId,
+          appKey,
+          environment: data.environment,
+          error: error instanceof Error ? error.message : String(error),
+        });
         return { error: friendlyStripeError(error) };
       }
+
     },
   );
 
