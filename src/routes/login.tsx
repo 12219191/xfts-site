@@ -376,10 +376,15 @@ function LoginPage() {
                       required
                     />
                   </div>
+                  <p className="rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                    Primeiro acesso ou conta criada pela sua empresa? Use este mesmo link para definir sua senha.
+                    {appMeta && <> Depois disso, abriremos o <strong>{appMeta.name}</strong> automaticamente.</>}
+                  </p>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
                     Enviar Link de Recuperação
                   </Button>
+
                   <Separator />
                   <p className="text-center text-sm text-muted-foreground">
                     Lembrou a senha?{" "}
