@@ -68,6 +68,8 @@ export function MeusSistemas({
         {FLEXUS_APPS.map((app) => {
           const sub = subscriptions.find((s) => appKeyFromPriceId(s.price_id) === app.key);
           const info = statusInfo(sub);
+          const noHub = !hubOpen(app.key);
+
 
           return (
             <Card key={app.key} className={info.liberado ? "border-cta/30" : "border-border"}>
