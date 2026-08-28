@@ -51,14 +51,14 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const appKey = appKeyFromPriceId(data.priceId);
 
       if (appKey) {
-        const { productStatusOf } = await import("@/lib/catalog.server");
+        const { productFlagsOf } = await import("@/lib/catalog.server");
         const { canPurchase, statusLabel } = await import("@/lib/catalog");
-        const status = await productStatusOf(appKey);
-        if (!canPurchase(status)) {
+        const flags = await productFlagsOf(appKey);
+        if (!canPurchase(flags)) {
           const appName = getFlexusApp(appKey)?.name ?? "Este sistema";
           return {
             error: `${appName} não está disponível para contratação no momento (${statusLabel(
-              status,
+              flags.status,
             ).toLowerCase()}).`,
           };
         }
