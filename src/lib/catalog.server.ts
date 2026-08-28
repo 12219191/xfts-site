@@ -1,9 +1,15 @@
 /** Leitura do catálogo no banco, com fallback para o catálogo em código. */
 import { createClient } from "@supabase/supabase-js";
-import type { CatalogPlan, CatalogProduct, CatalogSnapshot } from "@/lib/catalog";
+import type {
+  CatalogPlan,
+  CatalogProduct,
+  CatalogSnapshot,
+  ProductStatus,
+} from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
 import { PLANS_BY_APP } from "@/lib/product-plans";
 import { parseEntitlements } from "@/lib/entitlements";
+import { productContent } from "@/lib/product-content";
 
 function parseBRL(value?: string): number {
   if (!value) return 0;
@@ -13,15 +19,31 @@ function parseBRL(value?: string): number {
 
 /** Catálogo montado a partir dos arquivos de código (rede de segurança). */
 export function codeCatalog(): CatalogSnapshot {
-  const products: CatalogProduct[] = FLEXUS_APPS.map((app, index) => ({
-    key: app.key,
-    name: app.name,
-    url: app.url,
-    landing: app.landing,
-    pricePrefix: app.pricePrefix,
-    available: app.available,
-    sortOrder: index + 1,
-  }));
+  const products: CatalogProduct[] = FLEXUS_APPS.map((app, index) => {
+    const content = productContent(app.key);
+    return {
+      key: app.key,
+      name: app.name,
+      url: app.url,
+      landing: app.landing,
+      pricePrefix: app.pricePrefix,
+      available: app.available,
+      sortOrder: index + 1,
+      status: (app.available ? "active" : "development") as ProductStatus,
+      showOnWebsite: true,
+      betaNote: "",
+      displayName: app.name,
+      shortDescription: content.shortDescription,
+      headline: "",
+      subheadline: "",
+      icon: content.icon,
+      ctaLabel: "Saiba Mais",
+      ctaHref: app.landing,
+      imageUrl: content.imageUrl,
+      imageAlt: content.imageAlt,
+    };
+  });
+
 
   const plans: CatalogPlan[] = [];
   for (const app of FLEXUS_APPS) {
@@ -77,6 +99,18 @@ type ProductRow = {
   price_prefix: string;
   available: boolean;
   sort_order: number;
+  status?: string | null;
+  show_on_website?: boolean | null;
+  beta_note?: string | null;
+  display_name?: string | null;
+  short_description?: string | null;
+  headline?: string | null;
+  subheadline?: string | null;
+  icon?: string | null;
+  cta_label?: string | null;
+  cta_href?: string | null;
+  image_url?: string | null;
+  image_alt?: string | null;
 };
 
 type PlanRow = {
@@ -99,16 +133,32 @@ type PlanRow = {
 };
 
 export function mapProduct(row: ProductRow): CatalogProduct {
+  const content = productContent(row.key);
+  const status = ((row.status as ProductStatus) ??
+    (row.available ? "active" : "development")) as ProductStatus;
   return {
     key: row.key,
     name: row.name,
     url: row.url ?? "",
     landing: row.landing ?? "",
     pricePrefix: row.price_prefix,
-    available: row.available,
+    available: status === "active" || status === "beta",
     sortOrder: row.sort_order,
+    status,
+    showOnWebsite: row.show_on_website ?? true,
+    betaNote: row.beta_note ?? "",
+    displayName: row.display_name?.trim() || row.name,
+    shortDescription: row.short_description?.trim() || content.shortDescription,
+    headline: row.headline ?? "",
+    subheadline: row.subheadline ?? "",
+    icon: row.icon?.trim() || content.icon,
+    ctaLabel: row.cta_label?.trim() || "Saiba Mais",
+    ctaHref: row.cta_href?.trim() || row.landing || "",
+    imageUrl: row.image_url?.trim() || content.imageUrl,
+    imageAlt: row.image_alt?.trim() || content.imageAlt,
   };
 }
+
 
 export function mapPlan(row: PlanRow): CatalogPlan {
   return {
@@ -152,4 +202,31 @@ export async function loadPublicCatalog(): Promise<CatalogSnapshot> {
   } catch {
     return codeCatalog();
   }
+}
+
+/**
+ * Status operacional dos produtos (inclusive os ocultos no site).
+ * Usado para liberar/bloquear compra e acesso. Nunca lança.
+ */
+export async function loadProductStatuses(): Promise<Record<string, ProductStatus>> {
+  const fallback: Record<string, ProductStatus> = {};
+  for (const app of FLEXUS_APPS) fallback[app.key] = app.available ? "active" : "development";
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.from("catalog_products").select("key, status");
+    if (error || !data || data.length === 0) return fallback;
+    const map: Record<string, ProductStatus> = { ...fallback };
+    for (const row of data as { key: string; status: string | null }[]) {
+      if (row.status) map[row.key] = row.status as ProductStatus;
+    }
+    return map;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Status de um produto (fallback: catálogo em código). */
+export async function productStatusOf(key: string): Promise<ProductStatus> {
+  const map = await loadProductStatuses();
+  return map[key] ?? "development";
 }

@@ -5,15 +5,64 @@
 import type { ProductPlan } from "@/lib/product-plans";
 import type { EntitlementMap } from "@/lib/entitlements";
 
+/** Ciclo de vida do produto (independente de aparecer ou não no site). */
+export type ProductStatus =
+  | "active"
+  | "development"
+  | "beta"
+  | "paused"
+  | "discontinued";
+
 export interface CatalogProduct {
   key: string;
   name: string;
   url: string;
   landing: string;
   pricePrefix: string;
+  /** Compatibilidade: equivale a status === "active" || "beta". */
   available: boolean;
   sortOrder: number;
+  status: ProductStatus;
+  showOnWebsite: boolean;
+  betaNote: string;
+  /** Título usado no site (cai para `name` quando vazio). */
+  displayName: string;
+  shortDescription: string;
+  headline: string;
+  subheadline: string;
+  /** Nome do ícone lucide usado nos cards. */
+  icon: string;
+  ctaLabel: string;
+  ctaHref: string;
+  imageUrl: string;
+  imageAlt: string;
 }
+
+/** Produtos que podem ser contratados agora. */
+export function canPurchase(status: ProductStatus): boolean {
+  return status === "active" || status === "beta";
+}
+
+/** Produtos cujos assinantes ainda podem entrar no sistema. */
+export function canAccess(status: ProductStatus): boolean {
+  return status !== "development";
+}
+
+export function statusLabel(status: ProductStatus): string {
+  switch (status) {
+    case "active":
+      return "Disponível";
+    case "beta":
+      return "Beta";
+    case "development":
+      return "Em breve";
+    case "paused":
+      return "Temporariamente indisponível";
+    case "discontinued":
+      return "Descontinuado";
+  }
+}
+
 
 export interface CatalogPlan {
   id: string;

@@ -289,34 +289,70 @@ export type Database = {
       catalog_products: {
         Row: {
           available: boolean
+          beta_note: string | null
           created_at: string
+          cta_href: string | null
+          cta_label: string
+          display_name: string | null
+          headline: string | null
+          icon: string
+          image_alt: string | null
+          image_url: string | null
           key: string
           landing: string
           name: string
           price_prefix: string
+          short_description: string
+          show_on_website: boolean
           sort_order: number
+          status: Database["public"]["Enums"]["product_status"]
+          subheadline: string | null
           updated_at: string
           url: string
         }
         Insert: {
           available?: boolean
+          beta_note?: string | null
           created_at?: string
+          cta_href?: string | null
+          cta_label?: string
+          display_name?: string | null
+          headline?: string | null
+          icon?: string
+          image_alt?: string | null
+          image_url?: string | null
           key: string
           landing?: string
           name: string
           price_prefix: string
+          short_description?: string
+          show_on_website?: boolean
           sort_order?: number
+          status?: Database["public"]["Enums"]["product_status"]
+          subheadline?: string | null
           updated_at?: string
           url?: string
         }
         Update: {
           available?: boolean
+          beta_note?: string | null
           created_at?: string
+          cta_href?: string | null
+          cta_label?: string
+          display_name?: string | null
+          headline?: string | null
+          icon?: string
+          image_alt?: string | null
+          image_url?: string | null
           key?: string
           landing?: string
           name?: string
           price_prefix?: string
+          short_description?: string
+          show_on_website?: boolean
           sort_order?: number
+          status?: Database["public"]["Enums"]["product_status"]
+          subheadline?: string | null
           updated_at?: string
           url?: string
         }
@@ -1114,6 +1150,12 @@ export type Database = {
         | "comercial"
         | "suporte"
         | "produto"
+      product_status:
+        | "active"
+        | "development"
+        | "beta"
+        | "paused"
+        | "discontinued"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1247,6 +1289,13 @@ export const Constants = {
         "comercial",
         "suporte",
         "produto",
+      ],
+      product_status: [
+        "active",
+        "development",
+        "beta",
+        "paused",
+        "discontinued",
       ],
     },
   },
