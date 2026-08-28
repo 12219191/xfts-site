@@ -141,3 +141,10 @@ Regras complementares:
 - **Equipe:** recuperação local do próprio sistema (e-mail + senha), sem passar pelo hub.
 - **Primeiro acesso de conta criada pela empresa:** usar o mesmo fluxo de "Esqueci minha senha"
   para definir a primeira senha.
+
+#### Ajuste recomendado na tela de login dos sistemas
+
+- Bloco "Entrar pelo hub": link secundário "Esqueci minha senha" →
+  `https://xfts-flexus.com/login?app=<key>`
+- Bloco "Entrar como equipe": manter o link local, rotulado "Esqueci minha senha (equipe)".
+- Linha de apoio: "É o titular da assinatura? Recupere a senha pelo hub."
