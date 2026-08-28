@@ -196,9 +196,15 @@ function LoginPage() {
       return;
     }
     setLoading(true);
+    // Preserva o contexto de origem para devolver ao sistema após redefinir a senha.
+    const resetParams = new URLSearchParams();
+    if (app) resetParams.set("app", app);
+    if (redirect) resetParams.set("redirect", redirect);
+    const query = resetParams.toString();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password${query ? `?${query}` : ""}`,
     });
+
     setLoading(false);
     if (error) {
       toast.error(error.message);
