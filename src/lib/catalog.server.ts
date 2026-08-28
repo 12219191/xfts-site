@@ -203,3 +203,30 @@ export async function loadPublicCatalog(): Promise<CatalogSnapshot> {
     return codeCatalog();
   }
 }
+
+/**
+ * Status operacional dos produtos (inclusive os ocultos no site).
+ * Usado para liberar/bloquear compra e acesso. Nunca lança.
+ */
+export async function loadProductStatuses(): Promise<Record<string, ProductStatus>> {
+  const fallback: Record<string, ProductStatus> = {};
+  for (const app of FLEXUS_APPS) fallback[app.key] = app.available ? "active" : "development";
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.from("catalog_products").select("key, status");
+    if (error || !data || data.length === 0) return fallback;
+    const map: Record<string, ProductStatus> = { ...fallback };
+    for (const row of data as { key: string; status: string | null }[]) {
+      if (row.status) map[row.key] = row.status as ProductStatus;
+    }
+    return map;
+  } catch {
+    return fallback;
+  }
+}
+
+/** Status de um produto (fallback: catálogo em código). */
+export async function productStatusOf(key: string): Promise<ProductStatus> {
+  const map = await loadProductStatuses();
+  return map[key] ?? "development";
+}
