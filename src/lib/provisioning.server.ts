@@ -70,9 +70,9 @@ export async function provisionApp(
   if (!appKey || !input.userId) return { ok: false, app: appKey, error: "sem app/usuário" };
 
   const app = getFlexusApp(appKey);
-  const { productStatusOf } = await import("@/lib/catalog.server");
+  const { productFlagsOf } = await import("@/lib/catalog.server");
   const { canAccess } = await import("@/lib/catalog");
-  if (!app || !canAccess(await productStatusOf(app.key)) || !app.url) {
+  if (!app || !canAccess(await productFlagsOf(app.key)) || !app.url) {
     return finish(input, appKey, { ok: false, error: "app indisponível" }, startedAt);
   }
 
