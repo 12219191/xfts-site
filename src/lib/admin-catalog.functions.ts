@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { validateProduct } from "@/lib/catalog";
 import type { CatalogPlan, CatalogProduct, ProductStatus } from "@/lib/catalog";
 import type { PriceCheck } from "@/lib/catalog-stripe.server";
 import type { EntitlementMap } from "@/lib/entitlements";
