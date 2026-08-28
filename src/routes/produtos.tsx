@@ -1,9 +1,19 @@
-import { createFileRoute, Link, Outlet, useMatch } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
-import { useProductImageData } from "@/lib/product-images";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackCTAClick } from "@/lib/tracking";
-import { Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, ArrowRight } from "lucide-react";
+import { statusLabel, type CatalogProduct } from "@/lib/catalog";
+import {
+  Stethoscope,
+  Scissors,
+  Sparkles,
+  Brain,
+  TrendingUp,
+  House,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 
 export const Route = createFileRoute("/produtos")({
   head: () => ({
@@ -20,57 +30,20 @@ export const Route = createFileRoute("/produtos")({
   component: ProdutosLayout,
 });
 
-const products = [
-  {
-    icon: Stethoscope,
-    title: "FLEXUS | Clínica",
-    desc: "Sistema completo para consultórios e clínicas. Agendamentos, prontuários eletrônicos e controle financeiro.",
-    slug: "clinica" as const,
-    link: "/produtos/gestao-clinica" as const,
-  },
-  {
-    icon: Scissors,
-    title: "FLEXUS | Barbearia",
-    desc: "Controle de estoque, vendas, PDV e CRM para barbearias e salões masculinos.",
-    slug: "barbearia" as const,
-    link: "/produtos/gestao-barbearias" as const,
-  },
-  {
-    icon: Sparkles,
-    title: "FLEXUS | Estética",
-    desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza.",
-    slug: "estetica" as const,
-    link: "/produtos/gestao-esteticas" as const,
-  },
-  {
-    icon: Brain,
-    title: "FLEXUS | ABA",
-    desc: "Sistema para clínicas de Análise do Comportamento Aplicada (ABA / TEA): coleta de dados, evolução e relatórios.",
-    slug: "aba" as const,
-    link: "/produtos/flexus-aba" as const,
-  },
-  {
-    icon: TrendingUp,
-    title: "FLEXUS | CRM",
-    desc: "CRM de vendas multi-segmento com pipeline kanban, automações e relatórios de conversão.",
-    slug: "crm" as const,
-    link: "/produtos/flexus-crm" as const,
-  },
-  {
-    icon: House,
-    title: "FLEXUS | Casa360°",
-    desc: "ERP doméstico: estoque da despensa, lista de compras automática e finanças da casa em um só painel.",
-    slug: "casa360" as const,
-    link: "/produtos/flexus-casa360" as const,
-  },
-];
+const ICONS: Record<string, LucideIcon> = {
+  Stethoscope,
+  Scissors,
+  Sparkles,
+  Brain,
+  TrendingUp,
+  House,
+};
 
 function ProdutosLayout() {
   return <Outlet />;
 }
 
-export function ProdutosIndex() {
-  const productImages = useProductImageData();
+export function ProdutosIndex({ products }: { products: CatalogProduct[] }) {
   return (
     <>
       <section className="gradient-primary section-padding text-center">
@@ -83,37 +56,48 @@ export function ProdutosIndex() {
       </section>
       <section className="section-padding">
         <div className="container-wide grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p) => (
-            <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
-              <div className="aspect-video overflow-hidden">
-                <img src={productImages[p.slug].url} alt={productImages[p.slug].alt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-              </div>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <p.icon className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
+          {products.map((p) => {
+            const Icon = ICONS[p.icon] ?? Sparkles;
+            const href = p.ctaHref || p.landing;
+            return (
+              <Card key={p.key} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
+                <div className="aspect-video overflow-hidden">
+                  <img src={p.imageUrl} alt={p.imageAlt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
-                <Link
-                  to={p.link}
-                  onClick={() =>
-                    trackCTAClick({
-                      section: "cards-produtos",
-                      action: `card-${p.slug}`,
-                      label: `Saiba Mais — ${p.title}`,
-                      destination: p.link,
-                    })
-                  }
-                >
-                  <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
-                    Saiba Mais <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className="p-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Icon className="h-5 w-5 text-primary" />
+                    <h2 className="text-lg font-semibold text-card-foreground">{p.displayName}</h2>
+                    {p.status !== "active" && (
+                      <Badge variant="secondary">{statusLabel(p.status)}</Badge>
+                    )}
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">{p.shortDescription}</p>
+                  {p.status === "beta" && p.betaNote ? (
+                    <p className="mt-2 text-xs text-muted-foreground">{p.betaNote}</p>
+                  ) : null}
+                  <a
+                    href={href}
+                    onClick={() =>
+                      trackCTAClick({
+                        section: "cards-produtos",
+                        action: `card-${p.key}`,
+                        label: `${p.ctaLabel} — ${p.displayName}`,
+                        destination: href,
+                      })
+                    }
+                  >
+                    <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
+                      {p.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </section>
     </>
   );
 }
+
