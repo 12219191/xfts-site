@@ -301,9 +301,14 @@ export function CatalogPanel() {
 
       <ProductDialog
         product={productDialog}
+        hasActivePlan={
+          !!productDialog &&
+          plans.some((p) => p.productKey === productDialog.key && p.active)
+        }
         onClose={() => setProductDialog(null)}
         onSaved={load}
       />
+
 
       <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
