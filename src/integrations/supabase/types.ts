@@ -289,6 +289,8 @@ export type Database = {
       catalog_products: {
         Row: {
           available: boolean
+          available_for_purchase: boolean
+          available_in_hub: boolean
           beta_note: string | null
           created_at: string
           cta_href: string | null
@@ -312,6 +314,8 @@ export type Database = {
         }
         Insert: {
           available?: boolean
+          available_for_purchase?: boolean
+          available_in_hub?: boolean
           beta_note?: string | null
           created_at?: string
           cta_href?: string | null
@@ -335,6 +339,8 @@ export type Database = {
         }
         Update: {
           available?: boolean
+          available_for_purchase?: boolean
+          available_in_hub?: boolean
           beta_note?: string | null
           created_at?: string
           cta_href?: string | null
