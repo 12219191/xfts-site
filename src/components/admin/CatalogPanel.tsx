@@ -328,7 +328,10 @@ export function emptyProduct(sortOrder: number): CatalogProduct {
     sortOrder,
     status: "development",
     showOnWebsite: false,
+    availableForPurchase: false,
+    availableInHub: false,
     betaNote: "",
+
     displayName: "",
     shortDescription: "",
     headline: "",
