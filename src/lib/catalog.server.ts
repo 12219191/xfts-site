@@ -114,6 +114,9 @@ type ProductRow = {
   cta_href?: string | null;
   image_url?: string | null;
   image_alt?: string | null;
+  available_for_purchase?: boolean | null;
+  available_in_hub?: boolean | null;
+
 };
 
 type PlanRow = {
