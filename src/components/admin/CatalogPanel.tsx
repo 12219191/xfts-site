@@ -26,7 +26,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle, Check, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import {
+  canPurchase,
   formatBRL,
+  siteCta,
+  statusAllowsAccess,
+  statusAllowsPurchase,
   statusLabel,
   type CatalogPlan,
   type CatalogProduct,
