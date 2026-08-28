@@ -37,9 +37,21 @@ export interface CatalogProductInput {
   url: string;
   landing: string;
   pricePrefix: string;
-  available: boolean;
   sortOrder: number;
+  status: ProductStatus;
+  showOnWebsite: boolean;
+  betaNote: string;
+  displayName: string;
+  shortDescription: string;
+  headline: string;
+  subheadline: string;
+  icon: string;
+  ctaLabel: string;
+  ctaHref: string;
+  imageUrl: string;
+  imageAlt: string;
 }
+
 
 /** Catálogo completo (inclusive planos inativos) para o Control Center. */
 export const getAdminCatalog = createServerFn({ method: "POST" })
