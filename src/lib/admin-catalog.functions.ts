@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { CatalogPlan, CatalogProduct } from "@/lib/catalog";
+import type { CatalogPlan, CatalogProduct, ProductStatus } from "@/lib/catalog";
 import type { PriceCheck } from "@/lib/catalog-stripe.server";
 import type { EntitlementMap } from "@/lib/entitlements";
 
@@ -104,8 +104,20 @@ export const saveCatalogProduct = createServerFn({ method: "POST" })
       url: data.url,
       landing: data.landing,
       price_prefix: data.pricePrefix,
-      available: data.available,
+      available: data.status === "active" || data.status === "beta",
       sort_order: data.sortOrder,
+      status: data.status,
+      show_on_website: data.showOnWebsite,
+      beta_note: data.betaNote || null,
+      display_name: data.displayName || null,
+      short_description: data.shortDescription ?? "",
+      headline: data.headline || null,
+      subheadline: data.subheadline || null,
+      icon: data.icon || "Sparkles",
+      cta_label: data.ctaLabel || "Saiba Mais",
+      cta_href: data.ctaHref || data.landing,
+      image_url: data.imageUrl || null,
+      image_alt: data.imageAlt || null,
     };
     const { error } = await supabaseAdmin
       .from("catalog_products")
