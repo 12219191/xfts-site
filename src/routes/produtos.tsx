@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { trackCTAClick } from "@/lib/tracking";
+import { trackProductCta } from "@/lib/tracking";
 import { siteCta, type CatalogProduct } from "@/lib/catalog";
 import {
   Stethoscope,
