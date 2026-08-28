@@ -259,3 +259,12 @@ Regras complementares:
 - **Equipe:** recuperação local do próprio sistema (e-mail + senha), sem passar pelo hub.
 - **Primeiro acesso de conta criada pela empresa:** usar o mesmo fluxo de "Esqueci minha senha"
   para definir a primeira senha.
+
+#### Ajuste recomendado na tela de login do sistema
+
+Separar os dois caminhos de recuperação, para o titular não usar a recuperação local (ele não tem senha local):
+
+- Bloco "Entrar pelo hub": link secundário **"Esqueci minha senha"** →
+  `https://xfts-flexus.com/login?app=casa360`
+- Bloco "Entrar como equipe": manter o link local, com o rótulo **"Esqueci minha senha (equipe)"**.
+- Linha de apoio: "É o titular da assinatura? Recupere a senha pelo hub."
