@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { validateProduct } from "@/lib/catalog";
 import type { CatalogPlan, CatalogProduct, ProductStatus } from "@/lib/catalog";
 import type { PriceCheck } from "@/lib/catalog-stripe.server";
 import type { EntitlementMap } from "@/lib/entitlements";
@@ -91,8 +92,13 @@ export const saveCatalogProduct = createServerFn({ method: "POST" })
       throw new Error("Chave inválida: use apenas letras minúsculas e números.");
     }
     if (!data.name?.trim()) throw new Error("Informe o nome do produto.");
+    const { errors } = validateProduct(data as never);
+    if (errors.length > 0) {
+      throw new Error(`Configuração incoerente: ${errors.join(" ")}`);
+    }
     return data;
   })
+
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const email = (context.claims as { email?: string })?.email ?? "";
     const { requireAdminModule } = await import("@/lib/admin-rbac.server");

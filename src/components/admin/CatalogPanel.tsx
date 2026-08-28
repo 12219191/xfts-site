@@ -30,9 +30,8 @@ import {
   canPurchase,
   formatBRL,
   siteCta,
-  statusAllowsAccess,
-  statusAllowsPurchase,
   statusLabel,
+  validateProduct,
   type CatalogPlan,
   type CatalogProduct,
   type ProductStatus,
@@ -301,9 +300,14 @@ export function CatalogPanel() {
 
       <ProductDialog
         product={productDialog}
+        hasActivePlan={
+          !!productDialog &&
+          plans.some((p) => p.productKey === productDialog.key && p.active)
+        }
         onClose={() => setProductDialog(null)}
         onSaved={load}
       />
+
 
       <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
         <AlertDialogContent>
@@ -361,10 +365,12 @@ export function emptyProduct(sortOrder: number): CatalogProduct {
 
 function ProductDialog({
   product,
+  hasActivePlan,
   onClose,
   onSaved,
 }: {
   product: CatalogProduct | null;
+  hasActivePlan: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -416,24 +422,11 @@ function ProductDialog({
 
   const statusHelp = STATUS_OPTIONS.find((o) => o.value === form.status)?.help ?? "";
   const preview = siteCta(form);
-  const coherenceWarnings: string[] = [];
-  if (form.availableForPurchase && !statusAllowsPurchase(form.status)) {
-    coherenceWarnings.push(
-      `“Pode ser contratado” está ligado, mas o status “${statusLabel(
-        form.status,
-      )}” não permite vender — o status vence e a venda continua bloqueada.`,
-    );
-  }
-  if (form.availableInHub && !statusAllowsAccess(form.status)) {
-    coherenceWarnings.push(
-      "“Aparece no Hub” está ligado, mas produtos em desenvolvimento não liberam acesso.",
-    );
-  }
-  if (canPurchase(form) && !form.availableInHub) {
-    coherenceWarnings.push(
-      "O produto pode ser contratado mas não aparece no Hub: quem comprar ficará sem porta de entrada.",
-    );
-  }
+  const { errors: blockingErrors, warnings: coherenceWarnings } = validateProduct({
+    ...form,
+    hasActivePlan,
+  });
+
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -518,15 +511,28 @@ function ProductDialog({
               />
             </div>
 
-            {coherenceWarnings.length > 0 && (
-              <ul className="space-y-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
-                {coherenceWarnings.map((w) => (
+            {blockingErrors.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                <li className="font-semibold">Corrija para poder salvar:</li>
+                {blockingErrors.map((w: string) => (
                   <li key={w} className="flex items-start gap-1.5">
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     {w}
                   </li>
                 ))}
               </ul>
+            )}
+
+            {coherenceWarnings.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-gold/40 bg-gold/10 p-3 text-xs text-gold-deep">
+                {coherenceWarnings.map((w: string) => (
+                  <li key={w} className="flex items-start gap-1.5">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+
             )}
 
             <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
@@ -709,7 +715,7 @@ function ProductDialog({
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>
-          <Button onClick={save} disabled={saving}>
+          <Button onClick={save} disabled={saving || blockingErrors.length > 0}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Salvar
           </Button>
         </DialogFooter>

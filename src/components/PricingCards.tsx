@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Crown } from "lucide-react";
-import { trackCTAClick } from "@/lib/tracking";
+import { trackCTAClick, trackProductCta } from "@/lib/tracking";
 
 interface PricingPlan {
   name: string;
@@ -149,11 +149,14 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                         : "bg-primary text-primary-foreground hover:bg-primary/90"
                     }`}
                     onClick={() => {
-                      trackCTAClick({
-                        section: trackingSection,
-                        action: `${plan.tier}-assinar-${useAnnual ? "anual" : "mensal"}`,
+                      trackProductCta({
+                        productKey: compareProduct ?? "geral",
+                        productName: productName ?? "FLEXUS",
+                        ctaAction: "buy",
                         label: plan.ctaLabel,
+                        section: trackingSection,
                         destination: "/checkout",
+                        placement: "precos",
                       });
                       if (activePriceId && onCheckout) {
                         onCheckout(activePriceId, plan.ctaLabel);

@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { trackCTAClick } from "@/lib/tracking";
+import { trackProductCta } from "@/lib/tracking";
 import { siteCta, type CatalogProduct } from "@/lib/catalog";
 import {
   Stethoscope,
@@ -86,14 +86,19 @@ export function ProdutosIndex({ products }: { products: CatalogProduct[] }) {
                     <a
                       href={href}
                       onClick={() =>
-                        trackCTAClick({
+                        trackProductCta({
+                          productKey: p.key,
+                          productName: p.displayName,
+                          productStatus: p.status,
+                          ctaAction: cta.action,
+                          label: cta.label,
                           section: "cards-produtos",
-                          action: `card-${p.key}`,
-                          label: `${cta.label} — ${p.displayName}`,
                           destination: href,
+                          placement: "card",
                         })
                       }
                     >
+
                       <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
                         {cta.label} <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
