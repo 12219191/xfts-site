@@ -152,7 +152,11 @@ export function mapProduct(row: ProductRow): CatalogProduct {
     sortOrder: row.sort_order,
     status,
     showOnWebsite: row.show_on_website ?? true,
+    availableForPurchase:
+      row.available_for_purchase ?? (status === "active" || status === "beta"),
+    availableInHub: row.available_in_hub ?? status !== "development",
     betaNote: row.beta_note ?? "",
+
     displayName: row.display_name?.trim() || row.name,
     shortDescription: row.short_description?.trim() || content.shortDescription,
     headline: row.headline ?? "",
