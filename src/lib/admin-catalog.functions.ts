@@ -83,7 +83,13 @@ export const getAdminCatalog = createServerFn({ method: "POST" })
 /** Cria ou atualiza um produto do catálogo. */
 export const saveCatalogProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: CatalogProductInput) => data)
+  .inputValidator((data: CatalogProductInput) => {
+    if (!/^[a-z0-9]{2,32}$/.test(data.key ?? "")) {
+      throw new Error("Chave inválida: use apenas letras minúsculas e números.");
+    }
+    if (!data.name?.trim()) throw new Error("Informe o nome do produto.");
+    return data;
+  })
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const email = (context.claims as { email?: string })?.email ?? "";
     const { requireAdminModule } = await import("@/lib/admin-rbac.server");
