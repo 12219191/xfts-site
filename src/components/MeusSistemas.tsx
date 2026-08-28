@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, Lock, Clock } from "lucide-react";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { canAccess, type CatalogProduct } from "@/lib/catalog";
 import {
   ACTIVE_STATUSES,
   FLEXUS_APPS,
