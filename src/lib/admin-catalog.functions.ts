@@ -40,6 +40,9 @@ export interface CatalogProductInput {
   sortOrder: number;
   status: ProductStatus;
   showOnWebsite: boolean;
+  availableForPurchase: boolean;
+  availableInHub: boolean;
+
   betaNote: string;
   displayName: string;
   shortDescription: string;
