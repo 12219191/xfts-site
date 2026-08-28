@@ -40,6 +40,9 @@ export interface CatalogProductInput {
   sortOrder: number;
   status: ProductStatus;
   showOnWebsite: boolean;
+  availableForPurchase: boolean;
+  availableInHub: boolean;
+
   betaNote: string;
   displayName: string;
   shortDescription: string;
@@ -114,6 +117,10 @@ export const saveCatalogProduct = createServerFn({ method: "POST" })
       sort_order: data.sortOrder,
       status: data.status,
       show_on_website: data.showOnWebsite,
+      available_for_purchase:
+        data.availableForPurchase && (data.status === "active" || data.status === "beta"),
+      available_in_hub: data.availableInHub && data.status !== "development",
+
       beta_note: data.betaNote || null,
       display_name: data.displayName || null,
       short_description: data.shortDescription ?? "",

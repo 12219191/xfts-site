@@ -26,7 +26,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle, Check, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import {
+  canAccess,
+  canPurchase,
   formatBRL,
+  siteCta,
+  statusAllowsAccess,
+  statusAllowsPurchase,
   statusLabel,
   type CatalogPlan,
   type CatalogProduct,
@@ -186,16 +191,26 @@ export function CatalogPanel() {
                 <Badge variant={product.showOnWebsite ? "outline" : "destructive"}>
                   {product.showOnWebsite ? "No site" : "Oculto no site"}
                 </Badge>
+                <Badge variant={canPurchase(product) ? "outline" : "secondary"}>
+                  {canPurchase(product) ? "Vende" : "Não vende"}
+                </Badge>
+                <Badge variant={canAccess(product) ? "outline" : "secondary"}>
+                  {canAccess(product) ? "No Hub" : "Fora do Hub"}
+                </Badge>
                 <span className="text-xs text-muted-foreground">
                   {productPlans.length} plano(s)
                 </span>
-                {product.showOnWebsite &&
-                  product.status !== "development" &&
-                  productPlans.filter((p) => p.active).length === 0 && (
-                    <span className="flex items-center gap-1 text-xs text-destructive">
-                      <AlertTriangle className="h-3.5 w-3.5" /> visível no site sem plano ativo
-                    </span>
-                  )}
+                {canPurchase(product) && productPlans.filter((p) => p.active).length === 0 && (
+                  <span className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertTriangle className="h-3.5 w-3.5" /> vendável sem plano ativo
+                  </span>
+                )}
+                {canPurchase(product) && !canAccess(product) && (
+                  <span className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertTriangle className="h-3.5 w-3.5" /> vende mas não aparece no Hub
+                  </span>
+                )}
+
                 {product.url && (
                   <span className="text-xs text-muted-foreground">{product.url}</span>
                 )}
@@ -328,7 +343,10 @@ export function emptyProduct(sortOrder: number): CatalogProduct {
     sortOrder,
     status: "development",
     showOnWebsite: false,
+    availableForPurchase: false,
+    availableInHub: false,
     betaNote: "",
+
     displayName: "",
     shortDescription: "",
     headline: "",
@@ -371,7 +389,10 @@ function ProductDialog({
           sortOrder: form.sortOrder,
           status: form.status,
           showOnWebsite: form.showOnWebsite,
+          availableForPurchase: form.availableForPurchase,
+          availableInHub: form.availableInHub,
           betaNote: form.betaNote,
+
           displayName: form.displayName,
           shortDescription: form.shortDescription,
           headline: form.headline,
@@ -394,6 +415,25 @@ function ProductDialog({
   };
 
   const statusHelp = STATUS_OPTIONS.find((o) => o.value === form.status)?.help ?? "";
+  const preview = siteCta(form);
+  const coherenceWarnings: string[] = [];
+  if (form.availableForPurchase && !statusAllowsPurchase(form.status)) {
+    coherenceWarnings.push(
+      `“Pode ser contratado” está ligado, mas o status “${statusLabel(
+        form.status,
+      )}” não permite vender — o status vence e a venda continua bloqueada.`,
+    );
+  }
+  if (form.availableInHub && !statusAllowsAccess(form.status)) {
+    coherenceWarnings.push(
+      "“Aparece no Hub” está ligado, mas produtos em desenvolvimento não liberam acesso.",
+    );
+  }
+  if (canPurchase(form) && !form.availableInHub) {
+    coherenceWarnings.push(
+      "O produto pode ser contratado mas não aparece no Hub: quem comprar ficará sem porta de entrada.",
+    );
+  }
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -450,6 +490,60 @@ function ProductDialog({
                 onCheckedChange={(v) => setForm({ ...form, showOnWebsite: v })}
               />
             </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <p className="text-sm text-foreground">Pode ser contratado</p>
+                <p className="text-xs text-muted-foreground">
+                  Libera o botão de compra e o checkout. Só vale em produtos disponíveis
+                  ou em acesso antecipado.
+                </p>
+              </div>
+              <Switch
+                checked={form.availableForPurchase}
+                onCheckedChange={(v) => setForm({ ...form, availableForPurchase: v })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border border-border p-3">
+              <div>
+                <p className="text-sm text-foreground">Aparece no Hub</p>
+                <p className="text-xs text-muted-foreground">
+                  Mostra o sistema em “Meus Sistemas” e libera SSO e provisionamento.
+                </p>
+              </div>
+              <Switch
+                checked={form.availableInHub}
+                onCheckedChange={(v) => setForm({ ...form, availableInHub: v })}
+              />
+            </div>
+
+            {coherenceWarnings.length > 0 && (
+              <ul className="space-y-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+                {coherenceWarnings.map((w) => (
+                  <li key={w} className="flex items-start gap-1.5">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Prévia no site: </span>
+              {form.showOnWebsite ? (
+                <>
+                  {preview.badge ? `selo “${preview.badge}” · ` : ""}
+                  botão “{preview.label}”
+                  {preview.showPricing ? " com preços" : " sem preços"}
+                  {preview.notice ? ` · ${preview.notice}` : ""}
+                </>
+              ) : (
+                "oculto nas páginas públicas."
+              )}
+            </div>
+
+
 
             {form.status === "beta" && (
               <div className="grid gap-1.5">

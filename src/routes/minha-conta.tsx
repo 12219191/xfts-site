@@ -490,7 +490,7 @@ function MinhaContaPage() {
 
       <section className="section-padding">
         <div className="container-wide mx-auto max-w-4xl space-y-8 px-4 md:px-8">
-          <MeusSistemas subscriptions={allSubscriptions} />
+          <MeusSistemas subscriptions={allSubscriptions} products={catalog.products} />
 
           <Separator />
 

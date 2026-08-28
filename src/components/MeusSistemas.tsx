@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LayoutGrid, Lock, Clock } from "lucide-react";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { canAccess, type CatalogProduct } from "@/lib/catalog";
 import {
   ACTIVE_STATUSES,
   FLEXUS_APPS,
@@ -39,7 +40,17 @@ function statusInfo(sub: SistemaSubscription | undefined) {
   return { label: "Bloqueado", tone: "muted" as const, liberado: false };
 }
 
-export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscription[] }) {
+export function MeusSistemas({
+  subscriptions,
+  products = [],
+}: {
+  subscriptions: SistemaSubscription[];
+  products?: CatalogProduct[];
+}) {
+  const hubOpen = (key: string) => {
+    const product = products.find((p) => p.key === key);
+    return product ? canAccess(product) : false;
+  };
   return (
     <div>
       <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-foreground">
@@ -57,6 +68,8 @@ export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscrip
         {FLEXUS_APPS.map((app) => {
           const sub = subscriptions.find((s) => appKeyFromPriceId(s.price_id) === app.key);
           const info = statusInfo(sub);
+          const noHub = !hubOpen(app.key);
+
 
           return (
             <Card key={app.key} className={info.liberado ? "border-cta/30" : "border-border"}>
@@ -65,9 +78,7 @@ export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscrip
                   <div>
                     <p className="font-semibold text-foreground">{app.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {app.available
-                        ? app.url.replace("https://", "")
-                        : "Disponível em breve"}
+                      {noHub ? "Disponível em breve" : app.url.replace("https://", "")}
                     </p>
                   </div>
                   <Badge
@@ -94,7 +105,7 @@ export function MeusSistemas({ subscriptions }: { subscriptions: SistemaSubscrip
                 )}
 
                 <div className="mt-auto pt-2">
-                  {!app.available ? (
+                  {noHub ? (
                     <Button variant="outline" size="sm" disabled className="w-full">
                       <Clock className="mr-2 h-4 w-4" />
                       Em breve

@@ -32,10 +32,10 @@ export const createSsoLink = createServerFn({ method: "POST" })
       await import("@/lib/flexus-apps");
     const app = getFlexusApp(data.app);
     if (!app) return deny("sistema inexistente", "Sistema não encontrado");
-    const { productStatusOf } = await import("@/lib/catalog.server");
+    const { productFlagsOf } = await import("@/lib/catalog.server");
     const { canAccess } = await import("@/lib/catalog");
-    const status = await productStatusOf(app.key);
-    if (!canAccess(status) || !app.url)
+    const flags = await productFlagsOf(app.key);
+    if (!canAccess(flags) || !app.url)
       return deny("sistema indisponível", `${app.name} ainda não está disponível.`);
 
     const env = data.environment ?? "sandbox";

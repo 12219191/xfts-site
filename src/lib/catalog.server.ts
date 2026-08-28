@@ -4,6 +4,7 @@ import type {
   CatalogPlan,
   CatalogProduct,
   CatalogSnapshot,
+  ProductFlags,
   ProductStatus,
 } from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
@@ -31,7 +32,10 @@ export function codeCatalog(): CatalogSnapshot {
       sortOrder: index + 1,
       status: (app.available ? "active" : "development") as ProductStatus,
       showOnWebsite: true,
+      availableForPurchase: app.available,
+      availableInHub: app.available,
       betaNote: "",
+
       displayName: app.name,
       shortDescription: content.shortDescription,
       headline: "",
@@ -111,6 +115,9 @@ type ProductRow = {
   cta_href?: string | null;
   image_url?: string | null;
   image_alt?: string | null;
+  available_for_purchase?: boolean | null;
+  available_in_hub?: boolean | null;
+
 };
 
 type PlanRow = {
@@ -146,7 +153,11 @@ export function mapProduct(row: ProductRow): CatalogProduct {
     sortOrder: row.sort_order,
     status,
     showOnWebsite: row.show_on_website ?? true,
+    availableForPurchase:
+      row.available_for_purchase ?? (status === "active" || status === "beta"),
+    availableInHub: row.available_in_hub ?? status !== "development",
     betaNote: row.beta_note ?? "",
+
     displayName: row.display_name?.trim() || row.name,
     shortDescription: row.short_description?.trim() || content.shortDescription,
     headline: row.headline ?? "",
@@ -205,19 +216,38 @@ export async function loadPublicCatalog(): Promise<CatalogSnapshot> {
 }
 
 /**
- * Status operacional dos produtos (inclusive os ocultos no site).
- * Usado para liberar/bloquear compra e acesso. Nunca lança.
+ * Regras operacionais dos produtos (inclusive os ocultos no site):
+ * status + pode contratar + aparece no Hub. Nunca lança.
  */
-export async function loadProductStatuses(): Promise<Record<string, ProductStatus>> {
-  const fallback: Record<string, ProductStatus> = {};
-  for (const app of FLEXUS_APPS) fallback[app.key] = app.available ? "active" : "development";
+export async function loadProductFlags(): Promise<Record<string, ProductFlags>> {
+  const fallback: Record<string, ProductFlags> = {};
+  for (const app of FLEXUS_APPS) {
+    fallback[app.key] = {
+      status: app.available ? "active" : "development",
+      availableForPurchase: app.available,
+      availableInHub: app.available,
+    };
+  }
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("catalog_products").select("key, status");
+    const { data, error } = await supabaseAdmin
+      .from("catalog_products")
+      .select("key, status, available_for_purchase, available_in_hub");
     if (error || !data || data.length === 0) return fallback;
-    const map: Record<string, ProductStatus> = { ...fallback };
-    for (const row of data as { key: string; status: string | null }[]) {
-      if (row.status) map[row.key] = row.status as ProductStatus;
+    const map: Record<string, ProductFlags> = { ...fallback };
+    for (const row of data as {
+      key: string;
+      status: string | null;
+      available_for_purchase: boolean | null;
+      available_in_hub: boolean | null;
+    }[]) {
+      const status = (row.status as ProductStatus) ?? "development";
+      map[row.key] = {
+        status,
+        availableForPurchase:
+          row.available_for_purchase ?? (status === "active" || status === "beta"),
+        availableInHub: row.available_in_hub ?? status !== "development",
+      };
     }
     return map;
   } catch {
@@ -225,8 +255,15 @@ export async function loadProductStatuses(): Promise<Record<string, ProductStatu
   }
 }
 
-/** Status de um produto (fallback: catálogo em código). */
-export async function productStatusOf(key: string): Promise<ProductStatus> {
-  const map = await loadProductStatuses();
-  return map[key] ?? "development";
+/** Regras de um produto (fallback: catálogo em código). */
+export async function productFlagsOf(key: string): Promise<ProductFlags> {
+  const map = await loadProductFlags();
+  return (
+    map[key] ?? {
+      status: "development",
+      availableForPurchase: false,
+      availableInHub: false,
+    }
+  );
 }
+

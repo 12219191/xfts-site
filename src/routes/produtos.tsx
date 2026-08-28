@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackCTAClick } from "@/lib/tracking";
-import { statusLabel, type CatalogProduct } from "@/lib/catalog";
+import { siteCta, type CatalogProduct } from "@/lib/catalog";
 import {
   Stethoscope,
   Scissors,
@@ -58,6 +58,7 @@ export function ProdutosIndex({ products }: { products: CatalogProduct[] }) {
         <div className="container-wide grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
             const Icon = ICONS[p.icon] ?? Sparkles;
+            const cta = siteCta(p);
             const href = p.ctaHref || p.landing;
             return (
               <Card key={p.key} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
@@ -68,33 +69,41 @@ export function ProdutosIndex({ products }: { products: CatalogProduct[] }) {
                   <div className="flex flex-wrap items-center gap-3">
                     <Icon className="h-5 w-5 text-primary" />
                     <h2 className="text-lg font-semibold text-card-foreground">{p.displayName}</h2>
-                    {p.status !== "active" && (
-                      <Badge variant="secondary">{statusLabel(p.status)}</Badge>
-                    )}
+                    {cta.badge && <Badge variant="secondary">{cta.badge}</Badge>}
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">{p.shortDescription}</p>
                   {p.status === "beta" && p.betaNote ? (
                     <p className="mt-2 text-xs text-muted-foreground">{p.betaNote}</p>
                   ) : null}
-                  <a
-                    href={href}
-                    onClick={() =>
-                      trackCTAClick({
-                        section: "cards-produtos",
-                        action: `card-${p.key}`,
-                        label: `${p.ctaLabel} — ${p.displayName}`,
-                        destination: href,
-                      })
-                    }
-                  >
-                    <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
-                      {p.ctaLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                  {cta.notice ? (
+                    <p className="mt-2 text-xs text-muted-foreground">{cta.notice}</p>
+                  ) : null}
+                  {cta.action === "none" ? (
+                    <Button className="mt-4" variant="outline" disabled>
+                      {cta.label}
                     </Button>
-                  </a>
+                  ) : (
+                    <a
+                      href={href}
+                      onClick={() =>
+                        trackCTAClick({
+                          section: "cards-produtos",
+                          action: `card-${p.key}`,
+                          label: `${cta.label} — ${p.displayName}`,
+                          destination: href,
+                        })
+                      }
+                    >
+                      <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
+                        {cta.label} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </a>
+                  )}
                 </CardContent>
               </Card>
             );
           })}
+
         </div>
       </section>
     </>

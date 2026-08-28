@@ -24,6 +24,10 @@ export interface CatalogProduct {
   sortOrder: number;
   status: ProductStatus;
   showOnWebsite: boolean;
+  /** Pode ser contratado (limitado pelo teto do status). */
+  availableForPurchase: boolean;
+  /** Aparece como aplicação acessível no Hub. */
+  availableInHub: boolean;
   betaNote: string;
   /** Título usado no site (cai para `name` quando vazio). */
   displayName: string;
@@ -38,14 +42,31 @@ export interface CatalogProduct {
   imageAlt: string;
 }
 
-/** Produtos que podem ser contratados agora. */
-export function canPurchase(status: ProductStatus): boolean {
+/** Conjunto mínimo de regras de um produto (status + chaves independentes). */
+export interface ProductFlags {
+  status: ProductStatus;
+  availableForPurchase: boolean;
+  availableInHub: boolean;
+}
+
+/** O status permite venda? (teto: development/paused/discontinued nunca vendem) */
+export function statusAllowsPurchase(status: ProductStatus): boolean {
   return status === "active" || status === "beta";
 }
 
-/** Produtos cujos assinantes ainda podem entrar no sistema. */
-export function canAccess(status: ProductStatus): boolean {
+/** O status permite acesso de quem já assina? */
+export function statusAllowsAccess(status: ProductStatus): boolean {
   return status !== "development";
+}
+
+/** Produtos que podem ser contratados agora. */
+export function canPurchase(product: ProductFlags): boolean {
+  return statusAllowsPurchase(product.status) && product.availableForPurchase;
+}
+
+/** Produtos cujos assinantes ainda podem entrar no sistema pelo Hub. */
+export function canAccess(product: ProductFlags): boolean {
+  return statusAllowsAccess(product.status) && product.availableInHub;
 }
 
 export function statusLabel(status: ProductStatus): string {
@@ -53,7 +74,7 @@ export function statusLabel(status: ProductStatus): string {
     case "active":
       return "Disponível";
     case "beta":
-      return "Beta";
+      return "Acesso antecipado";
     case "development":
       return "Em breve";
     case "paused":
@@ -62,6 +83,68 @@ export function statusLabel(status: ProductStatus): string {
       return "Descontinuado";
   }
 }
+
+export interface SiteCta {
+  /** Selo exibido no card/landing (null quando não há). */
+  badge: string | null;
+  /** Rótulo sugerido para o botão principal. */
+  label: string;
+  /** buy = leva ao checkout; learn = leva à landing; none = sem ação. */
+  action: "buy" | "learn" | "none";
+  /** Mostrar preços na página? */
+  showPricing: boolean;
+  /** Aviso exibido junto ao CTA, quando houver. */
+  notice: string | null;
+}
+
+/** Como o site interpreta status + chaves. */
+export function siteCta(product: ProductFlags & { ctaLabel?: string }): SiteCta {
+  const buyable = canPurchase(product);
+  switch (product.status) {
+    case "development":
+      return {
+        badge: "Em breve",
+        label: "Em breve",
+        action: "none",
+        showPricing: false,
+        notice: null,
+      };
+    case "paused":
+      return {
+        badge: statusLabel("paused"),
+        label: "Saiba mais",
+        action: "learn",
+        showPricing: false,
+        notice: "Novas contratações estão temporariamente suspensas.",
+      };
+    case "discontinued":
+      return {
+        badge: "Descontinuado",
+        label: "Saiba mais",
+        action: "learn",
+        showPricing: false,
+        notice: "Produto descontinuado para novas contratações.",
+      };
+    case "beta":
+      return {
+        badge: "Acesso antecipado",
+        label: buyable ? product.ctaLabel || "Comece agora" : "Saiba mais",
+        action: buyable ? "buy" : "learn",
+        showPricing: buyable,
+        notice: null,
+      };
+    case "active":
+    default:
+      return {
+        badge: null,
+        label: buyable ? product.ctaLabel || "Comece agora" : "Saiba mais",
+        action: buyable ? "buy" : "learn",
+        showPricing: buyable,
+        notice: null,
+      };
+  }
+}
+
 
 
 export interface CatalogPlan {
