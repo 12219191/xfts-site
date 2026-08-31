@@ -14,6 +14,8 @@ import {
 import type { CustomerProduct, CustomerRow } from "@/lib/admin-customers.server";
 import { History, LifeBuoy, Search, Users } from "lucide-react";
 import { CustomerTimelineDialog } from "@/components/admin/CustomerTimelineDialog";
+import { listAdminAudit, type AuditRow } from "@/lib/admin-audit.functions";
+import { auditActionLabel, diffAuditFields } from "@/lib/audit-format";
 
 export const Route = createFileRoute("/admin/clientes")({
   component: () => (
@@ -154,8 +156,30 @@ function ProductCard({
   const [seats, setSeats] = useState(
     product.seatsOverride !== null ? String(product.seatsOverride) : "",
   );
-  const [reason, setReason] = useState("");
+  const [seatsReason, setSeatsReason] = useState("");
+  const [supportReason, setSupportReason] = useState("");
   const [busy, setBusy] = useState(false);
+  const [history, setHistory] = useState<AuditRow[] | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  const loadHistory = async () => {
+    const next = !historyOpen;
+    setHistoryOpen(next);
+    if (!next || history) return;
+    try {
+      const [bySub, byUser] = await Promise.all([
+        listAdminAudit({ data: { targetId: product.subscriptionId, days: 365 } }),
+        listAdminAudit({ data: { targetId: userId, days: 365 } }),
+      ]);
+      const entries = [
+        ...("entries" in bySub ? bySub.entries : []),
+        ...("entries" in byUser ? byUser.entries : []),
+      ].sort((a, b) => b.created_at.localeCompare(a.created_at));
+      setHistory(entries);
+    } catch {
+      setHistory([]);
+    }
+  };
 
   const saveSeats = async () => {
     setBusy(true);
@@ -164,13 +188,14 @@ function ProductCard({
         data: {
           subscriptionId: product.subscriptionId,
           seats: seats.trim() === "" ? null : Number(seats),
-          reason,
+          reason: seatsReason,
         },
       });
       if ("error" in result) toast.error(result.error);
       else {
         toast.success("Limite de usuários atualizado.");
-        setReason("");
+        setSeatsReason("");
+        setHistory(null);
         onDone();
       }
     } catch (e) {
@@ -180,20 +205,21 @@ function ProductCard({
   };
 
   const supportAccess = async () => {
-    if (reason.trim().length < 5) {
+    if (supportReason.trim().length < 5) {
       toast.error("Informe o motivo do acesso de suporte.");
       return;
     }
     setBusy(true);
     try {
       const result = await createSupportAccessLink({
-        data: { userId, app: product.app, reason },
+        data: { userId, app: product.app, reason: supportReason },
       });
       if ("error" in result) toast.error(result.error);
       else {
         await navigator.clipboard.writeText(result.url).catch(() => undefined);
         toast.success("Link de suporte gerado e copiado (válido por poucos minutos).");
-        setReason("");
+        setSupportReason("");
+        setHistory(null);
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha ao gerar acesso.");
@@ -219,29 +245,96 @@ function ProductCard({
         {product.seatsOverride !== null ? " (limite manual)" : ""}
       </p>
 
-      <div className="mt-3 grid gap-2">
-        <div className="flex gap-2">
+      <div className="mt-3 rounded-md border border-border/70 bg-muted/20 p-3">
+        <p className="text-xs font-medium text-foreground">Limite de usuários</p>
+        <div className="mt-2 grid gap-2">
+          <div className="flex gap-2">
+            <Input
+              value={seats}
+              onChange={(e) => setSeats(e.target.value)}
+              placeholder="Limite manual (vazio = plano)"
+              inputMode="numeric"
+              className="h-9"
+            />
+            <Button size="sm" variant="outline" onClick={saveSeats} disabled={busy}>
+              Salvar
+            </Button>
+          </div>
           <Input
-            value={seats}
-            onChange={(e) => setSeats(e.target.value)}
-            placeholder="Limite manual (vazio = plano)"
-            inputMode="numeric"
+            value={seatsReason}
+            onChange={(e) => setSeatsReason(e.target.value)}
+            placeholder="Motivo da alteração (obrigatório, fica na auditoria)"
             className="h-9"
           />
-          <Button size="sm" variant="outline" onClick={saveSeats} disabled={busy}>
-            Salvar
+        </div>
+      </div>
+
+      <div className="mt-3 rounded-md border border-border/70 bg-muted/20 p-3">
+        <p className="text-xs font-medium text-foreground">Acesso de suporte</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Entra no sistema do cliente sem a senha dele. Link de uso único e curta duração.
+        </p>
+        <div className="mt-2 grid gap-2">
+          <Input
+            value={supportReason}
+            onChange={(e) => setSupportReason(e.target.value)}
+            placeholder="Motivo do acesso (obrigatório, fica na auditoria)"
+            className="h-9"
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={supportAccess}
+            disabled={busy}
+            className="justify-start"
+          >
+            <LifeBuoy className="mr-2 h-4 w-4" /> Gerar acesso de suporte
           </Button>
         </div>
-        <Input
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Motivo (obrigatório, fica na auditoria)"
-          className="h-9"
-        />
-        <Button size="sm" variant="ghost" onClick={supportAccess} disabled={busy} className="justify-start">
-          <LifeBuoy className="mr-2 h-4 w-4" /> Gerar acesso de suporte
-        </Button>
       </div>
+
+      <button
+        type="button"
+        onClick={loadHistory}
+        className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+      >
+        <History className="h-3.5 w-3.5" />
+        {historyOpen ? "Ocultar alterações" : "Ver alterações deste produto"}
+      </button>
+
+      {historyOpen && (
+        <div className="mt-2 space-y-1.5">
+          {history === null && <p className="text-xs text-muted-foreground">Carregando…</p>}
+          {history?.length === 0 && (
+            <p className="text-xs text-muted-foreground">Nenhuma alteração manual registrada.</p>
+          )}
+          {(history ?? []).map((entry) => {
+            const changes = diffAuditFields(entry.before, entry.after);
+            return (
+              <div key={entry.id} className="rounded-md bg-muted/40 p-2 text-[11px]">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <span className="font-medium text-foreground">
+                    {auditActionLabel(entry.action)}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {new Date(entry.created_at).toLocaleString("pt-BR")}
+                  </span>
+                </div>
+                <p className="text-muted-foreground">
+                  por {entry.actor_email ?? "—"}
+                  {entry.reason ? ` · motivo: ${entry.reason}` : ""}
+                </p>
+                {changes.map((c) => (
+                  <p key={c.field} className="text-muted-foreground">
+                    {c.label}: <span className="line-through">{c.before ?? "—"}</span> →{" "}
+                    <span className="font-medium text-primary">{c.after ?? "—"}</span>
+                  </p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
