@@ -3,7 +3,7 @@ import { PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
 import { productJsonLd } from "@/lib/product-schema";
 import { clinicaPlans as fallbackPlans, lowestMonthlyPrice } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
-import { plansForProduct } from "@/lib/catalog";
+import { plansForProduct, canPurchase } from "@/lib/catalog";
 import { ProductPageLayout } from "@/components/product/ProductPageLayout";
 
 const heroClinic = PRODUCT_IMAGE_DEFAULTS.clinica;
@@ -18,14 +18,19 @@ export const Route = createFileRoute("/produtos/gestao-clinica")({
   },
   head: ({ loaderData }) => {
     const plans = loaderData?.plans?.length ? loaderData.plans : fallbackPlans;
+    const product = loaderData?.product ?? null;
+    const sellable = product ? canPurchase(product) : true;
     const from = lowestMonthlyPrice(plans, "R$ 99");
-    const description = `Sistema SaaS completo para gestão de consultórios e clínicas: agendamento online, prontuário eletrônico, finanças e relatórios. Planos a partir de ${from}/mês, no cartão, mensal ou anual.`;
+    const priceSentence = sellable
+      ? `Planos a partir de ${from}/mês, no cartão, mensal ou anual.`
+      : "Valores sob consulta: fale com o nosso time para receber a proposta.";
+    const description = `Sistema SaaS completo para gestão de consultórios e clínicas: agendamento online, prontuário eletrônico, finanças e relatórios. ${priceSentence}`;
     return {
       meta: [
         { title: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
         { name: "description", content: description },
         { property: "og:title", content: "FLEXUS | Clínica - Gestão de Consultórios e Clínicas" },
-        { property: "og:description", content: `Agendamento, prontuário eletrônico e controle financeiro para clínicas. Planos a partir de ${from}/mês.` },
+        { property: "og:description", content: `Agendamento, prontuário eletrônico e controle financeiro para clínicas. ${priceSentence}` },
         { property: "og:type", content: "product" },
         { property: "og:url", content: "https://xfts-flexus.com/produtos/gestao-clinica" },
         { property: "og:image", content: heroClinic },
