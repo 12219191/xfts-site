@@ -3,7 +3,7 @@ import { PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
 import { productJsonLd } from "@/lib/product-schema";
 import { clinicaPlans as fallbackPlans, lowestMonthlyPrice } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
-import { plansForProduct } from "@/lib/catalog";
+import { plansForProduct, canPurchase } from "@/lib/catalog";
 import { ProductPageLayout } from "@/components/product/ProductPageLayout";
 
 const heroClinic = PRODUCT_IMAGE_DEFAULTS.clinica;
