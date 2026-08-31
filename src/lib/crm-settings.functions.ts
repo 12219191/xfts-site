@@ -72,6 +72,27 @@ export const saveCrmSettingsFn = createServerFn({ method: "POST" })
     const token = data.auth_token === "********" ? current.auth_token : data.auth_token;
 
     await saveCrmSettings({ ...data, auth_token: token }, context.userId);
+
+    const summary = (v: typeof current) => ({
+      enabled: v.enabled,
+      lead_url: v.lead_url,
+      auth_mode: v.auth_mode,
+      signature_encoding: v.signature_encoding,
+      form_types: v.form_types,
+      origem: v.origem,
+      timeout_ms: v.timeout_ms,
+    });
+    const { recordAudit } = await import("@/lib/admin-audit.server");
+    await recordAudit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string })?.email ?? null,
+      action: "integracao.crm",
+      targetType: "integration",
+      targetId: "crm",
+      before: summary(current),
+      after: summary({ ...current, ...data } as typeof current),
+      reason: "configuração salva no Control Center",
+    });
     return { ok: true };
   });
 

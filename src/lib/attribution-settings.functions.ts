@@ -62,10 +62,31 @@ export const setAttributionWindow = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!adminRow) throw new Error("Acesso restrito a administradores.");
 
+    const { data: currentRow } = await context.supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "attribution")
+      .maybeSingle();
+    const previous =
+      (currentRow?.value as { window_days?: number } | null)?.window_days ??
+      DEFAULT_ATTRIBUTION_WINDOW_DAYS;
+
     const { error } = await context.supabase
       .from("app_settings")
       .upsert({ key: "attribution", value: { window_days: data.window_days } });
     if (error) throw new Error(error.message);
+
+    const { recordAudit } = await import("@/lib/admin-audit.server");
+    await recordAudit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string })?.email ?? null,
+      action: "atribuicao.janela",
+      targetType: "app_settings",
+      targetId: "attribution",
+      before: { window_days: previous },
+      after: { window_days: data.window_days },
+      reason: "janela de atribuição alterada no Control Center",
+    });
 
     return { window_days: data.window_days };
   });

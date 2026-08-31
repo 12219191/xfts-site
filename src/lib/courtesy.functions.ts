@@ -178,6 +178,23 @@ export const grantCourtesy = createServerFn({ method: "POST" })
         environment: data.environment,
       } as never);
 
+      const { recordAudit } = await import("@/lib/admin-audit.server");
+      await recordAudit({
+        actorId: context.userId,
+        actorEmail: (context.claims as { email?: string })?.email ?? null,
+        action: "cortesia.concedida",
+        targetType: "user",
+        targetId: user.userId,
+        after: {
+          cliente: data.email,
+          app: app.name,
+          plano: data.tier,
+          dias: data.dias,
+          status: "active",
+        },
+        reason: data.nota?.slice(0, 300) ?? "cortesia concedida no Control Center",
+      });
+
       return {
         ok: true,
         invited: user.invited,
@@ -240,6 +257,18 @@ export const revokeCourtesy = createServerFn({ method: "POST" })
       reason: "encerrada manualmente no admin",
       environment: record.environment,
     } as never);
+
+    const { recordAudit } = await import("@/lib/admin-audit.server");
+    await recordAudit({
+      actorId: context.userId,
+      actorEmail: (context.claims as { email?: string })?.email ?? null,
+      action: "cortesia.encerrada",
+      targetType: "subscription",
+      targetId: data.id,
+      before: { status: "active" },
+      after: { status: "canceled" },
+      reason: "cortesia encerrada manualmente no Control Center",
+    });
 
     return { ok: true };
   });
