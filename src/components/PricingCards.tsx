@@ -114,7 +114,20 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                   <p className="mt-1 text-xs font-medium text-cta">Equivale a 12 meses com 20% de desconto</p>
                 )}
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
-
+                {(plan.seats || plan.trialDays) && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {plan.seats ? (
+                      <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-[11px] font-medium text-foreground">
+                        {plan.seats} {plan.seats === 1 ? "usuário incluído" : "usuários incluídos"}
+                      </span>
+                    ) : null}
+                    {plan.trialDays ? (
+                      <span className="rounded-full border border-cta/40 bg-cta/10 px-2.5 py-0.5 text-[11px] font-medium text-foreground">
+                        {plan.trialDays} dias grátis
+                      </span>
+                    ) : null}
+                  </div>
+                )}
               </div>
 
               {/* Features */}
