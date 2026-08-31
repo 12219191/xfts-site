@@ -28,6 +28,9 @@ interface Props {
   };
 }
 
+/** Recursos que são só limite de assentos — ficam nos cards de plano, não na lista geral. */
+const SEAT_LIKE = /(profissionai?s?|usu[áa]rios?|colaboradores?)\b/i;
+
 /** Junta os recursos dos planos ativos, sem repetição, na ordem dos planos. */
 function featuresFromPlans(plans: ProductPlan[]): string[] {
   const seen = new Set<string>();
@@ -38,6 +41,7 @@ function featuresFromPlans(plans: ProductPlan[]): string[] {
       if (!f) continue;
       const key = f.toLowerCase();
       if (key.startsWith("tudo do")) continue;
+      if (SEAT_LIKE.test(f) && /\d|ilimitad/i.test(f)) continue;
       if (seen.has(key)) continue;
       seen.add(key);
       out.push(f);
