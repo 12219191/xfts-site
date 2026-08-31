@@ -1,14 +1,22 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export type AuditJson =
+  | string
+  | number
+  | boolean
+  | null
+  | AuditJson[]
+  | { [key: string]: AuditJson };
+
 export interface AuditRow {
   id: string;
   actor_email: string | null;
   action: string;
   target_type: string;
   target_id: string | null;
-  before: unknown;
-  after: unknown;
+  before: AuditJson;
+  after: AuditJson;
   reason: string | null;
   created_at: string;
 }
