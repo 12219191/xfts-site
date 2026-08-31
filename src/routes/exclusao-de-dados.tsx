@@ -14,10 +14,10 @@ export const Route = createFileRoute("/exclusao-de-dados")({
       { name: "description", content: "Instruções e formulário para solicitar a exclusão de dados pessoais nos sistemas da XFTS, incluindo o FLEXUS CRM." },
       { property: "og:title", content: "Exclusão de Dados do Usuário - XFTS Inteligência Analítica" },
       { property: "og:description", content: "Como solicitar a exclusão de seus dados pessoais armazenados nos sistemas da XFTS." },
-      { property: "og:url", content: "https://xfts-site.lovable.app/exclusao-de-dados" },
+      { property: "og:url", content: "https://xfts-flexus.com/exclusao-de-dados" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://xfts-site.lovable.app/exclusao-de-dados" }],
+    links: [{ rel: "canonical", href: "https://xfts-flexus.com/exclusao-de-dados" }],
   }),
   component: ExclusaoDeDadosPage,
 });
@@ -203,7 +203,7 @@ function ExclusaoDeDadosPage() {
       breadcrumbLabel="Exclusão de Dados"
       title="Exclusão de Dados do Usuário"
       subtitle="Como solicitar a exclusão de seus dados pessoais armazenados nos sistemas da XFTS, incluindo o FLEXUS CRM e demais aplicações."
-      updatedAt="27 de maio de 2026"
+      updatedAt="31 de agosto de 2026"
       sections={sections}
       intro={
         <>
