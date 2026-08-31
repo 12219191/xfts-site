@@ -280,6 +280,8 @@ export function toProductPlan(plan: CatalogPlan): ProductPlan {
     ctaLabel: plan.ctaLabel,
     ...(plan.priceYearCents ? { annualPrice: formatBRL(plan.priceYearCents) } : {}),
     ...(plan.annualLookupKey ? { annualPriceId: plan.annualLookupKey } : {}),
+    ...(plan.seats ? { seats: plan.seats } : {}),
+    ...(plan.trialDays ? { trialDays: plan.trialDays } : {}),
   };
 }
 
