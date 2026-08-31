@@ -137,6 +137,10 @@ export interface ProductPlan {
   ctaLabel: string;
   annualPrice?: string;
   annualPriceId?: string;
+  /** Usuários/profissionais incluídos no plano (quando cadastrado). */
+  seats?: number;
+  /** Dias de teste grátis na primeira contratação (0 = sem teste). */
+  trialDays?: number;
 }
 
 /**
