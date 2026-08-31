@@ -2,8 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useProductImage, useProductImageAlt, PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
 const heroBarbershop = PRODUCT_IMAGE_DEFAULTS.barbearia;
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Check, ArrowRight, Star, X } from "lucide-react";
+import { Check, ArrowRight, X } from "lucide-react";
 import { trackCTAClick } from "@/lib/tracking";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { PricingCards } from "@/components/PricingCards";
@@ -56,11 +55,6 @@ const features = [
   "Notificações por WhatsApp",
 ];
 
-const testimonials = [
-  { name: "Lucas Ferreira", role: "Barbearia Premium", text: "O controle de estoque e PDV mudaram nosso jogo. Não perdemos mais produtos e o caixa fecha certinho." },
-  { name: "Rafael Santos", role: "Salão Masculino", text: "O CRM nos ajudou a fidelizar clientes. Taxa de retorno aumentou 50% em 3 meses." },
-  { name: "André Oliveira", role: "Rede de Barbearias", text: "Gerenciar 5 unidades ficou simples com os dashboards analíticos. Recomendo demais." },
-];
 
 
 function GestaoBarbeariasPage() {
@@ -130,20 +124,6 @@ function GestaoBarbeariasPage() {
         </div>
       </section>
 
-      <section className="section-padding">
-        <div className="container-wide">
-          <h2 className="text-center text-3xl font-bold text-foreground">O que dizem nossos clientes</h2>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <Card key={t.name} className="border-border bg-card"><CardContent className="p-6">
-                <div className="flex gap-1">{Array(5).fill(0).map((_, i) => <Star key={i} className="h-4 w-4 fill-primary text-primary" />)}</div>
-                <p className="mt-4 text-sm text-muted-foreground italic">"{t.text}"</p>
-                <div className="mt-4"><p className="text-sm font-semibold text-card-foreground">{t.name}</p><p className="text-xs text-muted-foreground">{t.role}</p></div>
-              </CardContent></Card>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }
