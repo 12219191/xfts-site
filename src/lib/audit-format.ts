@@ -7,7 +7,8 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "cortesia.encerrada": "Cortesia encerrada",
   "integracao.crm": "Configuração da integração com o CRM",
   "atribuicao.janela": "Janela de atribuição de leads",
-  "equipe.papel": "Papel de administrador alterado",
+  "team.role_granted": "Papel de administrador concedido",
+  "team.role_revoked": "Papel de administrador removido",
   "convite.cancelado": "Convite de equipe cancelado",
 };
 
