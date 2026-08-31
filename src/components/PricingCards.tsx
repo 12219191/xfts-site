@@ -17,6 +17,10 @@ interface PricingPlan {
   annualPrice?: string;
   /** Lookup key do preço anual no Stripe. */
   annualPriceId?: string;
+  /** Usuários/profissionais incluídos. */
+  seats?: number;
+  /** Dias de teste grátis na primeira contratação. */
+  trialDays?: number;
 }
 
 type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360";
