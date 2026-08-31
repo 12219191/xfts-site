@@ -1,32 +1,54 @@
-# Transferir a propriedade do projeto
+# Impersonação controlada + histórico de alterações manuais
 
-Esta é uma mudança de configuração feita na interface do Lovable — não exige nenhuma alteração de código no site.
+Boa parte do que você descreveu já existe no Control Center: em `/admin/clientes` cada produto do cliente tem "Gerar acesso de suporte" (token de 5 minutos, uso único, marcado como suporte e vinculado ao admin), o ajuste de limite de usuários exige motivo, e `/admin/auditoria` registra quem/quando/o quê/antes/depois/motivo. O que falta é fechar as lacunas: alguns tipos de alteração manual ainda não geram histórico, a tela de suporte é pouco clara, e a auditoria mostra JSON cru em vez de "users: 5 → 10".
 
-## Passo a passo
+## 1. Tela do cliente mais clara (`/admin/clientes`)
 
-1. Convide o novo dono para o workspace
-   - Workspace settings → Access → People → convidar o e-mail dele
-   - Defina o papel como Admin (necessário para receber a propriedade)
-   - Ele precisa aceitar o convite antes do próximo passo
+Cada produto passa a ter dois blocos separados, hoje eles dividem o mesmo campo de motivo:
 
-2. Transfira o projeto
-   - Abra Project settings → seção Project → General
-   - Clique em "Transfer ownership" e escolha a conta do novo dono
-   - Confirme a transferência
+```text
+FLEXUS | Barbearia          [PRO] [ativo]
+Usuários: 5 / 10 (limite manual)
+Renova em 26/09/2026
 
-3. Ajustes após a transferência
-   - Billing e créditos não são transferidos: o novo dono precisa ter plano/créditos próprios
-   - Se quiser continuar editando, peça para ele te manter como Admin/Editor no workspace
-   - Se o projeto usar um Supabase externo (não é o caso aqui — usamos Lovable Cloud), seria preciso desconectar antes
+Limite de usuários
+[ 10 ]  Motivo: [__________]  [Salvar]
 
-## Pontos de atenção para este projeto
+Acesso de suporte
+Motivo: [__________]        [ Abrir sistema como suporte ]
+Última entrada: 26/08 15:32 por Luciano (atendimento técnico)
+```
 
-- Domínio: xfts-flexus.com e www.xfts-flexus.com continuam apontando para o projeto; nada de DNS precisa mudar, mas a gestão de domínio passa para o novo dono.
-- Integrações de workspace (Stripe, Google Search Console, Zapier) são conexões de workspace: se o projeto for para outro workspace/conta, elas precisam ser reconectadas pelo novo dono.
-- Segredos do backend (chaves Stripe, HMAC do CRM, etc.) permanecem no projeto, mas vale revisar quem tem acesso após a troca.
+- Botão de suporte abre o sistema em nova aba direto (além de copiar o link), com aviso de expiração em 5 minutos e uso único.
+- Cada bloco tem seu próprio campo de motivo, obrigatório, com mínimo de 5 caracteres.
+- Abaixo de cada produto, as três últimas ações auditadas daquele cliente/produto, para o atendente ver o histórico sem sair da tela.
 
-## O que eu posso fazer no build
+## 2. Registrar tudo que hoje escapa
 
-Nada é obrigatório no código. Se quiser, na aprovação eu posso:
-- Listar todas as conexões/segredos atuais que precisarão ser reconfirmados pelo novo dono
-- Documentar tudo isso em um arquivo de handover no repositório (ex.: `docs/handover-propriedade.md`)
+Estas ações manuais passam a gravar em auditoria, com antes/depois e motivo obrigatório onde faz sentido:
+
+- Cortesia concedida e cortesia revogada (hoje sem registro).
+- Alteração das configurações de integração com o CRM (chave, URL, ativação).
+- Mudança da janela de atribuição de marketing.
+- Cancelamento de convite de equipe do cliente.
+
+Já registradas e mantidas como estão: acesso de suporte, limite de usuários, papéis da equipe interna, catálogo (produto/plano), promoções, reembolsos, notas de atendimento, reenvio de e-mail/provisionamento, reprocessamento de webhook.
+
+## 3. Auditoria legível (`/admin/auditoria`)
+
+- Antes/depois vira lista de campos alterados em português: `usuários: 5 → 10`, `status: ativo → cancelado`, em vez do JSON atual. O JSON completo fica atrás de "ver detalhes".
+- Novo filtro por cliente (e-mail do alvo) e por tipo de ação em lista suspensa, no lugar do campo de texto livre.
+- Destaque visual para acessos de suporte (ícone e cor próprios), por serem os eventos mais sensíveis.
+- Exportação CSV do período filtrado.
+
+## 4. Sessões de suporte visíveis
+
+Novo bloco no topo de `/admin/auditoria`: "Acessos de suporte", listando os tokens emitidos com cliente, sistema, admin, motivo, se foi usado e quando expirou. Token não usado que expirou aparece como "não utilizado" — evidência de que ninguém entrou.
+
+## Detalhes técnicos
+
+- Sem migração nova: `admin_audit_log` e `sso_tokens` (`purpose`, `created_by_admin`, `used_at`) já suportam tudo isso.
+- `recordAudit` ganha helper `diffFields(before, after, labels)` para renderização legível; a normalização acontece na leitura, em `admin-audit.functions.ts`, preservando os registros já gravados.
+- `courtesy.functions.ts`, `crm-settings.functions.ts`, `attribution-settings.functions.ts` e `invites.functions.ts` passam a chamar `recordAudit` depois da checagem de papel, no mesmo padrão de `admin-customers.functions.ts` (validação de motivo no `inputValidator`).
+- `listAdminAudit` recebe filtros `targetId`/`action` opcionais e um novo `listSupportSessions` lê `sso_tokens` com `purpose = 'support'` via cliente admin, juntando e-mail do cliente pelo diretório de usuários.
+- `admin.clientes.tsx`: `ProductCard` separa os dois estados de motivo e consome um novo `listCustomerAudit` limitado a 3 registros.
