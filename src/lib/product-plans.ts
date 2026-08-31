@@ -155,3 +155,15 @@ export const PLANS_BY_APP: Record<string, ProductPlan[]> = {
   crm: crmPlans,
   casa360: casa360Plans,
 };
+
+/** Menor preço mensal dos planos (ex.: "R$ 99"), para metadados da página. */
+export function lowestMonthlyPrice(plans: { price: string }[], fallback: string): string {
+  const parsed = plans
+    .map((p) => ({
+      label: p.price,
+      value: Number(p.price.replace(/[^\d,]/g, "").replace(",", ".")),
+    }))
+    .filter((p) => Number.isFinite(p.value) && p.value > 0);
+  if (!parsed.length) return fallback;
+  return parsed.reduce((min, p) => (p.value < min.value ? p : min)).label;
+}
