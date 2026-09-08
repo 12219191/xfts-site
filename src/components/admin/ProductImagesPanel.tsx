@@ -175,7 +175,7 @@ export function ProductImagesPanel() {
                     onClick={() =>
                       void persist(
                         slug,
-                        (drafts[slug] ?? savedUrl) || "",
+                        (drafts[slug] ?? savedUrl) || PRODUCT_IMAGE_DEFAULTS[slug],
                         (currentAlt || "").trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug],
                         "Imagem do produto atualizada",
                       )
