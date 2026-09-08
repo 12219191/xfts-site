@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/admin/ImageUploader";
-import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  getAdminCatalog,
+  saveCatalogProduct,
+  type CatalogProductInput,
+} from "@/lib/admin-catalog.functions";
+import type { CatalogProduct } from "@/lib/catalog";
 import {
   PRODUCT_IMAGE_DEFAULTS,
   PRODUCT_IMAGE_ALT_DEFAULTS,
@@ -14,32 +19,51 @@ import {
 import { Loader2, RotateCcw, Save } from "lucide-react";
 import { toast } from "sonner";
 
+function toInput(p: CatalogProduct, imageUrl: string, imageAlt: string): CatalogProductInput {
+  return {
+    key: p.key,
+    name: p.name,
+    url: p.url,
+    landing: p.landing,
+    pricePrefix: p.pricePrefix,
+    sortOrder: p.sortOrder,
+    status: p.status,
+    showOnWebsite: p.showOnWebsite,
+    availableForPurchase: p.availableForPurchase,
+    availableInHub: p.availableInHub,
+    betaNote: p.betaNote ?? "",
+    displayName: p.displayName ?? "",
+    shortDescription: p.shortDescription ?? "",
+    headline: p.headline ?? "",
+    subheadline: p.subheadline ?? "",
+    icon: p.icon ?? "",
+    ctaLabel: p.ctaLabel ?? "",
+    ctaHref: p.ctaHref ?? "",
+    imageUrl,
+    imageAlt,
+  };
+}
+
 export function ProductImagesPanel() {
-  const [overrides, setOverrides] = useState<Partial<Record<ProductSlug, string>>>({});
+  const [products, setProducts] = useState<Record<string, CatalogProduct>>({});
   const [drafts, setDrafts] = useState<Partial<Record<ProductSlug, string>>>({});
-  const [altOverrides, setAltOverrides] = useState<Partial<Record<ProductSlug, string>>>({});
   const [altDrafts, setAltDrafts] = useState<Partial<Record<ProductSlug, string>>>({});
   const [loading, setLoading] = useState(true);
   const [savingSlug, setSavingSlug] = useState<ProductSlug | null>(null);
 
   const load = async () => {
-    const { data, error } = await supabase
-      .from("product_images")
-      .select("slug, image_url, alt_text");
-    if (error) {
-      toast.error("Não foi possível carregar as imagens", { description: error.message });
+    try {
+      const catalog = await getAdminCatalog();
+      const map: Record<string, CatalogProduct> = {};
+      for (const p of catalog.products) map[p.key] = p;
+      setProducts(map);
+      setDrafts({});
+      setAltDrafts({});
+    } catch (e) {
+      toast.error("Não foi possível carregar as imagens", {
+        description: e instanceof Error ? e.message : undefined,
+      });
     }
-    const map: Partial<Record<ProductSlug, string>> = {};
-    const alts: Partial<Record<ProductSlug, string>> = {};
-    for (const row of (data ?? []) as { slug: string; image_url: string | null; alt_text?: string | null }[]) {
-      const slug = row.slug as ProductSlug;
-      if (row.image_url) map[slug] = row.image_url;
-      if (row.alt_text) alts[slug] = row.alt_text;
-    }
-    setOverrides(map);
-    setDrafts(map);
-    setAltOverrides(alts);
-    setAltDrafts(alts);
     setLoading(false);
   };
 
@@ -47,64 +71,28 @@ export function ProductImagesPanel() {
     void load();
   }, []);
 
-  const save = async (slug: ProductSlug) => {
-    const url = drafts[slug];
-    if (!url) return;
-    const alt = (altDrafts[slug] ?? "").trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug];
-    setSavingSlug(slug);
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from("product_images")
-      .upsert(
-        {
-          slug,
-          image_url: url,
-          alt_text: alt,
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id ?? null,
-        },
-        { onConflict: "slug" },
-      );
-    setSavingSlug(null);
-    if (error) {
-      toast.error("Falha ao salvar", { description: error.message });
+  const persist = async (slug: ProductSlug, url: string, alt: string, successMsg: string) => {
+    const product = products[slug];
+    if (!product) {
+      toast.error("Produto não encontrado no catálogo");
       return;
     }
-    setOverrides((prev) => ({ ...prev, [slug]: url }));
-    setAltOverrides((prev) => ({ ...prev, [slug]: alt }));
-    setAltDrafts((prev) => ({ ...prev, [slug]: alt }));
-    toast.success("Imagem do produto atualizada");
-  };
-
-  const reset = async (slug: ProductSlug) => {
     setSavingSlug(slug);
-    const { error } = await supabase.from("product_images").delete().eq("slug", slug);
-    setSavingSlug(null);
-    if (error) {
-      toast.error("Falha ao restaurar", { description: error.message });
-      return;
+    try {
+      await saveCatalogProduct({ data: toInput(product, url, alt) });
+      setProducts((prev) => ({
+        ...prev,
+        [slug]: { ...product, imageUrl: url || PRODUCT_IMAGE_DEFAULTS[slug], imageAlt: alt },
+      }));
+      setDrafts((prev) => ({ ...prev, [slug]: undefined }));
+      setAltDrafts((prev) => ({ ...prev, [slug]: undefined }));
+      toast.success(successMsg);
+    } catch (e) {
+      toast.error("Falha ao salvar", {
+        description: e instanceof Error ? e.message : undefined,
+      });
     }
-    setOverrides((prev) => {
-      const next = { ...prev };
-      delete next[slug];
-      return next;
-    });
-    setDrafts((prev) => {
-      const next = { ...prev };
-      delete next[slug];
-      return next;
-    });
-    setAltOverrides((prev) => {
-      const next = { ...prev };
-      delete next[slug];
-      return next;
-    });
-    setAltDrafts((prev) => {
-      const next = { ...prev };
-      delete next[slug];
-      return next;
-    });
-    toast.success("Imagem padrão restaurada");
+    setSavingSlug(null);
   };
 
   if (loading) {
@@ -119,21 +107,22 @@ export function ProductImagesPanel() {
     <div>
       <h3 className="text-lg font-semibold text-foreground">Imagens dos produtos</h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma nova foto para cada produto. As imagens são comprimidas e
-        convertidas para WebP automaticamente no envio, e o texto alternativo (alt)
-        é preenchido sozinho para SEO e acessibilidade.
+        Envie uma nova foto para cada produto. A foto salva aqui é a mesma usada na
+        página inicial, na página Nossos Produtos e na página do produto. As imagens
+        são comprimidas e convertidas para WebP automaticamente no envio.
       </p>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {PRODUCT_IMAGE_LABELS.map(({ slug, label }) => {
-          const current = drafts[slug] ?? overrides[slug] ?? PRODUCT_IMAGE_DEFAULTS[slug];
-          const isCustom = !!overrides[slug];
-          const currentAlt =
-            altDrafts[slug] ?? altOverrides[slug] ?? PRODUCT_IMAGE_ALT_DEFAULTS[slug];
+          const product = products[slug];
+          const savedUrl = product?.imageUrl?.trim() ?? "";
+          const savedAlt = product?.imageAlt?.trim() ?? "";
+          const current = drafts[slug] ?? savedUrl ?? PRODUCT_IMAGE_DEFAULTS[slug];
+          const isCustom = !!savedUrl && savedUrl !== PRODUCT_IMAGE_DEFAULTS[slug];
+          const currentAlt = altDrafts[slug] ?? savedAlt ?? PRODUCT_IMAGE_ALT_DEFAULTS[slug];
           const dirty =
-            !!drafts[slug] &&
-            ((drafts[slug] ?? "") !== (overrides[slug] ?? "") ||
-              (altDrafts[slug] ?? "") !== (altOverrides[slug] ?? ""));
+            (drafts[slug] !== undefined && drafts[slug] !== savedUrl) ||
+            (altDrafts[slug] !== undefined && altDrafts[slug] !== savedAlt);
 
           return (
             <Card key={slug} className="border-border bg-card">
@@ -146,7 +135,7 @@ export function ProductImagesPanel() {
                 </div>
 
                 <ImageUploader
-                  value={current}
+                  value={current || PRODUCT_IMAGE_DEFAULTS[slug]}
                   previewAlt={currentAlt}
                   onChange={(url) => setDrafts((prev) => ({ ...prev, [slug]: url }))}
                   onAltSuggestion={(suggested) =>
@@ -154,6 +143,7 @@ export function ProductImagesPanel() {
                       ...prev,
                       [slug]:
                         prev[slug]?.trim() ||
+                        savedAlt ||
                         (suggested ? `${label} — ${suggested}` : PRODUCT_IMAGE_ALT_DEFAULTS[slug]),
                     }))
                   }
@@ -181,8 +171,15 @@ export function ProductImagesPanel() {
                   <Button
                     size="sm"
                     className="flex-1 bg-primary text-primary-foreground"
-                    disabled={!dirty || savingSlug === slug}
-                    onClick={() => void save(slug)}
+                    disabled={!product || !dirty || savingSlug === slug}
+                    onClick={() =>
+                      void persist(
+                        slug,
+                        (drafts[slug] ?? savedUrl) || "",
+                        (currentAlt || "").trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug],
+                        "Imagem do produto atualizada",
+                      )
+                    }
                   >
                     {savingSlug === slug ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -196,7 +193,14 @@ export function ProductImagesPanel() {
                       size="sm"
                       variant="outline"
                       disabled={savingSlug === slug}
-                      onClick={() => void reset(slug)}
+                      onClick={() =>
+                        void persist(
+                          slug,
+                          "",
+                          PRODUCT_IMAGE_ALT_DEFAULTS[slug],
+                          "Imagem padrão restaurada",
+                        )
+                      }
                     >
                       <RotateCcw className="mr-2 h-4 w-4" /> Padrão
                     </Button>
