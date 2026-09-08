@@ -48,20 +48,21 @@ export interface ProductImage {
   alt: string;
 }
 
+/** Fonte única: a foto cadastrada no catálogo do produto. */
 export async function fetchProductImageOverrides(): Promise<Partial<Record<ProductSlug, ProductImage>>> {
   const { data, error } = await supabase
-    .from("product_images")
-    .select("slug, image_url, alt_text");
+    .from("catalog_products")
+    .select("key, image_url, image_alt");
 
   if (error || !data) return {};
 
   const map: Partial<Record<ProductSlug, ProductImage>> = {};
-  for (const row of data as { slug: string; image_url: string | null; alt_text?: string | null }[]) {
-    const slug = row.slug as ProductSlug;
-    if (!row.image_url) continue;
+  for (const row of data as { key: string; image_url: string | null; image_alt?: string | null }[]) {
+    const slug = row.key as ProductSlug;
+    if (!row.image_url?.trim()) continue;
     map[slug] = {
       url: row.image_url,
-      alt: row.alt_text?.trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug] || "",
+      alt: row.image_alt?.trim() || PRODUCT_IMAGE_ALT_DEFAULTS[slug] || "",
     };
   }
   return map;
