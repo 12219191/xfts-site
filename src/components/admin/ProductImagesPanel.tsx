@@ -196,7 +196,7 @@ export function ProductImagesPanel() {
                       onClick={() =>
                         void persist(
                           slug,
-                          "",
+                          PRODUCT_IMAGE_DEFAULTS[slug],
                           PRODUCT_IMAGE_ALT_DEFAULTS[slug],
                           "Imagem padrão restaurada",
                         )
