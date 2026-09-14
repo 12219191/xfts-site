@@ -68,6 +68,7 @@ function AdminLayout() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [sessionError, setSessionError] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -80,11 +81,13 @@ function AdminLayout() {
       return;
     }
     setIsAuth(true);
+    setSessionError("");
     try {
       const result = await getAdminSession();
       setSession(result);
-    } catch {
+    } catch (err) {
       setSession(null);
+      setSessionError(err instanceof Error ? err.message : "Erro ao verificar permissões.");
     }
     setLoading(false);
   }, []);
@@ -181,11 +184,18 @@ function AdminLayout() {
   if (!session || session.roles.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Acesso Negado</h1>
+        <h1 className="text-2xl font-bold text-foreground">
+          {sessionError ? "Não foi possível verificar suas permissões" : "Acesso Negado"}
+        </h1>
         <p className="mt-2 max-w-md text-muted-foreground">
-          Sua conta não tem perfil administrativo no Control Center.
+          {sessionError
+            ? `Houve uma falha técnica ao consultar seu perfil. Detalhe: ${sessionError}`
+            : "Sua conta não tem perfil administrativo no Control Center."}
         </p>
-        <Button onClick={handleLogout} variant="outline" className="mt-4">Sair</Button>
+        <div className="mt-4 flex gap-2">
+          <Button onClick={refresh} variant="outline">Tentar novamente</Button>
+          <Button onClick={handleLogout} variant="ghost">Sair</Button>
+        </div>
       </div>
     );
   }
