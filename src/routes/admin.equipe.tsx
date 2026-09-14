@@ -113,6 +113,10 @@ function EquipePage() {
             </Button>
           </form>
           <p className="mt-2 text-xs text-muted-foreground">{ROLE_DESCRIPTIONS[role]}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            A pessoa entra no Control Center com este mesmo e-mail: pelo botão "Continuar com Google"
+            ou definindo uma senha em "Primeiro acesso ou esqueci a senha". Você não cria a senha por ela.
+          </p>
         </CardContent>
       </Card>
 

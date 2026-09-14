@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
+import { Separator } from "@/components/ui/separator";
 import { getAdminSession } from "@/lib/admin-core.functions";
 import { canAccess, ROLE_LABELS, type AdminModule, type AdminRole } from "@/lib/admin-rbac";
 import { AdminContext } from "@/components/admin/admin-context";
@@ -66,6 +68,7 @@ function AdminLayout() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const refresh = useCallback(async () => {
@@ -96,7 +99,29 @@ function AdminLayout() {
     e.preventDefault();
     setAuthError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setAuthError(error.message);
+    if (error) {
+      setAuthError(
+        error.message === "Invalid login credentials"
+          ? "E-mail ou senha incorretos. Se você criou a conta com o Google, use o botão \"Continuar com Google\". Se ainda não tem senha, use \"Primeiro acesso ou esqueci a senha\"."
+          : error.message,
+      );
+    }
+  };
+
+  const handleGoogle = async () => {
+    setAuthError("");
+    setGoogleLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/login?redirect=%2Fadmin`,
+    });
+    if (result.error) {
+      setAuthError("Não foi possível entrar com o Google. Tente novamente.");
+      setGoogleLoading(false);
+      return;
+    }
+    if (result.redirected) return;
+    setGoogleLoading(false);
+    refresh();
   };
 
   const handleLogout = async () => {
@@ -127,6 +152,26 @@ function AdminLayout() {
               {authError && <p className="text-sm text-destructive">{authError}</p>}
               <Button type="submit" className="bg-primary text-primary-foreground">Entrar</Button>
             </form>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center"><Separator /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">ou</span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogle}
+              disabled={googleLoading}
+            >
+              {googleLoading ? "Conectando..." : "Continuar com Google"}
+            </Button>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              <a className="text-primary hover:underline" href="/login?redirect=%2Fadmin">
+                Primeiro acesso ou esqueci a senha
+              </a>
+            </p>
           </CardContent></Card>
         </div>
       </div>
