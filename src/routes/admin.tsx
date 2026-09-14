@@ -68,6 +68,7 @@ function AdminLayout() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [sessionError, setSessionError] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
