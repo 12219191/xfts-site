@@ -152,6 +152,26 @@ function AdminLayout() {
               {authError && <p className="text-sm text-destructive">{authError}</p>}
               <Button type="submit" className="bg-primary text-primary-foreground">Entrar</Button>
             </form>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center"><Separator /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">ou</span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogle}
+              disabled={googleLoading}
+            >
+              {googleLoading ? "Conectando..." : "Continuar com Google"}
+            </Button>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              <a className="text-primary hover:underline" href="/login?redirect=%2Fadmin">
+                Primeiro acesso ou esqueci a senha
+              </a>
+            </p>
           </CardContent></Card>
         </div>
       </div>
