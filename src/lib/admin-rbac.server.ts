@@ -13,7 +13,13 @@ export async function loadAdminRoles(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<AdminRole[]> {
-  const { data } = await supabase.from("admin_roles").select("role").eq("user_id", userId);
+  const { data, error } = await supabase
+    .from("admin_roles")
+    .select("role")
+    .eq("user_id", userId);
+  if (error) {
+    throw new Error(`Falha ao consultar permissões administrativas: ${error.message}`);
+  }
   const roles = ((data ?? []) as Array<{ role: AdminRole }>).map((r) => r.role);
   if (roles.length > 0) return roles;
 

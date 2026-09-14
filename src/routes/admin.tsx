@@ -80,11 +80,13 @@ function AdminLayout() {
       return;
     }
     setIsAuth(true);
+    setSessionError("");
     try {
       const result = await getAdminSession();
       setSession(result);
-    } catch {
+    } catch (err) {
       setSession(null);
+      setSessionError(err instanceof Error ? err.message : "Erro ao verificar permissões.");
     }
     setLoading(false);
   }, []);
