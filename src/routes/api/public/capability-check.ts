@@ -50,7 +50,7 @@ export const Route = createFileRoute("/api/public/capability-check")({
         ) =>
           logIntegrationEvent({
             appKey: appParam,
-            kind: "capability-check",
+            kind: "capability_check",
             status,
             httpStatus,
             reason: reason ?? null,
