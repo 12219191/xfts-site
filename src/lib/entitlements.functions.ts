@@ -34,15 +34,22 @@ export const getMyEntitlements = createServerFn({ method: "POST" })
 
 
     const { resolveCapabilities } = await import("@/lib/capabilities.server");
+    const { resolveViewer } = await import("@/lib/authz.server");
 
     return Promise.all(
       productKeys.map(async (key) => {
         const resolved = await resolveUserEntitlements(context.userId, key);
-        // Titular da assinatura no hub = administrador do tenant.
+        // Titular da assinatura no hub = administrador do tenant; papéis XFTS
+        // vêm da identidade autenticada, nunca do cliente.
+        const viewer = await resolveViewer({
+          supabase: context.supabase,
+          userId: context.userId,
+          productKey: key,
+        });
         const capabilities = await resolveCapabilities({
           productKey: key,
           entitlements: resolved,
-          viewer: { actingAs: "TENANT_ADMIN" },
+          viewer,
         });
         return { ...resolved, capabilities };
       }),
