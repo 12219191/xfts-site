@@ -44,11 +44,14 @@ export async function resolveViewer(input: {
   const isXftsSuperadmin = roles.includes("superadmin");
   const isXftsSupport = isXftsSuperadmin || roles.includes("suporte");
 
-  return {
-    actingAs: input.actingAs ?? "TENANT_ADMIN",
-    isXftsSupport,
-    isXftsSuperadmin,
-  };
+  // Suporte (sem superadmin) é sempre fixado no escopo XFTS_SUPPORT: nunca
+  // assume o papel de administrador do cliente, mesmo se o cliente pedir.
+  const supportOnly = isXftsSupport && !isXftsSuperadmin;
+  const actingAs: VisibilityScope = supportOnly
+    ? "XFTS_SUPPORT"
+    : (input.actingAs ?? "TENANT_ADMIN");
+
+  return { actingAs, isXftsSupport, isXftsSuperadmin };
 }
 
 /** Decisão central: pode usar esta capability neste produto? */
@@ -78,9 +81,14 @@ export async function canForUser(input: {
     viewer,
   });
 
+  if (allowed) return { allowed: true, reason: null };
+
   return {
-    allowed,
-    reason: allowed ? null : "Este recurso não está liberado para o seu plano ou perfil.",
+    allowed: false,
+    reason:
+      viewer.actingAs === "XFTS_SUPPORT"
+        ? "Recurso fora do escopo de suporte XFTS."
+        : "Este recurso não está liberado para o seu plano ou perfil.",
   };
 }
 

@@ -70,13 +70,11 @@ export interface CapabilityViewer {
 export function scopeAllows(scope: VisibilityScope, viewer: CapabilityViewer): boolean {
   switch (scope) {
     case "TENANT":
-      return true;
+      // Suporte XFTS não entra no tenant: só vê o que é do escopo de suporte.
+      return viewer.actingAs !== "XFTS_SUPPORT";
     case "TENANT_ADMIN":
-      return (
-        viewer.actingAs === "TENANT_ADMIN" ||
-        !!viewer.isXftsSupport ||
-        !!viewer.isXftsSuperadmin
-      );
+      // Suporte NÃO herda o papel de administrador do cliente.
+      return viewer.actingAs === "TENANT_ADMIN" || !!viewer.isXftsSuperadmin;
     case "XFTS_SUPPORT":
       return !!viewer.isXftsSupport || !!viewer.isXftsSuperadmin;
     case "XFTS_SUPERADMIN":
