@@ -78,7 +78,8 @@ export const Route = createFileRoute("/api/public/capability-check")({
           return json({ error: "Chave de API inválida" }, 401);
         }
 
-        // Sistemas externos só informam papel dentro do tenant.
+        // Sistemas externos só informam papel dentro do tenant (TENANT ou TENANT_ADMIN).
+        // Escopos internos da XFTS nunca são aceitos por aqui.
         const actingAs = body.acting_as === "TENANT" ? "TENANT" : "TENANT_ADMIN";
 
         const { resolveUserEntitlements } = await import("@/lib/entitlements.server");
