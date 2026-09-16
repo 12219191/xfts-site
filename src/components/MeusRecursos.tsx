@@ -91,6 +91,21 @@ export function MeusRecursos() {
                   })}
                 </ul>
 
+                {ent.capabilities.length > 0 && (
+                  <div className="space-y-1.5 border-t border-border pt-3">
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Funcionalidades liberadas ({ent.capabilities.length})
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ent.capabilities.map((key) => (
+                        <Badge key={key} variant="secondary" className="font-normal">
+                          {key}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {!ent.ativo && (
                   <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">
                     Acesso bloqueado: assinatura inativa. Regularize para liberar os recursos.
