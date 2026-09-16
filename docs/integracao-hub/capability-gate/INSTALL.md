@@ -10,6 +10,8 @@ Nada muda em planos, Stripe, checkout ou assinaturas.
 | `xfts-hub-client.ts` | `src/lib/xfts-hub.ts` |
 | `CapabilityGate.tsx` | `src/components/CapabilityGate.tsx` |
 | `gate-endpoint.ts` | rota `GET /api/xfts/gate` + `xftsGuard` no backend |
+| `validate-gate.mjs` | roda solto (não precisa copiar) — valida as rotas protegidas |
+| `CHECKLIST.md` | roteiro de instalação + validação por sistema |
 
 ## Variáveis de ambiente (servidor do SaaS)
 
