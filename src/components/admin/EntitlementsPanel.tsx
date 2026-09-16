@@ -42,17 +42,23 @@ export function EntitlementsPanel() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState(emptyDef);
   const [saving, setSaving] = useState(false);
+  const [usage, setUsage] = useState<
+    Record<string, Array<{ productKey: string; capabilities: Array<{ key: string; name: string }> }>>
+  >({});
+  const [expanded, setExpanded] = useState<string>("");
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [catalog, definitions] = await Promise.all([
+      const [catalog, definitions, capabilityUsage] = await Promise.all([
         getAdminCatalog(),
         getEntitlementDefinitions(),
+        getEntitlementUsage(),
       ]);
       setProducts(catalog.products);
       setPlans(catalog.plans);
       setDefs(definitions);
+      setUsage(capabilityUsage);
       setSelected((current) => current || catalog.products[0]?.key || "");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Falha ao carregar entitlements.");
