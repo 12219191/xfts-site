@@ -154,3 +154,14 @@ antes de responder. O hub devolve **403** e o SaaS repassa 403 — nenhuma decis
 // exemplo: handler do relatório de retenção
 await requireCan(app, userId, apiKey, "reports.retention_analysis");
 ```
+
+## 6. Kit pronto para instalar
+
+Os arquivos finais (sem adaptação) estão em `docs/integracao-hub/capability-gate/`:
+
+- `xfts-hub-client.ts` → `src/lib/xfts-hub.ts` no SaaS (cache 60s, `can`, `requireCan`, `requireRoute`, `requireAction`, fail-closed)
+- `CapabilityGate.tsx` → bloqueio de tela + tela "Recurso indisponível no seu plano"
+- `gate-endpoint.ts` → rota `GET /api/xfts/gate` e o middleware `xftsGuard` que devolve **403 real**
+- `INSTALL.md` → passo a passo, variáveis de ambiente, mapa telas × capability e checklist de aceite
+
+A chave do sistema fica só no backend do SaaS; o browser consulta a rota interna `/api/xfts/gate`.
