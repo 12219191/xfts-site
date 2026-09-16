@@ -19,6 +19,7 @@ function ProdutosPage() {
           <TabsTrigger value="catalogo">Catálogo</TabsTrigger>
           <TabsTrigger value="entitlements">Entitlements</TabsTrigger>
           <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
+          <TabsTrigger value="telas">Telas dos SaaS</TabsTrigger>
           <TabsTrigger value="imagens">Imagens</TabsTrigger>
         </TabsList>
 
