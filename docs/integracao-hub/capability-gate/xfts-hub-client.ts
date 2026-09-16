@@ -84,13 +84,14 @@ export async function requireCan(
   userId: string,
   apiKey: string,
   capability: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   let res: Response;
   try {
     res = await fetch(`${HUB}/api/public/capability-check`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-flexus-app-key": apiKey },
-      body: JSON.stringify({ app, user_id: userId, capability, acting_as: "TENANT" }),
+      body: JSON.stringify({ app, user_id: userId, capability, acting_as: actingAs }),
     });
   } catch {
     throw new CapabilityDenied(capability, "Não foi possível validar seu plano agora");
@@ -108,11 +109,12 @@ export async function requireRoute(
   userId: string,
   apiKey: string,
   path: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.routes[path];
   if (!key) return; // tela sem capability vinculada = pública dentro do SaaS
-  await requireCan(app, userId, apiKey, key);
+  await requireCan(app, userId, apiKey, key, actingAs);
 }
 
 /** Guard por ação, ex.: requireAction(..., "EXPORT:relatorios.csv"). */
@@ -121,11 +123,12 @@ export async function requireAction(
   userId: string,
   apiKey: string,
   actionKey: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.actions[actionKey];
   if (!key) throw new CapabilityDenied(actionKey, "Ação não cadastrada no Control Center");
-  await requireCan(app, userId, apiKey, key);
+  await requireCan(app, userId, apiKey, key, actingAs);
 }
 
 export function clearXftsCache() {
