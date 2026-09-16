@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getMyEntitlements, type UserEntitlements } from "@/lib/entitlements.functions";
 import { hasFeature, limitOf, withinLimit } from "@/lib/entitlements";
+import { makeCan } from "@/lib/capabilities";
 
 /**
  * Entitlements do usuário logado, resolvidos no servidor.
