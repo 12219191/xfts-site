@@ -40,7 +40,10 @@ export const Route = createFileRoute("/api/public/capability-routes")({
         for (const cap of caps) {
           if (!cap.enabled) continue;
           for (const res of cap.resources) {
-            if (res.resourceType === "UI_ROUTE") routes[res.resourceKey] = cap.key;
+            if (res.resourceType === "UI_ROUTE") {
+              // apenas caminhos de tela reais; chaves sem "/" são apelidos internos
+              if (res.resourceKey.startsWith("/")) routes[res.resourceKey] = cap.key;
+            }
             else actions[`${res.resourceType}:${res.resourceKey}`] = cap.key;
           }
         }
