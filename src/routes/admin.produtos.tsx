@@ -4,6 +4,7 @@ import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CatalogPanel } from "@/components/admin/CatalogPanel";
 import { EntitlementsPanel } from "@/components/admin/EntitlementsPanel";
 import { CapabilitiesPanel } from "@/components/admin/CapabilitiesPanel";
+import { CapabilityScreensPanel } from "@/components/admin/CapabilityScreensPanel";
 import { ModuleGuard } from "@/components/admin/admin-context";
 
 export const Route = createFileRoute("/admin/produtos")({
