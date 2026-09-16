@@ -13,14 +13,20 @@
  *
  * O que ele checa:
  *  1. Mapa de telas do hub responde e traz rotas.
- *  2. Chave inválida é recusada (401) — o gate não é aberto.
- *  3. Cada capability do mapa é verificada no hub (200 liberado / 403 bloqueado).
- *  4. Escopo interno da XFTS não pode ser pedido de fora (deve dar 403).
- *  5. Se SAAS_URL for informado: /api/xfts/gate responde e as rotas bloqueadas
+ *  2. Chave ausente e chave inválida são recusadas (401) — o gate não abre.
+ *  3. Para o app "barbearia": compara o mapa do hub com a lista oficial de
+ *     rotas/páginas do sistema (docs .../barbearia-routes.mjs) e aponta o que
+ *     falta cadastrar e o que está cadastrado a mais.
+ *  4. Cada capability do mapa é verificada no hub (200 liberado / 403 bloqueado).
+ *  5. Rotas da Central XFTS (/superadmin/*) devem ser negadas ao tenant.
+ *  6. Escopo interno da XFTS não pode ser pedido de fora (deve dar 403).
+ *  7. Se SAAS_URL for informado: /api/xfts/gate responde e as rotas bloqueadas
  *     no hub também devolvem 403 no SaaS (bloqueio real, não só tela).
  *
  * Saída: tabela no terminal + exit code 1 se algo estiver inconsistente.
  */
+
+import { ALL_BARBEARIA_ROUTES, INTERNAL_PREFIX, PARAM_ROUTES } from "./barbearia-routes.mjs";
 
 const HUB = process.env.XFTS_HUB_URL || "https://xfts-flexus.com";
 const APP = process.env.XFTS_APP;
@@ -42,15 +48,18 @@ const add = (ok, step, detail = "") => {
 
 async function hubRoutes(key = KEY) {
   const res = await fetch(`${HUB}/api/public/capability-routes?app=${encodeURIComponent(APP)}`, {
-    headers: { "x-flexus-app-key": key },
+    headers: key ? { "x-flexus-app-key": key } : {},
   });
   return { status: res.status, body: await res.json().catch(() => ({})) };
 }
 
-async function hubCheck(capability, actingAs = "TENANT") {
+async function hubCheck(capability, actingAs = "TENANT", key = KEY) {
   const res = await fetch(`${HUB}/api/public/capability-check`, {
     method: "POST",
-    headers: { "content-type": "application/json", "x-flexus-app-key": KEY },
+    headers: {
+      "content-type": "application/json",
+      ...(key ? { "x-flexus-app-key": key } : {}),
+    },
     body: JSON.stringify({ app: APP, user_id: USER, capability, acting_as: actingAs }),
   });
   return { status: res.status, body: await res.json().catch(() => ({})) };
@@ -73,11 +82,28 @@ const main = async () => {
   const routeCount = Object.keys(routes).length;
   add(map.status === 200 && routeCount > 0, "Mapa de telas do hub", `${map.status}, ${routeCount} rota(s)`);
 
-  // 2. chave inválida deve ser recusada
+  // 2. chave ausente e chave inválida devem ser recusadas
+  const noKey = await hubRoutes(null);
+  add(noKey.status === 401, "Sem chave de sistema recusado", `esperado 401, veio ${noKey.status}`);
   const bad = await hubRoutes("chave-invalida-de-teste");
   add(bad.status === 401, "Chave inválida recusada", `esperado 401, veio ${bad.status}`);
+  const badCheck = await hubCheck("agenda.view", "TENANT", "chave-invalida-de-teste");
+  add(badCheck.status === 401, "Checagem com chave inválida recusada", `esperado 401, veio ${badCheck.status}`);
 
-  // 3. cada capability
+  // 3. conferência com a lista oficial de rotas do sistema
+  if (APP === "barbearia") {
+    const cadastradas = new Set(Object.keys(routes));
+    const faltando = ALL_BARBEARIA_ROUTES.filter((r) => !cadastradas.has(r));
+    const extras = [...cadastradas].filter((r) => !ALL_BARBEARIA_ROUTES.includes(r));
+    add(
+      faltando.length === 0,
+      `Rotas oficiais cadastradas (${ALL_BARBEARIA_ROUTES.length})`,
+      faltando.length ? `faltando: ${faltando.join(", ")}` : "todas presentes",
+    );
+    add(extras.length === 0, "Nenhuma rota fora da lista oficial", extras.length ? extras.join(", ") : "ok");
+  }
+
+  // 4. cada capability
   const decisions = new Map();
   for (const [path, capability] of Object.entries(routes)) {
     const r = await hubCheck(capability);
@@ -86,13 +112,24 @@ const main = async () => {
     add(known, `${path} → ${capability}`, r.status === 200 ? "liberado" : r.body?.reason || `HTTP ${r.status}`);
   }
 
-  // 4. escopo interno não pode vir de fora
+  // 5. Central XFTS nunca liberada ao tenant
+  for (const [path, allowed] of decisions.entries()) {
+    if (path.startsWith(INTERNAL_PREFIX)) {
+      add(!allowed, `Central XFTS bloqueada: ${path}`, allowed ? "liberado indevidamente" : "bloqueado");
+    }
+  }
+
+  // 6. escopo interno não pode vir de fora
   const internal = await hubCheck("xfts.internal.probe", "XFTS_SUPERADMIN");
   add(internal.status === 403, "Escopo interno XFTS bloqueado", `esperado 403, veio ${internal.status}`);
 
-  // 5. gate dentro do SaaS
+  // 7. gate dentro do SaaS
   if (SAAS) {
     for (const [path, allowed] of decisions.entries()) {
+      if (PARAM_ROUTES.has(path)) {
+        console.log(`(pulado ${path} — rota com parâmetro)`);
+        continue;
+      }
       const g = await saasGate(path);
       if (g.status === 401) {
         add(false, `SaaS ${path}`, "401 — sessão ausente (defina SAAS_COOKIE)");
