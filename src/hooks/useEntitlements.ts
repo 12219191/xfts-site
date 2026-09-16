@@ -38,6 +38,11 @@ export function useEntitlements() {
     /** Capability resolvida no servidor (uma consulta por sessão). */
     canCapability: (productKey: string, capabilityKey: string) =>
       makeCan(forProduct(productKey)?.capabilities)(capabilityKey),
+    /** Confirmação no servidor antes de executar a ação (fonte da verdade). */
+    confirmCapability: async (productKey: string, capabilityKey: string) => {
+      const { canCapabilityCheck } = await import("@/lib/authz.functions");
+      return canCapabilityCheck({ data: { productKey, capabilityKey } });
+    },
     can: (productKey: string, key: string) => hasFeature(forProduct(productKey), key),
     limit: (productKey: string, key: string) => limitOf(forProduct(productKey), key),
     within: (productKey: string, key: string, used: number) =>
