@@ -48,6 +48,7 @@ import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
+import { Route as ApiPublicCapabilityCheckRouteImport } from './routes/api/public/capability-check'
 import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-retry'
 import { Route as ApiPublicEmailQueueFlushRouteImport } from './routes/api/public/email-queue-flush'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
@@ -256,6 +257,12 @@ const ProdutosGestaoEsteticasRoute = ProdutosGestaoEsteticasRouteImport.update({
   path: '/gestao-esteticas',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ApiPublicCapabilityCheckRoute =
+  ApiPublicCapabilityCheckRouteImport.update({
+    id: '/api/public/capability-check',
+    path: '/api/public/capability-check',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCrmRetryRoute = ApiPublicCrmRetryRouteImport.update({
   id: '/api/public/crm-retry',
   path: '/api/public/crm-retry',
@@ -356,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/capability-check': typeof ApiPublicCapabilityCheckRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
@@ -405,6 +413,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/produtos': typeof ProdutosIndexRoute
+  '/api/public/capability-check': typeof ApiPublicCapabilityCheckRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
@@ -458,6 +467,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/produtos/': typeof ProdutosIndexRoute
+  '/api/public/capability-check': typeof ApiPublicCapabilityCheckRoute
   '/api/public/crm-retry': typeof ApiPublicCrmRetryRoute
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
@@ -512,6 +522,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/capability-check'
     | '/api/public/crm-retry'
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
@@ -561,6 +572,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/produtos'
+    | '/api/public/capability-check'
     | '/api/public/crm-retry'
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
@@ -613,6 +625,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/produtos/'
+    | '/api/public/capability-check'
     | '/api/public/crm-retry'
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
@@ -641,6 +654,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosDeUsoRoute: typeof TermosDeUsoRoute
   ConviteTokenRoute: typeof ConviteTokenRoute
+  ApiPublicCapabilityCheckRoute: typeof ApiPublicCapabilityCheckRoute
   ApiPublicCrmRetryRoute: typeof ApiPublicCrmRetryRoute
   ApiPublicEmailQueueFlushRoute: typeof ApiPublicEmailQueueFlushRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
@@ -929,6 +943,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosGestaoEsteticasRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/api/public/capability-check': {
+      id: '/api/public/capability-check'
+      path: '/api/public/capability-check'
+      fullPath: '/api/public/capability-check'
+      preLoaderRoute: typeof ApiPublicCapabilityCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/crm-retry': {
       id: '/api/public/crm-retry'
       path: '/api/public/crm-retry'
@@ -1110,6 +1131,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosDeUsoRoute: TermosDeUsoRoute,
   ConviteTokenRoute: ConviteTokenRoute,
+  ApiPublicCapabilityCheckRoute: ApiPublicCapabilityCheckRoute,
   ApiPublicCrmRetryRoute: ApiPublicCrmRetryRoute,
   ApiPublicEmailQueueFlushRoute: ApiPublicEmailQueueFlushRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
