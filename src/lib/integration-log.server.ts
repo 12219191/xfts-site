@@ -7,6 +7,7 @@ export type IntegrationKind =
   | "sso_issue"
   | "sso_verify"
   | "entitlements"
+  | "capability_check"
   | "provision"
   | "test";
 
