@@ -35,6 +35,10 @@ Use `actingAsFromRole(role)` de `gate-endpoint.ts` ou a sua própria função. O
 **sempre da sessão no servidor** — nunca de um parâmetro do browser. Enviar `TENANT` para
 uma tela do painel gera 403 correto, e foi a causa do painel aparecer todo bloqueado.
 
+No FLEXUS Barbearia, os papéis administrativos atuais são `admin`, `super_admin` e
+`moderator`. A função `xfts-gate` deve consultar `user_roles` no servidor depois de validar
+o token da sessão. Não use um valor fixo e não receba `acting_as` do navegador.
+
 ## Passo a passo
 
 1. Copiar os três arquivos e ajustar `getCurrentUserId` e `getActingAs` para a sessão do SaaS.
@@ -50,8 +54,8 @@ uma tela do painel gera 403 correto, e foi a causa do painel aparecer todo bloqu
 4. Proteger a rota de dados de cada tela — **obrigatório**, é aqui que o 403 é real:
 
 ```ts
-app.get("/api/relatorios/retencao", xftsGuard("reports.retention_analysis", getCurrentUserId), handler);
-app.post("/api/relatorios/export", xftsGuard("reports.export", getCurrentUserId), handler);
+app.get("/api/relatorios/retencao", xftsGuard("reports.retention_analysis", getCurrentUserId, getActingAs), handler);
+app.post("/api/relatorios/export", xftsGuard("reports.export", getCurrentUserId, getActingAs), handler);
 ```
 
 5. Remover os antigos `if (plan === "PRO")` e `entitlements.<recurso>` (tabela em `docs/flexus-can.md`, seção 3).
