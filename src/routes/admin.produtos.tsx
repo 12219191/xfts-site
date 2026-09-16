@@ -4,6 +4,7 @@ import { ProductImagesPanel } from "@/components/admin/ProductImagesPanel";
 import { CatalogPanel } from "@/components/admin/CatalogPanel";
 import { EntitlementsPanel } from "@/components/admin/EntitlementsPanel";
 import { CapabilitiesPanel } from "@/components/admin/CapabilitiesPanel";
+import { CapabilityScreensPanel } from "@/components/admin/CapabilityScreensPanel";
 import { ModuleGuard } from "@/components/admin/admin-context";
 
 export const Route = createFileRoute("/admin/produtos")({
@@ -18,6 +19,7 @@ function ProdutosPage() {
           <TabsTrigger value="catalogo">Catálogo</TabsTrigger>
           <TabsTrigger value="entitlements">Entitlements</TabsTrigger>
           <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
+          <TabsTrigger value="telas">Telas dos SaaS</TabsTrigger>
           <TabsTrigger value="imagens">Imagens</TabsTrigger>
         </TabsList>
 
@@ -31,6 +33,10 @@ function ProdutosPage() {
 
         <TabsContent value="capabilities" className="mt-6">
           <CapabilitiesPanel />
+        </TabsContent>
+
+        <TabsContent value="telas" className="mt-6">
+          <CapabilityScreensPanel />
         </TabsContent>
 
         <TabsContent value="imagens" className="mt-6">
