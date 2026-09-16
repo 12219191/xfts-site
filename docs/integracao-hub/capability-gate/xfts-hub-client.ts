@@ -27,7 +27,7 @@ const TTL = 60_000;
 
 type Cached<T> = { value: T; at: number };
 const capsCache = new Map<string, Cached<Set<string>>>();
-let routesCache: Cached<CapabilityMap> | null = null;
+const routesCache = new Map<string, Cached<CapabilityMap>>();
 
 export class CapabilityDenied extends Error {
   status = 403 as const;
@@ -59,14 +59,15 @@ export async function loadCapabilities(
 
 /** Mapa tela → capability e ação → capability, cadastrado no hub. */
 export async function loadCapabilityMap(app: string, apiKey: string): Promise<CapabilityMap> {
-  if (routesCache && Date.now() - routesCache.at < TTL) return routesCache.value;
+  const hit = routesCache.get(app);
+  if (hit && Date.now() - hit.at < TTL) return hit.value;
   const res = await fetch(`${HUB}/api/public/capability-routes?app=${encodeURIComponent(app)}`, {
     headers: { "x-flexus-app-key": apiKey },
   });
   if (!res.ok) throw new Error(`hub_capability_routes_${res.status}`);
   const data = (await res.json()) as Partial<CapabilityMap>;
   const value: CapabilityMap = { routes: data.routes ?? {}, actions: data.actions ?? {} };
-  routesCache = { value, at: Date.now() };
+  routesCache.set(app, { value, at: Date.now() });
   return value;
 }
 
@@ -84,7 +85,7 @@ export async function requireCan(
   userId: string,
   apiKey: string,
   capability: string,
-  actingAs: ActingAs = "TENANT_ADMIN",
+  actingAs: ActingAs,
 ): Promise<void> {
   let res: Response;
   try {
@@ -109,7 +110,7 @@ export async function requireRoute(
   userId: string,
   apiKey: string,
   path: string,
-  actingAs: ActingAs = "TENANT_ADMIN",
+  actingAs: ActingAs,
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.routes[path];
@@ -123,7 +124,7 @@ export async function requireAction(
   userId: string,
   apiKey: string,
   actionKey: string,
-  actingAs: ActingAs = "TENANT_ADMIN",
+  actingAs: ActingAs,
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.actions[actionKey];
@@ -133,5 +134,5 @@ export async function requireAction(
 
 export function clearXftsCache() {
   capsCache.clear();
-  routesCache = null;
+  routesCache.clear();
 }

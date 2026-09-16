@@ -9,6 +9,8 @@ Nada muda em planos, Stripe, checkout ou assinaturas.
 - [ ] `CapabilityGate.tsx` → `src/components/CapabilityGate.tsx`
 - [ ] `gate-endpoint.ts` → rota `GET /api/xfts/gate` + `xftsGuard` no backend
 - [ ] `getCurrentUserId` apontando para a sessão real do sistema
+- [ ] `getActingAs` consultando o papel real no servidor (`admin`, `super_admin` e `moderator` → `TENANT_ADMIN`)
+- [ ] Nenhuma chamada usa `acting_as: "TENANT"` fixo
 
 ## 2. Configurar (servidor do SaaS)
 
@@ -40,6 +42,7 @@ Ele confirma:
 - [ ] Mapa de telas do hub responde com rotas
 - [ ] Chave inválida é recusada (401)
 - [ ] Cada tela do mapa tem decisão clara (liberado 200 / bloqueado 403)
+- [ ] O mesmo usuário administrativo é liberado como `TENANT_ADMIN` e recusado como `TENANT` nas telas do painel
 - [ ] Escopo interno da XFTS não pode ser pedido de fora (403)
 - [ ] Rotas bloqueadas no hub também devolvem **403 dentro do sistema**
 

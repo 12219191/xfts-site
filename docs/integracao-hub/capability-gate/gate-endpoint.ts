@@ -14,8 +14,18 @@ import { CapabilityDenied, requireRoute, type ActingAs } from "../lib/xfts-hub";
 export type SaasRole = string;
 
 export function actingAsFromRole(role: SaasRole | null | undefined): ActingAs {
-  const admins = ["owner", "dono", "admin", "gerente", "manager", "recepcao", "recepção"];
-  return role && admins.includes(String(role).toLowerCase()) ? "TENANT_ADMIN" : "TENANT";
+  const admins = new Set([
+    "owner",
+    "dono",
+    "admin",
+    "super_admin",
+    "moderator",
+    "gerente",
+    "manager",
+    "recepcao",
+    "recepção",
+  ]);
+  return role && admins.has(String(role).trim().toLowerCase()) ? "TENANT_ADMIN" : "TENANT";
 }
 
 export async function xftsGateHandler(
