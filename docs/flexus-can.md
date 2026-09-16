@@ -86,3 +86,71 @@ apenas para exibição.
   `integrations.api`, `automations.cadence`, `branding.custom`
 
 Novas funcionalidades e mudanças de plano exigido são feitas no admin, sem deploy dos SaaS.
+
+## 5. Bloqueio das telas reais do SaaS
+
+`GET /api/public/capability-routes?app=<app>` (header `x-flexus-app-key`) devolve o mapa
+cadastrado no hub — sem deploy do SaaS quando uma tela muda de plano:
+
+```json
+{ "app": "barbearia",
+  "routes": { "/relatorios/retencao": "reports.retention_analysis", "/agenda": "agenda.view" },
+  "actions": { "EXPORT:relatorios.csv": "reports.export", "REPORT:ranking": "reports.professional_ranking" } }
+```
+
+### 5.1 Guard de tela (React)
+
+```tsx
+// src/components/CapabilityRoute.tsx (no SaaS)
+import { useEffect, useState } from "react";
+import { can, loadCapabilities } from "@/lib/can";
+
+let routeMap: Record<string, string> | null = null;
+
+export async function loadRouteMap(app: string, apiKey: string) {
+  if (routeMap) return routeMap;
+  const r = await fetch(`https://xfts-flexus.com/api/public/capability-routes?app=${app}`, {
+    headers: { "x-flexus-app-key": apiKey },
+  });
+  routeMap = (await r.json()).routes ?? {};
+  return routeMap;
+}
+
+export function CapabilityRoute({ app, userId, apiKey, path, children }: {
+  app: string; userId: string; apiKey: string; path: string; children: React.ReactNode;
+}) {
+  const [state, setState] = useState<"loading" | "ok" | "denied">("loading");
+  useEffect(() => {
+    (async () => {
+      const [map] = await Promise.all([
+        loadRouteMap(app, apiKey),
+        loadCapabilities(app, userId, apiKey),
+      ]);
+      const key = map[path];
+      setState(!key || can(key) ? "ok" : "denied");
+    })().catch(() => setState("denied")); // fail-closed
+  }, [app, userId, apiKey, path]);
+
+  if (state === "loading") return null;
+  if (state === "denied")
+    return (
+      <div className="p-8 text-center">
+        <p className="font-medium">Recurso não incluído no seu plano</p>
+        <a className="underline" href="https://xfts-flexus.com/minha-conta">Ver planos e fazer upgrade</a>
+      </div>
+    );
+  return <>{children}</>;
+}
+```
+
+Uso: envolver cada tela protegida — `<CapabilityRoute path="/relatorios/retencao" ...><Retencao /></CapabilityRoute>`.
+
+### 5.2 Guard obrigatório no backend do SaaS
+
+A tela é só apresentação: cada rota/handler correspondente chama `requireCan(...)` (seção 2)
+antes de responder. O hub devolve **403** e o SaaS repassa 403 — nenhuma decisão fica no cliente.
+
+```ts
+// exemplo: handler do relatório de retenção
+await requireCan(app, userId, apiKey, "reports.retention_analysis");
+```
