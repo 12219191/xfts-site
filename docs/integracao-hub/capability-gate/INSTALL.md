@@ -23,9 +23,21 @@ XFTS_APP_KEY=<chave do sistema no Control Center>
 
 A chave nunca vai para o browser: quem fala com o hub é sempre o backend do SaaS.
 
+## Papel do usuário dentro do tenant (obrigatório)
+
+As telas do painel admin estão cadastradas como **Administrador do cliente**. O SaaS precisa
+informar o papel do usuário logado ao hub (`acting_as`):
+
+- `TENANT_ADMIN` — dono, gerente, recepção e demais perfis com acesso ao painel;
+- `TENANT` — cliente final e profissional (portais).
+
+Use `actingAsFromRole(role)` de `gate-endpoint.ts` ou a sua própria função. O papel vem
+**sempre da sessão no servidor** — nunca de um parâmetro do browser. Enviar `TENANT` para
+uma tela do painel gera 403 correto, e foi a causa do painel aparecer todo bloqueado.
+
 ## Passo a passo
 
-1. Copiar os três arquivos e ajustar `getCurrentUserId` para a sessão do SaaS.
+1. Copiar os três arquivos e ajustar `getCurrentUserId` e `getActingAs` para a sessão do SaaS.
 2. Registrar `GET /api/xfts/gate` (usa `xftsGateHandler`).
 3. Envolver cada tela protegida:
 

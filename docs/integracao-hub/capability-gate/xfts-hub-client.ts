@@ -13,6 +13,15 @@ export type CapabilityMap = {
   actions: Record<string, string>;
 };
 
+/**
+ * Papel do usuário DENTRO do tenant, resolvido pela sessão do SaaS (nunca pelo browser).
+ * "TENANT_ADMIN" = dono/gerente/recepção com acesso ao painel admin.
+ * "TENANT" = cliente final ou profissional (portais).
+ * Telas do painel admin estão cadastradas como "Administrador do cliente": enviar
+ * "TENANT" para elas resulta em 403 legítimo.
+ */
+export type ActingAs = "TENANT" | "TENANT_ADMIN";
+
 const HUB = (typeof process !== "undefined" && process.env?.["XFTS_HUB_URL"]) || "https://xfts-flexus.com";
 const TTL = 60_000;
 
@@ -75,13 +84,14 @@ export async function requireCan(
   userId: string,
   apiKey: string,
   capability: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   let res: Response;
   try {
     res = await fetch(`${HUB}/api/public/capability-check`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-flexus-app-key": apiKey },
-      body: JSON.stringify({ app, user_id: userId, capability, acting_as: "TENANT" }),
+      body: JSON.stringify({ app, user_id: userId, capability, acting_as: actingAs }),
     });
   } catch {
     throw new CapabilityDenied(capability, "Não foi possível validar seu plano agora");
@@ -99,11 +109,12 @@ export async function requireRoute(
   userId: string,
   apiKey: string,
   path: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.routes[path];
   if (!key) return; // tela sem capability vinculada = pública dentro do SaaS
-  await requireCan(app, userId, apiKey, key);
+  await requireCan(app, userId, apiKey, key, actingAs);
 }
 
 /** Guard por ação, ex.: requireAction(..., "EXPORT:relatorios.csv"). */
@@ -112,11 +123,12 @@ export async function requireAction(
   userId: string,
   apiKey: string,
   actionKey: string,
+  actingAs: ActingAs = "TENANT_ADMIN",
 ): Promise<void> {
   const map = await loadCapabilityMap(app, apiKey);
   const key = map.actions[actionKey];
   if (!key) throw new CapabilityDenied(actionKey, "Ação não cadastrada no Control Center");
-  await requireCan(app, userId, apiKey, key);
+  await requireCan(app, userId, apiKey, key, actingAs);
 }
 
 export function clearXftsCache() {

@@ -103,13 +103,23 @@ const main = async () => {
     add(extras.length === 0, "Nenhuma rota fora da lista oficial", extras.length ? extras.join(", ") : "ok");
   }
 
-  // 4. cada capability
+  // 4. cada capability, nas duas vias: cliente comum e administrador do cliente
   const decisions = new Map();
   for (const [path, capability] of Object.entries(routes)) {
-    const r = await hubCheck(capability);
-    const known = r.status === 200 || r.status === 403;
-    decisions.set(path, r.status === 200);
-    add(known, `${path} → ${capability}`, r.status === 200 ? "liberado" : r.body?.reason || `HTTP ${r.status}`);
+    const asTenant = await hubCheck(capability, "TENANT");
+    const asAdmin = await hubCheck(capability, "TENANT_ADMIN");
+    const known = [asTenant.status, asAdmin.status].every((s) => s === 200 || s === 403);
+    const allowed = asAdmin.status === 200;
+    decisions.set(path, allowed);
+    const detail = `cliente ${asTenant.status === 200 ? "liberado" : "bloqueado"}, admin ${
+      asAdmin.status === 200 ? "liberado" : asAdmin.body?.reason || `HTTP ${asAdmin.status}`
+    }`;
+    add(known, `${path} → ${capability}`, detail);
+
+    // Tela do painel que só abre como cliente comum indica escopo cadastrado errado.
+    if (path.startsWith("/admin") && asTenant.status === 200 && asAdmin.status !== 200) {
+      add(false, `Escopo invertido em ${path}`, "abre para cliente comum e não para o administrador");
+    }
   }
 
   // 5. Central XFTS nunca liberada ao tenant
