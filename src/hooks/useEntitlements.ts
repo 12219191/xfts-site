@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getMyEntitlements, type UserEntitlements } from "@/lib/entitlements.functions";
 import { hasFeature, limitOf, withinLimit } from "@/lib/entitlements";
+import { makeCan } from "@/lib/capabilities";
 
 /**
  * Entitlements do usuário logado, resolvidos no servidor.
@@ -34,6 +35,9 @@ export function useEntitlements() {
     loading,
     refresh,
     forProduct,
+    /** Capability resolvida no servidor (uma consulta por sessão). */
+    canCapability: (productKey: string, capabilityKey: string) =>
+      makeCan(forProduct(productKey)?.capabilities)(capabilityKey),
     can: (productKey: string, key: string) => hasFeature(forProduct(productKey), key),
     limit: (productKey: string, key: string) => limitOf(forProduct(productKey), key),
     within: (productKey: string, key: string, used: number) =>

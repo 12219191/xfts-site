@@ -90,6 +90,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             usuarios_em_uso: 0,
             recursos: {},
             limites: {},
+            capabilities: [],
           });
         }
 
@@ -105,6 +106,16 @@ export const Route = createFileRoute("/api/public/entitlements")({
           seatsOverride: (sub as { seats_override?: number | null }).seats_override ?? null,
         });
 
+        // Aditivo: capabilities liberadas (o formato antigo segue igual).
+        const { resolveCapabilities } = await import("@/lib/capabilities.server");
+        const capabilities = ativo
+          ? await resolveCapabilities({
+              productKey: app.key,
+              entitlements: ent,
+              viewer: { actingAs: "TENANT_ADMIN" },
+            })
+          : [];
+
         await log("ok", 200, ativo ? undefined : "assinatura inativa");
 
         return json({
@@ -117,6 +128,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             : 0,
           recursos: ent.features,
           limites: ent.limites,
+          capabilities,
           usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
