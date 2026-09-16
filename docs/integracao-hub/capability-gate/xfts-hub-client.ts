@@ -13,6 +13,15 @@ export type CapabilityMap = {
   actions: Record<string, string>;
 };
 
+/**
+ * Papel do usuário DENTRO do tenant, resolvido pela sessão do SaaS (nunca pelo browser).
+ * "TENANT_ADMIN" = dono/gerente/recepção com acesso ao painel admin.
+ * "TENANT" = cliente final ou profissional (portais).
+ * Telas do painel admin estão cadastradas como "Administrador do cliente": enviar
+ * "TENANT" para elas resulta em 403 legítimo.
+ */
+export type ActingAs = "TENANT" | "TENANT_ADMIN";
+
 const HUB = (typeof process !== "undefined" && process.env?.["XFTS_HUB_URL"]) || "https://xfts-flexus.com";
 const TTL = 60_000;
 
