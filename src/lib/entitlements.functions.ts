@@ -4,6 +4,8 @@ import type { ResolvedEntitlements } from "@/lib/entitlements";
 
 export interface UserEntitlements extends ResolvedEntitlements {
   seatsUsed: number;
+  /** Capabilities liberadas neste produto (resolvidas no servidor). */
+  capabilities: string[];
 }
 
 /**
