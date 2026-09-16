@@ -162,7 +162,7 @@ export function EntitlementsPanel() {
             <p className="py-4 text-sm text-muted-foreground">Nenhum recurso cadastrado.</p>
           ) : (
             productDefs.map((def) => (
-              <div key={def.id} className="flex items-center justify-between gap-3 py-3">
+              <div key={def.id} className="flex items-start justify-between gap-3 py-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground">{def.label}</p>
@@ -173,6 +173,43 @@ export function EntitlementsPanel() {
                     {def.unit ? ` · ${def.unit}` : ""}
                     {def.description ? ` — ${def.description}` : ""}
                   </p>
+                  {(usage[def.key] ?? []).length > 0 ? (
+                    <div className="mt-2">
+                      <p className="text-xs font-medium text-foreground">Utilizado em</p>
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {(usage[def.key] ?? []).map((group) => {
+                          const id = `${def.key}:${group.productKey}`;
+                          const productName =
+                            products.find((p) => p.key === group.productKey)?.name ??
+                            group.productKey;
+                          return (
+                            <Button
+                              key={id}
+                              size="sm"
+                              variant={expanded === id ? "default" : "outline"}
+                              onClick={() => setExpanded(expanded === id ? "" : id)}
+                            >
+                              {productName} — {group.capabilities.length} capabilities
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      {(usage[def.key] ?? [])
+                        .filter((group) => expanded === `${def.key}:${group.productKey}`)
+                        .map((group) => (
+                          <ul
+                            key={group.productKey}
+                            className="mt-2 list-disc pl-5 text-xs text-muted-foreground"
+                          >
+                            {group.capabilities.map((cap) => (
+                              <li key={cap.key}>
+                                {cap.name} <span className="opacity-70">({cap.key})</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ))}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-1">
                   <Button
