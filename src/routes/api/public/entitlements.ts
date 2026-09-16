@@ -90,6 +90,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             usuarios_em_uso: 0,
             recursos: {},
             limites: {},
+            capabilities: [],
           });
         }
 

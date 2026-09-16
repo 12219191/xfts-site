@@ -33,7 +33,20 @@ export const getMyEntitlements = createServerFn({ method: "POST" })
     );
 
 
-    return Promise.all(productKeys.map((key) => resolveUserEntitlements(context.userId, key)));
+    const { resolveCapabilities } = await import("@/lib/capabilities.server");
+
+    return Promise.all(
+      productKeys.map(async (key) => {
+        const resolved = await resolveUserEntitlements(context.userId, key);
+        // Titular da assinatura no hub = administrador do tenant.
+        const capabilities = await resolveCapabilities({
+          productKey: key,
+          entitlements: resolved,
+          viewer: { actingAs: "TENANT_ADMIN" },
+        });
+        return { ...resolved, capabilities };
+      }),
+    );
   });
 
 /** Checagem pontual no servidor (usar antes de qualquer ação sensível). */
