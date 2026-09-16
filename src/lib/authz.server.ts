@@ -81,9 +81,14 @@ export async function canForUser(input: {
     viewer,
   });
 
+  if (allowed) return { allowed: true, reason: null };
+
   return {
-    allowed,
-    reason: allowed ? null : "Este recurso não está liberado para o seu plano ou perfil.",
+    allowed: false,
+    reason:
+      viewer.actingAs === "XFTS_SUPPORT"
+        ? "Recurso fora do escopo de suporte XFTS."
+        : "Este recurso não está liberado para o seu plano ou perfil.",
   };
 }
 
