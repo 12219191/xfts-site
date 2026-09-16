@@ -19,6 +19,7 @@ import {
   getEntitlementDefinitions,
   saveEntitlementDefinition,
 } from "@/lib/admin-entitlements.functions";
+import { getEntitlementUsage } from "@/lib/admin-capabilities.functions";
 import type { CatalogPlan, CatalogProduct } from "@/lib/catalog";
 import { formatEntitlementValue, type EntitlementDefinition } from "@/lib/entitlements";
 
