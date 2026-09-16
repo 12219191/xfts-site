@@ -215,6 +215,38 @@ export type Database = {
         }
         Relationships: []
       }
+      capability_resources: {
+        Row: {
+          capability_id: string
+          created_at: string
+          id: string
+          resource_key: string
+          resource_type: string
+        }
+        Insert: {
+          capability_id: string
+          created_at?: string
+          id?: string
+          resource_key: string
+          resource_type: string
+        }
+        Update: {
+          capability_id?: string
+          created_at?: string
+          id?: string
+          resource_key?: string
+          resource_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capability_resources_capability_id_fkey"
+            columns: ["capability_id"]
+            isOneToOne: false
+            referencedRelation: "product_capabilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       catalog_plans: {
         Row: {
           active: boolean
@@ -876,6 +908,59 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      product_capabilities: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          enabled: boolean
+          id: string
+          key: string
+          name: string
+          product_key: string
+          required_entitlement_key: string | null
+          sort_order: number
+          updated_at: string
+          visibility_scope: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          name: string
+          product_key: string
+          required_entitlement_key?: string | null
+          sort_order?: number
+          updated_at?: string
+          visibility_scope?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          name?: string
+          product_key?: string
+          required_entitlement_key?: string | null
+          sort_order?: number
+          updated_at?: string
+          visibility_scope?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_capabilities_product_key_fkey"
+            columns: ["product_key"]
+            isOneToOne: false
+            referencedRelation: "catalog_products"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       product_images: {
         Row: {
