@@ -35,6 +35,10 @@ function ProdutosPage() {
           <CapabilitiesPanel />
         </TabsContent>
 
+        <TabsContent value="telas" className="mt-6">
+          <CapabilityScreensPanel />
+        </TabsContent>
+
         <TabsContent value="imagens" className="mt-6">
           <ProductImagesPanel />
         </TabsContent>
