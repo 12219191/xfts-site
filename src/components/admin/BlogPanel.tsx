@@ -171,13 +171,23 @@ export function BlogPanel() {
   const handleSave = async () => {
     setSaving(true);
     const payload = { ...form, slug: generateSlug(form.slug) };
-    const { error } = editing
-      ? await supabase.from("blog_articles").update(payload).eq("id", editing.id)
-      : await supabase.from("blog_articles").insert(payload);
+    const { data, error } = editing
+      ? await supabase
+          .from("blog_articles")
+          .update(payload)
+          .eq("id", editing.id)
+          .select("id")
+      : await supabase.from("blog_articles").insert(payload).select("id");
     setSaving(false);
 
     if (error) {
       toast.error("Não foi possível salvar", { description: error.message });
+      return;
+    }
+    if (!data || data.length === 0) {
+      toast.error("Nada foi salvo", {
+        description: "Sua conta não tem permissão para alterar este artigo.",
+      });
       return;
     }
     toast.success(editing ? "Artigo atualizado" : "Artigo criado");
@@ -192,12 +202,20 @@ export function BlogPanel() {
     setArticles((prev) =>
       prev.map((a) => (a.id === article.id ? { ...a, published: next } : a)),
     );
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("blog_articles")
       .update({ published: next })
-      .eq("id", article.id);
+      .eq("id", article.id)
+      .select("id");
     if (error) {
       toast.error("Não foi possível alterar o status", { description: error.message });
+      void fetchArticles();
+      return;
+    }
+    if (!data || data.length === 0) {
+      toast.error("Nada foi salvo", {
+        description: "Sua conta não tem permissão para alterar este artigo.",
+      });
       void fetchArticles();
       return;
     }
