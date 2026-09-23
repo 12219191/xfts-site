@@ -9,6 +9,7 @@ export type IntegrationKind =
   | "entitlements"
   | "capability_check"
   | "provision"
+  | "catalog"
   | "test";
 
 export interface IntegrationEventInput {
