@@ -61,7 +61,7 @@ Exit code 0 = tudo consistente. Exit code 1 = a lista de pendências sai no fina
 | CRM | sim |
 | Casa360° | sim |
 | Clínica | **não** |
-| Estética | **não** |
+| Estética | sim |
 | ABA | **não** |
 
 Sem chave o gate responde 401 para tudo — cadastrar antes de validar esses três.

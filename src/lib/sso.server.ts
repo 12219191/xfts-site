@@ -87,6 +87,7 @@ export function appApiKey(app: FlexusAppKey): string | undefined {
     barbearia: process.env["FLEXUS_APP_KEY_BARBEARIA"],
     crm: process.env["FLEXUS_APP_KEY_CRM"],
     casa360: process.env["FLEXUS_APP_KEY_CASA360"],
+    estetica: process.env["FLEXUS_APP_KEY_ESTETICA"],
   };
   return map[app];
 }
