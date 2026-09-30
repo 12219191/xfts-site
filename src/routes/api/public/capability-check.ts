@@ -78,15 +78,20 @@ export const Route = createFileRoute("/api/public/capability-check")({
           return json({ error: "Chave de API inválida" }, 401);
         }
 
-        // Sistemas externos só informam papel dentro do tenant (TENANT ou TENANT_ADMIN).
-        // Escopos internos da XFTS nunca são aceitos por aqui.
-        const actingAs = body.acting_as === "TENANT" ? "TENANT" : "TENANT_ADMIN";
+        // acting_as só é validado; nunca concede privilégio (ver capability-check.ts).
+        const { parseActingAs, verifiedViewer } = await import("@/lib/capability-check");
+        const claim = parseActingAs(body.acting_as);
+        if (!claim.ok) {
+          await log("denied", claim.status, claim.error);
+          return json({ allowed: false, reason: claim.error }, claim.status);
+        }
 
         const { resolveUserEntitlements } = await import("@/lib/entitlements.server");
         const { canCapability } = await import("@/lib/capabilities.server");
 
         const entitlements = await resolveUserEntitlements(userId, app.key);
-        if (!entitlements.ativo) {
+        const viewer = verifiedViewer(entitlements.ativo);
+        if (!viewer) {
           await log("ok", 403, "assinatura inativa");
           return json(
             { allowed: false, reason: "Assinatura inativa para este sistema." },
@@ -98,7 +103,7 @@ export const Route = createFileRoute("/api/public/capability-check")({
           productKey: app.key,
           capabilityKey,
           entitlements,
-          viewer: { actingAs },
+          viewer,
         });
 
         await log("ok", allowed ? 200 : 403, allowed ? undefined : "capability bloqueada");
