@@ -78,8 +78,9 @@ export const Route = createFileRoute("/api/public/capability-check")({
           return json({ error: "Chave de API inválida" }, 401);
         }
 
-        // acting_as só é validado; nunca concede privilégio (ver capability-check.ts).
-        const { parseActingAs, verifiedViewer } = await import("@/lib/capability-check");
+        // acting_as: enum validado e usado como TETO; o hub nunca eleva o papel
+        // (limite de confiança documentado em capability-check.ts).
+        const { parseActingAs, effectiveViewer } = await import("@/lib/capability-check");
         const claim = parseActingAs(body.acting_as);
         if (!claim.ok) {
           await log("denied", claim.status, claim.error);
@@ -90,7 +91,7 @@ export const Route = createFileRoute("/api/public/capability-check")({
         const { canCapability } = await import("@/lib/capabilities.server");
 
         const entitlements = await resolveUserEntitlements(userId, app.key);
-        const viewer = verifiedViewer(entitlements.ativo);
+        const viewer = effectiveViewer(entitlements.ativo, claim.value);
         if (!viewer) {
           await log("ok", 403, "assinatura inativa");
           return json(

@@ -1,2 +1,2 @@
 
-- capability-check: acting_as vindo de SaaS só é validado (TENANT|TENANT_ADMIN; internos 403; resto 400); escopo efetivo vem de identidade verificada no hub (titular ativo do app) — por quê: chave de app não prova papel do usuário.
+- capability-check: chave do app autentica só o SaaS; user_id = titular de cobrança; acting_as (TENANT|TENANT_ADMIN) é teto declarado pelo RBAC do SaaS, nunca elevado; internos 403, resto 400 — por quê: hub não tem prova do ator em v1.
