@@ -78,7 +78,36 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           return json({ error: "Chave de API inválida para este sistema" }, 401);
         }
 
+        const isAtende = app.key === "atende";
+        const { atendePurposeAllowed, isPaymentEnv, resolveAtendeSubscription } = await import(
+          "@/lib/atende-sso"
+        );
+        if (isAtende) {
+          // Atende: só titular (owner/legado) e ambiente assinado obrigatório.
+          if (!atendePurposeAllowed(payload.purpose)) {
+            await log(app.key, "denied", 403, "purpose não permitido", payload.sub);
+            return json({ error: "Tipo de acesso não permitido para este sistema" }, 403);
+          }
+          if (!isPaymentEnv(payload.env)) {
+            await log(app.key, "denied", 401, "token sem ambiente", payload.sub);
+            return json({ error: "Token inválido ou expirado" }, 401);
+          }
+        }
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        if (isAtende) {
+          // Recusa tokens de suporte já emitidos, mesmo antes de consumir.
+          const { data: row } = await supabaseAdmin
+            .from("sso_tokens")
+            .select("purpose, app_key")
+            .eq("jti", payload.jti)
+            .maybeSingle();
+          if (!row || row.app_key !== "atende" || !atendePurposeAllowed(payload.purpose, row.purpose)) {
+            await log(app.key, "denied", 403, "token não é de titular", payload.sub);
+            return json({ error: "Tipo de acesso não permitido para este sistema" }, 403);
+          }
+        }
 
         // Uso único: só consome se ainda não foi usado e não expirou.
         const { data: consumed } = await supabaseAdmin
@@ -93,6 +122,56 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         if (!consumed) {
           await log(app.key, "denied", 401, "token já utilizado ou expirado", payload.sub);
           return json({ error: "Token já utilizado ou expirado" }, 401);
+        }
+
+        if (isAtende && isPaymentEnv(payload.env)) {
+          const env = payload.env;
+          const { data: rows } = await supabaseAdmin
+            .from("subscriptions")
+            .select("price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy, seats_override")
+            .eq("user_id", payload.sub)
+            .eq("environment", env);
+          const r = resolveAtendeSubscription(rows ?? [], env, (p) => appKeyFromPriceId(p) === "atende");
+          if (r.kind === "ambiguous") {
+            await log(app.key, "denied", 409, `assinatura ambígua (${r.count})`, payload.sub);
+            return json({ error: "Mais de uma assinatura ativa; acesso negado" }, 409);
+          }
+          if (r.kind === "none") {
+            await log(app.key, "denied", 403, "sem assinatura ativa no ambiente", payload.sub);
+            return json({ error: "Sem assinatura ativa" }, 403);
+          }
+          const s = r.sub as (typeof rows extends (infer T)[] | null ? T : never);
+          const { resolveEntitlements } = await import("@/lib/entitlements.server");
+          const ent = await resolveEntitlements({
+            priceId: s.price_id,
+            status: s.status,
+            currentPeriodEnd: s.current_period_end,
+            seatsOverride: s.seats_override ?? null,
+          });
+          // Nome do plano vem do catálogo; sem plano cadastrado → null (sem mapear tiers).
+          const { data: plan } = await supabaseAdmin
+            .from("catalog_plans")
+            .select("name")
+            .eq("product_key", "atende")
+            .or(`price_lookup_key.eq.${s.price_id},annual_lookup_key.eq.${s.price_id}`)
+            .maybeSingle();
+          await log(app.key, "ok", 200, undefined, payload.sub);
+          return json({
+            user_id: payload.sub,
+            email: payload.email,
+            produto: "atende",
+            plano: plan?.name ?? null,
+            papel: "owner",
+            purpose: "owner",
+            environment: r.environment,
+            limite_usuarios: ent.limites["usuarios"] ?? null,
+            recursos: ent.features,
+            limites: ent.limites,
+            status: s.status,
+            ativo: true,
+            acesso_ate: s.current_period_end ?? null,
+            cancelamento_agendado: s.cancel_at_period_end ?? false,
+          });
         }
 
         const { data: subs } = await supabaseAdmin
