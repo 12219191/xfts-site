@@ -57,6 +57,11 @@ export const PAGES: Record<string, PageInfo> = {
     name: "FLEXUS | Casa360° — Produto",
     group: "Produtos",
   },
+  "/produtos/flexus-atende": {
+    slug: "atende",
+    name: "FLEXUS | Atende — Produto",
+    group: "Produtos",
+  },
   "/contato": { slug: "contato", name: "Contato", group: "Institucional" },
   "/exclusao-de-dados": {
     slug: "exclusao-de-dados",

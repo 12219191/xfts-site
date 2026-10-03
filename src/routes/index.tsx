@@ -100,6 +100,13 @@ function HomePage() {
       slug: "casa360" as const,
       link: "/produtos/flexus-casa360" as const,
     },
+    {
+      icon: MessageCircle,
+      title: "FLEXUS | Atende",
+      desc: "Atendimento pelo WhatsApp (API oficial) com agentes de IA, base de conhecimento própria e caixa de entrada para a equipe.",
+      slug: "atende" as const,
+      link: "/produtos/flexus-atende" as const,
+    },
   ];
 
   return (

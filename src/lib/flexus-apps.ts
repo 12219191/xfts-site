@@ -11,7 +11,8 @@ export type FlexusAppKey =
   | "casa360"
   | "clinica"
   | "estetica"
-  | "aba";
+  | "aba"
+  | "atende";
 
 export interface FlexusApp {
   key: FlexusAppKey;
@@ -86,6 +87,15 @@ export const FLEXUS_APPS: FlexusApp[] = [
     pricePrefix: "flexus_aba",
     landing: "/produtos/flexus-aba",
     available: false,
+  },
+  {
+    key: "atende",
+    name: "FLEXUS | Atende",
+    url: "https://xfts-flexus10.com",
+    provisionUrl: "https://xfts-flexus10.com/api/public/provision",
+    pricePrefix: "flexus_atende",
+    landing: "/produtos/flexus-atende",
+    available: true,
   },
 ];
 
