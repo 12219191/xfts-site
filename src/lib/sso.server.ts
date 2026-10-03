@@ -14,6 +14,8 @@ export interface SsoPayload {
   /** Finalidade: acesso normal do titular ou sessão de suporte da XFTS. */
   purpose?: "owner" | "support";
 
+  /** Ambiente de pagamento da assinatura (hoje só emitido para o Atende). */
+  env?: "live" | "sandbox";
   /** Assentos de equipe liberados pelo plano (null = ilimitado). */
   seats?: number | null;
   jti: string;

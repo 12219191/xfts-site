@@ -49,9 +49,27 @@ export const createSsoLink = createServerFn({ method: "POST" })
       .or(`environment.eq.${env},is_courtesy.is.true`)
       .order("created_at", { ascending: false });
 
-    const sub = (subs ?? []).find(
+    let sub = (subs ?? []).find(
       (s) => appKeyFromPriceId(s.price_id) === app.key,
     );
+    let atendeEnv: "live" | "sandbox" | undefined;
+    if (app.key === "atende") {
+      // Atende: seleção estrita por ambiente, sem "a mais recente vence".
+      const { resolveAtendeSubscription, isPaymentEnv } = await import("@/lib/atende-sso");
+      if (!isPaymentEnv(env)) return deny("ambiente inválido", "Ambiente inválido.");
+      const { data: rows } = await supabase
+        .from("subscriptions")
+        .select("price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy")
+        .eq("user_id", userId)
+        .eq("environment", env);
+      const r = resolveAtendeSubscription(rows ?? [], env, (p) => appKeyFromPriceId(p) === "atende");
+      if (r.kind === "ambiguous")
+        return deny("assinatura ambígua", "Encontramos mais de uma assinatura ativa do FLEXUS | Atende. Fale com o suporte.");
+      if (r.kind === "none")
+        return deny("sem assinatura", `Você ainda não tem uma assinatura ativa do ${app.name}.`);
+      sub = r.sub as typeof sub;
+      atendeEnv = r.environment;
+    }
     if (!sub)
       return deny("sem assinatura", `Você ainda não tem uma assinatura do ${app.name}.`);
 
@@ -87,9 +105,11 @@ export const createSsoLink = createServerFn({ method: "POST" })
       sub: userId,
       email: (claims as { email?: string })?.email ?? "",
       app: app.key,
-      plan: planTierFromPriceId(sub.price_id),
+      // Atende: planos próprios (Basic/Standard/Corporate) — nunca mapeia para Básico/Pro/Enterprise.
+      plan: app.key === "atende" ? null : planTierFromPriceId(sub.price_id),
       role: "owner",
-      seats: seatsFromPriceId(sub.price_id),
+      seats: app.key === "atende" ? null : seatsFromPriceId(sub.price_id),
+      ...(atendeEnv ? { env: atendeEnv, purpose: "owner" as const } : {}),
       jti,
       iat: now,
       exp,

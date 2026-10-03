@@ -148,6 +148,9 @@ export async function createSupportAccess(params: {
 }): Promise<{ url: string } | { error: string }> {
   const app = getFlexusApp(params.app);
   if (!app || !app.url) return { error: "Sistema não disponível para acesso de suporte." };
+  // Atende: sem contrato de suporte verificável ainda — nunca emite token de suporte.
+  if (app.key === "atende")
+    return { error: "Acesso de suporte ao FLEXUS | Atende ainda não está disponível." };
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: subs } = await supabaseAdmin
