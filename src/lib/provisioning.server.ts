@@ -88,7 +88,24 @@ export async function provisionApp(
     currentPeriodEnd: input.accessUntil ?? null,
   });
 
-  const body = JSON.stringify({
+  let body: string;
+  if (appKey === "atende") {
+    const { buildAtendeProvisionBody } = await import("@/lib/atende-provision");
+    const built = buildAtendeProvisionBody({
+      event: input.event,
+      userId: input.userId,
+      priceId: input.priceId ?? "",
+      status: input.status ?? null,
+      accessUntil: input.accessUntil ?? null,
+      environment: input.environment,
+      planoNome: ent.planoNome,
+      features: ent.features,
+      limites: ent.limites,
+      timestamp: new Date().toISOString(),
+    });
+    if (!built.ok) return finish(input, appKey, { ok: false, error: built.error }, startedAt);
+    body = JSON.stringify(built.body);
+  } else body = JSON.stringify({
     event: input.event,
     user_id: input.userId,
     produto: appKey,
