@@ -67,7 +67,7 @@ export const createSsoLink = createServerFn({ method: "POST" })
         return deny("assinatura ambígua", "Encontramos mais de uma assinatura ativa do FLEXUS | Atende. Fale com o suporte.");
       if (r.kind === "none")
         return deny("sem assinatura", `Você ainda não tem uma assinatura ativa do ${app.name}.`);
-      sub = r.sub as typeof sub;
+      sub = r.sub;
       atendeEnv = r.environment;
     }
     if (!sub)

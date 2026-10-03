@@ -140,7 +140,7 @@ export const Route = createFileRoute("/api/public/sso/verify")({
             await log(app.key, "denied", 403, "sem assinatura ativa no ambiente", payload.sub);
             return json({ error: "Sem assinatura ativa" }, 403);
           }
-          const s = r.sub as (typeof rows extends (infer T)[] | null ? T : never);
+          const s = r.sub;
           const { resolveEntitlements } = await import("@/lib/entitlements.server");
           const ent = await resolveEntitlements({
             priceId: s.price_id,

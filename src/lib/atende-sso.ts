@@ -33,8 +33,8 @@ export interface AtendeSubRow {
   is_courtesy?: boolean | null;
 }
 
-export type AtendeResolution =
-  | { kind: "ok"; sub: AtendeSubRow; environment: PaymentEnv }
+export type AtendeResolution<T extends AtendeSubRow = AtendeSubRow> =
+  | { kind: "ok"; sub: T; environment: PaymentEnv }
   | { kind: "none" }
   | { kind: "ambiguous"; count: number };
 
@@ -52,12 +52,12 @@ function grants(s: AtendeSubRow, now: number): boolean {
  * 3. exatamente uma → usa; zero → sem acesso; mais de uma → ambíguo (nega).
  * Não existe "a mais recente vence".
  */
-export function resolveAtendeSubscription(
-  rows: AtendeSubRow[],
+export function resolveAtendeSubscription<T extends AtendeSubRow>(
+  rows: T[],
   env: PaymentEnv,
   isAtende: (priceId: string) => boolean,
   now = Date.now(),
-): AtendeResolution {
+): AtendeResolution<T> {
   const granting = rows.filter(
     (r) => isAtende(r.price_id) && r.environment === env && grants(r, now),
   );
