@@ -26,6 +26,10 @@ interface Props {
     features: string[];
     plansSubtitle: string;
   };
+  /** Só contato/demo: sem "Acessar Sistema" e sem seção de pagamento enquanto não vende. */
+  contactOnly?: boolean;
+  /** Aviso sempre visível abaixo da descrição (não é substituído pelo catálogo). */
+  note?: string;
 }
 
 /** Recursos que são só limite de assentos — ficam nos cards de plano, não na lista geral. */
@@ -50,7 +54,7 @@ function featuresFromPlans(plans: ProductPlan[]): string[] {
   return out;
 }
 
-export function ProductPageLayout({ productKey, app, product, plans, fallback }: Props) {
+export function ProductPageLayout({ productKey, app, product, plans, fallback, contactOnly, note }: Props) {
   const heroImage = useProductImage(productKey);
   const heroAlt = useProductImageAlt(productKey);
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
@@ -128,7 +132,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback }:
                 Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />
+            {!contactOnly && <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />}
           </div>
         </div>
       </section>
@@ -138,6 +142,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback }:
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-foreground">O que o {name} faz</h2>
             <p className="mt-3 text-muted-foreground">{description}</p>
+            {note && <p className="mt-3 text-sm text-muted-foreground">{note}</p>}
           </div>
           <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
@@ -200,7 +205,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback }:
         </div>
       </section>
 
-      <PaymentInfoSection />
+      {!(contactOnly && !purchasable) && <PaymentInfoSection />}
     </>
   );
 }
