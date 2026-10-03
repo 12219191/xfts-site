@@ -43,6 +43,7 @@ import { Route as ConviteTokenRouteImport } from './routes/convite.$token'
 import { Route as ProdutosIndexRouteImport } from './routes/produtos.index'
 import { Route as ProdutosCompararPlanosRouteImport } from './routes/produtos.comparar-planos'
 import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-aba'
+import { Route as ProdutosFlexusAtendeRouteImport } from './routes/produtos.flexus-atende'
 import { Route as ProdutosFlexusCasa360RouteImport } from './routes/produtos.flexus-casa360'
 import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
@@ -233,6 +234,11 @@ const ProdutosFlexusAbaRoute = ProdutosFlexusAbaRouteImport.update({
   path: '/flexus-aba',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ProdutosFlexusAtendeRoute = ProdutosFlexusAtendeRouteImport.update({
+  id: '/flexus-atende',
+  path: '/flexus-atende',
+  getParentRoute: () => ProdutosRoute,
+} as any)
 const ProdutosFlexusCasa360Route = ProdutosFlexusCasa360RouteImport.update({
   id: '/flexus-casa360',
   path: '/flexus-casa360',
@@ -368,6 +374,7 @@ export interface FileRoutesByFullPath {
   '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
@@ -420,6 +427,7 @@ export interface FileRoutesByTo {
   '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
@@ -476,6 +484,7 @@ export interface FileRoutesById {
   '/convite/$token': typeof ConviteTokenRoute
   '/produtos/comparar-planos': typeof ProdutosCompararPlanosRoute
   '/produtos/flexus-aba': typeof ProdutosFlexusAbaRoute
+  '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
@@ -533,6 +542,7 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
@@ -585,6 +595,7 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
@@ -640,6 +651,7 @@ export interface FileRouteTypes {
     | '/convite/$token'
     | '/produtos/comparar-planos'
     | '/produtos/flexus-aba'
+    | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
     | '/produtos/gestao-barbearias'
@@ -935,6 +947,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosFlexusAbaRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/produtos/flexus-atende': {
+      id: '/produtos/flexus-atende'
+      path: '/flexus-atende'
+      fullPath: '/produtos/flexus-atende'
+      preLoaderRoute: typeof ProdutosFlexusAtendeRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/produtos/flexus-casa360': {
       id: '/produtos/flexus-casa360'
       path: '/flexus-casa360'
@@ -1134,6 +1153,7 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
 interface ProdutosRouteChildren {
   ProdutosCompararPlanosRoute: typeof ProdutosCompararPlanosRoute
   ProdutosFlexusAbaRoute: typeof ProdutosFlexusAbaRoute
+  ProdutosFlexusAtendeRoute: typeof ProdutosFlexusAtendeRoute
   ProdutosFlexusCasa360Route: typeof ProdutosFlexusCasa360Route
   ProdutosFlexusCrmRoute: typeof ProdutosFlexusCrmRoute
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
@@ -1145,6 +1165,7 @@ interface ProdutosRouteChildren {
 const ProdutosRouteChildren: ProdutosRouteChildren = {
   ProdutosCompararPlanosRoute: ProdutosCompararPlanosRoute,
   ProdutosFlexusAbaRoute: ProdutosFlexusAbaRoute,
+  ProdutosFlexusAtendeRoute: ProdutosFlexusAtendeRoute,
   ProdutosFlexusCasa360Route: ProdutosFlexusCasa360Route,
   ProdutosFlexusCrmRoute: ProdutosFlexusCrmRoute,
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,

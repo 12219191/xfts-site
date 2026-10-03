@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
 import { toast } from "sonner";
@@ -99,6 +99,13 @@ function HomePage() {
       desc: "ERP doméstico: estoque da despensa, lista de compras automática, controle de validade e finanças da casa.",
       slug: "casa360" as const,
       link: "/produtos/flexus-casa360" as const,
+    },
+    {
+      icon: MessageCircle,
+      title: "FLEXUS | Atende",
+      desc: "Atendimento pelo WhatsApp (API oficial) com agentes de IA, base de conhecimento própria e caixa de entrada para a equipe.",
+      slug: "atende" as const,
+      link: "/produtos/flexus-atende" as const,
     },
   ];
 

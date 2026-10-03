@@ -1,0 +1,1 @@
+- Atende: FLEXUS_APP_KEY_ATENDE pendente (usuário cadastra); planos/preços a aprovar.

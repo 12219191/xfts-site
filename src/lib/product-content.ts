@@ -9,6 +9,7 @@ import heroAestheticsAsset from "@/assets/hero-aesthetics.webp.asset.json";
 import heroAbaAsset from "@/assets/hero-aba.webp.asset.json";
 import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
 import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
+import heroAtende from "@/assets/hero-atende.jpg";
 
 export interface ProductContent {
   icon: string;
@@ -58,6 +59,13 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       "ERP doméstico: estoque da despensa, lista de compras automática e finanças da casa em um só painel.",
     imageUrl: heroCasa360Asset.url,
     imageAlt: "FLEXUS | Casa360° — sistema de gestão para casas de repouso e cuidado 360°",
+  },
+  atende: {
+    icon: "MessageCircle",
+    shortDescription:
+      "Atendimento pelo WhatsApp (API oficial) com agentes de IA configuráveis, base de conhecimento própria e caixa de entrada para a equipe.",
+    imageUrl: heroAtende,
+    imageAlt: "FLEXUS | Atende — atendente usando a caixa de entrada com agente de IA",
   },
 };
 
