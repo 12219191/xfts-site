@@ -79,21 +79,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
             ? await resolveCapabilities({ productKey: "atende", entitlements: ent, viewer: { actingAs: "TENANT_ADMIN" } })
             : [];
           await log("ok", 200, ent.denialReason);
-          return json({
-            ativo: !!s,
-            status: s?.status ?? "none",
-            plano: s ? ent.planoNome ?? null : null,
-            papel: "owner",
-            environment: s ? "live" : null,
-            motivo: ent.denialReason ?? null,
-            limite_usuarios: s ? (ent.limites["usuarios"] ?? null) : 0,
-            usuarios_em_uso: s?.seats_used ?? 0,
-            recursos: s ? ent.features : {},
-            limites: s ? ent.limites : {},
-            capabilities,
-            acesso_ate: s?.current_period_end ?? null,
-            cancelamento_agendado: s?.cancel_at_period_end ?? false,
-          });
+          const { buildAtendeEntitlementsPayload } = await import("@/lib/atende-entitlements-payload");
+          return json(buildAtendeEntitlementsPayload(ent, s, capabilities));
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
