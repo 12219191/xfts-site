@@ -62,7 +62,7 @@ function FlexusAtendePage() {
       product={product}
       plans={plans}
       contactOnly
-      note="Os custos são separados: a assinatura da plataforma e o uso da IA são cobrados pela XFTS, e as mensagens do WhatsApp seguem a cobrança da Meta pela API oficial."
+      note="Custos separados: a plataforma e o uso da IA têm cobrança própria, e as mensagens do WhatsApp seguem as tarifas da Meta para a API oficial."
       fallback={{
         name: "FLEXUS | Atende",
         headline: "FLEXUS | Atende",
