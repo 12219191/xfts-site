@@ -69,6 +69,33 @@ export const Route = createFileRoute("/api/public/entitlements")({
           return json({ error: "Chave de API inválida" }, 401);
         }
 
+        if (app.key === "atende") {
+          const { resolveUserEntitlements, resolveAtendeLive } = await import("@/lib/entitlements.server");
+          const ent = await resolveUserEntitlements(userId, "atende");
+          const r = ent.ativo ? await resolveAtendeLive(userId) : null;
+          const s = r && r.kind === "ok" ? r.sub : null;
+          const { resolveCapabilities } = await import("@/lib/capabilities.server");
+          const capabilities = s
+            ? await resolveCapabilities({ productKey: "atende", entitlements: ent, viewer: { actingAs: "TENANT_ADMIN" } })
+            : [];
+          await log("ok", 200, ent.denialReason);
+          return json({
+            ativo: !!s,
+            status: s?.status ?? "none",
+            plano: s ? ent.planoNome ?? null : null,
+            papel: "owner",
+            environment: s ? "live" : null,
+            motivo: ent.denialReason ?? null,
+            limite_usuarios: s ? (ent.limites["usuarios"] ?? null) : 0,
+            usuarios_em_uso: s?.seats_used ?? 0,
+            recursos: s ? ent.features : {},
+            limites: s ? ent.limites : {},
+            capabilities,
+            acesso_ate: s?.current_period_end ?? null,
+            cancelamento_agendado: s?.cancel_at_period_end ?? false,
+          });
+        }
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")

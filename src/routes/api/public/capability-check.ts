@@ -93,9 +93,10 @@ export const Route = createFileRoute("/api/public/capability-check")({
         const entitlements = await resolveUserEntitlements(userId, app.key);
         const viewer = effectiveViewer(entitlements.ativo, claim.value);
         if (!viewer) {
-          await log("ok", 403, "assinatura inativa");
+          const reason = entitlements.denialReason ?? "Assinatura inativa para este sistema.";
+          await log("ok", 403, entitlements.denialReason ?? "assinatura inativa");
           return json(
-            { allowed: false, reason: "Assinatura inativa para este sistema." },
+            { allowed: false, reason },
             403,
           );
         }

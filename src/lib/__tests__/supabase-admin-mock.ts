@@ -19,6 +19,8 @@ export interface MockSub {
   seats_used?: number | null;
   seats_override?: number | null;
   created_at?: string;
+  environment?: string;
+  is_courtesy?: boolean | null;
 }
 
 export interface MockDefinition {
@@ -72,7 +74,11 @@ function makeQuery(table: string) {
       );
     }
     if (table === "subscriptions") {
-      return state.subscriptions.filter(() => true);
+      return state.subscriptions.filter((s) =>
+        filters.every((f) =>
+          f.column === "environment" ? (s.environment ?? "sandbox") === f.value : true,
+        ),
+      );
     }
     return [];
   }
