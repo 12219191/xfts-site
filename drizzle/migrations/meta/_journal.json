@@ -8,6 +8,13 @@
       "when": 1789671532933,
       "tag": "0000_is_admin_recognizes_admin_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791027755862,
+      "tag": "0001_add_flexus_atende",
+      "breakpoints": true
     }
   ]
 }
