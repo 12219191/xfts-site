@@ -133,10 +133,69 @@ export async function resolveEntitlements(
 }
 
 /** Entitlements do usuário em um produto específico. */
+type AtendeRow = {
+  price_id: string;
+  status: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean | null;
+  environment: string;
+  is_courtesy: boolean | null;
+  seats_used: number | null;
+  seats_override: number | null;
+};
+
+/**
+ * Fonte única da assinatura do FLEXUS | Atende (SSO, entitlements e
+ * capability-check). Só ambiente "live" — nunca escolhido pelo navegador;
+ * sandbox mais nova não libera acesso real. Ambíguo nega.
+ */
+export async function resolveAtendeLive(userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { resolveAtendeSubscription } = await import("@/lib/atende-sso");
+  const { data } = await supabaseAdmin
+    .from("subscriptions")
+    .select(
+      "price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy, seats_used, seats_override",
+    )
+    .eq("user_id", userId)
+    .eq("environment", "live");
+  return resolveAtendeSubscription(
+    (data ?? []) as unknown as AtendeRow[],
+    "live",
+    (p) => appKeyFromPriceId(p) === "atende",
+  );
+}
+
+export const ATENDE_DENIAL = {
+  none: "Sem assinatura live ativa do FLEXUS | Atende.",
+  ambiguous: "Mais de uma assinatura live ativa do FLEXUS | Atende; acesso negado até regularizar.",
+} as const;
+
 export async function resolveUserEntitlements(
   userId: string,
   productKey: string,
-): Promise<ResolvedEntitlements & { seatsUsed: number }> {
+): Promise<
+  ResolvedEntitlements & { seatsUsed: number; environment?: "live"; denialReason?: string }
+> {
+  if (productKey === "atende") {
+    const r = await resolveAtendeLive(userId);
+    const s = r.kind === "ok" ? r.sub : null;
+    const resolved = await resolveEntitlements({
+      priceId: s?.price_id ?? null,
+      status: s?.status ?? "none",
+      currentPeriodEnd: s?.current_period_end ?? null,
+      seatsOverride: s?.seats_override ?? null,
+    });
+    return {
+      ...resolved,
+      productKey,
+      definicoes: resolved.definicoes.length ? resolved.definicoes : await loadDefinitions(productKey),
+      seatsUsed: s?.seats_used ?? 0,
+      ...(r.kind === "ok"
+        ? { environment: "live" as const }
+        : { ativo: false, denialReason: ATENDE_DENIAL[r.kind] }),
+    };
+  }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: subs } = await supabaseAdmin
     .from("subscriptions")

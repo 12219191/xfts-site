@@ -79,7 +79,7 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         }
 
         const isAtende = app.key === "atende";
-        const { atendePurposeAllowed, isPaymentEnv, resolveAtendeSubscription } = await import(
+        const { atendePurposeAllowed, isPaymentEnv } = await import(
           "@/lib/atende-sso"
         );
         if (isAtende) {
@@ -88,7 +88,7 @@ export const Route = createFileRoute("/api/public/sso/verify")({
             await log(app.key, "denied", 403, "purpose não permitido", payload.sub);
             return json({ error: "Tipo de acesso não permitido para este sistema" }, 403);
           }
-          if (!isPaymentEnv(payload.env)) {
+          if (payload.env !== "live") {
             await log(app.key, "denied", 401, "token sem ambiente", payload.sub);
             return json({ error: "Token inválido ou expirado" }, 401);
           }
@@ -125,13 +125,8 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         }
 
         if (isAtende && isPaymentEnv(payload.env)) {
-          const env = payload.env;
-          const { data: rows } = await supabaseAdmin
-            .from("subscriptions")
-            .select("price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy, seats_override")
-            .eq("user_id", payload.sub)
-            .eq("environment", env);
-          const r = resolveAtendeSubscription(rows ?? [], env, (p) => appKeyFromPriceId(p) === "atende");
+          const { resolveAtendeLive } = await import("@/lib/entitlements.server");
+          const r = await resolveAtendeLive(payload.sub);
           if (r.kind === "ambiguous") {
             await log(app.key, "denied", 409, `assinatura ambígua (${r.count})`, payload.sub);
             return json({ error: "Mais de uma assinatura ativa; acesso negado" }, 409);

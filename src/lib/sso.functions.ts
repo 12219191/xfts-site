@@ -54,21 +54,13 @@ export const createSsoLink = createServerFn({ method: "POST" })
     );
     let atendeEnv: "live" | "sandbox" | undefined;
     if (app.key === "atende") {
-      // Atende: seleção estrita por ambiente, sem "a mais recente vence".
-      const { resolveAtendeSubscription, isPaymentEnv } = await import("@/lib/atende-sso");
-      if (!isPaymentEnv(env)) return deny("ambiente inválido", "Ambiente inválido.");
-      const { data: rows } = await supabase
-        .from("subscriptions")
-        .select("price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy")
-        .eq("user_id", userId)
-        .eq("environment", env);
-      const r = resolveAtendeSubscription(rows ?? [], env, (p) => appKeyFromPriceId(p) === "atende");
-      if (r.kind === "ambiguous")
-        return deny("assinatura ambígua", "Encontramos mais de uma assinatura ativa do FLEXUS | Atende. Fale com o suporte.");
-      if (r.kind === "none")
-        return deny("sem assinatura", `Você ainda não tem uma assinatura ativa do ${app.name}.`);
+      // Atende: sempre "live" (ignora ambiente vindo do navegador), mesma seleção
+      // de entitlements/capability-check.
+      const { resolveAtendeLive, ATENDE_DENIAL } = await import("@/lib/entitlements.server");
+      const r = await resolveAtendeLive(userId);
+      if (r.kind !== "ok") return deny(r.kind === "ambiguous" ? "assinatura ambígua" : "sem assinatura", ATENDE_DENIAL[r.kind]);
       sub = r.sub;
-      atendeEnv = r.environment;
+      atendeEnv = "live";
     }
     if (!sub)
       return deny("sem assinatura", `Você ainda não tem uma assinatura do ${app.name}.`);
