@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
 import { toast } from "sonner";
