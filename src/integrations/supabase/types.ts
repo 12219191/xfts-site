@@ -1111,6 +1111,8 @@ export type Database = {
           cancel_at_period_end: boolean | null
           courtesy_note: string | null
           created_at: string | null
+          credit_anchor: string | null
+          credit_anchor_source: string | null
           current_period_end: string | null
           current_period_start: string | null
           environment: string
@@ -1134,6 +1136,8 @@ export type Database = {
           cancel_at_period_end?: boolean | null
           courtesy_note?: string | null
           created_at?: string | null
+          credit_anchor?: string | null
+          credit_anchor_source?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
@@ -1157,6 +1161,8 @@ export type Database = {
           cancel_at_period_end?: boolean | null
           courtesy_note?: string | null
           created_at?: string | null
+          credit_anchor?: string | null
+          credit_anchor_source?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
           environment?: string
