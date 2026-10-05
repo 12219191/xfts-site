@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient } from "@/lib/stripe.server";
 import { friendlyStripeError, resolveSubscription, toMajorUnit } from "@/lib/subscriptions.server";
 import { DEMO_MESSAGE, isRealStripeId } from "@/lib/subscription-guards";
+import { safeReturnUrl } from "@/lib/return-url";
 import { appKeyFromPriceId } from "@/lib/flexus-apps";
 
 type ActionResult = { ok: true; message: string } | { error: string };
@@ -190,7 +191,10 @@ export const changePlan = createServerFn({ method: "POST" })
 export const createPortalSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { environment: StripeEnv; returnUrl?: string; subscriptionId?: string }) => data,
+    (data: { environment: StripeEnv; returnUrl?: string; subscriptionId?: string }) => ({
+      ...data,
+      returnUrl: safeReturnUrl(data.returnUrl),
+    }),
   )
   .handler(async ({ data, context }): Promise<{ url: string } | { error: string }> => {
     const { supabase, userId } = context;
