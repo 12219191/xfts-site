@@ -14,7 +14,7 @@ export interface CatalogPlanInput {
   id?: string;
   productKey: string;
   name: string;
-  tier: "basico" | "pro" | "enterprise";
+  tier: CatalogPlan["tier"];
   description: string;
   priceMonthCents: number;
   priceYearCents: number | null;
@@ -170,6 +170,16 @@ export const saveCatalogPlan = createServerFn({ method: "POST" })
     const { data: before } = data.id
       ? await supabaseAdmin.from("catalog_plans").select("*").eq("id", data.id).maybeSingle()
       : { data: null };
+    if (data.id && !before) throw new Error("Plano não encontrado.");
+
+    // Antes de qualquer gravação (Stripe ou banco): tier precisa ser do produto.
+    const { planTierError } = await import("@/lib/catalog");
+    const tierError = planTierError(
+      data.productKey,
+      data.tier,
+      (before as { product_key?: string } | null)?.product_key ?? null,
+    );
+    if (tierError) throw new Error(tierError);
 
     const { data: product } = await supabaseAdmin
       .from("catalog_products")

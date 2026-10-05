@@ -230,11 +230,39 @@ export function validateProduct(product: ProductValidationInput): ProductValidat
 
 
 
+/** Tiers padrão dos produtos FLEXUS e tiers próprios por produto (mapa único). */
+export const DEFAULT_PLAN_TIERS = ["basico", "pro", "enterprise"] as const;
+export const PRODUCT_PLAN_TIERS: Record<string, readonly string[]> = {
+  atende: ["basic", "standard", "corporate"],
+};
+export type DefaultPlanTier = (typeof DEFAULT_PLAN_TIERS)[number];
+export type PlanTier = DefaultPlanTier | "basic" | "standard" | "corporate";
+
+export function tiersForProduct(productKey: string): readonly string[] {
+  return PRODUCT_PLAN_TIERS[productKey] ?? DEFAULT_PLAN_TIERS;
+}
+
+/** Erro se o tier não pertence ao produto ou se o plano muda de produto. Sem coerção. */
+export function planTierError(
+  productKey: string,
+  tier: string,
+  existingProductKey?: string | null,
+): string | null {
+  if (existingProductKey && existingProductKey !== productKey) {
+    return "O plano pertence a outro produto.";
+  }
+  const allowed = tiersForProduct(productKey);
+  if (!allowed.includes(tier)) {
+    return `Tier "${tier}" inválido para ${productKey}. Use: ${allowed.join(", ")}.`;
+  }
+  return null;
+}
+
 export interface CatalogPlan {
   id: string;
   productKey: string;
   name: string;
-  tier: "basico" | "pro" | "enterprise";
+  tier: PlanTier;
   description: string;
   priceMonthCents: number;
   priceYearCents: number | null;
@@ -274,7 +302,8 @@ export function toProductPlan(plan: CatalogPlan): ProductPlan {
     name: plan.name,
     price: formatBRL(plan.priceMonthCents),
     description: plan.description,
-    tier: plan.tier,
+    // Site público só exibe produtos com tiers padrão (Atende sem venda/planos ativos).
+    tier: plan.tier as DefaultPlanTier,
     features: plan.features,
     ...(plan.priceLookupKey ? { priceId: plan.priceLookupKey } : {}),
     ctaLabel: plan.ctaLabel,
