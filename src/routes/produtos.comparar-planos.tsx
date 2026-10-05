@@ -1,3 +1,4 @@
+import { CheckoutModal } from "@/components/CheckoutModal";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
@@ -252,14 +253,9 @@ function CompararPlanosPage() {
   return (
     <TooltipProvider>
       {isOpen && CheckoutForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-2xl">
-            <button onClick={closeCheckout} className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted">
-              <X className="h-5 w-5" />
-            </button>
-            <CheckoutForm />
-          </div>
-        </div>
+        <CheckoutModal onClose={closeCheckout}>
+          <CheckoutForm />
+        </CheckoutModal>
       )}
 
       <section className="section-padding">

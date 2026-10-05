@@ -6,6 +6,7 @@ import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { PaymentInfoSection } from "@/components/product/PaymentInfoSection";
 import { useProductImage, useProductImageAlt, type ProductSlug } from "@/lib/product-images";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
+import { CheckoutModal } from "@/components/CheckoutModal";
 import { trackCTAClick } from "@/lib/tracking";
 import { canPurchase, statusLabel, type CatalogProduct } from "@/lib/catalog";
 import type { ProductPlan } from "@/lib/product-plans";
@@ -83,18 +84,9 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
   return (
     <>
       {isOpen && CheckoutForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="relative w-full max-w-lg rounded-xl bg-background p-6 shadow-2xl">
-            <button
-              onClick={closeCheckout}
-              aria-label="Fechar checkout"
-              className="absolute right-3 top-3 rounded-full p-1 text-muted-foreground hover:bg-muted"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <CheckoutForm />
-          </div>
-        </div>
+        <CheckoutModal onClose={closeCheckout}>
+          <CheckoutForm />
+        </CheckoutModal>
       )}
 
       <section className="relative overflow-hidden">
