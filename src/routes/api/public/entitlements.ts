@@ -58,20 +58,18 @@ export const Route = createFileRoute("/api/public/entitlements")({
           });
         };
 
+        // Nada é gravado antes de a chave do sistema ser verificada.
         const app = getFlexusApp(appParam);
-        if (!app) {
-          await log("denied", 400, "sistema inválido");
-          return json({ error: "Sistema inválido" }, 400);
-        }
-        if (!UUID_RE.test(userId)) {
-          await log("denied", 400, "user_id inválido");
-          return json({ error: "user_id inválido" }, 400);
-        }
+        if (!app) return json({ error: "Sistema inválido" }, 400);
 
         const expectedKey = appApiKey(app.key as FlexusAppKey);
         if (!providedKey || !expectedKey || !safeEqual(providedKey, expectedKey)) {
-          await log("error", 401, "chave de API inválida");
           return json({ error: "Chave de API inválida" }, 401);
+        }
+
+        if (!UUID_RE.test(userId)) {
+          await log("denied", 400, "user_id inválido");
+          return json({ error: "user_id inválido" }, 400);
         }
 
         if (app.key === "atende") {

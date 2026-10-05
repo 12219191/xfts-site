@@ -74,5 +74,19 @@ export async function removeRole(
     .eq("user_id", userId)
     .eq("role", role);
   if (error) return { error: error.message };
+  // Sem papéis restantes, remove também o registro legado para que o
+  // fallback (admin_users → superadmin) não devolva o acesso revogado.
+  const { count, error: countError } = await supabaseAdmin
+    .from("admin_roles")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+  if (countError) return { error: countError.message };
+  if (!count) {
+    const { error: legacyError } = await supabaseAdmin
+      .from("admin_users")
+      .delete()
+      .eq("user_id", userId);
+    if (legacyError) return { error: legacyError.message };
+  }
   return { ok: true };
 }
