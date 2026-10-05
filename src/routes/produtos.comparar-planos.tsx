@@ -1,3 +1,4 @@
+import { CheckoutModal } from "@/components/CheckoutModal";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
