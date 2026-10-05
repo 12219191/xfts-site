@@ -9,6 +9,9 @@ import {
   planTierFromPriceId,
   seatsFromPriceId,
 } from "@/lib/flexus-apps";
+// Import estático de propósito: com import dinâmico o bundler de produção
+// deduzia que buildCreditCycle só recebia sub=null e removia o ramo positivo.
+import { buildCreditCycle, intervalFromPlans } from "@/lib/atende-credit-cycle";
 import {
   parseEntitlements,
   splitEntitlements,
@@ -175,7 +178,6 @@ export async function resolveAtendeLive(userId: string) {
  * (fail closed, sem detalhes do erro).
  */
 export async function creditCycleForSub(sub: AtendeRow | null) {
-  const { buildCreditCycle, intervalFromPlans } = await import("@/lib/atende-credit-cycle");
   if (!sub) return buildCreditCycle(null, null);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
