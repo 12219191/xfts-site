@@ -242,6 +242,11 @@ export function tiersForProduct(productKey: string): readonly string[] {
   return PRODUCT_PLAN_TIERS[productKey] ?? DEFAULT_PLAN_TIERS;
 }
 
+/** Tiers aceitos em cortesia: próprios do produto, ou basico/pro nos padrões. */
+export function courtesyTiersForProduct(productKey: string): readonly string[] {
+  return PRODUCT_PLAN_TIERS[productKey] ?? ["basico", "pro"];
+}
+
 /** Erro se o tier não pertence ao produto ou se o plano muda de produto. Sem coerção. */
 export function planTierError(
   productKey: string,

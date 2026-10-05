@@ -31,3 +31,16 @@ describe("tiers por produto", () => {
     expect(planTierError("barbearia", "pro", "atende")).toBe("O plano pertence a outro produto.");
   });
 });
+
+import { courtesyTiersForProduct } from "../catalog";
+describe("cortesia por produto", () => {
+  it("atende gera lookup real flexus_atende_basic_mensal", () => {
+    const t = courtesyTiersForProduct("atende");
+    expect(t).toEqual(["basic", "standard", "corporate"]);
+    expect(`flexus_atende_${t[0]}_mensal`).toBe("flexus_atende_basic_mensal");
+    expect(t).not.toContain("basico");
+  });
+  it("regressão: demais produtos seguem basico/pro", () => {
+    for (const p of ["barbearia", "crm", "casa360", "clinica"]) expect(courtesyTiersForProduct(p)).toEqual(["basico", "pro"]);
+  });
+});
