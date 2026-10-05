@@ -150,6 +150,8 @@ export const Route = createFileRoute("/api/public/sso/verify")({
             .eq("product_key", "atende")
             .or(`price_lookup_key.eq.${s.price_id},annual_lookup_key.eq.${s.price_id}`)
             .maybeSingle();
+          const { loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
+          const creditCycle = await loadAtendeCreditCycle(payload.sub);
           await log(app.key, "ok", 200, undefined, payload.sub);
           return json({
             user_id: payload.sub,
@@ -166,6 +168,7 @@ export const Route = createFileRoute("/api/public/sso/verify")({
             ativo: true,
             acesso_ate: s.current_period_end ?? null,
             cancelamento_agendado: s.cancel_at_period_end ?? false,
+            credit_cycle: creditCycle,
           });
         }
 

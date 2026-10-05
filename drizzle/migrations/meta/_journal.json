@@ -15,6 +15,13 @@
       "when": 1791027755862,
       "tag": "0001_add_flexus_atende",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791239640010,
+      "tag": "0002_atende_credit_anchor",
+      "breakpoints": true
     }
   ]
 }

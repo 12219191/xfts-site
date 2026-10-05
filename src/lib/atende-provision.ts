@@ -1,5 +1,7 @@
 // Corpo do provisionamento do FLEXUS | Atende. Só live; plano precisa existir no
 // catálogo (nome real Basic/Standard/Corporate) — sem plano reconhecido, bloqueia.
+import { buildCreditCycle, type CreditCycle } from "@/lib/atende-credit-cycle";
+
 export const ATENDE_LOOKUP_PREFIX = "flexus_atende_";
 
 export interface AtendeProvisionInput {
@@ -13,6 +15,7 @@ export interface AtendeProvisionInput {
   features: Record<string, boolean>;
   limites: Record<string, number | null>;
   timestamp: string;
+  creditCycle?: CreditCycle;
 }
 
 export type AtendeProvisionResult =
@@ -39,6 +42,7 @@ export function buildAtendeProvisionBody(i: AtendeProvisionInput): AtendeProvisi
       acesso_ate: i.accessUntil,
       environment: "live",
       timestamp: i.timestamp,
+      credit_cycle: canceled || !i.creditCycle ? buildCreditCycle(null, null) : i.creditCycle,
     },
   };
 }

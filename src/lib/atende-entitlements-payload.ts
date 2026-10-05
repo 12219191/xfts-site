@@ -13,10 +13,13 @@ export interface AtendeSubInput {
   cancel_at_period_end?: boolean | null;
 }
 
+import { buildCreditCycle, type CreditCycle } from "@/lib/atende-credit-cycle";
+
 export function buildAtendeEntitlementsPayload(
   ent: AtendeEntInput,
   s: AtendeSubInput | null,
   capabilities: string[],
+  creditCycle: CreditCycle = buildCreditCycle(null, null),
 ) {
   return {
     produto: "atende" as const,
@@ -33,5 +36,6 @@ export function buildAtendeEntitlementsPayload(
     capabilities: s ? capabilities : [],
     acesso_ate: s?.current_period_end ?? null,
     cancelamento_agendado: s?.cancel_at_period_end ?? false,
+    credit_cycle: s ? creditCycle : buildCreditCycle(null, null),
   };
 }

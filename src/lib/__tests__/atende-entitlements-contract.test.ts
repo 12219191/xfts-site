@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { buildAtendeEntitlementsPayload } from "../atende-entitlements-payload";
 
-const KEYS = ["produto","ativo","status","plano","papel","environment","motivo","limite_usuarios","usuarios_em_uso","recursos","limites","capabilities","acesso_ate","cancelamento_agendado"].sort();
+const KEYS = ["produto","ativo","status","plano","papel","environment","motivo","limite_usuarios","usuarios_em_uso","recursos","limites","capabilities","acesso_ate","cancelamento_agendado","credit_cycle"].sort();
 
 describe("contrato entitlements atende", () => {
   it("positivo: produto atende, environment live", () => {
@@ -23,6 +23,7 @@ describe("contrato entitlements atende", () => {
       produto: "atende", ativo: false, status: "none", plano: null, papel: "owner", environment: null,
       motivo: "Sem assinatura live ativa do FLEXUS | Atende.", limite_usuarios: 0, usuarios_em_uso: 0,
       recursos: {}, limites: {}, capabilities: [], acesso_ate: null, cancelamento_agendado: false,
+      credit_cycle: { version: "atende-credits-1", subscription_id: null, anchor: null, billing_interval: null, period_start: null, access_until: null, is_courtesy: null, eligible: false, reason: "no_active_subscription" },
     });
   });
 });
