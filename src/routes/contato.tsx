@@ -9,6 +9,7 @@ import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
 import { toast } from "sonner";
 import { trackFormSubmit } from "@/lib/tracking";
 import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
+import { organizationJsonLd } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/contato")({
       { name: "twitter:description", content: "Solicite uma demonstração gratuita dos sistemas FLEXUS ou fale com nosso time." },
     ],
     links: [{ rel: "canonical", href: "https://xfts-flexus.com/contato" }],
+    scripts: [organizationJsonLd()],
   }),
   component: ContatoPage,
 });
