@@ -134,6 +134,9 @@ export async function resolveEntitlements(
 
 /** Entitlements do usuário em um produto específico. */
 type AtendeRow = {
+  id: string;
+  current_period_start: string | null;
+  credit_anchor: string | null;
   price_id: string;
   status: string;
   current_period_end: string | null;
@@ -155,7 +158,7 @@ export async function resolveAtendeLive(userId: string) {
   const { data } = await supabaseAdmin
     .from("subscriptions")
     .select(
-      "price_id, status, current_period_end, cancel_at_period_end, environment, is_courtesy, seats_used, seats_override",
+      "id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment, is_courtesy, seats_used, seats_override, credit_anchor",
     )
     .eq("user_id", userId)
     .eq("environment", "live");
@@ -164,6 +167,19 @@ export async function resolveAtendeLive(userId: string) {
     "live",
     (p) => appKeyFromPriceId(p) === "atende",
   );
+}
+
+/** credit_cycle (atende-credits-1) da assinatura live resolvida; sem dado confiável → inelegível. */
+export async function loadAtendeCreditCycle(userId: string) {
+  const { buildCreditCycle, intervalFromPlans } = await import("@/lib/atende-credit-cycle");
+  const r = await resolveAtendeLive(userId);
+  if (r.kind !== "ok") return buildCreditCycle(null, null);
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("catalog_plans")
+    .select("price_lookup_key, annual_lookup_key")
+    .eq("product_key", "atende");
+  return buildCreditCycle(r.sub, intervalFromPlans(r.sub.price_id, data ?? []));
 }
 
 export const ATENDE_DENIAL = {

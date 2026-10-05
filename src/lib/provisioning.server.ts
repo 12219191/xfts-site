@@ -91,6 +91,11 @@ export async function provisionApp(
   let body: string;
   if (appKey === "atende") {
     const { buildAtendeProvisionBody } = await import("@/lib/atende-provision");
+    const { loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
+    const creditCycle =
+      input.event === "canceled" || input.environment !== "live"
+        ? undefined
+        : await loadAtendeCreditCycle(input.userId);
     const built = buildAtendeProvisionBody({
       event: input.event,
       userId: input.userId,
@@ -102,6 +107,7 @@ export async function provisionApp(
       features: ent.features,
       limites: ent.limites,
       timestamp: new Date().toISOString(),
+      creditCycle,
     });
     if (!built.ok) return finish(input, appKey, { ok: false, error: built.error }, startedAt);
     body = JSON.stringify(built.body);

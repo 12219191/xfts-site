@@ -154,6 +154,8 @@ export const grantCourtesy = createServerFn({ method: "POST" })
         price_id: priceId,
         status: "active",
         current_period_start: now.toISOString(),
+        credit_anchor: now.toISOString(),
+        credit_anchor_source: "courtesy_grant",
         current_period_end: until.toISOString(),
         cancel_at_period_end: false,
         environment: data.environment,

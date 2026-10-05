@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
         }
 
         if (app.key === "atende") {
-          const { resolveUserEntitlements, resolveAtendeLive } = await import("@/lib/entitlements.server");
+          const { resolveUserEntitlements, resolveAtendeLive, loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
           const ent = await resolveUserEntitlements(userId, "atende");
           const r = ent.ativo ? await resolveAtendeLive(userId) : null;
           const s = r && r.kind === "ok" ? r.sub : null;
@@ -80,7 +80,8 @@ export const Route = createFileRoute("/api/public/entitlements")({
             : [];
           await log("ok", 200, ent.denialReason);
           const { buildAtendeEntitlementsPayload } = await import("@/lib/atende-entitlements-payload");
-          return json(buildAtendeEntitlementsPayload(ent, s, capabilities));
+          const cycle = s ? await loadAtendeCreditCycle(userId) : undefined;
+          return json(buildAtendeEntitlementsPayload(ent, s, capabilities, cycle));
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

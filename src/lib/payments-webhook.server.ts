@@ -67,6 +67,15 @@ async function logEvent(row: Record<string, unknown>) {
   if (error) console.error("Falha ao registrar evento:", error.message);
 }
 
+/** Aniversário confiável do Stripe (start_date imutável; senão billing_cycle_anchor). Gravado uma vez; trigger impede reset. */
+export function stripeCreditAnchor(subscription: any): { credit_anchor: string; credit_anchor_source: string } | Record<string, never> {
+  const sd = subscription?.start_date;
+  if (typeof sd === "number" && sd > 0) return { credit_anchor: new Date(sd * 1000).toISOString(), credit_anchor_source: "stripe_start_date" };
+  const bca = subscription?.billing_cycle_anchor;
+  if (typeof bca === "number" && bca > 0) return { credit_anchor: new Date(bca * 1000).toISOString(), credit_anchor_source: "stripe_billing_cycle_anchor" };
+  return {};
+}
+
 function resolvePriceId(item: any): string {
   return (
     item?.price?.lookup_key || item?.price?.metadata?.lovable_external_id || item?.price?.id
@@ -157,6 +166,7 @@ async function handleSubscriptionCreated(
           : null,
         current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         environment: env,
+        ...stripeCreditAnchor(subscription),
         ...eventStamp(meta),
         updated_at: new Date().toISOString(),
       } as never,
@@ -229,6 +239,7 @@ async function handleSubscriptionUpdated(
       current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
       current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
       cancel_at_period_end: subscription.cancel_at_period_end || false,
+      ...stripeCreditAnchor(subscription),
       ...eventStamp(meta),
       updated_at: new Date().toISOString(),
     } as never)
