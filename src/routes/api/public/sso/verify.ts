@@ -153,23 +153,19 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           const { loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
           const creditCycle = await loadAtendeCreditCycle(payload.sub);
           await log(app.key, "ok", 200, undefined, payload.sub);
-          return json({
-            user_id: payload.sub,
+          const { buildAtendeSsoPayload } = await import("@/lib/atende-sso-payload");
+          return json(buildAtendeSsoPayload({
+            userId: payload.sub,
             email: payload.email,
-            produto: "atende",
-            plano: plan?.name ?? null,
-            papel: "owner",
-            purpose: "owner",
+            planoNome: plan?.name ?? null,
             environment: r.environment,
-            limite_usuarios: ent.limites["usuarios"] ?? null,
-            recursos: ent.features,
+            features: ent.features,
             limites: ent.limites,
             status: s.status,
-            ativo: true,
-            acesso_ate: s.current_period_end ?? null,
-            cancelamento_agendado: s.cancel_at_period_end ?? false,
-            credit_cycle: creditCycle,
-          });
+            currentPeriodEnd: s.current_period_end ?? null,
+            cancelAtPeriodEnd: s.cancel_at_period_end ?? null,
+            creditCycle,
+          }));
         }
 
         const { data: subs } = await supabaseAdmin

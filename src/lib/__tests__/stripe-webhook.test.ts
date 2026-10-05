@@ -393,3 +393,25 @@ describe("idempotência e deduplicação", () => {
     expect(db.subscriptions[0]!["status"]).toBe("canceled");
   });
 });
+
+describe("credit_anchor (atende-credits-1)", () => {
+  const at = (type: string, object: unknown, id: string, created: number) => ({ id, type, created, data: { object } });
+  const now = Math.floor(Date.now() / 1000);
+  const START = now - 86400 * 40;
+
+  it("grava anchor do start_date e descarta evento atrasado com âncora diferente", async () => {
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(PRO, { start_date: START }), "evt_a_novo", now),
+      "sandbox",
+    );
+    expect(db.subscriptions[0]!["credit_anchor"]).toBe(new Date(START * 1000).toISOString());
+    expect(db.subscriptions[0]!["credit_anchor_source"]).toBe("stripe_start_date");
+
+    await handleStripeEvent(
+      at("customer.subscription.updated", stripeSubscription(BASICO, { start_date: START - 999999 }), "evt_a_antigo", now - 600),
+      "sandbox",
+    );
+    expect(db.subscriptions[0]!["credit_anchor"]).toBe(new Date(START * 1000).toISOString());
+    expect(db.subscriptions[0]!["price_id"]).toBe(PRO);
+  });
+});

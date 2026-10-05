@@ -3,6 +3,7 @@ import { buildCreditCycle, intervalFromPlans, CREDIT_CYCLE_VERSION } from "../at
 import { buildAtendeEntitlementsPayload } from "../atende-entitlements-payload";
 import { buildAtendeProvisionBody } from "../atende-provision";
 import { stripeCreditAnchor } from "../payments-webhook.server";
+import { buildAtendeSsoPayload } from "../atende-sso-payload";
 
 const NOW = Date.parse("2026-10-20T00:00:00Z");
 const PLANS = [
@@ -65,5 +66,36 @@ describe("credit_cycle atende-credits-1", () => {
     expect(stripeCreditAnchor({ start_date: 1759622400, billing_cycle_anchor: 1760000000 })).toEqual({ credit_anchor: new Date(1759622400000).toISOString(), credit_anchor_source: "stripe_start_date" });
     expect(stripeCreditAnchor({ billing_cycle_anchor: 1760000000 }).credit_anchor_source).toBe("stripe_billing_cycle_anchor");
     expect(stripeCreditAnchor({})).toEqual({});
+  });
+  it("crédito exige status active: trialing/past_due/incomplete/unpaid/canceled inelegíveis", () => {
+    for (const st of ["trialing", "past_due", "incomplete", "unpaid", "canceled", "paused"]) {
+      expect(buildCreditCycle({ ...base, status: st }, "month", NOW)).toMatchObject({ eligible: false, reason: "status_not_eligible" });
+    }
+    expect(buildCreditCycle({ ...base, is_courtesy: true, status: "trialing" }, "month", NOW).eligible).toBe(false);
+  });
+  it("period_invalid: datas inválidas, futuras ou início>=fim", () => {
+    const bad = [
+      { current_period_start: "not-a-date" },
+      { current_period_end: "2026-13-99T00:00:00Z" },
+      { current_period_start: null },
+      { current_period_start: "2026-10-25T00:00:00Z" },
+      { current_period_start: "2026-11-04T00:00:00Z", current_period_end: "2026-11-04T00:00:00Z" },
+      { credit_anchor: "invalid" },
+      { credit_anchor: "2026-12-01T00:00:00Z" },
+    ];
+    for (const b of bad) {
+      expect(buildCreditCycle({ ...base, ...b }, "month", NOW)).toMatchObject({ eligible: false, reason: "period_invalid" });
+    }
+  });
+  it("SSO: mesmo credit_cycle e campos atuais preservados", () => {
+    const cycle = buildCreditCycle(base, "month", NOW);
+    const p = buildAtendeSsoPayload({ userId: "u", email: "e", planoNome: "Basic", environment: "live", features: {}, limites: { usuarios: 2 }, status: "active", currentPeriodEnd: base.current_period_end, cancelAtPeriodEnd: true, creditCycle: cycle });
+    expect(Object.keys(p).sort()).toEqual(["user_id","email","produto","plano","papel","purpose","environment","limite_usuarios","recursos","limites","status","ativo","acesso_ate","cancelamento_agendado","credit_cycle"].sort());
+    expect(p).toMatchObject({ produto: "atende", purpose: "owner", cancelamento_agendado: true, limite_usuarios: 2 });
+    expect(p.credit_cycle).toEqual(cycle);
+    expect(Object.keys(p.credit_cycle).sort()).toEqual(KEYS);
+  });
+  it("cancel_at_period_end com status active segue elegível", () => {
+    expect(buildCreditCycle({ ...base, status: "active" }, "year", NOW).eligible).toBe(true);
   });
 });
