@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Check, Loader2 } from "lucide-react";
-import { formatBRL, type CatalogPlan } from "@/lib/catalog";
+import { formatBRL, tiersForProduct, type CatalogPlan } from "@/lib/catalog";
 import { saveCatalogPlan } from "@/lib/admin-catalog.functions";
 import { getEntitlementDefinitions } from "@/lib/admin-entitlements.functions";
 import type { EntitlementDefinition, EntitlementMap } from "@/lib/entitlements";
@@ -85,11 +85,14 @@ export function CatalogPlanDialog({
         trialDays: String(plan.trialDays ?? 0),
       });
     } else {
-      setForm(emptyForm);
+      setForm({ ...emptyForm, tier: tiersForProduct(productKey)[0] as CatalogPlan["tier"] });
     }
     setEnts({ ...(plan?.entitlements ?? {}) });
     setSyncStripe(true);
-  }, [open, plan]);
+  }, [open, plan, productKey]);
+
+  const tierOptions = tiersForProduct(productKey);
+  const tierInvalid = !tierOptions.includes(form.tier);
 
   useEffect(() => {
     if (!open) return;
@@ -181,10 +184,14 @@ export function CatalogPlanDialog({
                   value={form.tier}
                   onChange={(e) => setForm({ ...form, tier: e.target.value as CatalogPlan["tier"] })}
                 >
-                  <option value="basico">basico</option>
-                  <option value="pro">pro</option>
-                  <option value="enterprise">enterprise</option>
+                  {tierInvalid && <option value={form.tier}>{form.tier} (inválido)</option>}
+                  {tierOptions.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
                 </select>
+                {tierInvalid && (
+                  <p className="text-xs text-destructive">Tier não pertence a este produto.</p>
+                )}
               </div>
             </div>
 
