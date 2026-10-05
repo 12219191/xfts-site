@@ -7,8 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Gift, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
+import { courtesyTiersForProduct } from "@/lib/catalog";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { grantCourtesy, listCourtesy, revokeCourtesy, type CourtesyRow } from "@/lib/courtesy.functions";
+
+const TIER_LABELS: Record<string, string> = {
+  basico: "Básico",
+  pro: "Pro",
+  basic: "Basic",
+  standard: "Standard",
+  corporate: "Corporate",
+};
 
 const ENV = getStripeEnvironment() as "sandbox" | "live";
 
@@ -24,7 +33,7 @@ export function CourtesyPanel() {
 
   const [email, setEmail] = useState("");
   const [appKey, setAppKey] = useState(FLEXUS_APPS[0]!.key as string);
-  const [tier, setTier] = useState<"basico" | "pro">("pro");
+  const [tier, setTier] = useState<string>("pro");
   const [dias, setDias] = useState("30");
   const [nota, setNota] = useState("");
 
@@ -102,7 +111,12 @@ export function CourtesyPanel() {
             <select
               id="cortesia-app"
               value={appKey}
-              onChange={(e) => setAppKey(e.target.value)}
+              onChange={(e) => {
+                const next = e.target.value;
+                setAppKey(next);
+                const opts = courtesyTiersForProduct(next);
+                if (!opts.includes(tier)) setTier(opts[0]!);
+              }}
               className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
             >
               {FLEXUS_APPS.map((app) => (
@@ -119,11 +133,14 @@ export function CourtesyPanel() {
             <select
               id="cortesia-plano"
               value={tier}
-              onChange={(e) => setTier(e.target.value as "basico" | "pro")}
+              onChange={(e) => setTier(e.target.value)}
               className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
             >
-              <option value="basico">Básico</option>
-              <option value="pro">Pro</option>
+              {courtesyTiersForProduct(appKey).map((t) => (
+                <option key={t} value={t}>
+                  {TIER_LABELS[t] ?? t}
+                </option>
+              ))}
             </select>
           </div>
 

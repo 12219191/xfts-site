@@ -1,3 +1,4 @@
+import { courtesyTiersForProduct } from "@/lib/catalog";
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ACTIVE_STATUSES, getFlexusApp } from "@/lib/flexus-apps";
@@ -19,7 +20,7 @@ export interface CourtesyRow {
 type GrantInput = {
   email: string;
   appKey: string;
-  tier: "basico" | "pro";
+  tier: string;
   dias: number;
   nota?: string;
   environment: StripeEnv;
@@ -90,7 +91,9 @@ export const grantCourtesy = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: GrantInput) => {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? "")) throw new Error("E-mail inválido");
-    if (!["basico", "pro"].includes(data.tier)) throw new Error("Plano inválido");
+    if (!courtesyTiersForProduct(data.appKey ?? "").includes(data.tier)) {
+      throw new Error("Plano inválido para este sistema");
+    }
     if (!Number.isFinite(data.dias) || data.dias < 1 || data.dias > 365) {
       throw new Error("Informe uma validade entre 1 e 365 dias");
     }
