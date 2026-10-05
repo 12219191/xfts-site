@@ -1,7 +1,5 @@
 // Ciclo de franquia de créditos do FLEXUS | Atende (contrato atende-credits-1).
 // Mesmo objeto em entitlements, provisionamento e SSO. Puro e testável.
-import { ACTIVE_STATUSES } from "@/lib/flexus-apps";
-
 export const CREDIT_CYCLE_VERSION = "atende-credits-1" as const;
 
 export type BillingInterval = "month" | "year";
@@ -20,6 +18,7 @@ export type CreditCycleReason =
   | "no_active_subscription"
   | "not_live"
   | "status_not_eligible"
+  | "period_invalid"
   | "access_expired"
   | "anchor_unverified"
   | "interval_unknown";
@@ -66,12 +65,7 @@ export function buildCreditCycle(
   }
   const anchor = sub.credit_anchor ?? null;
   const until = sub.current_period_end;
-  let reason: CreditCycleReason | null = null;
-  if (sub.environment !== "live") reason = "not_live";
-  else if (!(ACTIVE_STATUSES.includes(sub.status) || sub.status === "canceled")) reason = "status_not_eligible";
-  else if (!until || new Date(until).getTime() <= now) reason = "access_expired";
-  else if (!anchor || Number.isNaN(new Date(anchor).getTime())) reason = "anchor_unverified";
-  else if (!interval) reason = "interval_unknown";
+  const reason = creditReason(sub, interval, now);
   return {
     version: CREDIT_CYCLE_VERSION,
     subscription_id: sub.id,
@@ -83,4 +77,37 @@ export function buildCreditCycle(
     eligible: reason === null,
     reason,
   };
+}
+
+/** Data ISO válida e finita; senão null. */
+function ts(v: string | null | undefined): number | null {
+  if (!v) return null;
+  const t = new Date(v).getTime();
+  return Number.isFinite(t) ? t : null;
+}
+
+/**
+ * Elegibilidade de CRÉDITO (não de acesso). Só status "active":
+ * trialing/past_due/incomplete/unpaid/canceled não recebem nova franquia,
+ * mesmo com acesso em carência. cancel_at_period_end=true com status active
+ * segue elegível até access_until. Limite: o Hub não guarda prova de
+ * pagamento (paid-through); para pagas a prova é status "active" do Stripe +
+ * current_period_end.
+ */
+function creditReason(
+  sub: CreditCycleSub,
+  interval: BillingInterval | null,
+  now: number,
+): CreditCycleReason | null {
+  if (sub.environment !== "live") return "not_live";
+  if (sub.status !== "active") return "status_not_eligible";
+  const start = ts(sub.current_period_start);
+  const end = ts(sub.current_period_end);
+  if (start === null || end === null || start >= end || start > now) return "period_invalid";
+  if (end <= now) return "access_expired";
+  if (!sub.credit_anchor) return "anchor_unverified";
+  const a = ts(sub.credit_anchor);
+  if (a === null || a > now) return "period_invalid";
+  if (!interval) return "interval_unknown";
+  return null;
 }
