@@ -9,6 +9,7 @@ import {
   planTierFromPriceId,
 } from "@/lib/flexus-apps";
 import { isRealStripeId } from "@/lib/subscription-guards";
+import { safeReturnUrl } from "@/lib/return-url";
 
 export interface CheckoutSessionResult {
   clientSecret: string;
@@ -41,7 +42,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       returnUrl?: string;
     }) => {
       if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId ?? "")) throw new Error("Plano inválido");
-      return data;
+      if (data.environment !== "live" && data.environment !== "sandbox") {
+        throw new Error("Ambiente inválido");
+      }
+      // Quantidade nunca vem do cliente: cada checkout é de 1 assinatura.
+      return {
+        priceId: data.priceId,
+        environment: data.environment,
+        returnUrl: safeReturnUrl(data.returnUrl),
+      };
     },
   )
   .handler(
@@ -154,7 +163,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         }
 
         const session = await stripe.checkout.sessions.create({
-          line_items: [{ price: stripePrice.id, quantity: data.quantity || 1 }],
+          line_items: [{ price: stripePrice.id, quantity: 1 }],
           mode: isRecurring ? "subscription" : "payment",
           ui_mode: "embedded_page",
           // Permite cupons de beta tester / desconto promocional no checkout.
@@ -203,7 +212,7 @@ export const getCheckoutStatus = createServerFn({ method: "POST" })
       const stripe = createStripeClient(data.environment);
       const session = await stripe.checkout.sessions.retrieve(data.sessionId);
 
-      if (session.metadata?.userId && session.metadata.userId !== userId) {
+      if (!session.metadata?.userId || session.metadata.userId !== userId) {
         return { error: "Esta sessão de pagamento não pertence à sua conta." };
       }
 

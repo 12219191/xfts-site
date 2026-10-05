@@ -73,6 +73,9 @@ export const listFormSubmissions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => filterSchema.parse(input ?? {}))
   .handler(async ({ data, context }): Promise<{ rows: FormSubmissionRow[] }> => {
+    const { requireAdminModule } = await import("@/lib/admin-rbac.server");
+    const email = (context.claims as { email?: string } | null)?.email ?? "";
+    await requireAdminModule(context.supabase, context.userId, email, "leads");
     let query = context.supabase
       .from("form_submissions")
       .select("*")

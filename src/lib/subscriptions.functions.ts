@@ -190,7 +190,10 @@ export const changePlan = createServerFn({ method: "POST" })
 export const createPortalSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (data: { environment: StripeEnv; returnUrl?: string; subscriptionId?: string }) => data,
+    (data: { environment: StripeEnv; returnUrl?: string; subscriptionId?: string }) => ({
+      ...data,
+      returnUrl: safeReturnUrl(data.returnUrl),
+    }),
   )
   .handler(async ({ data, context }): Promise<{ url: string } | { error: string }> => {
     const { supabase, userId } = context;
