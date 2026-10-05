@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProdutosIndex } from "./produtos";
 import { getPublicCatalog } from "@/lib/catalog.functions";
+import { softwareAppsJsonLd } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/produtos/")({
+  head: () => ({ scripts: [softwareAppsJsonLd()] }),
   loader: () => getPublicCatalog(),
   errorComponent: ({ error }) => (
     <div className="section-padding container-wide text-sm text-muted-foreground" role="alert">

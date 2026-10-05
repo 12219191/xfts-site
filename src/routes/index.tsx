@@ -10,6 +10,7 @@ import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/trackin
 import heroMain from "@/assets/hero-main.jpg";
 import { Logo } from "@/components/Logo";
 import { useProductImageData } from "@/lib/product-images";
+import { softwareAppsJsonLd } from "@/lib/structured-data";
 
 
 export const Route = createFileRoute("/")({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f480906-6ed1-4b34-80bf-977ce01e735d/id-preview-911ffcd3--26205ede-bbe4-4e90-90d5-5be5b0db494b.lovable.app-1779899998656.png" },
     ],
     links: [{ rel: "canonical", href: "https://xfts-flexus.com/" }],
+    scripts: [softwareAppsJsonLd()],
   }),
   component: HomePage,
 });
