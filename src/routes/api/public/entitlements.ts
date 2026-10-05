@@ -15,8 +15,13 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
+export const CREDITS_BUILD = "credits-cycle-r2";
+
 function json(data: unknown, status = 200) {
-  return Response.json(data, { status, headers: { ...CORS, "Cache-Control": "no-store" } });
+  return Response.json(data, {
+    status,
+    headers: { ...CORS, "Cache-Control": "no-store", "X-XFTS-Credits-Build": CREDITS_BUILD },
+  });
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -70,17 +75,17 @@ export const Route = createFileRoute("/api/public/entitlements")({
         }
 
         if (app.key === "atende") {
-          const { resolveUserEntitlements, resolveAtendeLive, loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
+          const { resolveUserEntitlements, creditCycleForSub } = await import("@/lib/entitlements.server");
           const ent = await resolveUserEntitlements(userId, "atende");
-          const r = ent.ativo ? await resolveAtendeLive(userId) : null;
-          const s = r && r.kind === "ok" ? r.sub : null;
+          // Mesma assinatura canônica para acesso e credit_cycle (sem re-resolver).
+          const s = ent.ativo ? (ent.atendeSub ?? null) : null;
           const { resolveCapabilities } = await import("@/lib/capabilities.server");
           const capabilities = s
             ? await resolveCapabilities({ productKey: "atende", entitlements: ent, viewer: { actingAs: "TENANT_ADMIN" } })
             : [];
           await log("ok", 200, ent.denialReason);
           const { buildAtendeEntitlementsPayload } = await import("@/lib/atende-entitlements-payload");
-          const cycle = s ? await loadAtendeCreditCycle(userId) : undefined;
+          const cycle = await creditCycleForSub(s);
           return json(buildAtendeEntitlementsPayload(ent, s, capabilities, cycle));
         }
 

@@ -150,8 +150,8 @@ export const Route = createFileRoute("/api/public/sso/verify")({
             .eq("product_key", "atende")
             .or(`price_lookup_key.eq.${s.price_id},annual_lookup_key.eq.${s.price_id}`)
             .maybeSingle();
-          const { loadAtendeCreditCycle } = await import("@/lib/entitlements.server");
-          const creditCycle = await loadAtendeCreditCycle(payload.sub);
+          const { creditCycleForSub } = await import("@/lib/entitlements.server");
+          const creditCycle = await creditCycleForSub(s);
           await log(app.key, "ok", 200, undefined, payload.sub);
           const { buildAtendeSsoPayload } = await import("@/lib/atende-sso-payload");
           return json(buildAtendeSsoPayload({

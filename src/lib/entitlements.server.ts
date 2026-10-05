@@ -133,7 +133,7 @@ export async function resolveEntitlements(
 }
 
 /** Entitlements do usuário em um produto específico. */
-type AtendeRow = {
+export type AtendeRow = {
   id: string;
   current_period_start: string | null;
   credit_anchor: string | null;
@@ -169,17 +169,30 @@ export async function resolveAtendeLive(userId: string) {
   );
 }
 
-/** credit_cycle (atende-credits-1) da assinatura live resolvida; sem dado confiável → inelegível. */
-export async function loadAtendeCreditCycle(userId: string) {
+/**
+ * credit_cycle (atende-credits-1) a partir da assinatura JÁ resolvida
+ * (sem re-resolver). Falha ao ler o catálogo → intervalo desconhecido
+ * (fail closed, sem detalhes do erro).
+ */
+export async function creditCycleForSub(sub: AtendeRow | null) {
   const { buildCreditCycle, intervalFromPlans } = await import("@/lib/atende-credit-cycle");
-  const r = await resolveAtendeLive(userId);
-  if (r.kind !== "ok") return buildCreditCycle(null, null);
+  if (!sub) return buildCreditCycle(null, null);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from("catalog_plans")
     .select("price_lookup_key, annual_lookup_key")
     .eq("product_key", "atende");
-  return buildCreditCycle(r.sub, intervalFromPlans(r.sub.price_id, data ?? []));
+  if (error || !data) {
+    console.error("credit_cycle: falha ao ler catálogo do Atende");
+    return buildCreditCycle(sub, null);
+  }
+  return buildCreditCycle(sub, intervalFromPlans(sub.price_id, data));
+}
+
+/** Para o provisionamento: resolve UMA vez e monta o ciclo. */
+export async function loadAtendeCreditCycle(userId: string) {
+  const r = await resolveAtendeLive(userId);
+  return creditCycleForSub(r.kind === "ok" ? r.sub : null);
 }
 
 export const ATENDE_DENIAL = {
@@ -191,7 +204,13 @@ export async function resolveUserEntitlements(
   userId: string,
   productKey: string,
 ): Promise<
-  ResolvedEntitlements & { seatsUsed: number; environment?: "live"; denialReason?: string }
+  ResolvedEntitlements & {
+    seatsUsed: number;
+    environment?: "live";
+    denialReason?: string;
+    /** Assinatura canônica do Atende usada nesta resolução (só app=atende). */
+    atendeSub?: AtendeRow | null;
+  }
 > {
   if (productKey === "atende") {
     const r = await resolveAtendeLive(userId);
@@ -207,6 +226,7 @@ export async function resolveUserEntitlements(
       productKey,
       definicoes: resolved.definicoes.length ? resolved.definicoes : await loadDefinitions(productKey),
       seatsUsed: s?.seats_used ?? 0,
+      atendeSub: s,
       ...(r.kind === "ok"
         ? { environment: "live" as const }
         : { ativo: false, denialReason: ATENDE_DENIAL[r.kind] }),

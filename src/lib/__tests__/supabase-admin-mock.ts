@@ -40,6 +40,9 @@ export interface MockState {
   subscriptions: MockSub[];
 }
 
+/** Tabelas que devolvem erro nas leituras em lista (simula falha transitória). */
+export const failTables = new Set<string>();
+
 export const state: MockState = { definitions: [], plans: [], subscriptions: [] };
 
 export function setState(next: Partial<MockState>) {
@@ -97,8 +100,10 @@ function makeQuery(table: string) {
     order: () => query,
     limit: () => query,
     maybeSingle: async () => ({ data: rows()[0] ?? null, error: null }),
-    then: (resolve: (value: { data: unknown[]; error: null }) => unknown) =>
-      resolve({ data: rows(), error: null }),
+    then: (resolve: (value: { data: unknown[] | null; error: { message: string } | null }) => unknown) =>
+      failTables.has(table)
+        ? resolve({ data: null, error: { message: "falha simulada" } })
+        : resolve({ data: rows(), error: null }),
   };
   return query;
 }
