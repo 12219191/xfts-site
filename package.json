@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:credit-bundle": "node scripts/verify-credit-bundle.mjs dist"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",

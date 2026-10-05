@@ -51,7 +51,7 @@ beforeEach(() => {
   });
 });
 
-describe("GET /api/public/entitlements?app=atende (credits-cycle-r2)", () => {
+describe("GET /api/public/entitlements?app=atende (credits-cycle-r3)", () => {
   it("credit_cycle usa a MESMA assinatura do acesso e o marcador de build", async () => {
     const { res, body } = await call();
     expect(res.status).toBe(200);

@@ -15,7 +15,7 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
-export const CREDITS_BUILD = "credits-cycle-r2";
+export const CREDITS_BUILD = "credits-cycle-r3";
 
 function json(data: unknown, status = 200) {
   return Response.json(data, {
