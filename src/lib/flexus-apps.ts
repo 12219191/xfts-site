@@ -75,10 +75,11 @@ export const FLEXUS_APPS: FlexusApp[] = [
   {
     key: "estetica",
     name: "FLEXUS | Estética",
-    url: "",
+    url: "https://xfts-flexus9.com",
+    provisionUrl: "https://fhtjdctzpeurqgfqkypx.supabase.co/functions/v1/flexus-provision",
     pricePrefix: "gestao_esteticas",
     landing: "/produtos/gestao-esteticas",
-    available: false,
+    available: true,
   },
   {
     key: "aba",
