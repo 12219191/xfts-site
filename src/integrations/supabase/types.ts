@@ -1184,6 +1184,69 @@ export type Database = {
         }
         Relationships: []
       }
+      support_sessions: {
+        Row: {
+          actor_email: string
+          actor_id: string
+          actor_name: string
+          app_key: string
+          created_at: string
+          ended_at: string | null
+          ended_reason: string | null
+          environment: string
+          id: string
+          jti: string
+          reason: string
+          revoked_by: string | null
+          role: string
+          session_expires_at: string | null
+          tenant_id: string
+          ticket: string | null
+          token_expires_at: string
+          used_at: string | null
+        }
+        Insert: {
+          actor_email: string
+          actor_id: string
+          actor_name?: string
+          app_key: string
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          environment?: string
+          id?: string
+          jti: string
+          reason: string
+          revoked_by?: string | null
+          role: string
+          session_expires_at?: string | null
+          tenant_id: string
+          ticket?: string | null
+          token_expires_at: string
+          used_at?: string | null
+        }
+        Update: {
+          actor_email?: string
+          actor_id?: string
+          actor_name?: string
+          app_key?: string
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          environment?: string
+          id?: string
+          jti?: string
+          reason?: string
+          revoked_by?: string | null
+          role?: string
+          session_expires_at?: string | null
+          tenant_id?: string
+          ticket?: string | null
+          token_expires_at?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       webhook_events: {
         Row: {
           attempts: number
