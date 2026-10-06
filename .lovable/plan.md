@@ -8,7 +8,7 @@ Substitui o "Acesso de suporte" atual, que entra como o cliente com papel `owner
 Control Center ──(papel + motivo + ticket)──> Hub emite token (5 min, uso único, chave dedicada)
       │                                              │ jti gravado
       ▼                                              ▼
-Abre https://<produto>/support?token=...  ──>  produto chama POST /api/public/support-session/verify
+Abre https://<produto>/support#token=...  ──>  produto chama POST /api/public/support-session/verify
                                                    │ (chave do app + token)
                                                    ▼
                                      Hub valida, consome o jti, abre a sessão (máx. 60 min)
@@ -23,7 +23,7 @@ Abre https://<produto>/support?token=...  ──>  produto chama POST /api/publi
   - **Estética:** `reports.dados_360` ("Dados Gerenciais 360"), escopo `XFTS_SUPPORT`, ou seja, já é exclusivo da XFTS.
   - **Barbearia:** `reports.data_360` ("Relatório · Dados 360"), escopo `TENANT_ADMIN`, ou seja, hoje é liberado ao admin do cliente.
 
-  Preciso que você decida se o da Barbearia também deve virar exclusivo da XFTS (veja "Decisão pendente"). A Barbearia ainda tem 14 capabilities `XFTS_SUPERADMIN`, por exemplo `xfts.*`, `admin.backup` e `admin.security`.
+  O da Barbearia também passa a ser exclusivo da XFTS (ajuste 1). A Barbearia ainda tem 14 capabilities `XFTS_SUPERADMIN`, por exemplo `xfts.*`, `admin.backup` e `admin.security`.
 
 ## O que muda no Hub
 
@@ -62,7 +62,7 @@ Abre https://<produto>/support?token=...  ──>  produto chama POST /api/publi
   - `acting_as` interno sem sessão continua dando 403.
 - `src/routes/api/public/entitlements.ts`: com `support_session_id` válido, inclui as capabilities XFTS. Sem ele, a resposta não muda.
 - `src/lib/capability-check.ts`: novo `supportViewer(session)`. `parseActingAs` fica igual.
-- `src/lib/admin-customers.server.ts` / `.functions.ts`: `createSupportAccess` passa a emitir a sessão nova. O fluxo antigo com `role: "owner"` sai.
+- `src/lib/admin-customers.server.ts` / `.functions.ts`: `createSupportAccess` emite a sessão nova nos apps com a flag ligada. Nos demais, mantém o fluxo antigo (ver ajuste 4).
 - `src/routes/api/public/sso/verify.ts`: recusa tokens `purpose: "support"` ainda pendentes. Não haverá sessão de suporte disfarçada de owner.
 - `src/components/admin/CustomerTimelineDialog.tsx` (ou o diálogo de suporte atual em `/admin/clientes`):
   - escolha do papel, motivo (mínimo de 5 caracteres) e ticket;
@@ -88,7 +88,7 @@ Abre https://<produto>/support?token=...  ──>  produto chama POST /api/publi
 
 Isso vale para Atende, Estética, Barbearia, CRM e Casa360. O Hub não altera os outros sistemas. Entrego um kit pronto para colar, como fiz com o capability-gate.
 
-1. **Rota `/support?token=...`**:
+1. **Rota `/support#token=...`**, com `Referrer-Policy: no-referrer`. O token é lido do fragmento e a URL é limpa com `history.replaceState` em seguida:
    - chama `POST https://xfts-flexus.com/api/public/support-session/verify` com `x-flexus-app-key`;
    - se a resposta não for ok, mostra "Acesso de suporte inválido ou expirado".
 2. **Sessão local separada da do cliente**:
@@ -110,5 +110,29 @@ Isso vale para Atende, Estética, Barbearia, CRM e Casa360. O Hub não altera os
 - Não altero assinaturas, pagamentos, preços nem o SSO de clientes, e não publico.
 - Não altero o código dos produtos externos: entrego só o kit.
 
-## Decisão pendente
-Barbearia `reports.data_360` está como `TENANT_ADMIN`. Se ele deve ficar só para a XFTS, mudo o escopo para `XFTS_SUPPORT`, com auditoria. Isso tira o relatório dos admins de barbearias que o usam hoje. Sem a sua confirmação, ele fica como está.
+## Ajustes aprovados
+
+1. **Dados 360 da Barbearia:** `reports.data_360` passa para o escopo `XFTS_SUPPORT`.
+   - A mudança fica registrada em `admin_audit_log`, com o antes e o depois.
+   - Teste: `TENANT_ADMIN` bloqueado e `XFTS_SUPPORT`/`XFTS_SUPERADMIN` liberados, também na Barbearia.
+2. **Token no fragmento:**
+   - o link fica `https://<produto>/support#token=...`, então o token não vai a logs de servidor nem ao Referer;
+   - o kit lê o fragmento, limpa a URL na hora com `history.replaceState` e serve a rota `/support` com `Referrer-Policy: no-referrer`.
+3. **`support_session_id` amarrado ao app e ao tenant:**
+   - vale em capability-check, entitlements, status, end e audit;
+   - a `x-flexus-app-key` tem que ser a do `app_key` da sessão, e o tenant da requisição (`user_id`/`tenant_id`) tem que ser o da sessão. Senão, 403, registrado como `support_session.mismatch`.
+   - Testes: sessão de um app usada por outro gera 403; tenant diferente gera 403.
+4. **Rollout por app:**
+   - nova flag `support_session_enabled` por app, guardada em `integration_settings` (chave `support_session.<app>`), editável só por superadmin e auditada;
+   - com a flag ligada, o app usa só a sessão nova, e o token antigo de suporte é recusado no `sso/verify` desse app;
+   - sem a flag, o app continua no fluxo antigo (o Atende segue sem suporte nenhum até ligar a flag);
+   - no Control Center, cada app mostra "Sessão de suporte XFTS" ou "Fluxo antigo", com um botão para ligar ou desligar;
+   - com isso, sai a remoção imediata do fluxo antigo prevista acima em `createSupportAccess`/`sso/verify`: só some por app, quando a flag liga.
+5. **Expiração ativa:**
+   - nova rota de rotina `POST /api/public/support-session/expire`, protegida pela chave de cron existente (`verify_cron_key`) e agendada a cada 5 min;
+   - marca como `expired` as sessões vencidas (token não usado após 5 min ou sessão com mais de 60 min), grava `support_session.expired` e registra a execução em `cron_runs`;
+   - o painel de sessões ativas só mostra sessões não vencidas.
+6. **Uma sessão ativa por atendente + tenant + app:**
+   - abrir uma nova encerra a anterior (`ended_reason = 'replaced'`, auditado);
+   - um índice único parcial no banco (`actor_id, tenant_id, app_key` onde a sessão está aberta) garante a regra;
+   - teste: a segunda emissão encerra a primeira.
