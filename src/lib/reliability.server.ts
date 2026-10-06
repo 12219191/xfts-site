@@ -426,6 +426,7 @@ export async function testAppConnection(appKey: string): Promise<ConnectionTestR
     plano: "teste",
     limite_usuarios: 1,
     status: "ping",
+    environment: "live",
     timestamp: new Date().toISOString(),
   });
 
