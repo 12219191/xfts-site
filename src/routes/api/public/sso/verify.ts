@@ -78,6 +78,16 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           return json({ error: "Chave de API inválida para este sistema" }, 401);
         }
 
+        // Rollout: apps com a Sessão de Suporte XFTS ligada não aceitam mais o
+        // acesso de suporte antigo (que entrava como o titular).
+        if (payload.purpose === "support") {
+          const { supportFlagEnabled } = await import("@/lib/support-session.server");
+          if (await supportFlagEnabled(app.key)) {
+            await log(app.key, "denied", 403, "suporte antigo desativado", payload.sub);
+            return json({ error: "Use a Sessão de Suporte XFTS" }, 403);
+          }
+        }
+
         const isAtende = app.key === "atende";
         const { atendePurposeAllowed, isPaymentEnv } = await import(
           "@/lib/atende-sso"
