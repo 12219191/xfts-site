@@ -62,7 +62,7 @@ function FlexusAtendePage() {
       product={product}
       plans={plans}
       contactOnly
-      note="Custos separados: a plataforma e o uso da IA têm cobrança própria, e as mensagens do WhatsApp seguem as tarifas da Meta para a API oficial."
+      note="Custos separados: a plataforma e o uso da IA têm cobrança própria. As mensagens e conversas do WhatsApp oficial são faturadas pela Meta diretamente na conta WABA da empresa."
       fallback={{
         name: "FLEXUS | Atende",
         headline: "FLEXUS | Atende",
