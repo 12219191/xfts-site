@@ -16,6 +16,7 @@ import { History, LifeBuoy, Search, Users } from "lucide-react";
 import { CustomerTimelineDialog } from "@/components/admin/CustomerTimelineDialog";
 import { listAdminAudit, type AuditRow } from "@/lib/admin-audit.functions";
 import { auditActionLabel, diffAuditFields } from "@/lib/audit-format";
+import { SupportSessionsPanel } from "@/components/admin/SupportSessionsPanel";
 
 export const Route = createFileRoute("/admin/clientes")({
   component: () => (
@@ -58,6 +59,9 @@ function ClientesPage() {
           Busque por e-mail e veja todos os produtos, limites e acessos de cada cliente.
         </p>
       </div>
+
+      <SupportSessionsPanel />
+
 
       <form
         onSubmit={(e) => {
@@ -158,6 +162,8 @@ function ProductCard({
   );
   const [seatsReason, setSeatsReason] = useState("");
   const [supportReason, setSupportReason] = useState("");
+  const [supportRole, setSupportRole] = useState<"XFTS_SUPPORT" | "XFTS_SUPERADMIN">("XFTS_SUPPORT");
+  const [supportTicket, setSupportTicket] = useState("");
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState<AuditRow[] | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -212,13 +218,19 @@ function ProductCard({
     setBusy(true);
     try {
       const result = await createSupportAccessLink({
-        data: { userId, app: product.app, reason: supportReason },
+        data: { userId, app: product.app, reason: supportReason, role: supportRole, ticket: supportTicket || null },
       });
       if ("error" in result) toast.error(result.error);
       else {
-        await navigator.clipboard.writeText(result.url).catch(() => undefined);
-        toast.success("Link de suporte gerado e copiado (válido por poucos minutos).");
+        if (result.flow === "session") {
+          window.open(result.url, "_blank", "noopener,noreferrer");
+          toast.success("Sessão de Suporte XFTS aberta em nova aba (link de uso único, 5 min).");
+        } else {
+          await navigator.clipboard.writeText(result.url).catch(() => undefined);
+          toast.success("Link de suporte (fluxo antigo) gerado e copiado.");
+        }
         setSupportReason("");
+        setSupportTicket("");
         setHistory(null);
       }
     } catch (e) {
@@ -272,9 +284,25 @@ function ProductCard({
       <div className="mt-3 rounded-md border border-border/70 bg-muted/20 p-3">
         <p className="text-xs font-medium text-foreground">Acesso de suporte</p>
         <p className="mt-0.5 text-[11px] text-muted-foreground">
-          Entra no sistema do cliente sem a senha dele. Link de uso único e curta duração.
+          Você entra com a sua identidade XFTS, nunca como o admin do cliente. Sistemas que ainda
+          não usam a Sessão de Suporte XFTS seguem no fluxo antigo.
         </p>
         <div className="mt-2 grid gap-2">
+          <select
+            value={supportRole}
+            onChange={(e) => setSupportRole(e.target.value as "XFTS_SUPPORT" | "XFTS_SUPERADMIN")}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground"
+            aria-label="Papel da sessão de suporte"
+          >
+            <option value="XFTS_SUPPORT">Suporte XFTS (somente leitura)</option>
+            <option value="XFTS_SUPERADMIN">Superadmin XFTS (leitura e escrita)</option>
+          </select>
+          <Input
+            value={supportTicket}
+            onChange={(e) => setSupportTicket(e.target.value)}
+            placeholder="Nº do ticket (opcional)"
+            className="h-9"
+          />
           <Input
             value={supportReason}
             onChange={(e) => setSupportReason(e.target.value)}

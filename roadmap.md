@@ -1,1 +1,2 @@
 - Atende: FLEXUS_APP_KEY_ATENDE pendente (usuário cadastra); planos/preços a aprovar.
+- Sessão de Suporte XFTS: Hub pronto; cada produto implementa o kit (docs/integracao-hub/support-session.md) e só então a flag do app é ligada no Control Center.

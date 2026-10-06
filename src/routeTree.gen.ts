@@ -62,6 +62,10 @@ import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public
 import { Route as ApiPublicPaymentsDunningRouteImport } from './routes/api/public/payments/dunning'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicSsoVerifyRouteImport } from './routes/api/public/sso/verify'
+import { Route as ApiPublicSupportSessionAuditRouteImport } from './routes/api/public/support-session/audit'
+import { Route as ApiPublicSupportSessionEndRouteImport } from './routes/api/public/support-session/end'
+import { Route as ApiPublicSupportSessionStatusRouteImport } from './routes/api/public/support-session/status'
+import { Route as ApiPublicSupportSessionVerifyRouteImport } from './routes/api/public/support-session/verify'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -335,6 +339,30 @@ const ApiPublicSsoVerifyRoute = ApiPublicSsoVerifyRouteImport.update({
   path: '/api/public/sso/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSupportSessionAuditRoute =
+  ApiPublicSupportSessionAuditRouteImport.update({
+    id: '/api/public/support-session/audit',
+    path: '/api/public/support-session/audit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicSupportSessionEndRoute =
+  ApiPublicSupportSessionEndRouteImport.update({
+    id: '/api/public/support-session/end',
+    path: '/api/public/support-session/end',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicSupportSessionStatusRoute =
+  ApiPublicSupportSessionStatusRouteImport.update({
+    id: '/api/public/support-session/status',
+    path: '/api/public/support-session/status',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicSupportSessionVerifyRoute =
+  ApiPublicSupportSessionVerifyRouteImport.update({
+    id: '/api/public/support-session/verify',
+    path: '/api/public/support-session/verify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -396,6 +424,10 @@ export interface FileRoutesByFullPath {
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/api/public/support-session/audit': typeof ApiPublicSupportSessionAuditRoute
+  '/api/public/support-session/end': typeof ApiPublicSupportSessionEndRoute
+  '/api/public/support-session/status': typeof ApiPublicSupportSessionStatusRoute
+  '/api/public/support-session/verify': typeof ApiPublicSupportSessionVerifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -449,6 +481,10 @@ export interface FileRoutesByTo {
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/api/public/support-session/audit': typeof ApiPublicSupportSessionAuditRoute
+  '/api/public/support-session/end': typeof ApiPublicSupportSessionEndRoute
+  '/api/public/support-session/status': typeof ApiPublicSupportSessionStatusRoute
+  '/api/public/support-session/verify': typeof ApiPublicSupportSessionVerifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -506,6 +542,10 @@ export interface FileRoutesById {
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/api/public/sso/verify': typeof ApiPublicSsoVerifyRoute
+  '/api/public/support-session/audit': typeof ApiPublicSupportSessionAuditRoute
+  '/api/public/support-session/end': typeof ApiPublicSupportSessionEndRoute
+  '/api/public/support-session/status': typeof ApiPublicSupportSessionStatusRoute
+  '/api/public/support-session/verify': typeof ApiPublicSupportSessionVerifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -564,6 +604,10 @@ export interface FileRouteTypes {
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/api/public/support-session/audit'
+    | '/api/public/support-session/end'
+    | '/api/public/support-session/status'
+    | '/api/public/support-session/verify'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -617,6 +661,10 @@ export interface FileRouteTypes {
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/api/public/support-session/audit'
+    | '/api/public/support-session/end'
+    | '/api/public/support-session/status'
+    | '/api/public/support-session/verify'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -673,6 +721,10 @@ export interface FileRouteTypes {
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
     | '/api/public/sso/verify'
+    | '/api/public/support-session/audit'
+    | '/api/public/support-session/end'
+    | '/api/public/support-session/status'
+    | '/api/public/support-session/verify'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -704,6 +756,10 @@ export interface RootRouteChildren {
   ApiPublicPaymentsDunningRoute: typeof ApiPublicPaymentsDunningRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   ApiPublicSsoVerifyRoute: typeof ApiPublicSsoVerifyRoute
+  ApiPublicSupportSessionAuditRoute: typeof ApiPublicSupportSessionAuditRoute
+  ApiPublicSupportSessionEndRoute: typeof ApiPublicSupportSessionEndRoute
+  ApiPublicSupportSessionStatusRoute: typeof ApiPublicSupportSessionStatusRoute
+  ApiPublicSupportSessionVerifyRoute: typeof ApiPublicSupportSessionVerifyRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -1080,6 +1136,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSsoVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/support-session/audit': {
+      id: '/api/public/support-session/audit'
+      path: '/api/public/support-session/audit'
+      fullPath: '/api/public/support-session/audit'
+      preLoaderRoute: typeof ApiPublicSupportSessionAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/support-session/end': {
+      id: '/api/public/support-session/end'
+      path: '/api/public/support-session/end'
+      fullPath: '/api/public/support-session/end'
+      preLoaderRoute: typeof ApiPublicSupportSessionEndRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/support-session/status': {
+      id: '/api/public/support-session/status'
+      path: '/api/public/support-session/status'
+      fullPath: '/api/public/support-session/status'
+      preLoaderRoute: typeof ApiPublicSupportSessionStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/support-session/verify': {
+      id: '/api/public/support-session/verify'
+      path: '/api/public/support-session/verify'
+      fullPath: '/api/public/support-session/verify'
+      preLoaderRoute: typeof ApiPublicSupportSessionVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -1206,6 +1290,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicPaymentsDunningRoute: ApiPublicPaymentsDunningRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   ApiPublicSsoVerifyRoute: ApiPublicSsoVerifyRoute,
+  ApiPublicSupportSessionAuditRoute: ApiPublicSupportSessionAuditRoute,
+  ApiPublicSupportSessionEndRoute: ApiPublicSupportSessionEndRoute,
+  ApiPublicSupportSessionStatusRoute: ApiPublicSupportSessionStatusRoute,
+  ApiPublicSupportSessionVerifyRoute: ApiPublicSupportSessionVerifyRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport

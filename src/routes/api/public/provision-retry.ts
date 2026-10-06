@@ -31,7 +31,9 @@ export const Route = createFileRoute("/api/public/provision-retry")({
           const fila = await retryProvisionQueue(25);
           const tokensRemovidos = await cleanupExpiredSsoTokens();
           const digest = await sendDailyOperationalDigest();
-          return { fila, tokensRemovidos, digest };
+          const { expireSupportSessions } = await import("@/lib/support-session.server");
+          const sessoesSuporteExpiradas = await expireSupportSessions();
+          return { fila, tokensRemovidos, digest, sessoesSuporteExpiradas };
         });
 
         if (!run.ok) return Response.json({ error: run.error }, { status: 500 });

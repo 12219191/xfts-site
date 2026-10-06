@@ -10,7 +10,8 @@ export type IntegrationKind =
   | "capability_check"
   | "provision"
   | "catalog"
-  | "test";
+  | "test"
+  | "support_session";
 
 export interface IntegrationEventInput {
   appKey: string;
