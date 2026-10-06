@@ -61,7 +61,6 @@ function FlexusAtendePage() {
       app="atende"
       product={product}
       plans={plans}
-      contactOnly
       note="Custos separados: a plataforma e o uso da IA têm cobrança própria. As mensagens e conversas do WhatsApp oficial são faturadas pela Meta diretamente na conta WABA da empresa."
       fallback={{
         name: "FLEXUS | Atende",
@@ -71,7 +70,7 @@ function FlexusAtendePage() {
         description:
           "Conecte o WhatsApp pela API oficial, configure agentes de IA com o conhecimento do seu negócio e acompanhe tudo numa caixa de entrada compartilhada.",
         features: fallbackFeatures,
-        plansSubtitle: "Planos em definição — fale com o nosso time.",
+        plansSubtitle: "Escolha o plano ideal para a sua empresa.",
       }}
     />
   );

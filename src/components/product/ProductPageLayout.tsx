@@ -163,7 +163,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
                 plans={plans}
                 trackingSection="pricing"
                 onCheckout={handleCheckout}
-                compareProduct={productKey === "atende" ? undefined : productKey}
+                compareProduct={productKey}
                 productName={name}
               />
             </div>

@@ -307,8 +307,7 @@ export function toProductPlan(plan: CatalogPlan): ProductPlan {
     name: plan.name,
     price: formatBRL(plan.priceMonthCents),
     description: plan.description,
-    // Site público só exibe produtos com tiers padrão (Atende sem venda/planos ativos).
-    tier: plan.tier as DefaultPlanTier,
+    tier: plan.tier,
     features: plan.features,
     ...(plan.priceLookupKey ? { priceId: plan.priceLookupKey } : {}),
     ctaLabel: plan.ctaLabel,
