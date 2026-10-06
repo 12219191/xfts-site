@@ -435,9 +435,9 @@ function MinhaContaPage() {
             (interval === "anual" ? p.annualPriceId ?? p.priceId : p.priceId),
         )
         .map((p) => ({
-          tier: p.tier,
+          tier: p.tier as TierKey,
           name: p.name,
-          isUpgrade: TIER_ORDER.indexOf(p.tier) > TIER_ORDER.indexOf(currentPlanKey),
+          isUpgrade: TIER_ORDER.indexOf(p.tier as TierKey) > TIER_ORDER.indexOf(currentPlanKey),
         }))
     : [];
   const upgradeOption = changeOptions.find((o) => o.isUpgrade);

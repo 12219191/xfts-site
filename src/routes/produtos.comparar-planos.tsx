@@ -237,6 +237,7 @@ const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
   aba: abaPlans,
   crm: crmPlans,
   casa360: casa360Plans,
+  atende: [],
 };
 
 function CompararPlanosPage() {
