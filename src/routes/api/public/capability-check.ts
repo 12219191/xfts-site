@@ -29,6 +29,7 @@ export const Route = createFileRoute("/api/public/capability-check")({
           user_id?: string;
           capability?: string;
           acting_as?: string;
+          support_session_id?: string;
         };
         try {
           body = (await request.json()) as typeof body;
@@ -76,6 +77,38 @@ export const Route = createFileRoute("/api/public/capability-check")({
         if (!providedKey || !expectedKey || !safeEqual(providedKey, expectedKey)) {
           await log("error", 401, "chave de API inválida");
           return json({ error: "Chave de API inválida" }, 401);
+        }
+
+        // Sessão de Suporte XFTS: o papel interno vem SÓ da sessão assinada pelo Hub,
+        // amarrada a este app (chave) e a este tenant (user_id). Nunca do acting_as.
+        if (body.support_session_id !== undefined) {
+          const { bindSession } = await import("@/lib/support-session.server");
+          const bound = await bindSession(String(body.support_session_id), providedKey, userId);
+          if (!bound.ok || bound.app !== app.key) {
+            const status = bound.ok ? 403 : bound.status;
+            const error = bound.ok ? "Sessão de suporte não pertence a este sistema" : bound.error;
+            await log("denied", status, error);
+            return json({ allowed: false, reason: error }, status);
+          }
+          const { supportViewer } = await import("@/lib/support-session");
+          const { resolveUserEntitlements } = await import("@/lib/entitlements.server");
+          const { canCapability } = await import("@/lib/capabilities.server");
+          const entitlements = await resolveUserEntitlements(userId, app.key);
+          const allowed = await canCapability({
+            productKey: app.key,
+            capabilityKey,
+            entitlements,
+            viewer: supportViewer(bound.row.role),
+          });
+          await log("ok", allowed ? 200 : 403, allowed ? "sessão de suporte" : "capability bloqueada (suporte)");
+          return json(
+            {
+              allowed,
+              reason: allowed ? null : "Recurso não liberado para este papel de suporte.",
+              support_role: bound.row.role,
+            },
+            allowed ? 200 : 403,
+          );
         }
 
         // acting_as: enum validado e usado como TETO; o hub nunca eleva o papel
