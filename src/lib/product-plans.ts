@@ -131,7 +131,7 @@ export interface ProductPlan {
   name: string;
   price: string;
   description: string;
-  tier: "basico" | "pro" | "enterprise";
+  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate";
   features: string[];
   priceId?: string;
   ctaLabel: string;

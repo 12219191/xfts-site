@@ -9,7 +9,7 @@ interface PricingPlan {
   price: string;
   description: string;
   badge?: string;
-  tier: "basico" | "pro" | "enterprise";
+  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate";
   features: string[];
   priceId?: string;
   ctaLabel: string;
@@ -23,7 +23,7 @@ interface PricingPlan {
   trialDays?: number;
 }
 
-type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360";
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende";
 
 interface PricingCardsProps {
   plans: PricingPlan[];
@@ -69,8 +69,8 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
 
       <div className="grid gap-6 lg:grid-cols-3">
         {plans.map((plan) => {
-          const isPro = plan.tier === "pro";
-          const isEnterprise = plan.tier === "enterprise";
+          const isPro = plan.tier === "pro" || plan.tier === "standard";
+          const isEnterprise = plan.tier === "enterprise" || plan.tier === "corporate";
           const useAnnual = annual && !!plan.annualPriceId;
           const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
           const shownPeriod = useAnnual ? "/ano" : "/mês";
@@ -142,7 +142,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
 
               {/* CTA */}
               <div className="mt-6">
-                {isEnterprise ? (
+                {isEnterprise && !activePriceId ? (
                   <Link to="/contato">
                     <Button
                       className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
@@ -161,7 +161,9 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                 ) : (
                   <Button
                     className={`w-full ${
-                      isPro
+                      isEnterprise
+                        ? "bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
+                        : isPro
                         ? "bg-cta text-cta-foreground hover:bg-cta/90 shadow-md shadow-cta/20"
                         : "bg-primary text-primary-foreground hover:bg-primary/90"
                     }`}
