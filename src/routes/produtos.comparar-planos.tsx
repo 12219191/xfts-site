@@ -21,7 +21,7 @@ import { plansForProduct } from "@/lib/catalog";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
-const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360"] as const;
+const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360", "atende"] as const;
 type ProductKey = (typeof PRODUCT_KEYS)[number];
 
 export const Route = createFileRoute("/produtos/comparar-planos")({
@@ -62,7 +62,14 @@ interface ProductPlan {
   slug: string;
   prices: { basico: number; pro: number; enterprise: number };
   features: PlanFeature[];
+  /** Tiers do catálogo por coluna (padrão basico/pro/enterprise). */
+  tiers?: { basico: string; pro: string; enterprise: string };
+  labels?: { basico: string; pro: string; enterprise: string };
+  /** Usa as colunas do catálogo para usuários e permite checkout nas três colunas. */
+  allTiersOnline?: boolean;
 }
+
+type Column = "basico" | "pro" | "enterprise";
 
 const products: ProductPlan[] = [
   {
@@ -187,6 +194,28 @@ const products: ProductPlan[] = [
   },
 ];
 
+products.push({
+  key: "atende",
+  product: "FLEXUS | Atende",
+  slug: "/produtos/flexus-atende",
+  prices: { basico: 129, pro: 429, enterprise: 869 },
+  tiers: { basico: "basic", pro: "standard", enterprise: "corporate" },
+  labels: { basico: "Basic", pro: "Standard", enterprise: "Corporate" },
+  allTiersOnline: true,
+  features: [
+    { name: "Agentes de IA", basico: "Até 2", pro: "Até 10", enterprise: "Até 20" },
+    { name: "Créditos de IA por mês", tooltip: "Renovam todo mês no aniversário da assinatura, também no plano anual", basico: "2.500", pro: "11.500", enterprise: "30.000" },
+    { name: "Números de WhatsApp oficial", basico: "1", pro: "1", enterprise: "Ilimitados" },
+    { name: "Departamentos", basico: "Até 2", pro: "Até 5", enterprise: "Ilimitados" },
+    { name: "Agenda Nativa", basico: true, pro: true, enterprise: true },
+    { name: "Google Agenda e Agenda Externa", basico: false, pro: true, enterprise: true },
+    { name: "Relatórios", basico: "Básicos (7 dias)", pro: "Completos (7, 30 e 90 dias)", enterprise: "Completos + exportação" },
+    { name: "Campanhas (disparo ativo)", basico: false, pro: true, enterprise: true },
+    { name: "API pública para integrações", basico: false, pro: false, enterprise: true },
+    { name: "Conversas do WhatsApp", tooltip: "As mensagens e conversas do WhatsApp oficial são faturadas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
+  ],
+});
+
 const faqs = [
   { q: "Posso trocar de plano a qualquer momento?", a: "Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. O valor será ajustado proporcionalmente (pro-rata) no próximo ciclo de faturamento." },
   { q: "Como funciona o período de teste?", a: "Todos os planos incluem 7 dias de teste grátis. Durante esse período, você tem acesso completo a todas as funcionalidades do plano escolhido, sem compromisso." },
@@ -225,22 +254,35 @@ function CompararPlanosPage() {
   };
 
   /** Valor mensal vindo do catálogo do banco, com fallback para a tabela local. */
-  const priceOf = (productKey: ProductKey, tier: "basico" | "pro" | "enterprise") => {
-    const plan = plansByProduct[productKey]?.find((p) => p.tier === tier);
+  const tierOf = (productKey: ProductKey, col: Column) =>
+    products.find((p) => p.key === productKey)?.tiers?.[col] ?? col;
+  const catalogPlan = (productKey: ProductKey, col: Column) =>
+    plansByProduct[productKey]?.find((p) => p.tier === tierOf(productKey, col));
+  const shownPrice = (productKey: ProductKey, col: Column) => {
+    const plan = catalogPlan(productKey, col);
+    if (annual && productKey === "atende" && plan?.annualPrice) {
+      const year = Number(plan.annualPrice.replace(/[^\d,]/g, "").replace(",", "."));
+      if (year > 0) return `R$ ${(year / 12).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`;
+    }
+    return formatPrice(priceOf(productKey, col));
+  };
+
+  const priceOf = (productKey: ProductKey, tier: Column) => {
+    const plan = catalogPlan(productKey, tier);
     const parsed = plan ? Number(plan.price.replace(/[^\d]/g, "")) : 0;
     if (parsed > 0) return parsed;
     return products.find((p) => p.key === productKey)?.prices[tier] ?? 0;
   };
 
-  const priceIdFor = (productKey: ProductKey, tier: "basico" | "pro") => {
+  const priceIdFor = (productKey: ProductKey, tier: Column) => {
     const plan =
-      plansByProduct[productKey]?.find((p) => p.tier === tier) ??
+      catalogPlan(productKey, tier) ??
       PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
     if (!plan) return undefined;
     return (annual && plan.annualPriceId) || plan.priceId;
   };
 
-  const startCheckout = (productKey: ProductKey, tier: "basico" | "pro", section: string, label: string) => {
+  const startCheckout = (productKey: ProductKey, tier: Column, section: string, label: string) => {
     trackCTAClick({ section, label, destination: "/checkout" });
     const priceId = priceIdFor(productKey, tier);
     if (!priceId) return;
@@ -327,24 +369,24 @@ function CompararPlanosPage() {
                     <tr className="border-b border-border">
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-sm font-semibold text-foreground">Funcionalidade</th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
-                        <div className="text-sm font-semibold text-foreground">Básico</div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "basico"))}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
+                        <div className="text-sm font-semibold text-foreground">{product.labels?.basico ?? "Básico"}</div>
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "basico")}/mês</div>}
                       </th>
                       <th className="sticky top-0 z-10 border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">Pro</span>
+                          <span className="text-sm font-semibold text-foreground">{product.labels?.pro ?? "Pro"}</span>
                           <span className="rounded-full bg-cta px-2.5 py-0.5 text-[10px] font-bold text-cta-foreground uppercase tracking-wide">Mais Popular</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "pro"))}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "pro")}/mês</div>}
                       </th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">Enterprise</span>
+                          <span className="text-sm font-semibold text-foreground">{product.labels?.enterprise ?? "Enterprise"}</span>
                           <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-gold-foreground uppercase tracking-wide">Premium</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{formatPrice(priceOf(product.key, "enterprise"))}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "enterprise")}/mês</div>}
                       </th>
                     </tr>
@@ -355,9 +397,15 @@ function CompararPlanosPage() {
                         name: "Usuários inclusos",
                         tooltip:
                           "Quantidade de pessoas da equipe que o titular pode convidar dentro do sistema. Clientes finais que acessam o portal por link não contam.",
-                        basico: seatsLabel(SEATS_BY_TIER["Básico"] ?? 2),
-                        pro: seatsLabel(SEATS_BY_TIER["Pro"] ?? 6),
-                        enterprise: seatsLabel(SEATS_BY_TIER["Enterprise"] ?? null),
+                        basico: product.allTiersOnline
+                          ? seatsLabel(catalogPlan(product.key, "basico")?.seats ?? null)
+                          : seatsLabel(SEATS_BY_TIER["Básico"] ?? 2),
+                        pro: product.allTiersOnline
+                          ? seatsLabel(catalogPlan(product.key, "pro")?.seats ?? null)
+                          : seatsLabel(SEATS_BY_TIER["Pro"] ?? 6),
+                        enterprise: product.allTiersOnline
+                          ? seatsLabel(catalogPlan(product.key, "enterprise")?.seats ?? null)
+                          : seatsLabel(SEATS_BY_TIER["Enterprise"] ?? null),
                       } as PlanFeature,
                       ...product.features,
                     ].map((feature, idx) => (
@@ -406,11 +454,20 @@ function CompararPlanosPage() {
                       </td>
 
                       <td className="px-6 py-5 text-center">
+                        {product.allTiersOnline && priceIdFor(product.key, "enterprise") ? (
+                          <Button
+                            className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20"
+                            onClick={() => startCheckout(product.key, "enterprise", `planos-${product.product}`, `Começar - ${product.labels?.enterprise ?? "Enterprise"}`)}
+                          >
+                            Começar Agora
+                          </Button>
+                        ) : (
                         <Link to="/contato">
                           <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
                             Falar com Consultor
                           </Button>
                         </Link>
+                        )}
                       </td>
                     </tr>
                   </tfoot>
