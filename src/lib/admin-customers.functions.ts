@@ -71,24 +71,66 @@ export const updateCustomerSeats = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Gera um link de acesso de suporte ao sistema do cliente (auditado). */
+/**
+ * Gera o acesso de suporte ao sistema do cliente (auditado).
+ * Apps com a Sessão de Suporte XFTS ligada recebem a sessão nova (papel interno,
+ * identidade própria). Os demais seguem no fluxo antigo até implementarem o kit.
+ */
 export const createSupportAccessLink = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { userId: string; app: string; reason: string }) => {
-    if (!data?.userId || !data?.app) throw new Error("Dados incompletos");
-    if (!data.reason || data.reason.trim().length < 5) {
-      throw new Error("Informe o motivo do acesso de suporte (mínimo 5 caracteres).");
-    }
-    return data;
-  })
-  .handler(async ({ data, context }): Promise<SupportResult> => {
-    const email = (context.claims as { email?: string })?.email ?? "";
+  .inputValidator(
+    (data: {
+      userId: string;
+      app: string;
+      reason: string;
+      role?: "XFTS_SUPPORT" | "XFTS_SUPERADMIN";
+      ticket?: string | null;
+      environment?: string;
+    }) => {
+      if (!data?.userId || !data?.app) throw new Error("Dados incompletos");
+      if (!data.reason || data.reason.trim().length < 5) {
+        throw new Error("Informe o motivo do acesso de suporte (mínimo 5 caracteres).");
+      }
+      if (data.reason.length > 500) throw new Error("Motivo muito longo.");
+      if (data.role && data.role !== "XFTS_SUPPORT" && data.role !== "XFTS_SUPERADMIN") {
+        throw new Error("Papel inválido");
+      }
+      if (data.ticket && data.ticket.length > 80) throw new Error("Ticket muito longo.");
+      return data;
+    },
+  )
+  .handler(async ({ data, context }): Promise<SupportResult & { flow?: "session" | "legacy" }> => {
+    const claims = context.claims as { email?: string; user_metadata?: { full_name?: string; name?: string } };
+    const email = claims?.email ?? "";
     const { requireAdminModule, AdminAccessError } = await import("@/lib/admin-rbac.server");
+    let identity;
     try {
-      await requireAdminModule(context.supabase, context.userId, email, "clientes");
+      identity = await requireAdminModule(context.supabase, context.userId, email, "clientes");
     } catch (e) {
       if (e instanceof AdminAccessError) return { error: e.message };
       throw e;
+    }
+
+    const { supportFlagEnabled, issueSupportSession } = await import("@/lib/support-session.server");
+    if (await supportFlagEnabled(data.app)) {
+      const role = data.role ?? "XFTS_SUPPORT";
+      if (role === "XFTS_SUPERADMIN" && !identity.roles.includes("superadmin")) {
+        return { error: "Só superadmin pode abrir sessão com leitura e escrita." };
+      }
+      const r = await issueSupportSession({
+        actor: {
+          id: context.userId,
+          email,
+          name: claims?.user_metadata?.full_name ?? claims?.user_metadata?.name ?? "",
+        },
+        role,
+        tenantId: data.userId,
+        appKey: data.app,
+        reason: data.reason.trim(),
+        ticket: data.ticket?.trim() || null,
+        environment: data.environment === "sandbox" ? "sandbox" : "live",
+      });
+      return "error" in r ? r : { url: r.url, flow: "session" };
     }
 
     const { loadUserDirectory } = await import("@/lib/admin-directory.server");
@@ -110,9 +152,9 @@ export const createSupportAccessLink = createServerFn({ method: "POST" })
       action: "support.impersonation",
       targetType: "user",
       targetId: data.userId,
-      after: { app: data.app, cliente: targetEmail, ok: !("error" in result) },
+      after: { app: data.app, cliente: targetEmail, ok: !("error" in result), fluxo: "antigo" },
       reason: data.reason.trim(),
     });
 
-    return result;
+    return "error" in result ? result : { ...result, flow: "legacy" };
   });
