@@ -60,6 +60,9 @@ function ClientesPage() {
         </p>
       </div>
 
+      <SupportSessionsPanel />
+
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
