@@ -160,13 +160,13 @@ export const Route = createFileRoute("/api/public/entitlements")({
           ? await resolveCapabilities({
               productKey: app.key,
               entitlements: ent,
-              viewer: { actingAs: "TENANT_ADMIN" },
+              viewer,
             })
           : [];
 
         await log("ok", 200, ativo ? undefined : "assinatura inativa");
 
-        return json({
+        return json(withSupport({
           ativo,
           status: sub.status,
           plano: planTierFromPriceId(sub.price_id),
@@ -180,7 +180,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
           usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
-        });
+        }));
 
       },
     },
