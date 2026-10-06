@@ -72,6 +72,36 @@ export const Route = createFileRoute("/api/public/entitlements")({
           return json({ error: "user_id inválido" }, 400);
         }
 
+        // Sessão de Suporte XFTS (opcional): amarrada a este app e a este tenant.
+        const supportSessionId = url.searchParams.get("support_session_id");
+        let support: { role: import("@/lib/support-session").SupportRole; id: string } | null = null;
+        if (supportSessionId !== null) {
+          const { bindSession } = await import("@/lib/support-session.server");
+          const bound = await bindSession(supportSessionId, providedKey, userId);
+          if (!bound.ok || bound.app !== app.key) {
+            const status = bound.ok ? 403 : bound.status;
+            const error = bound.ok ? "Sessão de suporte não pertence a este sistema" : bound.error;
+            await log("denied", status, error);
+            return json({ error }, status);
+          }
+          support = { role: bound.row.role, id: bound.row.id };
+        }
+        const { supportViewer, isWriteAllowed } = await import("@/lib/support-session");
+        const viewer = support
+          ? supportViewer(support.role)
+          : ({ actingAs: "TENANT_ADMIN" } as const);
+        const withSupport = (payload: Record<string, unknown>) =>
+          support
+            ? {
+                ...payload,
+                support: {
+                  session_id: support.id,
+                  role: support.role,
+                  can_write: isWriteAllowed(support.role),
+                },
+              }
+            : payload;
+
         if (app.key === "atende") {
           const { resolveUserEntitlements, creditCycleForSub } = await import("@/lib/entitlements.server");
           const ent = await resolveUserEntitlements(userId, "atende");
@@ -79,12 +109,12 @@ export const Route = createFileRoute("/api/public/entitlements")({
           const s = ent.ativo ? (ent.atendeSub ?? null) : null;
           const { resolveCapabilities } = await import("@/lib/capabilities.server");
           const capabilities = s
-            ? await resolveCapabilities({ productKey: "atende", entitlements: ent, viewer: { actingAs: "TENANT_ADMIN" } })
+            ? await resolveCapabilities({ productKey: "atende", entitlements: ent, viewer })
             : [];
           await log("ok", 200, ent.denialReason);
           const { buildAtendeEntitlementsPayload } = await import("@/lib/atende-entitlements-payload");
           const cycle = await creditCycleForSub(s);
-          return json(buildAtendeEntitlementsPayload(ent, s, capabilities, cycle));
+          return json(withSupport(buildAtendeEntitlementsPayload(ent, s, capabilities, cycle) as Record<string, unknown>));
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
