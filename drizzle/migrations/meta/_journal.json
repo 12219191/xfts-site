@@ -29,6 +29,13 @@
       "when": 1791321189160,
       "tag": "0003_support_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791468868298,
+      "tag": "0004_backup_casa360_20261008",
+      "breakpoints": true
     }
   ]
 }
