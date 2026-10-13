@@ -1,7 +1,8 @@
 import { currentPage, resolvePage } from "@/lib/page-registry";
 
 // Utility for firing tracking events across GTM/GA4 and Meta Pixel
-// Replace placeholder IDs in __root.tsx when you have real ones.
+// As tags (GTM, GA4, Meta Pixel, LinkedIn) só carregam com IDs reais em VITE_GTM_ID,
+// VITE_GA4_ID, VITE_META_PIXEL_ID e VITE_LINKEDIN_PARTNER_ID (ver src/lib/tracking-tags.ts).
 
 declare global {
   interface Window {
