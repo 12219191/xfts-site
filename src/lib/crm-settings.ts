@@ -35,7 +35,12 @@ export const CRM_SOURCE_FIELDS = [
   { id: "utm_term", label: "UTM term" },
   { id: "utm_content", label: "UTM content" },
   { id: "gclid", label: "gclid" },
+  { id: "gbraid", label: "gbraid" },
+  { id: "wbraid", label: "wbraid" },
   { id: "fbclid", label: "fbclid" },
+  { id: "li_fat_id", label: "li_fat_id (LinkedIn)" },
+  { id: "fbc", label: "fbc (cookie Meta)" },
+  { id: "fbp", label: "fbp (cookie Meta)" },
   { id: "referrer", label: "Referrer" },
   { id: "landing_page", label: "Landing page" },
 ] as const;

@@ -30,7 +30,12 @@ export interface CrmLeadInput {
   utm_term?: string | null;
   utm_content?: string | null;
   gclid?: string | null;
+  gbraid?: string | null;
+  wbraid?: string | null;
   fbclid?: string | null;
+  li_fat_id?: string | null;
+  fbc?: string | null;
+  fbp?: string | null;
   referrer?: string | null;
   landing_page?: string | null;
   lt_utm_source?: string | null;
@@ -39,7 +44,10 @@ export interface CrmLeadInput {
   lt_utm_term?: string | null;
   lt_utm_content?: string | null;
   lt_gclid?: string | null;
+  lt_gbraid?: string | null;
+  lt_wbraid?: string | null;
   lt_fbclid?: string | null;
+  lt_li_fat_id?: string | null;
   lt_referrer?: string | null;
   lt_landing_page?: string | null;
 }
@@ -228,7 +236,12 @@ export function rowToLeadInput(row: Record<string, unknown>): CrmLeadInput {
     utm_term: s("utm_term"),
     utm_content: s("utm_content"),
     gclid: s("gclid"),
+    gbraid: s("gbraid"),
+    wbraid: s("wbraid"),
     fbclid: s("fbclid"),
+    li_fat_id: s("li_fat_id"),
+    fbc: s("fbc"),
+    fbp: s("fbp"),
     referrer: s("referrer"),
     landing_page: s("landing_page"),
     lt_utm_source: s("lt_utm_source"),
@@ -237,7 +250,10 @@ export function rowToLeadInput(row: Record<string, unknown>): CrmLeadInput {
     lt_utm_term: s("lt_utm_term"),
     lt_utm_content: s("lt_utm_content"),
     lt_gclid: s("lt_gclid"),
+    lt_gbraid: s("lt_gbraid"),
+    lt_wbraid: s("lt_wbraid"),
     lt_fbclid: s("lt_fbclid"),
+    lt_li_fat_id: s("lt_li_fat_id"),
     lt_referrer: s("lt_referrer"),
     lt_landing_page: s("lt_landing_page"),
   };

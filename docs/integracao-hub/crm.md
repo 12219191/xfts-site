@@ -70,13 +70,28 @@ recusar com 401. O formato pode ser alternado para base64url no /admin, mas o pa
   "utm_term": null,
   "utm_content": null,
   "gclid": null,
+  "gbraid": null,
+  "wbraid": null,
   "fbclid": null,
+  "li_fat_id": null,
+  "fbc": null,
+  "fbp": null,
+  "lt_gclid": null,
+  "lt_gbraid": null,
+  "lt_wbraid": null,
+  "lt_fbclid": null,
+  "lt_li_fat_id": null,
   "referrer": "https://www.google.com/",
   "landing_page": "https://xfts-flexus.com/produtos/clinica",
   "origem": "site-xfts",
   "timestamp": "2026-02-12T14:03:11.000Z"
 }
 ```
+
+> **IDs de anúncio** (`gclid`, `gbraid`, `wbraid`, `fbclid`, `li_fat_id`, `fbc`, `fbp` e os `lt_*`) são
+> usados pelo CRM para devolver conversões (qualificado / venda fechada) a Google Ads, Meta e LinkedIn.
+> Exigem a migration `20261013220000_form_submissions_ad_click_ids.sql` aplicada antes do deploy.
+> `fbc`/`fbp` vêm dos cookies do pixel da Meta; `li_fat_id`, da URL ou do cookie do Insight Tag.
 
 ### Resposta esperada
 
