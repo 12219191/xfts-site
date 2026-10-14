@@ -80,8 +80,8 @@ export function applyConsent(c: ConsentCategories) {
       );
     }
   }
-  // Com o Tag Manager ativo, o GA4 já vem configurado dentro dele: não carregar de novo (evita contagem dupla).
-  if (c.performance && TRACKING_IDS.ga4 && !TRACKING_IDS.gtm) {
+  // O contêiner do Tag Manager não tem o GA4 configurado (verificado), então o GA4 é carregado direto.
+  if (c.performance && TRACKING_IDS.ga4) {
     addScript("xfts-ga4", `https://www.googletagmanager.com/gtag/js?id=${TRACKING_IDS.ga4}`);
     if (!document.getElementById("xfts-ga4-config")) {
       addScript("xfts-ga4-config", undefined, `gtag('js',new Date());gtag('config','${TRACKING_IDS.ga4}');`);
