@@ -4,8 +4,8 @@ const ORG_REF = { "@type": "Organization", name: "XFTS Inteligência Analítica"
 
 const MODULES = [
   { name: "FLEXUS | Clínica", path: "/produtos/gestao-clinica", description: "Sistema de gestão para clínicas com agenda, prontuário e inteligência analítica." },
-  { name: "FLEXUS | Barbearia", path: "/produtos/gestao-barbearias", description: "Sistema de gestão para barbearias com agenda, portal do profissional e relatórios." },
-  { name: "FLEXUS | Estética", path: "/produtos/gestao-esteticas", description: "Sistema de gestão para estéticas e salões de beleza com agenda e relatórios." },
+  { name: "FLEXUS | Barbearia", path: "/produtos/gestao-barbearias", description: "Estoque inteligente, PDV integrado, agendamento online, comissões e CRM para barbearias e salões masculinos." },
+  { name: "FLEXUS | Estética", path: "/produtos/gestao-esteticas", description: "Pacotes e sessões, ficha de anamnese, agendamento online, comissões e estoque de insumos para clínicas de estética e salões." },
   { name: "FLEXUS | ABA", path: "/produtos/flexus-aba", description: "Sistema de gestão para clínicas de terapia ABA." },
   { name: "FLEXUS | CRM", path: "/produtos/flexus-crm", description: "CRM para gestão de leads, funil de vendas e relacionamento com clientes." },
   { name: "FLEXUS | Casa360", path: "/produtos/flexus-casa360", description: "Sistema de gestão para o segmento imobiliário e residencial." },

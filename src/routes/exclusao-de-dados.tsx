@@ -141,10 +141,32 @@ const sections: LegalSection[] = [
     number: "02",
     title: "Prazo de atendimento",
     content: (
-      <p>
-        Após a confirmação da identidade do solicitante, a solicitação será processada em até{" "}
-        <strong>15 dias úteis</strong>, respeitando a legislação aplicável.
-      </p>
+      <>
+        <p>Ao enviar o pedido, você recebe na hora um <strong>número de protocolo</strong> para acompanhar a solicitação.</p>
+        <p><strong>Confirmação de identidade:</strong> para proteger seus dados, enviamos um e-mail de confirmação para o endereço cadastrado. A exclusão só começa depois que você confirmar por esse e-mail.</p>
+        <p>
+          Após a confirmação, a solicitação será processada em até <strong>15 dias úteis</strong>, respeitando a legislação aplicável.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "clientes-dos-clientes",
+    number: "02.1",
+    title: "Se você é cliente de uma empresa que usa o FLEXUS",
+    content: (
+      <>
+        <p>Quando seus dados foram cadastrados por uma empresa que usa nossos sistemas (por exemplo, a barbearia, clínica ou salão onde você é atendido), essa empresa é a responsável pelos seus dados, e a XFTS atua como operadora.</p>
+        <p>Nesse caso, faça o pedido primeiro diretamente à empresa. Se precisar, você também pode nos escrever, e encaminharemos o pedido a ela.</p>
+      </>
+    ),
+  },
+  {
+    id: "facebook",
+    number: "02.2",
+    title: "Login com Facebook",
+    content: (
+      <p>Se você entrou em algum sistema da XFTS usando o Facebook, pode remover o acesso do aplicativo em Configurações do Facebook → Segurança e login → Apps e sites, e pedir a exclusão dos dados ligados a essa conta pelo formulário desta página.</p>
     ),
   },
   {
@@ -184,8 +206,10 @@ const sections: LegalSection[] = [
     title: "Contato",
     content: (
       <p>
-        Em caso de dúvidas sobre privacidade ou proteção de dados, entre em contato pelos canais indicados no
-        rodapé desta página.
+        Em caso de dúvidas sobre privacidade ou proteção de dados, escreva para{" "}
+        <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">xfts@xfts.com.br</a>{" "}
+        ou consulte a{" "}
+        <a href="/politica-de-privacidade" className="text-primary underline-offset-4 hover:underline">Política de Privacidade</a>.
       </p>
     ),
   },
@@ -203,7 +227,7 @@ function ExclusaoDeDadosPage() {
       breadcrumbLabel="Exclusão de Dados"
       title="Exclusão de Dados do Usuário"
       subtitle="Como solicitar a exclusão de seus dados pessoais armazenados nos sistemas da XFTS, incluindo o FLEXUS CRM e demais aplicações."
-      updatedAt="31 de agosto de 2026"
+      updatedAt="14 de outubro de 2026"
       sections={sections}
       intro={
         <>

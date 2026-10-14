@@ -12,6 +12,8 @@ import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { buildHeadScripts, buildNoscriptTags, readTagIds } from "@/lib/tracking-tags";
 import { Logo } from "@/components/Logo";
+import { CookieConsent } from "@/components/CookieConsent";
+import { CONSENT_DEFAULT_SCRIPT } from "@/lib/consent";
 
 
 function NotFoundComponent() {
@@ -56,8 +58,13 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
     ],
-    // Tags carregadas só com IDs reais (VITE_GTM_ID, VITE_GA4_ID, VITE_META_PIXEL_ID, VITE_LINKEDIN_PARTNER_ID).
-    scripts: buildHeadScripts(tagIds),
+    scripts: [
+      // Google Consent Mode v2: tudo negado até o visitante escolher.
+      // Precisa vir ANTES das tags de rastreamento.
+      { children: CONSENT_DEFAULT_SCRIPT },
+      // Tags carregadas só com IDs reais (VITE_GTM_ID, VITE_GA4_ID, VITE_META_PIXEL_ID, VITE_LINKEDIN_PARTNER_ID).
+      ...buildHeadScripts(tagIds),
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -120,6 +127,7 @@ function RootComponent() {
       <Footer />
       <WhatsAppFloatingButton />
       <Toaster />
+      <CookieConsent />
     </div>
   );
 }

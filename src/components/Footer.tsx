@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Instagram, Linkedin, Facebook } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { trackCTAClick } from "@/lib/tracking";
+import { openCookiePreferences } from "@/lib/consent";
 
 
 export function Footer() {
@@ -54,6 +55,7 @@ export function Footer() {
           <span>Hospedado na Hostinger</span>
           <Link to="/politica-de-privacidade" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Política de Privacidade", destination: "/politica-de-privacidade" })}>Política de Privacidade</Link>
           <Link to="/termos-de-uso" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Termos de Uso", destination: "/termos-de-uso" })}>Termos de Uso</Link>
+          <button type="button" className="hover:text-primary-foreground" onClick={openCookiePreferences}>Preferências de cookies</button>
           <Link to="/exclusao-de-dados" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Exclusão de Dados", destination: "/exclusao-de-dados" })}>Exclusão de Dados</Link>
         </div>
       </div>
