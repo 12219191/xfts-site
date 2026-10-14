@@ -190,9 +190,7 @@ export default defineConfig(({ command, mode }) => {
               // downloads paralelos e a página ficava em branco (soft 404).
               manualChunks(id: string) {
                 const n = id.replace(/\\/g, "/");
-                if (n.includes("/node_modules/lucide-react/")) return "icons";
                 if (n.includes("/node_modules/")) return "vendor";
-                if (n.includes("/src/components/") || n.includes("/src/lib/") || n.includes("/src/hooks/")) return "app";
                 return undefined;
               },
             },
