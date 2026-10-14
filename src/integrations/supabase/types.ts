@@ -718,14 +718,6 @@ export type Database = {
           empresa: string | null
           error_message: string | null
           fbclid: string | null
-          fbc: string | null
-          fbp: string | null
-          gbraid: string | null
-          wbraid: string | null
-          li_fat_id: string | null
-          lt_gbraid: string | null
-          lt_wbraid: string | null
-          lt_li_fat_id: string | null
           form_type: string
           gclid: string | null
           http_status: number | null
@@ -773,14 +765,6 @@ export type Database = {
           empresa?: string | null
           error_message?: string | null
           fbclid?: string | null
-          fbc?: string | null
-          fbp?: string | null
-          gbraid?: string | null
-          wbraid?: string | null
-          li_fat_id?: string | null
-          lt_gbraid?: string | null
-          lt_wbraid?: string | null
-          lt_li_fat_id?: string | null
           form_type: string
           gclid?: string | null
           http_status?: number | null
@@ -828,14 +812,6 @@ export type Database = {
           empresa?: string | null
           error_message?: string | null
           fbclid?: string | null
-          fbc?: string | null
-          fbp?: string | null
-          gbraid?: string | null
-          wbraid?: string | null
-          li_fat_id?: string | null
-          lt_gbraid?: string | null
-          lt_wbraid?: string | null
-          lt_li_fat_id?: string | null
           form_type?: string
           gclid?: string | null
           http_status?: number | null

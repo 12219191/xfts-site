@@ -4,7 +4,7 @@
  */
 
 /** IDs de rastreamento, preenchidos no navegador a partir do servidor. Vazio = não carrega. */
-export const TRACKING_IDS = { gtm: "", ga4: "", metaPixel: "" };
+export const TRACKING_IDS = { gtm: "", ga4: "", metaPixel: "", linkedinPartner: "" };
 
 export function setTrackingIds(ids: Partial<typeof TRACKING_IDS>) {
   Object.assign(TRACKING_IDS, ids);
@@ -94,5 +94,13 @@ fbq('consent','revoke');fbq('consent','grant');fbq('init','${TRACKING_IDS.metaPi
     w.fbq?.("consent", "revoke");
   } else {
     w.fbq?.("consent", "grant");
+  }
+
+  if (c.marketing && TRACKING_IDS.linkedinPartner) {
+    addScript(
+      "xfts-linkedin",
+      undefined,
+      `window._linkedin_partner_id="${TRACKING_IDS.linkedinPartner}";window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(window._linkedin_partner_id);(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s);})(window.lintrk);`,
+    );
   }
 }

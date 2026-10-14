@@ -74,7 +74,7 @@ export function CookieConsent() {
           <div className="space-y-4">
             <Row title="Essenciais" desc="Necessários para o site funcionar, como login e segurança. Sempre ativos." checked disabled />
             <Row title="Desempenho" desc="Medem visitas e uso do site (Google Analytics)." checked={performance} onChange={setPerformance} />
-            <Row title="Marketing" desc="Anúncios e medição de campanhas (Google e Meta)." checked={marketing} onChange={setMarketing} />
+            <Row title="Marketing" desc="Anúncios e medição de campanhas (Google, Meta e LinkedIn)." checked={marketing} onChange={setMarketing} />
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => decide(false, false)}>Recusar</Button>
