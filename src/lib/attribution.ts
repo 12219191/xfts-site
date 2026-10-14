@@ -11,7 +11,12 @@ export type Attribution = {
   utm_term?: string;
   utm_content?: string;
   gclid?: string;
+  /** Cliques do Google em iOS (sem gclid): app → gbraid, web → wbraid. */
+  gbraid?: string;
+  wbraid?: string;
   fbclid?: string;
+  /** Identificador de clique do LinkedIn (URL ou cookie do Insight Tag). */
+  li_fat_id?: string;
   referrer?: string;
   landing_page?: string;
 };
@@ -23,9 +28,15 @@ export type AttributionPayload = Attribution & {
   lt_utm_term?: string;
   lt_utm_content?: string;
   lt_gclid?: string;
+  lt_gbraid?: string;
+  lt_wbraid?: string;
   lt_fbclid?: string;
+  lt_li_fat_id?: string;
   lt_referrer?: string;
   lt_landing_page?: string;
+  /** Cookies da Meta lidos no momento do envio (mudam a cada visita). */
+  fbc?: string;
+  fbp?: string;
 };
 
 type StoredRecord = { data: Attribution; ts: number };
@@ -36,15 +47,20 @@ const WINDOW_KEY = "xfts_attribution_window_days";
 const DEFAULT_WINDOW_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** IDs de clique dos anúncios: preservam a caixa original e não são normalizados como UTM. */
+const CLICK_ID_KEYS = ["gclid", "gbraid", "wbraid", "fbclid", "li_fat_id"] as const;
+
 const UTM_KEYS = [
   "utm_source",
   "utm_medium",
   "utm_campaign",
   "utm_term",
   "utm_content",
-  "gclid",
-  "fbclid",
+  ...CLICK_ID_KEYS,
 ] as const;
+
+const isClickIdKey = (key: string): boolean =>
+  (CLICK_ID_KEYS as readonly string[]).includes(key);
 
 /** Janela de atribuição configurada no admin (cacheada no navegador). */
 export function getAttributionWindowDays(): number {
@@ -152,10 +168,9 @@ function readCurrent(): { data: Attribution; hasSignal: boolean } {
 
   for (const key of UTM_KEYS) {
     const raw = params.get(key);
-    const value =
-      key === "gclid" || key === "fbclid"
-        ? normalizeClickId(raw)
-        : normalizeUtmValue(raw);
+    const value = isClickIdKey(key)
+      ? normalizeClickId(raw)
+      : normalizeUtmValue(raw);
     if (value) {
       data[key] = value;
       hasSignal = true;
@@ -202,6 +217,42 @@ export function getLastTouchAttribution(): Attribution {
   return readValid(LAST_KEY)?.data ?? getAttribution();
 }
 
+/**
+ * fbc no formato da Meta (`fb.<índice>.<ms do clique>.<fbclid>`). O pixel grava o cookie
+ * `_fbc` sozinho; isto só cobre o caso em que ele ainda não gravou (pixel bloqueado ou
+ * formulário enviado logo na chegada).
+ */
+export function buildFbc(fbclid: string | undefined, clickedAtMs: number): string | undefined {
+  return fbclid ? `fb.1.${Math.round(clickedAtMs)}.${fbclid}` : undefined;
+}
+
+function readAdCookie(key: string): string | undefined {
+  try {
+    return normalizeClickId(readCookie(key));
+  } catch {
+    return undefined; // cookie com percent-encoding inválido
+  }
+}
+
+/**
+ * Cookies de anúncio lidos na hora do envio, porque mudam a cada visita:
+ * `_fbc`/`_fbp` (pixel da Meta) e `li_fat_id` (Insight Tag do LinkedIn).
+ */
+export function getAdCookies(opts?: { fbclid?: string; clickedAtMs?: number }): {
+  fbc?: string;
+  fbp?: string;
+  li_fat_id?: string;
+} {
+  const out: { fbc?: string; fbp?: string; li_fat_id?: string } = {};
+  const fbc = readAdCookie("_fbc") ?? buildFbc(opts?.fbclid, opts?.clickedAtMs ?? Date.now());
+  const fbp = readAdCookie("_fbp");
+  const li = readAdCookie("li_fat_id");
+  if (fbc) out.fbc = fbc;
+  if (fbp) out.fbp = fbp;
+  if (li) out.li_fat_id = li;
+  return out;
+}
+
 /** First-touch + last-touch (prefixado com `lt_`) para envio ao servidor. */
 export function getAttributionPayload(): AttributionPayload {
   if (typeof window === "undefined") return {};
@@ -210,6 +261,19 @@ export function getAttributionPayload(): AttributionPayload {
   const payload: AttributionPayload = { ...first };
   for (const [key, value] of Object.entries(last)) {
     if (value) payload[`lt_${key}` as keyof AttributionPayload] = value;
+  }
+
+  // Cookies de anúncio (lidos agora). O fbclid mais recente é o do clique que gerou o fbc.
+  const fbclid = last.fbclid ?? first.fbclid;
+  const clickedAtMs =
+    (last.fbclid ? readValid(LAST_KEY)?.ts : readValid(FIRST_KEY)?.ts) ?? Date.now();
+  const cookies = getAdCookies({ fbclid, clickedAtMs });
+  if (cookies.fbc) payload.fbc = cookies.fbc;
+  if (cookies.fbp) payload.fbp = cookies.fbp;
+  if (cookies.li_fat_id) {
+    // Sem li_fat_id na URL, o cookie do Insight Tag é o melhor sinal que existe.
+    if (!payload.li_fat_id) payload.li_fat_id = cookies.li_fat_id;
+    if (!payload.lt_li_fat_id) payload.lt_li_fat_id = cookies.li_fat_id;
   }
   return payload;
 }
