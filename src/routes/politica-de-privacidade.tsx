@@ -106,14 +106,26 @@ const sections: LegalSection[] = [
       <>
         <p>A XFTS poderá compartilhar dados pessoais somente quando necessário e de forma compatível com as finalidades descritas nesta Política, incluindo:</p>
         <ul className="list-disc space-y-2 pl-6 marker:text-primary">
-          <li>fornecedores de tecnologia, hospedagem, armazenamento em nuvem e segurança;</li>
-          <li>plataformas de pagamento, cobrança e emissão fiscal;</li>
-          <li>ferramentas de atendimento, CRM, comunicação e automação;</li>
+          <li><strong>Google (Google Analytics 4 e Google Tag Manager):</strong> medição de audiência e desempenho do site, somente com seu consentimento;</li>
+          <li><strong>Meta (Meta Pixel e WhatsApp):</strong> mensuração de campanhas, somente com seu consentimento, e atendimento por WhatsApp;</li>
+          <li><strong>Supabase:</strong> banco de dados e login das contas;</li>
+          <li><strong>Lovable e Hostinger:</strong> hospedagem do site, infraestrutura e domínios;</li>
+          <li><strong>Stripe:</strong> processamento de pagamentos e cobranças recorrentes;</li>
           <li>prestadores de serviço necessários à execução do contrato;</li>
-          <li>autoridades públicas, órgãos reguladores ou entidades governamentais, quando houver obrigação legal;</li>
-          <li>parceiros comerciais, quando necessário para a prestação do serviço contratado.</li>
+          <li>autoridades públicas, órgãos reguladores ou entidades governamentais, quando houver obrigação legal.</li>
         </ul>
         <p><strong>A XFTS não vende dados pessoais dos usuários.</strong></p>
+      </>
+    ),
+  },
+  {
+    id: "transferencia-internacional",
+    number: "05.1",
+    title: "Transferência internacional de dados",
+    content: (
+      <>
+        <p>Alguns fornecedores citados acima, como Google, Meta, Stripe e Supabase, armazenam ou processam dados em servidores localizados fora do Brasil, principalmente nos Estados Unidos e na União Europeia.</p>
+        <p>Essas transferências ocorrem conforme o art. 33 da LGPD, com base em cláusulas contratuais e nas garantias de proteção oferecidas por esses fornecedores.</p>
       </>
     ),
   },
@@ -145,7 +157,13 @@ const sections: LegalSection[] = [
     title: "Retenção dos dados",
     content: (
       <>
-        <p>Os dados pessoais serão armazenados pelo tempo necessário para cumprir as finalidades para as quais foram coletados, incluindo obrigações legais, fiscais, regulatórias, contratuais, exercício regular de direitos e preservação da segurança da operação.</p>
+        <p>Os dados pessoais serão armazenados pelo tempo necessário para cumprir as finalidades para as quais foram coletados. Exemplos de prazos:</p>
+        <ul className="list-disc space-y-2 pl-6 marker:text-primary">
+          <li><strong>Dados fiscais e de cobrança:</strong> 5 anos, conforme a legislação tributária;</li>
+          <li><strong>Registros de acesso ao site (IP, data e hora):</strong> 6 meses, conforme o art. 15 do Marco Civil da Internet;</li>
+          <li><strong>Dados de conta e contrato:</strong> durante a vigência do contrato e pelo prazo legal posterior para exercício de direitos;</li>
+          <li><strong>Contatos e leads comerciais:</strong> até 2 anos sem interação ou até a revogação do consentimento.</li>
+        </ul>
         <p>Após esse período, os dados poderão ser excluídos, anonimizados ou mantidos conforme autorizado pela legislação.</p>
       </>
     ),
@@ -156,14 +174,27 @@ const sections: LegalSection[] = [
     title: "Cookies e tecnologias de rastreamento",
     content: (
       <>
-        <p>Nosso site poderá utilizar cookies e tecnologias semelhantes para melhorar a experiência de navegação, analisar desempenho, compreender o comportamento dos visitantes e personalizar conteúdos ou campanhas.</p>
-        <p>Os cookies podem ser:</p>
-        <ul className="list-disc space-y-2 pl-6 marker:text-primary">
-          <li><strong>Cookies essenciais:</strong> necessários para o funcionamento básico do site.</li>
-          <li><strong>Cookies de desempenho:</strong> utilizados para entender como os visitantes interagem com o site.</li>
-          <li><strong>Cookies de marketing:</strong> utilizados para mensurar campanhas e apresentar comunicações mais relevantes.</li>
-        </ul>
-        <p>O usuário pode configurar seu navegador para bloquear ou excluir cookies. No entanto, algumas funcionalidades do site poderão ser afetadas.</p>
+        <p>Usamos cookies em três categorias. Cookies de desempenho e de marketing só são ativados depois do seu consentimento.</p>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="py-2 pr-4 font-semibold">Cookie</th>
+                <th className="py-2 pr-4 font-semibold">Categoria</th>
+                <th className="py-2 pr-4 font-semibold">Finalidade</th>
+                <th className="py-2 font-semibold">Prazo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">xfts_cookie_consent</td><td className="py-2 pr-4">Essencial</td><td className="py-2 pr-4">Guardar sua escolha de cookies e a data</td><td className="py-2">Até você mudar a escolha</td></tr>
+              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">sb-*-auth-token</td><td className="py-2 pr-4">Essencial</td><td className="py-2 pr-4">Manter o login na área do cliente</td><td className="py-2">Sessão / até sair</td></tr>
+              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">_ga, _ga_*</td><td className="py-2 pr-4">Desempenho</td><td className="py-2 pr-4">Google Analytics: medir visitas e uso do site</td><td className="py-2">Até 2 anos</td></tr>
+              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">Google Tag Manager</td><td className="py-2 pr-4">Desempenho / Marketing</td><td className="py-2 pr-4">Carregar as ferramentas de medição autorizadas</td><td className="py-2">Sessão</td></tr>
+              <tr><td className="py-2 pr-4 font-mono text-xs">_fbp</td><td className="py-2 pr-4">Marketing</td><td className="py-2 pr-4">Meta Pixel: medir resultados de campanhas</td><td className="py-2">3 meses</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Como retirar o consentimento:</strong> clique em "Preferências de cookies", no rodapé de qualquer página, e desative as categorias que quiser. Você também pode apagar os cookies pelo seu navegador.</p>
       </>
     ),
   },
@@ -185,7 +216,8 @@ const sections: LegalSection[] = [
           <li>eliminação de dados tratados com base no consentimento;</li>
           <li>revisão de decisões automatizadas, quando aplicável.</li>
         </ul>
-        <p>As solicitações poderão ser enviadas pelo canal de contato indicado nesta Política.</p>
+        <p>As solicitações podem ser enviadas para <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">xfts@xfts.com.br</a>. Pedidos de exclusão também podem ser feitos pela página <a href="/exclusao-de-dados" className="text-primary underline-offset-4 hover:underline">Exclusão de Dados</a>.</p>
+        <p>Se entender que seus direitos não foram atendidos, você também pode apresentar reclamação à <strong>Autoridade Nacional de Proteção de Dados (ANPD)</strong>, pelo site <a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer" className="text-primary underline-offset-4 hover:underline">gov.br/anpd</a>.</p>
       </>
     ),
   },
@@ -218,16 +250,20 @@ const sections: LegalSection[] = [
     content: (
       <>
         <p>Esta Política de Privacidade poderá ser atualizada periodicamente para refletir alterações legais, regulatórias, técnicas ou operacionais.</p>
-        <p>A versão mais recente estará sempre disponível no site xfts.com.br.</p>
+        <p>A versão mais recente estará sempre disponível nos sites xfts-flexus.com e xfts.com.br. Última atualização: 14 de outubro de 2026.</p>
       </>
     ),
   },
   {
     id: "contato",
     number: "13",
-    title: "Canal de contato",
+    title: "Encarregado de dados e contato",
     content: (
-      <p>Para dúvidas, solicitações ou exercício de direitos relacionados a dados pessoais, utilize os canais de contato no final desta página.</p>
+      <>
+        <p><strong>Encarregado pelo tratamento de dados pessoais (DPO):</strong> canal dedicado de privacidade da XFTS.</p>
+        <p>E-mail: <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">xfts@xfts.com.br</a> (assunto "Privacidade / LGPD").</p>
+        <p>Para pedir a exclusão dos seus dados, use a página <a href="/exclusao-de-dados" className="text-primary underline-offset-4 hover:underline">Exclusão de Dados</a>.</p>
+      </>
     ),
   },
 ];
@@ -239,7 +275,7 @@ function PoliticaDePrivacidadePage() {
       breadcrumbLabel="Política de Privacidade"
       title="Política de Privacidade"
       subtitle="Como a XFTS coleta, utiliza, armazena e protege os dados pessoais dos usuários do site e das plataformas, em conformidade com a LGPD."
-      updatedAt="27 de maio de 2026"
+      updatedAt="14 de outubro de 2026"
       icon="shield"
       sections={sections}
       intro={
@@ -247,7 +283,7 @@ function PoliticaDePrivacidadePage() {
           <p>
             A presente Política de Privacidade tem como objetivo informar de forma clara e transparente como a{" "}
             <strong>XFTS CONSULTORIA EM SISTEMAS DE INFORMAÇÃO LTDA - ME</strong>, inscrita no CNPJ sob nº 23.102.588/0001-90,
-            responsável pelo site xfts.com.br, realiza a coleta, uso, armazenamento, compartilhamento e proteção dos
+            responsável pelos sites xfts-flexus.com e xfts.com.br, realiza a coleta, uso, armazenamento, compartilhamento e proteção dos
             dados pessoais dos usuários que acessam nosso site, utilizam nossos produtos, serviços, plataformas,
             sistemas ou canais de atendimento.
           </p>
