@@ -3,12 +3,12 @@
  * Nenhum script de rastreamento é carregado antes do aceite.
  */
 
-/** IDs reais de rastreamento. Enquanto vazios, o script correspondente não é carregado. */
-export const TRACKING_IDS = {
-  gtm: "", // ex.: GTM-ABC1234
-  ga4: "", // ex.: G-ABC123XYZ
-  metaPixel: "", // ex.: 1234567890123456
-};
+/** IDs de rastreamento, preenchidos no navegador a partir do servidor. Vazio = não carrega. */
+export const TRACKING_IDS = { gtm: "", ga4: "", metaPixel: "" };
+
+export function setTrackingIds(ids: Partial<typeof TRACKING_IDS>) {
+  Object.assign(TRACKING_IDS, ids);
+}
 
 export type ConsentCategories = { essential: true; performance: boolean; marketing: boolean };
 export type StoredConsent = { version: 1; date: string; categories: ConsentCategories };
