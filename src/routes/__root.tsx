@@ -11,6 +11,8 @@ import { WhatsAppFloatingButton } from "@/components/WhatsAppButton";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { Logo } from "@/components/Logo";
+import { CookieConsent } from "@/components/CookieConsent";
+import { CONSENT_DEFAULT_SCRIPT } from "@/lib/consent";
 
 
 function NotFoundComponent() {
@@ -104,6 +106,7 @@ function RootComponent() {
       <Footer />
       <WhatsAppFloatingButton />
       <Toaster />
+      <CookieConsent />
     </div>
   );
 }
