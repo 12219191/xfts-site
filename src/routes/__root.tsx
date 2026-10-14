@@ -10,7 +10,6 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { WhatsAppFloatingButton } from "@/components/WhatsAppButton";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
-import { buildHeadScripts, buildNoscriptTags, readTagIds } from "@/lib/tracking-tags";
 import { Logo } from "@/components/Logo";
 import { CookieConsent } from "@/components/CookieConsent";
 import { CONSENT_DEFAULT_SCRIPT } from "@/lib/consent";
@@ -34,9 +33,6 @@ function NotFoundComponent() {
     </div>
   );
 }
-
-const tagIds = readTagIds(import.meta.env);
-const noscriptTags = buildNoscriptTags(tagIds);
 
 export const Route = createRootRoute({
   head: () => ({
@@ -62,8 +58,6 @@ export const Route = createRootRoute({
       // Google Consent Mode v2: tudo negado até o visitante escolher.
       // Precisa vir ANTES das tags de rastreamento.
       { children: CONSENT_DEFAULT_SCRIPT },
-      // Tags carregadas só com IDs reais (VITE_GTM_ID, VITE_GA4_ID, VITE_META_PIXEL_ID, VITE_LINKEDIN_PARTNER_ID).
-      ...buildHeadScripts(tagIds),
     ],
   }),
   shellComponent: RootShell,
@@ -78,20 +72,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {noscriptTags.map((tag) => (
-          <noscript key={tag.src}>
-            {tag.kind === "iframe" ? (
-              <iframe
-                src={tag.src}
-                height="0"
-                width="0"
-                style={{ display: "none", visibility: "hidden" }}
-              />
-            ) : (
-              <img height="1" width="1" style={{ display: "none" }} src={tag.src} alt="" />
-            )}
-          </noscript>
-        ))}
         {children}
         <Scripts />
       </body>

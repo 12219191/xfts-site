@@ -2,7 +2,7 @@ import { currentPage, resolvePage } from "@/lib/page-registry";
 
 // Utility for firing tracking events across GTM/GA4 and Meta Pixel
 // As tags (GTM, GA4, Meta Pixel, LinkedIn) só carregam com IDs reais em VITE_GTM_ID,
-// VITE_GA4_ID, VITE_META_PIXEL_ID e VITE_LINKEDIN_PARTNER_ID (ver src/lib/tracking-tags.ts).
+// IDs vêm do servidor (tracking-ids.functions.ts) e só carregam após consentimento (consent.ts).
 
 declare global {
   interface Window {
