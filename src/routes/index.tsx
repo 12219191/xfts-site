@@ -70,14 +70,14 @@ function HomePage() {
     {
       icon: Scissors,
       title: "FLEXUS | Barbearia",
-      desc: "Solução para controle de estoque, vendas, PDV e relacionamento com cliente para barbearias e salões.",
+      desc: "Estoque inteligente, PDV integrado, agendamento online, comissões e CRM para barbearias e salões masculinos.",
       slug: "barbearia" as const,
       link: "/produtos/gestao-barbearias" as const,
     },
     {
       icon: Sparkles,
       title: "FLEXUS | Estética",
-      desc: "Estoque, vendas e CRM para clínicas de estética e salões de beleza com inteligência analítica.",
+      desc: "Pacotes e sessões, ficha de anamnese, agendamento online, comissões e estoque de insumos para clínicas de estética e salões.",
       slug: "estetica" as const,
       link: "/produtos/gestao-esteticas" as const,
     },

@@ -96,7 +96,7 @@ const products: ProductPlan[] = [
     key: "barbearia",
     product: "FLEXUS | Barbearia",
     slug: "/produtos/gestao-barbearias",
-    prices: { basico: 89, pro: 169, enterprise: 349 },
+    prices: { basico: 99, pro: 199, enterprise: 349 },
     features: [
       { name: "PDV integrado", basico: true, pro: true, enterprise: true },
       { name: "Controle de estoque", basico: true, pro: true, enterprise: true },
@@ -108,7 +108,7 @@ const products: ProductPlan[] = [
       { name: "Notificações por WhatsApp", basico: false, pro: true, enterprise: true },
       { name: "Fidelização de clientes", tooltip: "Programa de pontos e recompensas automático", basico: false, pro: true, enterprise: true },
       { name: "Multi-unidades", basico: false, pro: false, enterprise: true },
-      { name: "Profissionais inclusos", basico: "1", pro: "Até 10", enterprise: "Ilimitado" },
+      { name: "Profissionais inclusos", basico: "2", pro: "Até 5", enterprise: "Ilimitado" },
       { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
     ],
   },
@@ -116,7 +116,7 @@ const products: ProductPlan[] = [
     key: "estetica",
     product: "FLEXUS | Estética",
     slug: "/produtos/gestao-esteticas",
-    prices: { basico: 99, pro: 189, enterprise: 379 },
+    prices: { basico: 99, pro: 199, enterprise: 379 },
     features: [
       { name: "Gestão de vendas e PDV", basico: true, pro: true, enterprise: true },
       { name: "Controle de estoque", basico: true, pro: true, enterprise: true },
