@@ -58,6 +58,12 @@ export const Route = createRootRoute({
       // Google Consent Mode v2: tudo negado até o visitante escolher.
       // Precisa vir ANTES das tags de rastreamento.
       { children: CONSENT_DEFAULT_SCRIPT },
+      // Se um arquivo JS da página falhar ao baixar, recarrega uma vez
+      // em vez de deixar a página em branco.
+      {
+        children:
+          "window.addEventListener('vite:preloadError',function(e){try{var k='xfts-chunk-reload';if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');e.preventDefault();location.reload();}}catch(_){}});",
+      },
     ],
   }),
   shellComponent: RootShell,
