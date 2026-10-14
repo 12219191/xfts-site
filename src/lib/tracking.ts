@@ -185,7 +185,10 @@ export function trackCTAClick(input: CtaInput | string, legacyLocation?: string)
   };
   pushGTM("cta_click", params);
   pushGA4("cta_click", params);
-  pushMeta("Lead", { content_name: label, content_category: ctaId });
+  // Lead na Meta é enviado só pelo GTM (envio do formulário de demonstração).
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("trackCustom", "CTA_Click", { content_name: label, content_category: ctaId });
+  }
 }
 
 
@@ -255,7 +258,7 @@ export function trackTimeOnPage(seconds: number, pagePath: string) {
   const params = { seconds, page_path: pagePath };
   pushGTM("time_on_page", params);
   pushGA4("time_on_page", params);
-  pushMeta("CustomEvent", { content_name: "time_on_page", value: seconds, content_category: pagePath });
+  // Não enviado à Meta: evento sem uso lá.
 }
 
 /** Track a form submission (demo request or contact) */
