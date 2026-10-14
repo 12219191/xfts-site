@@ -29,13 +29,13 @@ export const clinicaPlans = [
 export const barbeariasPlans = [
   {
     name: "Básico", price: "R$ 99", description: "Para barbearias individuais", tier: "basico" as const,
-    features: ["PDV integrado", "Controle de estoque", "Agendamento online", "CRM de clientes", "1 profissional"],
+    features: ["PDV integrado", "Controle de estoque", "Agendamento online", "CRM de clientes", "2 profissionais"],
     priceId: "gestao_barbearias_basico_mensal", ctaLabel: "Começar Agora",
     annualPrice: "R$ 950", annualPriceId: "gestao_barbearias_basico_anual",
   },
   {
     name: "Pro", price: "R$ 199", description: "Para redes e múltiplas unidades", tier: "pro" as const,
-    features: ["Tudo do Básico", "Gestão de comissões", "Notificações WhatsApp", "Fidelização de clientes", "Até 10 profissionais"],
+    features: ["Tudo do Básico", "Gestão de comissões", "Notificações WhatsApp", "Fidelização de clientes", "Até 5 profissionais"],
     priceId: "gestao_barbearias_pro_mensal", ctaLabel: "Começar Agora",
     annualPrice: "R$ 1.910", annualPriceId: "gestao_barbearias_pro_anual",
   },

@@ -123,6 +123,7 @@ const products: ProductPlan[] = [
       { name: "Agendamento online", basico: true, pro: true, enterprise: true },
       { name: "CRM de clientes", basico: true, pro: true, enterprise: true },
       { name: "Controle de pacotes e sessões", tooltip: "Gerencie pacotes de sessões com controle automático", basico: false, pro: true, enterprise: true },
+      { name: "Ficha de anamnese e evolução", basico: true, pro: true, enterprise: true },
       { name: "Gestão de comissões", basico: false, pro: true, enterprise: true },
       { name: "Relatórios analíticos", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
       { name: "Notificações automáticas", basico: false, pro: true, enterprise: true },
