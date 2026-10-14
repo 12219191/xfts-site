@@ -717,21 +717,28 @@ export type Database = {
           email: string | null
           empresa: string | null
           error_message: string | null
+          fbc: string | null
           fbclid: string | null
+          fbp: string | null
           form_type: string
+          gbraid: string | null
           gclid: string | null
           http_status: number | null
           id: string
           landing_page: string | null
+          li_fat_id: string | null
           lt_fbclid: string | null
+          lt_gbraid: string | null
           lt_gclid: string | null
           lt_landing_page: string | null
+          lt_li_fat_id: string | null
           lt_referrer: string | null
           lt_utm_campaign: string | null
           lt_utm_content: string | null
           lt_utm_medium: string | null
           lt_utm_source: string | null
           lt_utm_term: string | null
+          lt_wbraid: string | null
           mensagem: string | null
           nome: string | null
           reference_id: string
@@ -746,6 +753,7 @@ export type Database = {
           utm_medium: string | null
           utm_source: string | null
           utm_term: string | null
+          wbraid: string | null
         }
         Insert: {
           assunto?: string | null
@@ -764,21 +772,28 @@ export type Database = {
           email?: string | null
           empresa?: string | null
           error_message?: string | null
+          fbc?: string | null
           fbclid?: string | null
+          fbp?: string | null
           form_type: string
+          gbraid?: string | null
           gclid?: string | null
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          li_fat_id?: string | null
           lt_fbclid?: string | null
+          lt_gbraid?: string | null
           lt_gclid?: string | null
           lt_landing_page?: string | null
+          lt_li_fat_id?: string | null
           lt_referrer?: string | null
           lt_utm_campaign?: string | null
           lt_utm_content?: string | null
           lt_utm_medium?: string | null
           lt_utm_source?: string | null
           lt_utm_term?: string | null
+          lt_wbraid?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id: string
@@ -793,6 +808,7 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          wbraid?: string | null
         }
         Update: {
           assunto?: string | null
@@ -811,21 +827,28 @@ export type Database = {
           email?: string | null
           empresa?: string | null
           error_message?: string | null
+          fbc?: string | null
           fbclid?: string | null
+          fbp?: string | null
           form_type?: string
+          gbraid?: string | null
           gclid?: string | null
           http_status?: number | null
           id?: string
           landing_page?: string | null
+          li_fat_id?: string | null
           lt_fbclid?: string | null
+          lt_gbraid?: string | null
           lt_gclid?: string | null
           lt_landing_page?: string | null
+          lt_li_fat_id?: string | null
           lt_referrer?: string | null
           lt_utm_campaign?: string | null
           lt_utm_content?: string | null
           lt_utm_medium?: string | null
           lt_utm_source?: string | null
           lt_utm_term?: string | null
+          lt_wbraid?: string | null
           mensagem?: string | null
           nome?: string | null
           reference_id?: string
@@ -840,6 +863,7 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          wbraid?: string | null
         }
         Relationships: []
       }
