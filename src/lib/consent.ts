@@ -80,6 +80,7 @@ export function applyConsent(c: ConsentCategories) {
       );
     }
   }
+  // O contêiner do Tag Manager não tem o GA4 configurado (verificado), então o GA4 é carregado direto.
   if (c.performance && TRACKING_IDS.ga4) {
     addScript("xfts-ga4", `https://www.googletagmanager.com/gtag/js?id=${TRACKING_IDS.ga4}`);
     if (!document.getElementById("xfts-ga4-config")) {
