@@ -86,7 +86,12 @@ const sections: LegalSection[] = [
     content: (
       <>
         <p>Os serviços poderão ser oferecidos mediante planos gratuitos, testes, assinaturas mensais, anuais ou condições comerciais específicas.</p>
-        <p>As regras de preço, cobrança, renovação, inadimplência, suspensão, cancelamento e reembolso serão informadas na proposta comercial, contrato, página de contratação ou documento equivalente.</p>
+        <p><strong>Pagamento online:</strong> os pagamentos feitos pelo site são processados pela <strong>Stripe</strong>. A XFTS não armazena os dados completos do seu cartão.</p>
+        <p><strong>Renovação automática:</strong> as assinaturas mensais e anuais são renovadas automaticamente ao fim de cada período, com cobrança no mesmo meio de pagamento, até que sejam canceladas.</p>
+        <p><strong>Cancelamento:</strong> você pode cancelar a qualquer momento em "Minha Conta". O acesso continua até o fim do período já pago, e não há nova cobrança.</p>
+        <p><strong>Reembolso:</strong> fora do prazo de arrependimento, não há reembolso proporcional do período em curso, salvo previsão em contrato ou na lei.</p>
+        <p><strong>Direito de arrependimento:</strong> o consumidor pessoa física pode desistir da contratação online em até <strong>7 dias corridos</strong> após a compra, com devolução integral do valor pago (art. 49 do Código de Defesa do Consumidor). Basta solicitar em "Minha Conta" ou por <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">xfts@xfts.com.br</a>.</p>
+        <p>Condições específicas de contratos corporativos podem constar na proposta comercial ou contrato.</p>
         <p>Em caso de inadimplência, a XFTS poderá suspender ou limitar o acesso aos serviços, mediante aviso prévio quando aplicável.</p>
       </>
     ),
@@ -183,7 +188,7 @@ const sections: LegalSection[] = [
         <a href="/politica-de-privacidade" className="text-primary underline-offset-4 hover:underline">
           Política de Privacidade
         </a>{" "}
-        disponível no site xfts.com.br e de acordo com a legislação aplicável, incluindo a Lei Geral de Proteção de Dados Pessoais.
+        e de acordo com a legislação aplicável, incluindo a Lei Geral de Proteção de Dados Pessoais.
       </p>
     ),
   },
@@ -194,7 +199,7 @@ const sections: LegalSection[] = [
     content: (
       <>
         <p>A XFTS poderá atualizar estes Termos de Uso a qualquer momento para refletir alterações nos serviços, funcionalidades, legislação ou regras comerciais.</p>
-        <p>A versão mais recente estará sempre disponível no site xfts.com.br.</p>
+        <p>A versão mais recente estará sempre disponível nos sites xfts-flexus.com e xfts.com.br. Versão 2.0, de 14 de outubro de 2026.</p>
       </>
     ),
   },
@@ -214,7 +219,7 @@ const sections: LegalSection[] = [
     number: "15",
     title: "Contato",
     content: (
-      <p>Em caso de dúvidas sobre estes Termos de Uso, utilize os canais de contato no final desta página.</p>
+      <p>Em caso de dúvidas sobre estes Termos de Uso, escreva para <a href="mailto:xfts@xfts.com.br" className="text-primary underline-offset-4 hover:underline">xfts@xfts.com.br</a>.</p>
     ),
   },
 ];
@@ -222,17 +227,17 @@ const sections: LegalSection[] = [
 function TermosDeUsoPage() {
   return (
     <LegalPageLayout
-      badge="Documento legal"
+      badge="Documento legal · Versão 2.0"
       breadcrumbLabel="Termos de Uso"
       title="Termos de Uso"
-      subtitle="Regras que regem o acesso e a utilização do site xfts.com.br e dos produtos, serviços e plataformas oferecidos pela XFTS."
-      updatedAt="27 de maio de 2026"
+      subtitle="Regras que regem o acesso e a utilização dos sites xfts-flexus.com e xfts.com.br e dos produtos, serviços e plataformas oferecidos pela XFTS."
+      updatedAt="14 de outubro de 2026"
       icon="file"
       sections={sections}
       intro={
         <>
           <p>
-            Estes Termos de Uso regulam o acesso e a utilização do site xfts.com.br, bem como dos produtos, serviços,
+            Estes Termos de Uso regulam o acesso e a utilização dos sites xfts-flexus.com e xfts.com.br, bem como dos produtos, serviços,
             sistemas, plataformas e soluções oferecidos pela <strong>XFTS CONSULTORIA EM SISTEMAS DE INFORMAÇÃO LTDA - ME</strong>,
             inscrita no CNPJ sob nº 23.102.588/0001-90.
           </p>
