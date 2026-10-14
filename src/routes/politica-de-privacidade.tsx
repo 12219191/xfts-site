@@ -186,7 +186,7 @@ const sections: LegalSection[] = [
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">xfts_cookie_consent</td><td className="py-2 pr-4">Essencial</td><td className="py-2 pr-4">Guardar sua escolha de cookies e a data</td><td className="py-2">12 meses</td></tr>
+              <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">xfts_cookie_consent</td><td className="py-2 pr-4">Essencial</td><td className="py-2 pr-4">Guardar sua escolha de cookies e a data</td><td className="py-2">Até você mudar a escolha</td></tr>
               <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">sb-*-auth-token</td><td className="py-2 pr-4">Essencial</td><td className="py-2 pr-4">Manter o login na área do cliente</td><td className="py-2">Sessão / até sair</td></tr>
               <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">_ga, _ga_*</td><td className="py-2 pr-4">Desempenho</td><td className="py-2 pr-4">Google Analytics: medir visitas e uso do site</td><td className="py-2">Até 2 anos</td></tr>
               <tr className="border-b border-border/60"><td className="py-2 pr-4 font-mono text-xs">Google Tag Manager</td><td className="py-2 pr-4">Desempenho / Marketing</td><td className="py-2 pr-4">Carregar as ferramentas de medição autorizadas</td><td className="py-2">Sessão</td></tr>
