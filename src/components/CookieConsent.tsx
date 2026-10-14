@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { applyConsent, OPEN_PREFS_EVENT, readConsent, saveConsent } from "@/lib/consent";
+import { applyConsent, OPEN_PREFS_EVENT, readConsent, saveConsent, setTrackingIds } from "@/lib/consent";
+import { getTrackingIds } from "@/lib/tracking-ids.functions";
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
@@ -12,11 +13,17 @@ export function CookieConsent() {
   const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
+    getTrackingIds()
+      .then((ids) => {
+        setTrackingIds(ids);
+        const s = readConsent();
+        if (s) applyConsent(s.categories);
+      })
+      .catch(() => undefined);
     const stored = readConsent();
     if (stored) {
       setPerformance(stored.categories.performance);
       setMarketing(stored.categories.marketing);
-      applyConsent(stored.categories);
     } else {
       setShowBanner(true);
     }
