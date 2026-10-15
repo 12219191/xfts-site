@@ -196,63 +196,14 @@ export const sendZapierWebhook = createServerFn({ method: "POST" })
       }
     };
 
-    if (!webhookUrl) {
-      await record("not_configured");
-      return {
-        success: false,
-        message:
-          "Envio indisponível no momento. Fale conosco pelo WhatsApp ou por xfts@xfts.com.br.",
-        referenceId,
-        sentAt,
-        status: "not_configured",
-        durationMs: Date.now() - startedAt,
-      };
-    }
-
-    try {
-      const res = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          reference_id: referenceId,
-          timestamp: sentAt,
-        }),
-      });
-
-      if (!res.ok) {
-        await record("rejected", { httpStatus: res.status });
-        return {
-          success: false,
-          message: `Não foi possível concluir o envio (código ${res.status}). Tente novamente ou escreva para xfts@xfts.com.br informando o protocolo ${referenceId}.`,
-          referenceId,
-          sentAt,
-          status: "rejected",
-          httpStatus: res.status,
-          durationMs: Date.now() - startedAt,
-        };
-      }
-
-      await record("sent", { httpStatus: res.status });
-      return {
-        success: true,
-        message: "Mensagem enviada com sucesso! Entraremos em contato em breve.",
-        referenceId,
-        sentAt,
-        status: "sent",
-        httpStatus: res.status,
-        durationMs: Date.now() - startedAt,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      await record("network_error", { errorMessage });
-      return {
-        success: false,
-        message: `Falha de conexão ao enviar. Tente novamente em instantes (protocolo ${referenceId}).`,
-        referenceId,
-        sentAt,
-        status: "network_error",
-        durationMs: Date.now() - startedAt,
-      };
-    }
+    // Zapier desativado: o lead é gravado no banco e enviado direto ao FLEXUS | CRM.
+    await record("sent");
+    return {
+      success: true,
+      message: "Mensagem enviada com sucesso! Entraremos em contato em breve.",
+      referenceId,
+      sentAt,
+      status: "sent",
+      durationMs: Date.now() - startedAt,
+    };
   });
