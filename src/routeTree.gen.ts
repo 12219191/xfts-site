@@ -56,6 +56,7 @@ import { Route as ApiPublicCrmRetryRouteImport } from './routes/api/public/crm-r
 import { Route as ApiPublicEmailQueueFlushRouteImport } from './routes/api/public/email-queue-flush'
 import { Route as ApiPublicEntitlementsRouteImport } from './routes/api/public/entitlements'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
+import { Route as ApiPublicHoloWebhookRouteImport } from './routes/api/public/holo-webhook'
 import { Route as ApiPublicProvisionRetryRouteImport } from './routes/api/public/provision-retry'
 import { Route as ApiPublicSeatsUsageRouteImport } from './routes/api/public/seats-usage'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
@@ -307,6 +308,11 @@ const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   path: '/api/public/health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHoloWebhookRoute = ApiPublicHoloWebhookRouteImport.update({
+  id: '/api/public/holo-webhook',
+  path: '/api/public/holo-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicProvisionRetryRoute = ApiPublicProvisionRetryRouteImport.update({
   id: '/api/public/provision-retry',
   path: '/api/public/provision-retry',
@@ -418,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -475,6 +482,7 @@ export interface FileRoutesByTo {
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -536,6 +544,7 @@ export interface FileRoutesById {
   '/api/public/email-queue-flush': typeof ApiPublicEmailQueueFlushRoute
   '/api/public/entitlements': typeof ApiPublicEntitlementsRoute
   '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
@@ -598,6 +607,7 @@ export interface FileRouteTypes {
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
     | '/api/public/health'
+    | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -655,6 +665,7 @@ export interface FileRouteTypes {
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
     | '/api/public/health'
+    | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -715,6 +726,7 @@ export interface FileRouteTypes {
     | '/api/public/email-queue-flush'
     | '/api/public/entitlements'
     | '/api/public/health'
+    | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
     | '/api/public/blog-image/$'
@@ -750,6 +762,7 @@ export interface RootRouteChildren {
   ApiPublicEmailQueueFlushRoute: typeof ApiPublicEmailQueueFlushRoute
   ApiPublicEntitlementsRoute: typeof ApiPublicEntitlementsRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
+  ApiPublicHoloWebhookRoute: typeof ApiPublicHoloWebhookRoute
   ApiPublicProvisionRetryRoute: typeof ApiPublicProvisionRetryRoute
   ApiPublicSeatsUsageRoute: typeof ApiPublicSeatsUsageRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
@@ -1094,6 +1107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/holo-webhook': {
+      id: '/api/public/holo-webhook'
+      path: '/api/public/holo-webhook'
+      fullPath: '/api/public/holo-webhook'
+      preLoaderRoute: typeof ApiPublicHoloWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/provision-retry': {
       id: '/api/public/provision-retry'
       path: '/api/public/provision-retry'
@@ -1284,6 +1304,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicEmailQueueFlushRoute: ApiPublicEmailQueueFlushRoute,
   ApiPublicEntitlementsRoute: ApiPublicEntitlementsRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
+  ApiPublicHoloWebhookRoute: ApiPublicHoloWebhookRoute,
   ApiPublicProvisionRetryRoute: ApiPublicProvisionRetryRoute,
   ApiPublicSeatsUsageRoute: ApiPublicSeatsUsageRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
