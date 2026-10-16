@@ -8,7 +8,7 @@ export const Route = createFileRoute("/produtos/")({
   loader: () => getPublicCatalog(),
   errorComponent: ({ error }) => (
     <div className="section-padding container-wide text-sm text-muted-foreground" role="alert">
-      Não foi possível carregar os produtos. {error.message}
+      Não foi possível carregar os produtos. {error instanceof Error ? error.message : ""}
     </div>
   ),
   notFoundComponent: () => (
