@@ -76,7 +76,7 @@ function GestaoClinicaPage() {
       plans={plans}
       fallback={{
         name: "FLEXUS | Clínica",
-        headline: "FLEXUS | Clínica Completo",
+        headline: "FLEXUS | Clínica",
         subheadline:
           "Sistema SaaS para otimizar agendamentos, prontuários e finanças da sua clínica.",
         description:

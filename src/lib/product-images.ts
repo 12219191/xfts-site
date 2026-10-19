@@ -44,7 +44,7 @@ export const PRODUCT_IMAGE_ALT_DEFAULTS: Record<ProductSlug, string> = {
   estetica: "FLEXUS | Estética — software de gestão para clínicas de estética",
   aba: "FLEXUS | ABA — plataforma de gestão para clínicas de terapia ABA",
   crm: "FLEXUS | CRM — painel de CRM com funil de vendas e oportunidades",
-  casa360: "FLEXUS | Casa360° — sistema de gestão para casas de repouso e cuidado 360°",
+  casa360: "FLEXUS | Casa360° — família na cozinha usando o painel de gestão da casa",
   atende: "FLEXUS | Atende — atendente usando a caixa de entrada com agente de IA",
 };
 

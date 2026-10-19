@@ -34,7 +34,7 @@ export const barbeariasPlans = [
     annualPrice: "R$ 950", annualPriceId: "gestao_barbearias_basico_anual",
   },
   {
-    name: "Pro", price: "R$ 199", description: "Para redes e múltiplas unidades", tier: "pro" as const,
+    name: "Pro", price: "R$ 199", description: "Para barbearias com equipe", tier: "pro" as const,
     features: ["Tudo do Básico", "Gestão de comissões", "Notificações WhatsApp", "Fidelização de clientes", "Até 5 profissionais"],
     priceId: "gestao_barbearias_pro_mensal", ctaLabel: "Começar Agora",
     annualPrice: "R$ 1.910", annualPriceId: "gestao_barbearias_pro_anual",
