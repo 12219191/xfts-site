@@ -185,9 +185,9 @@ function HomePage() {
           </p>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {[
-              { icon: Zap, title: "Eficiência", desc: "Automatize processos e ganhe produtividade no dia a dia do seu negócio." },
-              { icon: BarChart3, title: "Inovação", desc: "Tecnologia de ponta com inteligência analítica integrada aos seus processos." },
-              { icon: Shield, title: "Suporte", desc: "Equipe dedicada para garantir o melhor uso das nossas soluções." },
+              { icon: Zap, title: "Menos tempo com tarefas manuais", desc: "Agenda online, lembretes, comissões e estoque automáticos para sua equipe focar no cliente." },
+              { icon: BarChart3, title: "Decisões com seus próprios dados", desc: "Painéis com faturamento, ocupação e retorno de clientes atualizados em tempo real." },
+              { icon: Shield, title: "Suporte humano em português", desc: "Ajuda na implantação e atendimento por WhatsApp e e-mail com resposta em até 1 dia útil." },
             ].map((v) => (
               <Card key={v.title} className="border-border bg-card">
                 <CardContent className="flex flex-col items-center p-6 text-center">
