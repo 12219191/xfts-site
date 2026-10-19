@@ -1,8 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, Search } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { createServerFn } from "@tanstack/react-start";
+
+const fetchArticles = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("blog_articles")
+    .select("id, title, slug, summary, category, image_url, created_at")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
+  return (data ?? []) as Article[];
+});
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -30,6 +40,7 @@ export const Route = createFileRoute("/blog/")({
       },
     ],
   }),
+  loader: async () => ({ articles: await fetchArticles() }),
   component: BlogIndex,
 });
 
@@ -46,22 +57,9 @@ interface Article {
 function BlogIndex() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Todas");
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { articles } = Route.useLoaderData();
+  const loading = false;
   const categories = ["Todas", "Gestão", "Tecnologia"];
-
-  useEffect(() => {
-    const fetchArticles = async () => {
-      const { data, error } = await supabase
-        .from("blog_articles")
-        .select("id, title, slug, summary, category, image_url, created_at")
-        .eq("published", true)
-        .order("created_at", { ascending: false });
-      if (!error && data) setArticles(data);
-      setLoading(false);
-    };
-    fetchArticles();
-  }, []);
 
   const filtered = articles.filter((a) => {
     const matchSearch =
