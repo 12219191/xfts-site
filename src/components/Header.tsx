@@ -44,7 +44,8 @@ export function Header() {
               key={link.to}
               to={link.to}
               className="text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-              activeProps={{ className: "text-sm font-medium text-primary" }}
+              activeProps={{ className: "text-sm font-medium text-primary", "aria-current": "page" }}
+              activeOptions={{ exact: link.to !== "/blog" }}
               onClick={() =>
                 trackCTAClick({ section: "header-nav", label: link.label, destination: link.to })
               }
@@ -76,7 +77,7 @@ export function Header() {
             <Button asChild variant="outline" size="sm">
               <Link to="/login" onClick={() => trackCTAClick({ section: "header", action: "login", label: "Login", destination: "/login" })}>Login</Link>
             </Button>
-          ) : null}
+          ) : <span className="inline-block h-9 w-[70px]" aria-hidden="true" />}
 
           <Button asChild className="bg-cta text-cta-foreground hover:bg-cta/90">
             <Link to="/contato" onClick={() => trackCTAClick({ section: "header", action: "demo", label: "Solicite Demo", destination: "/contato", placement: "topo" })}>Solicite Demo</Link>
@@ -103,7 +104,8 @@ export function Header() {
                 key={link.to}
                 to={link.to}
                 className="py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:text-primary"
-                activeProps={{ className: "py-2.5 text-sm font-medium text-primary" }}
+                activeProps={{ className: "py-2.5 text-sm font-medium text-primary", "aria-current": "page" }}
+                activeOptions={{ exact: link.to !== "/blog" }}
                 onClick={() => {
                   trackCTAClick({ section: "header-mobile-nav", label: link.label, destination: link.to });
                   setMobileOpen(false);

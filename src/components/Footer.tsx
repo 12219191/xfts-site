@@ -53,7 +53,7 @@ export function Footer() {
       <div className="border-t border-primary-foreground/10 px-4 pb-24 pt-4 text-center text-xs text-primary-foreground/80 md:pb-4 md:pr-56">
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span>© 2026 XFTS Inteligência Analítica. Todos os direitos reservados.</span>
-          <span>Hospedado na Hostinger</span>
+          <span>CNPJ 23.102.588/0001-90</span>
           <Link to="/politica-de-privacidade" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Política de Privacidade", destination: "/politica-de-privacidade" })}>Política de Privacidade</Link>
           <Link to="/termos-de-uso" className="hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-legal", label: "Termos de Uso", destination: "/termos-de-uso" })}>Termos de Uso</Link>
           <button type="button" className="hover:text-primary-foreground" onClick={openCookiePreferences}>Preferências de cookies</button>
