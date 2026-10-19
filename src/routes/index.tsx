@@ -9,7 +9,9 @@ import { useState } from "react";
 import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
 import { toast } from "sonner";
 import { trackCTAClick, trackProductClick, trackFormSubmit } from "@/lib/tracking";
-import heroMain from "@/assets/hero-main.jpg";
+import heroMain from "@/assets/hero-main-1920.webp";
+import heroMain1024 from "@/assets/hero-main-1024.webp";
+import heroMain640 from "@/assets/hero-main-640.webp";
 import { Logo } from "@/components/Logo";
 import { useProductImageData } from "@/lib/product-images";
 import { softwareAppsJsonLd } from "@/lib/structured-data";
@@ -145,7 +147,7 @@ function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <img src={heroMain} alt="Equipe analisando dados em dashboards" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
+        <img src={heroMain} srcSet={`${heroMain640} 640w, ${heroMain1024} 1024w, ${heroMain} 1920w`} sizes="100vw" fetchPriority="high" alt="Equipe analisando dados em dashboards" width={1920} height={1080} className="absolute inset-0 h-full w-full object-cover" />
         <div className="gradient-hero-overlay absolute inset-0" />
         <Logo
           size={420}
