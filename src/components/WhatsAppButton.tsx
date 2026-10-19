@@ -19,12 +19,12 @@ export function WhatsAppFloatingButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar com a XFTS no WhatsApp"
+      title="Falar no WhatsApp"
       onClick={() => trackCTAClick({ section: "whatsapp-flutuante", label: "WhatsApp" })}
-      className="group fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-cta px-5 py-3.5 shadow-lg ring-1 ring-cta-foreground/20 transition-colors hover:bg-cta/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-cta shadow-lg md:bottom-5 md:right-5 md:h-auto md:w-auto md:px-5 md:py-3.5 ring-1 ring-cta-foreground/20 transition-colors hover:bg-cta/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <span className="pointer-events-none absolute inset-0 -z-10 animate-ping rounded-full bg-cta/40" />
-      <WhatsAppIcon className="relative h-6 w-6 shrink-0 text-cta-foreground" />
-      <span className="relative whitespace-nowrap text-sm font-bold text-cta-foreground">
+      <WhatsAppIcon className="relative h-7 w-7 shrink-0 text-cta-foreground md:h-6 md:w-6" />
+      <span className="relative hidden whitespace-nowrap md:inline text-sm font-bold text-cta-foreground">
         Fale conosco
       </span>
     </a>

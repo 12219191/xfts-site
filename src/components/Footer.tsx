@@ -22,6 +22,7 @@ export function Footer() {
           <nav className="flex flex-col gap-2 text-sm">
             <Link to="/" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Home", destination: "/" })}>Home</Link>
             <Link to="/produtos" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Produtos", destination: "/produtos" })}>Produtos</Link>
+            <Link to="/produtos/comparar-planos" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Planos", destination: "/produtos/comparar-planos" })}>Planos</Link>
             <Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Blog", destination: "/blog" })}>Blog</Link>
             <Link to="/contato" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Contato", destination: "/contato" })}>Contato</Link>
           </nav>
@@ -29,8 +30,8 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Contato</h4>
           <div className="flex flex-col gap-2 text-sm text-primary-foreground/80">
-            <span>(17) 99794-3349</span>
-            <span>xfts@xfts.com.br</span>
+            <a href="tel:+5517997943349" className="hover:text-primary-foreground hover:underline">(17) 99794-3349</a>
+            <a href="mailto:xfts@xfts.com.br" className="hover:text-primary-foreground hover:underline">xfts@xfts.com.br</a>
             <span>São José do Rio Preto, SP - Brasil</span>
           </div>
         </div>
@@ -49,7 +50,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-primary-foreground/10 px-4 py-4 text-center text-xs text-primary-foreground/50">
+      <div className="border-t border-primary-foreground/10 px-4 pb-24 pt-4 text-center text-xs text-primary-foreground/80 md:pb-4 md:pr-56">
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span>© 2026 XFTS Inteligência Analítica. Todos os direitos reservados.</span>
           <span>Hospedado na Hostinger</span>
