@@ -11,6 +11,9 @@ import heroMain from "@/assets/hero-main.jpg";
 import { Logo } from "@/components/Logo";
 import { useProductImageData } from "@/lib/product-images";
 import { softwareAppsJsonLd } from "@/lib/structured-data";
+import { Badge } from "@/components/ui/badge";
+import { getPublicCatalog } from "@/lib/catalog.functions";
+import { canPurchase, siteCta, type CatalogProduct } from "@/lib/catalog";
 
 
 export const Route = createFileRoute("/")({
@@ -31,11 +34,22 @@ export const Route = createFileRoute("/")({
     links: [{ rel: "canonical", href: "https://xfts-flexus.com/" }],
     scripts: [softwareAppsJsonLd()],
   }),
+  loader: async (): Promise<{ catalog: CatalogProduct[] }> => {
+    try {
+      const snapshot = await getPublicCatalog();
+      return { catalog: snapshot.products };
+    } catch {
+      return { catalog: [] };
+    }
+  },
+  errorComponent: () => null,
+  notFoundComponent: () => null,
   component: HomePage,
 });
 
 function HomePage() {
   const productImages = useProductImageData();
+  const { catalog } = Route.useLoaderData();
   const [formData, setFormData] = useState({ nome: "", email: "", telefone: "", segmento: "" });
   const [sending, setSending] = useState(false);
   const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
@@ -111,6 +125,20 @@ function HomePage() {
     },
   ];
 
+  const visibleProducts = products
+    .map((p, index) => {
+      const entry = catalog.find((c) => c.key === p.slug);
+      return {
+        ...p,
+        index,
+        entry,
+        buyable: entry ? canPurchase(entry) : true,
+        badge: entry ? siteCta(entry).badge : null,
+      };
+    })
+    .filter((p) => !p.entry || p.entry.showOnWebsite)
+    .sort((a, b) => Number(b.buyable) - Number(a.buyable) || a.index - b.index);
+
   return (
     <>
       {/* Hero */}
@@ -132,16 +160,16 @@ function HomePage() {
             Tecnologia, dados e gestão em uma só direção
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicite Demo Grátis" })}>
-              <Button size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+            <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+              <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicite Demo Grátis" })}>
                 Solicite Demo Grátis <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Fale Conosco" })}>
-              <Button size="lg" variant="heroOutline">
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="heroOutline">
+              <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Fale Conosco" })}>
                 Fale Conosco
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -181,7 +209,7 @@ function HomePage() {
             Conheça nossas soluções SaaS especializadas para diferentes segmentos.
           </p>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((p) => (
+            {visibleProducts.map((p) => (
               <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
                 <div className="aspect-video overflow-hidden">
                   <img src={productImages[p.slug].url} alt={productImages[p.slug].alt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -190,13 +218,14 @@ function HomePage() {
                   <div className="flex items-center gap-3">
                     <p.icon className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
+                    {p.badge && <Badge variant="secondary">{p.badge}</Badge>}
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
                   <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline" onClick={() => {
                     trackProductClick(p.title);
                     trackCTAClick({ section: "cards-produtos", action: `card-${p.slug}`, label: `Saiba Mais — ${p.title}`, destination: p.link });
                   }}>
-                    Saiba Mais <ArrowRight className="ml-1 h-4 w-4" />
+                    {p.buyable ? "Saiba Mais" : "Conhecer e entrar na lista"} <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </CardContent>
               </Card>

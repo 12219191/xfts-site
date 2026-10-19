@@ -11,7 +11,14 @@ import { trackFormSubmit } from "@/lib/tracking";
 import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 import { organizationJsonLd } from "@/lib/structured-data";
 
+export const SEGMENTOS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360", "atende", "outro"] as const;
+export type Segmento = (typeof SEGMENTOS)[number];
+
 export const Route = createFileRoute("/contato")({
+  validateSearch: (search: Record<string, unknown>): { segmento?: Segmento } => {
+    const s = search.segmento as Segmento;
+    return SEGMENTOS.includes(s) ? { segmento: s } : {};
+  },
   head: () => ({
     meta: [
       { title: "Contato - XFTS Inteligência Analítica" },
@@ -29,7 +36,8 @@ export const Route = createFileRoute("/contato")({
 });
 
 function ContatoPage() {
-  const [form, setForm] = useState({ nome: "", email: "", telefone: "", mensagem: "", segmento: "" });
+  const { segmento: initialSegmento } = Route.useSearch();
+  const [form, setForm] = useState({ nome: "", email: "", telefone: "", mensagem: "", segmento: initialSegmento ?? "" });
 
   const [sending, setSending] = useState(false);
   const [lastStatus, setLastStatus] = useState<ZapierResult | null>(null);
@@ -80,6 +88,10 @@ function ContatoPage() {
                 <option value="clinica">Clínica</option>
                 <option value="barbearia">Barbearia</option>
                 <option value="estetica">Estética / Salão</option>
+                <option value="aba">Clínica ABA</option>
+                <option value="crm">CRM de vendas</option>
+                <option value="casa360">Casa360°</option>
+                <option value="atende">Atendimento (WhatsApp)</option>
                 <option value="outro">Outro</option>
               </select>
               <Textarea placeholder="Sua mensagem" rows={5} value={form.mensagem} onChange={(e) => setForm({ ...form, mensagem: e.target.value })} required />

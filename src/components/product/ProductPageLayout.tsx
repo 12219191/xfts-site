@@ -73,6 +73,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
   const planFeatures = featuresFromPlans(plans);
   const features = planFeatures.length >= 4 ? planFeatures : fallback.features;
   const showPricing = purchasable && plans.length > 0;
+  const inDevelopment = product?.status === "development";
 
   const handleCheckout = (priceId: string) => {
     openCheckout({
@@ -115,16 +116,24 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
             </p>
           )}
           <div className="mt-8 flex flex-wrap gap-4">
-            <Link to="/contato">
-              <Button
-                size="lg"
-                className="bg-cta text-cta-foreground hover:bg-cta/90"
-                onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}
-              >
-                Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" />
+            {inDevelopment ? (
+              <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+                <Link
+                  to="/contato"
+                  search={{ segmento: productKey }}
+                  onClick={() => trackCTAClick({ section: "hero", label: "Entrar na lista de espera", destination: "/contato" })}
+                >
+                  Entrar na lista de espera <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-            </Link>
-            {!contactOnly && <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />}
+            ) : (
+              <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+                <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>
+                  Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+            {!contactOnly && !inDevelopment && <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />}
           </div>
         </div>
       </section>
@@ -177,21 +186,40 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
                   ? `Os planos do ${name} estão sendo atualizados. Fale com o nosso time para receber a proposta com valores e formas de pagamento.`
                   : `O ${name} ainda não está disponível para contratação online. Fale com o nosso time para entrar na lista e receber condições.`}
               </p>
-              <Link to="/contato" className="mt-6 inline-block">
-                <Button
-                  className="bg-cta text-cta-foreground hover:bg-cta/90"
-                  onClick={() =>
-                    trackCTAClick({
-                      section: "pricing",
-                      action: "falar-com-time",
-                      label: "Falar com o time",
-                      destination: "/contato",
-                    })
-                  }
-                >
-                  Falar com o time <ArrowRight className="ml-2 h-4 w-4" />
+              {purchasable ? (
+                <Button asChild className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90">
+                  <Link
+                    to="/contato"
+                    onClick={() =>
+                      trackCTAClick({
+                        section: "pricing",
+                        action: "falar-com-time",
+                        label: "Falar com o time",
+                        destination: "/contato",
+                      })
+                    }
+                  >
+                    Falar com o time <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
-              </Link>
+              ) : (
+                <Button asChild className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90">
+                  <Link
+                    to="/contato"
+                    search={{ segmento: productKey }}
+                    onClick={() =>
+                      trackCTAClick({
+                        section: "pricing",
+                        action: "lista-de-espera",
+                        label: "Entrar na lista de espera",
+                        destination: "/contato",
+                      })
+                    }
+                  >
+                    Entrar na lista de espera <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </div>
           )}
         </div>

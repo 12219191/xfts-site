@@ -17,7 +17,8 @@ import {
   casa360Plans,
 } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
-import { plansForProduct } from "@/lib/catalog";
+import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
+import { Badge } from "@/components/ui/badge";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
@@ -32,8 +33,15 @@ export const Route = createFileRoute("/produtos/comparar-planos")({
   loader: async () => {
     const snapshot = await getPublicCatalog();
     const plansByProduct: Record<string, CatalogProductPlan[]> = {};
-    for (const key of PRODUCT_KEYS) plansByProduct[key] = plansForProduct(snapshot, key);
-    return { plansByProduct };
+    const availability: Record<string, { buyable: boolean; badge: string | null }> = {};
+    for (const key of PRODUCT_KEYS) {
+      plansByProduct[key] = plansForProduct(snapshot, key);
+      const entry = snapshot.products.find((p) => p.key === key);
+      availability[key] = entry
+        ? { buyable: canPurchase(entry), badge: siteCta(entry).badge }
+        : { buyable: true, badge: null };
+    }
+    return { plansByProduct, availability };
   },
   head: () => ({
     meta: [
@@ -243,9 +251,14 @@ const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
 
 function CompararPlanosPage() {
   const { produto } = Route.useSearch();
-  const { plansByProduct } = Route.useLoaderData();
+  const { plansByProduct, availability } = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
-  const selected = products.find((p) => p.key === produto) ?? products[0];
+  const isBuyable = (key: ProductKey) => availability[key]?.buyable ?? true;
+  const selected =
+    products.find((p) => p.key === produto) ??
+    products.find((p) => isBuyable(p.key)) ??
+    products[0];
+  const selectedBuyable = isBuyable(selected.key);
   const [annual, setAnnual] = useState(false);
   const discount = 0.8;
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
@@ -319,6 +332,8 @@ function CompararPlanosPage() {
               {products.map((p) => (
                 <button
                   key={p.key}
+                  type="button"
+                  aria-pressed={selected.key === p.key}
                   onClick={() => navigate({ search: { produto: p.key } })}
                   className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
                     selected.key === p.key
@@ -327,6 +342,9 @@ function CompararPlanosPage() {
                   }`}
                 >
                   {p.product}
+                  {availability[p.key]?.badge && (
+                    <Badge variant="secondary" className="ml-2">{availability[p.key]?.badge}</Badge>
+                  )}
                 </button>
               ))}
             </div>
@@ -334,12 +352,16 @@ function CompararPlanosPage() {
             {/* Toggle Mensal / Anual */}
             <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-border bg-card p-1.5 shadow-sm">
               <button
+                type="button"
+                aria-pressed={!annual}
                 onClick={() => setAnnual(false)}
                 className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${!annual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Mensal
               </button>
               <button
+                type="button"
+                aria-pressed={annual}
                 onClick={() => setAnnual(true)}
                 className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${annual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
@@ -357,12 +379,29 @@ function CompararPlanosPage() {
                   <h2 className="text-2xl font-bold text-foreground">{product.product}</h2>
                   <p className="mt-1 text-sm text-muted-foreground">Compare funcionalidades lado a lado</p>
                 </div>
-                <Link to={product.slug as any}>
-                  <Button variant="outline" size="sm" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Ver produto" })}>
+                <Button asChild variant="outline" size="sm">
+                  <Link to={product.slug as any} onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Ver produto" })}>
                     Ver produto <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
+
+              {!selectedBuyable && (
+                <div role="note" className="mb-6 flex flex-col items-start gap-3 rounded-xl border border-border bg-muted/50 p-4 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between">
+                  <p>
+                    {product.product} ainda não está disponível para contratação; os valores são uma prévia e podem mudar no lançamento.
+                  </p>
+                  <Button asChild size="sm" className="shrink-0 bg-cta text-cta-foreground hover:bg-cta/90">
+                    <Link
+                      to="/contato"
+                      search={{ segmento: product.key }}
+                      onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Avise-me quando lançar", destination: "/contato" })}
+                    >
+                      Avise-me quando lançar
+                    </Link>
+                  </Button>
+                </div>
+              )}
 
               {/* Comparison Table */}
               <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
@@ -435,6 +474,18 @@ function CompararPlanosPage() {
                     ))}
                   </tbody>
                   <tfoot>
+                    {!selectedBuyable ? (
+                    <tr className="border-t border-border">
+                      <td className="px-6 py-5" />
+                      {(["basico", "pro", "enterprise"] as const).map((col) => (
+                        <td key={col} className="px-6 py-5 text-center">
+                          <Button type="button" variant="outline" className="w-full" disabled>
+                            Em breve
+                          </Button>
+                        </td>
+                      ))}
+                    </tr>
+                    ) : (
                     <tr className="border-t border-border">
                       <td className="px-6 py-5" />
                       <td className="px-6 py-5 text-center">
@@ -464,14 +515,15 @@ function CompararPlanosPage() {
                             Começar Agora
                           </Button>
                         ) : (
-                        <Link to="/contato">
-                          <Button className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
+                        <Button asChild className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-lg shadow-gold-deep/20">
+                          <Link to="/contato" onClick={() => trackCTAClick({ section: `planos-${product.product}`, label: "Falar com Consultor" })}>
                             Falar com Consultor
-                          </Button>
-                        </Link>
+                          </Link>
+                        </Button>
                         )}
                       </td>
                     </tr>
+                    )}
                   </tfoot>
                 </table>
               </div>
@@ -482,8 +534,8 @@ function CompararPlanosPage() {
           <div className="mx-auto mt-16 flex max-w-md items-center gap-4 rounded-2xl border border-cta/20 bg-primary/5 p-6">
             <Shield className="h-10 w-10 shrink-0 text-primary" />
             <div>
-              <p className="font-semibold text-foreground">Garantia de 7 dias</p>
-              <p className="mt-1 text-sm text-muted-foreground">Teste gratuitamente por 7 dias. Se não gostar, cancele sem custo algum.</p>
+              <p className="font-semibold text-foreground">7 dias grátis para testar</p>
+              <p className="mt-1 text-sm text-muted-foreground">Cancele dentro do período de teste e nada é cobrado.</p>
             </div>
           </div>
 
@@ -509,11 +561,11 @@ function CompararPlanosPage() {
           <div className="mt-20 rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-10 text-center shadow-xl">
             <h3 className="text-2xl font-bold text-primary-foreground">Não tem certeza qual plano escolher?</h3>
             <p className="mt-3 text-primary-foreground/80">Nossa equipe pode ajudar a encontrar a solução perfeita para o seu negócio.</p>
-            <Link to="/contato">
-              <Button size="lg" className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/30" onClick={() => trackCTAClick({ section: "cta-final", label: "Falar com Especialista" })}>
+            <Button asChild size="lg" className="mt-6 bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/30">
+              <Link to="/contato" onClick={() => trackCTAClick({ section: "cta-final", label: "Falar com Especialista" })}>
                 Falar com Especialista <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
