@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
 import { SEATS_BY_TIER, SEATS_BY_APP, seatsLabel } from "@/lib/flexus-apps";
 import { trackCTAClick } from "@/lib/tracking";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -260,6 +262,24 @@ function CompararPlanosPage() {
     products[0];
   const selectedBuyable = isBuyable(selected.key);
   const [annual, setAnnual] = useState(false);
+  /** Preços (lookup keys) das assinaturas ativas do visitante logado. */
+  const [myPriceIds, setMyPriceIds] = useState<string[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const env = getStripeEnvironment() === "live" ? "live" : "sandbox";
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("price_id, status")
+        .eq("user_id", session.user.id)
+        .or(`environment.eq.${env},is_courtesy.is.true`)
+        .in("status", ["active", "trialing", "past_due"]);
+      if (!cancelled) setMyPriceIds((data ?? []).map((r) => r.price_id));
+    })();
+    return () => { cancelled = true; };
+  }, []);
   const discount = 0.8;
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
@@ -273,6 +293,15 @@ function CompararPlanosPage() {
     products.find((p) => p.key === productKey)?.tiers?.[col] ?? col;
   const catalogPlan = (productKey: ProductKey, col: Column) =>
     plansByProduct[productKey]?.find((p) => p.tier === tierOf(productKey, col));
+  const isMyPlan = (productKey: ProductKey, col: Column) => {
+    const plan = catalogPlan(productKey, col);
+    if (!plan) return false;
+    return myPriceIds.some((id) => id === plan.priceLookupKey || id === plan.annualLookupKey);
+  };
+  const MyPlanBadge = ({ col }: { col: Column }) =>
+    isMyPlan(selected.key, col) ? (
+      <div className="mt-2"><Badge variant="secondary">Seu plano atual</Badge></div>
+    ) : null;
   const shownPrice = (productKey: ProductKey, col: Column) => {
     const plan = catalogPlan(productKey, col);
     if (annual && productKey === "atende" && plan?.annualPrice) {
@@ -425,6 +454,7 @@ function CompararPlanosPage() {
                         <div className="text-sm font-semibold text-foreground">{product.labels?.basico ?? "Básico"}</div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "basico")}/mês</div>}
+                        <MyPlanBadge col="basico" />
                       </th>
                       <th className="sticky top-0 z-10 border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
@@ -433,6 +463,7 @@ function CompararPlanosPage() {
                         </div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "pro")}/mês</div>}
+                        <MyPlanBadge col="pro" />
                       </th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
@@ -441,6 +472,7 @@ function CompararPlanosPage() {
                         </div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
                         {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "enterprise")}/mês</div>}
+                        <MyPlanBadge col="enterprise" />
                       </th>
                     </tr>
                   </thead>
