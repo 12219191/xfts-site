@@ -2,8 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share2, Calendar, User } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Article {
   id: string;
@@ -25,11 +23,11 @@ const fetchArticleMeta = createServerFn({ method: "GET" })
     );
     const { data } = await supabaseAdmin
       .from("blog_articles")
-      .select("title, summary, image_url, author, category, created_at")
+      .select("id, title, slug, summary, content, category, image_url, author, created_at")
       .eq("slug", slug)
       .eq("published", true)
-      .single();
-    return data;
+      .maybeSingle();
+    return (data as Article | null) ?? null;
   });
 
 export const Route = createFileRoute("/blog/$articleId")({
@@ -97,34 +95,22 @@ export const Route = createFileRoute("/blog/$articleId")({
   component: ArticlePage,
 });
 
+function pickProduct(text: string) {
+  const t = text.toLowerCase();
+  const list = [
+    { k: ["barbear"], to: "/produtos/gestao-barbearias", name: "FLEXUS | Barbearia" },
+    { k: ["estétic", "estetic", "salão", "salao"], to: "/produtos/gestao-esteticas", name: "FLEXUS | Estética" },
+    { k: ["whatsapp", "atendimento"], to: "/produtos/flexus-atende", name: "FLEXUS | Atende" },
+    { k: ["crm", "vendas", "funil"], to: "/produtos/flexus-crm", name: "FLEXUS | CRM" },
+    { k: ["aba", "autis", "tea"], to: "/produtos/flexus-aba", name: "FLEXUS | ABA" },
+    { k: ["clínica", "clinica", "consultório"], to: "/produtos/gestao-clinica", name: "FLEXUS | Clínica" },
+    { k: ["casa", "despensa"], to: "/produtos/flexus-casa360", name: "FLEXUS | Casa360°" },
+  ] as const;
+  return list.find((p) => p.k.some((k) => new RegExp(`\\b${k}`).test(t))) ?? null;
+}
+
 function ArticlePage() {
-  const { articleId } = Route.useParams();
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchArticle = async () => {
-      const { data } = await supabase
-        .from("blog_articles")
-        .select("*")
-        .eq("slug", articleId)
-        .eq("published", true)
-        .single();
-      setArticle(data);
-      setLoading(false);
-    };
-    fetchArticle();
-  }, [articleId]);
-
-  if (loading) {
-    return (
-      <div className="section-padding text-center">
-        <div className="animate-pulse">
-          <div className="mx-auto h-8 w-1/2 rounded bg-muted" />
-        </div>
-      </div>
-    );
-  }
+  const { meta: article } = Route.useLoaderData();
 
   if (!article) {
     return (
@@ -148,6 +134,8 @@ function ArticlePage() {
       month: "long",
       year: "numeric",
     });
+
+  const product = pickProduct(`${article.title} ${article.category} ${article.content}`);
 
   const currentUrl =
     typeof window !== "undefined" ? window.location.href : "";
@@ -239,11 +227,16 @@ function ArticlePage() {
               Solicite uma demonstração gratuita e transforme a gestão do seu
               negócio.
             </p>
-            <Link to="/contato">
-              <Button className="mt-4 bg-cta text-cta-foreground hover:bg-cta/90">
-                Solicitar Demo
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              {product && (
+                <Button asChild className="bg-cta text-cta-foreground hover:bg-cta/90">
+                  <Link to={product.to}>Conhecer o {product.name}</Link>
+                </Button>
+              )}
+              <Button asChild variant={product ? "heroOutline" : "default"} className={product ? "" : "bg-cta text-cta-foreground hover:bg-cta/90"}>
+                <Link to="/contato">Solicitar Demo</Link>
               </Button>
-            </Link>
+            </div>
           </div>
         </div>
       </article>
