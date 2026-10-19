@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Label } from "@/components/ui/label";
+import { LEAD_SEGMENTS, isLeadSegment, type LeadSegment } from "@/lib/lead-segments";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,14 +13,9 @@ import { trackFormSubmit } from "@/lib/tracking";
 import { WhatsAppInlineButton } from "@/components/WhatsAppButton";
 import { organizationJsonLd } from "@/lib/structured-data";
 
-export const SEGMENTOS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360", "atende", "outro"] as const;
-export type Segmento = (typeof SEGMENTOS)[number];
-
 export const Route = createFileRoute("/contato")({
-  validateSearch: (search: Record<string, unknown>): { segmento?: Segmento } => {
-    const s = search.segmento as Segmento;
-    return SEGMENTOS.includes(s) ? { segmento: s } : {};
-  },
+  validateSearch: (search: Record<string, unknown>): { segmento?: LeadSegment } =>
+    isLeadSegment(search.segmento) ? { segmento: search.segmento } : {},
   head: () => ({
     meta: [
       { title: "Contato - XFTS Inteligência Analítica" },
@@ -80,24 +77,38 @@ function ContatoPage() {
               <h2 className="text-2xl font-bold text-foreground">Envie uma mensagem</h2>
             </div>
             <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
-              <Input placeholder="Nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required />
-              <Input placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-              <Input placeholder="Telefone" value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} required />
-              <select className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground" value={form.segmento} onChange={(e) => setForm({ ...form, segmento: e.target.value })} required>
-                <option value="">Selecione o segmento</option>
-                <option value="clinica">Clínica</option>
-                <option value="barbearia">Barbearia</option>
-                <option value="estetica">Estética / Salão</option>
-                <option value="aba">Clínica ABA</option>
-                <option value="crm">CRM de vendas</option>
-                <option value="casa360">Casa360°</option>
-                <option value="atende">Atendimento (WhatsApp)</option>
-                <option value="outro">Outro</option>
-              </select>
-              <Textarea placeholder="Sua mensagem" rows={5} value={form.mensagem} onChange={(e) => setForm({ ...form, mensagem: e.target.value })} required />
+              <div className="grid gap-1.5">
+                <Label htmlFor="contato-nome">Nome</Label>
+                <Input id="contato-nome" name="nome" autoComplete="name" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="contato-email">E-mail</Label>
+                <Input id="contato-email" name="email" type="email" inputMode="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="contato-telefone">WhatsApp / Telefone</Label>
+                <Input id="contato-telefone" name="telefone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(17) 99999-9999" value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="contato-segmento">Qual sistema interessa?</Label>
+                <select id="contato-segmento" name="segmento" className="h-10 rounded-md border border-input bg-card px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" value={form.segmento} onChange={(e) => setForm({ ...form, segmento: e.target.value })} required>
+                  <option value="">Selecione</option>
+                  {LEAD_SEGMENTS.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="contato-mensagem">Mensagem</Label>
+                <Textarea id="contato-mensagem" name="mensagem" rows={5} value={form.mensagem} onChange={(e) => setForm({ ...form, mensagem: e.target.value })} required />
+              </div>
               <Button type="submit" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Enviar Mensagem"}
               </Button>
+              <p className="text-xs text-muted-foreground">
+                Respondemos em até 1 dia útil. Ao enviar, você concorda com a{" "}
+                <Link to="/politica-de-privacidade" className="underline hover:text-foreground">Política de Privacidade</Link>.
+              </p>
               {lastStatus && (
                 <div
                   role="status"
@@ -122,11 +133,11 @@ function ContatoPage() {
             <div className="mt-6 grid gap-6">
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Phone className="h-5 w-5 text-primary" /></div>
-                <div><p className="text-sm font-medium text-card-foreground">Telefone</p><p className="text-sm text-muted-foreground">(17) 99794-3349</p></div>
+                <div><p className="text-sm font-medium text-card-foreground">Telefone</p><a href="tel:+5517997943349" className="text-sm text-muted-foreground hover:text-foreground hover:underline">(17) 99794-3349</a></div>
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Mail className="h-5 w-5 text-primary" /></div>
-                <div><p className="text-sm font-medium text-card-foreground">Email</p><p className="text-sm text-muted-foreground">xfts@xfts.com.br</p></div>
+                <div><p className="text-sm font-medium text-card-foreground">Email</p><a href="mailto:xfts@xfts.com.br" className="text-sm text-muted-foreground hover:text-foreground hover:underline">xfts@xfts.com.br</a></div>
               </CardContent></Card>
               <Card className="border-border bg-card"><CardContent className="flex items-center gap-4 p-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><MapPin className="h-5 w-5 text-primary" /></div>

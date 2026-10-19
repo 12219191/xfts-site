@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LEAD_SEGMENTS } from "@/lib/lead-segments";
 import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
@@ -241,25 +243,40 @@ function HomePage() {
             <div className="flex items-center justify-center gap-2">
               <h2 className="text-3xl font-bold text-primary-foreground md:text-4xl">Comece Agora</h2>
             </div>
-            <p className="mt-4 text-primary-foreground/70">Preencha o formulário e nossa equipe entrará em contato.</p>
+            <p className="mt-4 text-primary-foreground/80">Preencha o formulário e nossa equipe entrará em contato.</p>
             <form className="mt-8 grid gap-4" onSubmit={handleDemoSubmit}>
-              <Input placeholder="Nome" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 border-primary-foreground/20"
-                value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
-              <Input placeholder="Email" type="email" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 border-primary-foreground/20"
-                value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
-              <Input placeholder="Telefone" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 border-primary-foreground/20"
-                value={formData.telefone} onChange={(e) => setFormData({ ...formData, telefone: e.target.value })} required />
-              <select className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-2 text-sm text-primary-foreground"
-                value={formData.segmento} onChange={(e) => setFormData({ ...formData, segmento: e.target.value })} required>
-                <option value="" className="text-foreground">Selecione o segmento</option>
-                <option value="clinica" className="text-foreground">Clínica</option>
-                <option value="barbearia" className="text-foreground">Barbearia</option>
-                <option value="estetica" className="text-foreground">Estética / Salão</option>
-                <option value="outro" className="text-foreground">Outro</option>
-              </select>
+              <div className="grid gap-1.5 text-left">
+                <Label htmlFor="home-nome" className="text-primary-foreground">Nome</Label>
+                <Input id="home-nome" name="nome" autoComplete="name" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/70 border-primary-foreground/40 focus-visible:ring-2 focus-visible:ring-cta"
+                  value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5 text-left">
+                <Label htmlFor="home-email" className="text-primary-foreground">E-mail</Label>
+                <Input id="home-email" name="email" type="email" inputMode="email" autoComplete="email" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/70 border-primary-foreground/40 focus-visible:ring-2 focus-visible:ring-cta"
+                  value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5 text-left">
+                <Label htmlFor="home-telefone" className="text-primary-foreground">WhatsApp / Telefone</Label>
+                <Input id="home-telefone" name="telefone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(17) 99999-9999" className="bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/70 border-primary-foreground/40 focus-visible:ring-2 focus-visible:ring-cta"
+                  value={formData.telefone} onChange={(e) => setFormData({ ...formData, telefone: e.target.value })} required />
+              </div>
+              <div className="grid gap-1.5 text-left">
+                <Label htmlFor="home-segmento" className="text-primary-foreground">Qual sistema interessa?</Label>
+                <select id="home-segmento" name="segmento" className="h-10 rounded-md border px-3 text-sm focus-visible:outline-none bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/70 border-primary-foreground/40 focus-visible:ring-2 focus-visible:ring-cta"
+                  value={formData.segmento} onChange={(e) => setFormData({ ...formData, segmento: e.target.value })} required>
+                  <option value="" className="text-foreground">Selecione</option>
+                  {LEAD_SEGMENTS.map((s) => (
+                    <option key={s.value} value={s.value} className="text-foreground">{s.label}</option>
+                  ))}
+                </select>
+              </div>
               <Button type="submit" size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90" disabled={sending}>
                 {sending ? "Enviando..." : "Solicitar Demonstração"}
               </Button>
+              <p className="text-xs text-primary-foreground/80">
+                Respondemos em até 1 dia útil. Ao enviar, você concorda com a{" "}
+                <Link to="/politica-de-privacidade" className="underline hover:text-primary-foreground">Política de Privacidade</Link>.
+              </p>
               {lastStatus && (
                 <div
                   role="status"
