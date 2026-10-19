@@ -296,7 +296,7 @@ function CompararPlanosPage() {
   const isMyPlan = (productKey: ProductKey, col: Column) => {
     const plan = catalogPlan(productKey, col);
     if (!plan) return false;
-    return myPriceIds.some((id) => id === plan.priceLookupKey || id === plan.annualLookupKey);
+    return myPriceIds.some((id) => id === plan.priceId || id === plan.annualPriceId);
   };
   const MyPlanBadge = ({ col }: { col: Column }) =>
     isMyPlan(selected.key, col) ? (
