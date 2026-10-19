@@ -1,4 +1,4 @@
 - Atende: FLEXUS_APP_KEY_ATENDE pendente (usuário cadastra); planos/preços a aprovar.
 - Sessão de Suporte XFTS: Hub pronto; cada produto implementa o kit (docs/integracao-hub/support-session.md) e só então a flag do app é ligada no Control Center.
 - [x] Fase 4: criar cópias menores das fotos atuais dos produtos e preservar substituições no catálogo.
-- [ ] Validar fotos menores na Home, lista de produtos e páginas de produto em celular e computador.
+- [x] Validar fotos menores na Home, lista de produtos e páginas de produto em celular e computador, usando o serviço real de imagens.

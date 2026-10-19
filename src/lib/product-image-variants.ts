@@ -33,5 +33,6 @@ export const PRODUCT_IMAGE_VARIANTS = new Map<string, { width: number; url: stri
   ["/__l5e/assets-v1/6a8ec980-5b1d-4029-ab54-93e3e1a01a0f/hero-clinic.webp", [{ width: 480, url: image4_480.url }, { width: 960, url: image4_960.url }, { width: 1600, url: image4_1600.url }]],
   ["/__l5e/assets-v1/7347cd1b-136c-43fd-b356-13f5a7cc59de/hero-crm.webp", [{ width: 480, url: image5_480.url }, { width: 960, url: image5_960.url }, { width: 1600, url: image5_1600.url }]],
   [heroAtende, [{ width: 480, url: image6_480.url }, { width: 960, url: image6_960.url }, { width: 1536, url: image6_1536.url }]],
+  ["/assets/hero-atende-BmlMFlOC.jpg", [{ width: 480, url: image6_480.url }, { width: 960, url: image6_960.url }, { width: 1536, url: image6_1536.url }]],
   ["https://xfts-flexus.com/api/public/blog-image/2026/7a4c345f-127e-4ea7-ac5c-d6aa05776f1b.webp", [{ width: 480, url: image7_480.url }, { width: 960, url: image7_960.url }, { width: 1600, url: image7_1600.url }]],
 ]);
