@@ -8,7 +8,7 @@ const MODULES = [
   { name: "FLEXUS | Estética", path: "/produtos/gestao-esteticas", description: "Pacotes e sessões, ficha de anamnese, agendamento online, comissões e estoque de insumos para clínicas de estética e salões." },
   { name: "FLEXUS | ABA", path: "/produtos/flexus-aba", description: "Sistema de gestão para clínicas de terapia ABA." },
   { name: "FLEXUS | CRM", path: "/produtos/flexus-crm", description: "CRM para gestão de leads, funil de vendas e relacionamento com clientes." },
-  { name: "FLEXUS | Casa360", path: "/produtos/flexus-casa360", description: "Sistema de gestão para o segmento imobiliário e residencial." },
+  { name: "FLEXUS | Casa360", path: "/produtos/flexus-casa360", description: "ERP doméstico: estoque da despensa, lista de compras automática, controle de validade e finanças da casa." },
   { name: "FLEXUS | Atende", path: "/produtos/flexus-atende", description: "Atendimento via API oficial do WhatsApp com agentes de IA, base de conhecimento e caixa de entrada humana." },
 ];
 
