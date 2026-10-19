@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PricingCards } from "@/components/PricingCards";
 import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
 import { PaymentInfoSection } from "@/components/product/PaymentInfoSection";
+import { ProductImage } from "@/components/product/ProductImage";
 import { useProductImage, useProductImageAlt, type ProductSlug } from "@/lib/product-images";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { CheckoutModal } from "@/components/CheckoutModal";
@@ -91,8 +92,9 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
       )}
 
       <section className="relative overflow-hidden">
-        <img
+        <ProductImage
           src={heroImage}
+          sizes="100vw"
           alt={heroAlt}
           width={1920}
           height={1080}
@@ -103,7 +105,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
           {showStatusBadge && (
             <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
               <Sparkles className="h-3.5 w-3.5" />
-              {statusLabel(product!.status)}
+              {product && statusLabel(product.status)}
             </span>
           )}
           <h1 className="max-w-3xl text-4xl font-extrabold text-primary-foreground md:text-5xl">
