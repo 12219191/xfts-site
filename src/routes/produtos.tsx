@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trackProductCta } from "@/lib/tracking";
 import { siteCta, type CatalogProduct } from "@/lib/catalog";
+import { ProductImage } from "@/components/product/ProductImage";
 import {
   Stethoscope,
   Scissors,
@@ -65,7 +66,7 @@ export function ProdutosIndex({ products }: { products: CatalogProduct[] }) {
             return (
               <Card key={p.key} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
                 <div className="aspect-video overflow-hidden">
-                  <img src={p.imageUrl} alt={p.imageAlt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <ProductImage src={p.imageUrl} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" alt={p.imageAlt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 </div>
                 <CardContent className="p-6">
                   <div className="flex flex-wrap items-center gap-3">

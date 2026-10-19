@@ -4,7 +4,17 @@ import { getPublicCatalog } from "@/lib/catalog.functions";
 import { softwareAppsJsonLd } from "@/lib/structured-data";
 
 export const Route = createFileRoute("/produtos/")({
-  head: () => ({ scripts: [softwareAppsJsonLd()] }),
+  head: () => ({
+    meta: [
+      { title: "Sistemas FLEXUS para seu negócio | XFTS" },
+      { name: "description", content: "Conheça os sistemas FLEXUS para Barbearia, Estética, Atende, CRM, Casa360°, Clínica e ABA." },
+      { property: "og:title", content: "Sistemas FLEXUS para seu negócio | XFTS" },
+      { property: "og:description", content: "Compare as soluções de gestão FLEXUS e encontre o sistema para seu negócio ou sua casa." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    scripts: [softwareAppsJsonLd()],
+  }),
   loader: () => getPublicCatalog(),
   errorComponent: ({ error }) => (
     <div className="section-padding container-wide text-sm text-muted-foreground" role="alert">
