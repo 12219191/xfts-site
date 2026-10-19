@@ -212,17 +212,17 @@ function HomePage() {
           </p>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {visibleProducts.map((p) => (
-              <Card key={p.title} className="group overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
+              <Card key={p.title} className="group flex flex-col overflow-hidden border-border bg-card transition-shadow hover:shadow-lg">
                 <div className="aspect-video overflow-hidden">
                   <img src={productImages[p.slug].url} alt={productImages[p.slug].alt} loading="lazy" decoding="async" width={640} height={360} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <p.icon className="h-5 w-5 text-primary" />
+                <CardContent className="flex flex-1 flex-col p-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p.icon className="h-5 w-5 shrink-0 text-primary" />
                     <h3 className="text-lg font-semibold text-card-foreground">{p.title}</h3>
                     {p.badge && <Badge variant="secondary">{p.badge}</Badge>}
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground">{p.desc}</p>
+                  <p className="mt-3 flex-1 text-left text-sm text-muted-foreground">{p.desc}</p>
                   <Link to={p.link} className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:underline" onClick={() => {
                     trackProductClick(p.title);
                     trackCTAClick({ section: "cards-produtos", action: `card-${p.slug}`, label: `Saiba Mais — ${p.title}`, destination: p.link });
