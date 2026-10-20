@@ -13,6 +13,7 @@ import {
   TrendingUp,
   House,
   MessageCircle,
+  Workflow,
   ArrowRight,
   type LucideIcon,
 } from "lucide-react";
@@ -40,6 +41,7 @@ const ICONS: Record<string, LucideIcon> = {
   TrendingUp,
   House,
   MessageCircle,
+  Workflow,
 };
 
 function ProdutosLayout() {
