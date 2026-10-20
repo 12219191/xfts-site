@@ -90,6 +90,7 @@ export const setSupportSessionFlag = createServerFn({ method: "POST" })
     try {
       const id = await guard(context as never);
       if (!id.roles.includes("superadmin")) return { error: "Só superadmin altera o fluxo de suporte." };
+      { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "integration.support_flag"); if (m) return { error: m }; }
       const { setSupportFlag } = await import("@/lib/support-session.server");
       await setSupportFlag(data.app, data.enabled, { id: id.userId, email: id.email });
       return { ok: true };

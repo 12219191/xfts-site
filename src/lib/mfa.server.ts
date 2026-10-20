@@ -78,3 +78,14 @@ export async function wipeFactors(userId: string): Promise<number> {
   await db.from("admin_mfa_recovery_codes").delete().eq("user_id", userId);
   return n;
 }
+
+/** Variante que devolve a mensagem de erro (para funções que retornam { error }). */
+export async function stepUpError(context: { userId: string; claims: unknown }, action: string): Promise<string | null> {
+  try {
+    await requireStepUp({ userId: context.userId, claims: context.claims, action });
+    return null;
+  } catch (e) {
+    if (e instanceof StepUpRequiredError) return e.message;
+    throw e;
+  }
+}
