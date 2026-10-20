@@ -64,6 +64,7 @@ export const createCustomerNote = createServerFn({ method: "POST" })
     const email = (context.claims as { email?: string })?.email ?? "";
     const denied = await guard(context.supabase, context.userId, email);
     if (denied) return { error: denied };
+    { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "customer.note_create"); if (m) return { error: m }; }
 
     const { addCustomerNote } = await import("@/lib/customer-timeline.server");
     const result = await addCustomerNote({
@@ -101,6 +102,7 @@ export const deleteCustomerNote = createServerFn({ method: "POST" })
     const email = (context.claims as { email?: string })?.email ?? "";
     const denied = await guard(context.supabase, context.userId, email);
     if (denied) return { error: denied };
+    { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "customer.note_delete"); if (m) return { error: m }; }
 
     const { removeCustomerNote } = await import("@/lib/customer-timeline.server");
     const result = await removeCustomerNote(data.noteId);
