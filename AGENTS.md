@@ -8,3 +8,4 @@
  - Product photos use ProductImage with exact-source responsive variants in product-image-variants; unknown URLs render unchanged so future catalog uploads never display stale copies.
 - Entitlement limits use null = unlimited (resolver and splitEntitlements preserve null); Flow plans rely on this for channels/flows_active — why: products must distinguish "unlimited" from "0".
 - Products with own tiers (atende, flow) declare them in PRODUCT_PLAN_TIERS and planTierFromPriceId maps their lookup keys explicitly — why: never coerce unknown tiers to Básico.
+- Flow-only contract fields (environment, periodo_inicio, trial_fim) and legacy-support refusal live in src/lib/flow-sub.ts and are spread only when app=flow — why: other products depend on the current payload shape.
