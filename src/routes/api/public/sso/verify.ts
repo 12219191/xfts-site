@@ -82,7 +82,18 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         // acesso de suporte antigo (que entrava como o titular).
         if (payload.purpose === "support") {
           const { supportFlagEnabled } = await import("@/lib/support-session.server");
-          if (await supportFlagEnabled(app.key)) {
+          if (app.key === "flow" || (await supportFlagEnabled(app.key))) {
+            await log(app.key, "denied", 403, "suporte antigo desativado", payload.sub);
+            return json({ error: "Use a Sessão de Suporte XFTS" }, 403);
+          }
+        }
+        if (app.key === "flow") {
+          // Recusa também quando o registro do token marca suporte.
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: row } = await supabaseAdmin
+            .from("sso_tokens").select("purpose").eq("jti", payload.jti).maybeSingle();
+          const { flowPurposeAllowed } = await import("@/lib/flow-sub");
+          if (!flowPurposeAllowed(payload.purpose, (row as { purpose?: string | null } | null)?.purpose)) {
             await log(app.key, "denied", 403, "suporte antigo desativado", payload.sub);
             return json({ error: "Use a Sessão de Suporte XFTS" }, 403);
           }
