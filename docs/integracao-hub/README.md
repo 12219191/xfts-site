@@ -49,24 +49,45 @@ Regras do lado do sistema:
 
 ## 2. Provisionamento (webhook do hub)
 
-O hub envia, a cada mudança de assinatura:
+O hub envia, a cada mudança de assinatura (formato geral; o Atende tem corpo próprio):
 
 ```
-POST <endpoint de provisionamento do sistema>
-x-flexus-signature: base64url(HMAC-SHA256(FLEXUS_APP_KEY_<APP>, corpo cru))
+POST <endpoint de provisionamento do sistema>   (padrão <url do app>/api/provision, timeout 10 s)
 content-type: application/json
-
-{
-  "event": "created" | "updated" | "canceled" | "payment_failed",
-  "user_id": "...", "produto": "barbearia", "plano": "Pro",
-  "limite_usuarios": 6, "price_id": "gestao_barbearias_pro_mensal",
-  "status": "active", "acesso_ate": "2026-09-16T00:00:00Z",
-  "environment": "sandbox", "timestamp": "2026-08-17T20:00:00.000Z"
-}
+x-flexus-signature: base64url sem padding (HMAC-SHA256(FLEXUS_APP_KEY_<APP>, corpo cru))
 ```
 
-O sistema **precisa responder JSON** (`{"ok":true}`) — o hub trata HTML de SPA como falha.
-Validar assinatura em tempo constante e rejeitar `timestamp` com mais de 5 minutos.
+Corpo real (`created`, Flow Business, simulado da compra de teste):
+
+```json
+{"event":"created","user_id":"<uuid>","produto":"flow","plano":"Business",
+ "limite_usuarios":25,
+ "recursos":{"campaigns":true,"ai_agents":true,"export_csv":true,"public_api":true,"outbound_webhooks":true},
+ "limites":{"usuarios":25,"contacts_active":10000,"channels":null,"flows_active":null},
+ "price_id":"flexus_flow_business_mensal","status":"trialing",
+ "acesso_ate":"2026-10-27T16:51:59.000Z","environment":"sandbox",
+ "timestamp":"2026-10-20T17:05:00.000Z"}
+```
+
+Corpo real (`canceled`):
+
+```json
+{"event":"canceled","user_id":"<uuid>","produto":"flow","plano":"Business",
+ "limite_usuarios":0,"recursos":{},"limites":{},
+ "price_id":"flexus_flow_business_mensal","status":"canceled",
+ "acesso_ate":null,"environment":"sandbox","timestamp":"2026-10-20T17:05:00.000Z"}
+```
+
+Regras do corpo:
+- Ordem e nomes das chaves fixos; `event` ∈ `created | updated | canceled | payment_failed`.
+- `plano` é o nome exibido do tier (ex.: `Básico`, `Pro`, `Business`).
+- `limites` inclui `usuarios` e os limites do plano; `null` = ilimitado (nunca 0).
+- `canceled`: `limite_usuarios: 0`, `recursos: {}`, `limites: {}`, `acesso_ate` normalmente `null` (bloquear agora).
+- `environment`: `sandbox` ou `live`. Produto deve ignorar/isolar `sandbox` em produção.
+- Assinatura: chave em UTF-8, HMAC sobre os bytes exatos do corpo, saída base64url sem `=`; comparar em tempo constante. Não há cabeçalho de horário: rejeitar `timestamp` do corpo com mais de 5 minutos.
+- Fila de reenvio guarda só `{event,status,userId,priceId,accessUntil,environment}`; o corpo é **remontado** a cada tentativa (recursos/limites do catálogo do momento e `timestamp` novo, logo assinatura nova). Tratar `user_id`+`event`+`price_id` como idempotente.
+
+O sistema **precisa responder 2xx com JSON** (`{"ok":true}`) — o hub trata HTML de SPA como falha.
 
 Endpoints configurados no hub (`src/lib/flexus-apps.ts`):
 
