@@ -9,3 +9,6 @@
 - Entitlement limits use null = unlimited (resolver and splitEntitlements preserve null); Flow plans rely on this for channels/flows_active — why: products must distinguish "unlimited" from "0".
 - Products with own tiers (atende, flow) declare them in PRODUCT_PLAN_TIERS and planTierFromPriceId maps their lookup keys explicitly — why: never coerce unknown tiers to Básico.
 - Flow-only contract fields (environment, periodo_inicio, trial_fim) and legacy-support refusal live in src/lib/flow-sub.ts and are spread only when app=flow — why: other products depend on the current payload shape.
+- Usage reports arrive at /api/public/usage (app identified by its key, last-write-wins on seats_reported_ts, 60 req/min via hit_rate_limit) and are informational only — why: in-use counts must never change billing, access or entitlements.
+- Sensitive Control Center actions call requireStepUp/stepUpError (src/lib/mfa.server.ts) which reads the aal claim server-side; enforcement starts only when integration_settings mfa.enforce_after is set — why: no admin may be locked out during MFA migration.
+- Flow admin-only SSO while not accessible is gated by integration_settings flow.admin_preview_access + admin_users and audited as flow.admin_preview_access — why: reversible without publishing.
