@@ -108,6 +108,7 @@ const sections: LegalSection[] = [
         <ul className="list-disc space-y-2 pl-6 marker:text-primary">
           <li><strong>Google (Google Analytics 4 e Google Tag Manager):</strong> medição de audiência e desempenho do site, somente com seu consentimento;</li>
           <li><strong>Meta (Meta Pixel e WhatsApp):</strong> mensuração de campanhas, somente com seu consentimento, e atendimento por WhatsApp;</li>
+          <li><strong>Meta (WhatsApp Business, Instagram e Facebook) nos sistemas FLEXUS | Atende e FLEXUS | Flow:</strong> quando a empresa cliente conecta seus canais, recebemos e tratamos, em nome dela, os dados dos contatos (nome, número, perfil) e o conteúdo das conversas enviados por essas plataformas, apenas para operar o atendimento, os fluxos automáticos e o envio de leads ao CRM. A empresa cliente é a controladora desses dados e a XFTS atua como operadora;</li>
           <li><strong>Supabase:</strong> banco de dados e login das contas;</li>
           <li><strong>Lovable e Hostinger:</strong> hospedagem do site, infraestrutura e domínios;</li>
           <li><strong>Stripe:</strong> processamento de pagamentos e cobranças recorrentes;</li>

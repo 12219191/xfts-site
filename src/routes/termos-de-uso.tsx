@@ -155,6 +155,7 @@ const sections: LegalSection[] = [
     content: (
       <>
         <p>A plataforma poderá possuir integrações com serviços externos, como meios de pagamento, ferramentas de comunicação, WhatsApp, APIs, sistemas fiscais, bancos, gateways, serviços de nuvem e outras plataformas.</p>
+        <p>Os sistemas FLEXUS (Barbearia, Estética, CRM, Casa360°, Atende, Flow, Clínica e ABA) seguem estes Termos. No FLEXUS | Atende e no FLEXUS | Flow, a conexão com WhatsApp, Instagram e Facebook usa as APIs oficiais da Meta e exige conta Business verificada; as conversas do WhatsApp oficial são cobradas pela Meta diretamente na conta WABA da empresa e não estão incluídas na assinatura.</p>
         <p>O funcionamento dessas integrações pode depender de disponibilidade, regras, permissões e políticas dos respectivos terceiros.</p>
         <p>A XFTS não se responsabiliza por falhas, alterações, indisponibilidades ou limitações decorrentes exclusivamente desses serviços externos.</p>
       </>
