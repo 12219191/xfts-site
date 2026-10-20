@@ -102,8 +102,9 @@ export const FLEXUS_APPS: FlexusApp[] = [
   {
     key: "flow",
     name: "FLEXUS | Flow",
-    // URL do app do Flow: preencher quando o sistema for publicado (vazio = SSO e provisionamento desligados).
-    url: "",
+    // Acesso e envio seguem desligados por available=false e pelo catálogo ("Em breve").
+    url: "https://xfts-flexus11.com",
+    provisionUrl: "https://xfts-flexus11.com/api/public/provision",
     pricePrefix: "flexus_flow",
     landing: "/produtos/flexus-flow",
     available: false,
