@@ -265,7 +265,7 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   return <span className="text-sm font-medium text-foreground">{value}</span>;
 }
 
-const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
+const PLANS_BY_PRODUCT: Record<ProductKey, CatalogProductPlan[]> = {
   clinica: clinicaPlans,
   barbearia: barbeariasPlans,
   estetica: esteticasPlans,
