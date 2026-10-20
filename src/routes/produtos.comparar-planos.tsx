@@ -215,7 +215,7 @@ products.push({
   labels: { basico: "Basic", pro: "Standard", enterprise: "Corporate" },
   allTiersOnline: true,
   features: [
-    { name: "Agentes de IA", basico: "Até 2", pro: "Até 10", enterprise: "Até 20" },
+    { name: "Agentes de IA (em desenvolvimento)", basico: "Até 2", pro: "Até 10", enterprise: "Até 20" },
     { name: "Créditos de IA por mês", tooltip: "Renovam todo mês no aniversário da assinatura, também no plano anual", basico: "2.500", pro: "11.500", enterprise: "30.000" },
     { name: "Números de WhatsApp oficial", basico: "1", pro: "1", enterprise: "Ilimitados" },
     { name: "Departamentos", basico: "Até 2", pro: "Até 5", enterprise: "Ilimitados" },
@@ -238,15 +238,15 @@ products.push({
   allTiersOnline: true,
   features: [
     { name: "Contatos ativos", tooltip: "Contato com ao menos uma interação no ciclo de cobrança", basico: "Até 500", pro: "Até 2.500", enterprise: "Até 10.000" },
-    { name: "Canais", basico: "1", pro: "3", enterprise: "Ilimitados" },
+    { name: "Canais WhatsApp, Instagram e Facebook (em desenvolvimento)", basico: "1", pro: "3", enterprise: "Ilimitados" },
     { name: "Fluxos ativos", basico: "5", pro: "Ilimitados", enterprise: "Ilimitados" },
     { name: "Caixa de entrada da equipe", basico: true, pro: true, enterprise: true },
     { name: "Modelos prontos", basico: true, pro: true, enterprise: true },
-    { name: "Campanhas", basico: false, pro: true, enterprise: true },
+    { name: "Campanhas (em desenvolvimento)", basico: false, pro: true, enterprise: true },
     { name: "Agentes de IA", basico: false, pro: true, enterprise: true },
     { name: "Exportação CSV", basico: false, pro: true, enterprise: true },
-    { name: "API pública", basico: false, pro: false, enterprise: true },
-    { name: "Webhooks de saída", basico: false, pro: false, enterprise: true },
+    { name: "API pública (em desenvolvimento)", basico: false, pro: false, enterprise: true },
+    { name: "Webhooks de saída (em desenvolvimento)", basico: false, pro: false, enterprise: true },
     { name: "Conversas do WhatsApp", tooltip: "Cobradas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
   ],
 });
