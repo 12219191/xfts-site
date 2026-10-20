@@ -120,13 +120,20 @@ export const Route = createFileRoute("/api/public/entitlements")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
-          .select("price_id, status, current_period_end, cancel_at_period_end, seats_used, seats_override")
+          .select("price_id, status, current_period_start, current_period_end, cancel_at_period_end, seats_used, seats_override, environment")
           .eq("user_id", userId)
           .order("created_at", { ascending: false });
 
         const { resolveEntitlements } = await import("@/lib/entitlements.server");
 
-        const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
+        const flow = await import("@/lib/flow-sub");
+        const isFlow = app.key === "flow";
+        const sub = isFlow
+          ? flow.pickFlowSub(subs ?? [], (p) => appKeyFromPriceId(p) === "flow")
+          : (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
+        const flowExtra = isFlow
+          ? { environment: flow.flowEnvironment(sub ?? null), ...flow.flowPeriodFields(sub ?? null) }
+          : {};
         if (!sub) {
           await log("ok", 200, "sem assinatura");
           return json({
@@ -139,6 +146,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             recursos: {},
             limites: {},
             capabilities: [],
+            ...flowExtra,
           });
         }
 
@@ -180,6 +188,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
           usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
+          ...flowExtra,
         }));
 
       },

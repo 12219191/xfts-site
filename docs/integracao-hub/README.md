@@ -169,3 +169,9 @@ Regras complementares:
   `https://xfts-flexus.com/login?app=<key>`
 - Bloco "Entrar como equipe": manter o link local, rotulado "Esqueci minha senha (equipe)".
 - Linha de apoio: "É o titular da assinatura? Recupere a senha pelo hub."
+
+## FLEXUS | Flow — campos aditivos (somente app=flow)
+- `/api/public/sso/verify` e `/api/public/entitlements?app=flow`: `environment` ("sandbox" | "live" | null). Escolha: live ativa > sandbox ativa > mais recente.
+- `/api/public/entitlements?app=flow` e webhook de provisionamento do Flow: `periodo_inicio` (ISO ou null) e `trial_fim` (ISO ou null; preenchido só com status "trialing", igual ao fim do período corrente).
+- Suporte antigo (`purpose: "support"`) é sempre recusado no Flow com 403 "Use a Sessão de Suporte XFTS"; use `/api/public/support-session/*` (`tenant_id` = id do titular no Hub).
+- Os demais sistemas não recebem esses campos.

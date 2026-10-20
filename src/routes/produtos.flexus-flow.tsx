@@ -3,6 +3,7 @@ import { ArrowRight, Check, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { productJsonLd } from "@/lib/product-schema";
+import { markFlowDev, markFlowPlans } from "@/lib/flow-dev-features";
 import { flowPlans as fallbackPlans, lowestMonthlyPrice } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase } from "@/lib/catalog";
@@ -93,7 +94,7 @@ function FlexusFlowPage() {
       productKey="flow"
       app="flow"
       product={product}
-      plans={plans}
+      plans={markFlowPlans(plans)}
       fallback={{
         name: "FLEXUS | Flow",
         headline: "FLEXUS | Flow",
@@ -101,7 +102,7 @@ function FlexusFlowPage() {
           "Automatize conversas no WhatsApp, Instagram e Facebook com fluxos visuais e envie os leads direto ao CRM.",
         description:
           "Automação de conversas no WhatsApp, Instagram e Facebook com fluxos visuais, caixa de entrada da equipe e captura de leads.",
-        features: fallbackFeatures,
+        features: fallbackFeatures.map(markFlowDev),
         plansSubtitle: "Planos por contatos ativos. Mensal ou anual com 20% de desconto, 7 dias grátis, sem fidelidade.",
       }}
     >
@@ -141,7 +142,7 @@ function FlexusFlowPage() {
           </p>
           <p role="note" className="flex gap-3 rounded-xl border border-border bg-surface p-4 text-sm text-foreground">
             <Info className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-            WhatsApp e Instagram/Facebook usam as APIs oficiais da Meta e exigem conta Business verificada. TikTok: em breve.
+            WhatsApp e Instagram/Facebook usam as APIs oficiais da Meta e exigem conta Business verificada. A conexão real com esses canais está em desenvolvimento. TikTok: em breve.
           </p>
         </div>
       </section>
@@ -162,7 +163,7 @@ function FlexusFlowPage() {
                   </div>
                   <p className="mt-1 text-xl font-extrabold text-foreground">{p.price}</p>
                   <ul className="mt-4 space-y-2">
-                    {p.items.map((i) => (
+                    {p.items.map(markFlowDev).map((i) => (
                       <li key={i} className="flex gap-2 text-sm text-foreground">
                         <Check className="h-4 w-4 shrink-0 text-primary" aria-hidden />
                         {i}

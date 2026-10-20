@@ -82,7 +82,18 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         // acesso de suporte antigo (que entrava como o titular).
         if (payload.purpose === "support") {
           const { supportFlagEnabled } = await import("@/lib/support-session.server");
-          if (await supportFlagEnabled(app.key)) {
+          if (app.key === "flow" || (await supportFlagEnabled(app.key))) {
+            await log(app.key, "denied", 403, "suporte antigo desativado", payload.sub);
+            return json({ error: "Use a Sessão de Suporte XFTS" }, 403);
+          }
+        }
+        if (app.key === "flow") {
+          // Recusa também quando o registro do token marca suporte.
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: row } = await supabaseAdmin
+            .from("sso_tokens").select("purpose").eq("jti", payload.jti).maybeSingle();
+          const { flowPurposeAllowed } = await import("@/lib/flow-sub");
+          if (!flowPurposeAllowed(payload.purpose, (row as { purpose?: string | null } | null)?.purpose)) {
             await log(app.key, "denied", 403, "suporte antigo desativado", payload.sub);
             return json({ error: "Use a Sessão de Suporte XFTS" }, 403);
           }
@@ -181,12 +192,15 @@ export const Route = createFileRoute("/api/public/sso/verify")({
         const { data: subs } = await supabaseAdmin
           .from("subscriptions")
           .select(
-            "price_id, status, current_period_end, cancel_at_period_end, environment, seats_override",
+            "price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment, seats_override",
           )
           .eq("user_id", payload.sub)
           .order("created_at", { ascending: false });
 
-        const sub = (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
+        const { pickFlowSub, flowEnvironment } = await import("@/lib/flow-sub");
+        const sub = app.key === "flow"
+          ? pickFlowSub(subs ?? [], (p) => appKeyFromPriceId(p) === "flow")
+          : (subs ?? []).find((s) => appKeyFromPriceId(s.price_id) === app.key);
         const periodOk =
           !sub?.current_period_end || new Date(sub.current_period_end).getTime() > Date.now();
         const active = !!sub && periodOk &&
@@ -223,6 +237,7 @@ export const Route = createFileRoute("/api/public/sso/verify")({
           ativo: active,
           acesso_ate: sub?.current_period_end ?? null,
           cancelamento_agendado: sub?.cancel_at_period_end ?? false,
+          ...(app.key === "flow" ? { environment: flowEnvironment(sub ?? null) } : {}),
         });
       },
     },

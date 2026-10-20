@@ -151,6 +151,8 @@ export async function createSupportAccess(params: {
   // Atende: sem contrato de suporte verificável ainda — nunca emite token de suporte.
   if (app.key === "atende")
     return { error: "Acesso de suporte ao FLEXUS | Atende ainda não está disponível." };
+  // Flow: suporte nunca entra como dono; só pela Sessão de Suporte XFTS.
+  if (app.key === "flow") return { error: "Use a Sessão de Suporte XFTS" };
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: subs } = await supabaseAdmin
