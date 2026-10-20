@@ -36,6 +36,7 @@ import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as AdminPromocoesRouteImport } from './routes/admin.promocoes'
+import { Route as AdminSegurancaRouteImport } from './routes/admin.seguranca'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogArticleIdRouteImport } from './routes/blog.$articleId'
 import { Route as CheckoutRetornoRouteImport } from './routes/checkout.retorno'
@@ -60,6 +61,7 @@ import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as ApiPublicHoloWebhookRouteImport } from './routes/api/public/holo-webhook'
 import { Route as ApiPublicProvisionRetryRouteImport } from './routes/api/public/provision-retry'
 import { Route as ApiPublicSeatsUsageRouteImport } from './routes/api/public/seats-usage'
+import { Route as ApiPublicUsageRouteImport } from './routes/api/public/usage'
 import { Route as ApiPublicBlogImageSplatRouteImport } from './routes/api/public/blog-image/$'
 import { Route as ApiPublicPaymentsDunningRouteImport } from './routes/api/public/payments/dunning'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -205,6 +207,11 @@ const AdminPromocoesRoute = AdminPromocoesRouteImport.update({
   path: '/promocoes',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSegurancaRoute = AdminSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
+  getParentRoute: () => AdminRoute,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -329,6 +336,11 @@ const ApiPublicSeatsUsageRoute = ApiPublicSeatsUsageRouteImport.update({
   path: '/api/public/seats-usage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicUsageRoute = ApiPublicUsageRouteImport.update({
+  id: '/api/public/usage',
+  path: '/api/public/usage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicBlogImageSplatRoute = ApiPublicBlogImageSplatRouteImport.update({
   id: '/api/public/blog-image/$',
   path: '/api/public/blog-image/$',
@@ -409,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/admin/promocoes': typeof AdminPromocoesRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -434,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
+  '/api/public/usage': typeof ApiPublicUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -468,6 +482,7 @@ export interface FileRoutesByTo {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/admin/promocoes': typeof AdminPromocoesRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -493,6 +508,7 @@ export interface FileRoutesByTo {
   '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
+  '/api/public/usage': typeof ApiPublicUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -531,6 +547,7 @@ export interface FileRoutesById {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/admin/promocoes': typeof AdminPromocoesRoute
+  '/admin/seguranca': typeof AdminSegurancaRoute
   '/blog/$articleId': typeof BlogArticleIdRoute
   '/checkout/retorno': typeof CheckoutRetornoRoute
   '/convite/$token': typeof ConviteTokenRoute
@@ -556,6 +573,7 @@ export interface FileRoutesById {
   '/api/public/holo-webhook': typeof ApiPublicHoloWebhookRoute
   '/api/public/provision-retry': typeof ApiPublicProvisionRetryRoute
   '/api/public/seats-usage': typeof ApiPublicSeatsUsageRoute
+  '/api/public/usage': typeof ApiPublicUsageRoute
   '/api/public/blog-image/$': typeof ApiPublicBlogImageSplatRoute
   '/api/public/payments/dunning': typeof ApiPublicPaymentsDunningRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -595,6 +613,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/produtos'
     | '/admin/promocoes'
+    | '/admin/seguranca'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/convite/$token'
@@ -620,6 +639,7 @@ export interface FileRouteTypes {
     | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
+    | '/api/public/usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -654,6 +674,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/produtos'
     | '/admin/promocoes'
+    | '/admin/seguranca'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/convite/$token'
@@ -679,6 +700,7 @@ export interface FileRouteTypes {
     | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
+    | '/api/public/usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -716,6 +738,7 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/produtos'
     | '/admin/promocoes'
+    | '/admin/seguranca'
     | '/blog/$articleId'
     | '/checkout/retorno'
     | '/convite/$token'
@@ -741,6 +764,7 @@ export interface FileRouteTypes {
     | '/api/public/holo-webhook'
     | '/api/public/provision-retry'
     | '/api/public/seats-usage'
+    | '/api/public/usage'
     | '/api/public/blog-image/$'
     | '/api/public/payments/dunning'
     | '/api/public/payments/webhook'
@@ -777,6 +801,7 @@ export interface RootRouteChildren {
   ApiPublicHoloWebhookRoute: typeof ApiPublicHoloWebhookRoute
   ApiPublicProvisionRetryRoute: typeof ApiPublicProvisionRetryRoute
   ApiPublicSeatsUsageRoute: typeof ApiPublicSeatsUsageRoute
+  ApiPublicUsageRoute: typeof ApiPublicUsageRoute
   ApiPublicBlogImageSplatRoute: typeof ApiPublicBlogImageSplatRoute
   ApiPublicPaymentsDunningRoute: typeof ApiPublicPaymentsDunningRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -979,6 +1004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPromocoesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/seguranca': {
+      id: '/admin/seguranca'
+      path: '/seguranca'
+      fullPath: '/admin/seguranca'
+      preLoaderRoute: typeof AdminSegurancaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -1147,6 +1179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeatsUsageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/usage': {
+      id: '/api/public/usage'
+      path: '/api/public/usage'
+      fullPath: '/api/public/usage'
+      preLoaderRoute: typeof ApiPublicUsageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/blog-image/$': {
       id: '/api/public/blog-image/$'
       path: '/api/public/blog-image/$'
@@ -1227,6 +1266,7 @@ interface AdminRouteChildren {
   AdminLeadsRoute: typeof AdminLeadsRoute
   AdminProdutosRoute: typeof AdminProdutosRoute
   AdminPromocoesRoute: typeof AdminPromocoesRoute
+  AdminSegurancaRoute: typeof AdminSegurancaRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -1244,6 +1284,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLeadsRoute: AdminLeadsRoute,
   AdminProdutosRoute: AdminProdutosRoute,
   AdminPromocoesRoute: AdminPromocoesRoute,
+  AdminSegurancaRoute: AdminSegurancaRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -1328,6 +1369,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHoloWebhookRoute: ApiPublicHoloWebhookRoute,
   ApiPublicProvisionRetryRoute: ApiPublicProvisionRetryRoute,
   ApiPublicSeatsUsageRoute: ApiPublicSeatsUsageRoute,
+  ApiPublicUsageRoute: ApiPublicUsageRoute,
   ApiPublicBlogImageSplatRoute: ApiPublicBlogImageSplatRoute,
   ApiPublicPaymentsDunningRoute: ApiPublicPaymentsDunningRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,

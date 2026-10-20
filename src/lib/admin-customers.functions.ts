@@ -53,6 +53,7 @@ export const updateCustomerSeats = createServerFn({ method: "POST" })
       if (e instanceof AdminAccessError) return { error: e.message };
       throw e;
     }
+    { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "customer.seats_override"); if (m) return { error: m }; }
     const { setSeatsOverride } = await import("@/lib/admin-customers.server");
     const result = await setSeatsOverride(data.subscriptionId, data.seats);
     if ("error" in result) return { error: result.error };
@@ -111,6 +112,7 @@ export const createSupportAccessLink = createServerFn({ method: "POST" })
       throw e;
     }
 
+    { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "support.access"); if (m) return { error: m }; }
     const { supportFlagEnabled, issueSupportSession } = await import("@/lib/support-session.server");
     if (await supportFlagEnabled(data.app)) {
       const role = data.role ?? "XFTS_SUPPORT";

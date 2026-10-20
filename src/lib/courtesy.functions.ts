@@ -106,6 +106,7 @@ export const grantCourtesy = createServerFn({ method: "POST" })
     }): Promise<{ ok: true; message: string; invited: boolean } | { error: string }> => {
       try {
         await assertAdmin(context as never);
+        { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "courtesy.grant"); if (m) return { error: m }; }
       } catch (e) {
         return { error: e instanceof Error ? e.message : "Acesso negado" };
       }
@@ -217,6 +218,7 @@ export const revokeCourtesy = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<{ ok: true } | { error: string }> => {
     try {
       await assertAdmin(context as never);
+      { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "courtesy.revoke"); if (m) return { error: m }; }
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Acesso negado" };
     }

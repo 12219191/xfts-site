@@ -59,6 +59,7 @@ const NAV: NavItem[] = [
   { to: "/admin/integracoes", label: "Integrações", module: "integracoes", icon: PlugZap, group: "Sistema" },
   { to: "/admin/equipe", label: "Equipe", module: "equipe", icon: ShieldCheck, group: "Sistema" },
   { to: "/admin/auditoria", label: "Auditoria", module: "auditoria", icon: ClipboardList, group: "Sistema" },
+  { to: "/admin/seguranca", label: "Segurança da conta", module: "dashboard", icon: ShieldCheck, group: "Sistema" },
 ];
 
 function AdminLayout() {

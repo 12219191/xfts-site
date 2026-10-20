@@ -65,6 +65,7 @@ export const saveCrmSettingsFn = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => settingsSchema.parse(input))
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     await assertAdmin(context);
+    await (await import("@/lib/mfa.server")).requireStepUp({ userId: context.userId, claims: context.claims, action: "integration.crm_settings" });
     const { loadCrmSettings, saveCrmSettings } = await import("@/lib/crm-settings.server");
 
     const current = await loadCrmSettings();

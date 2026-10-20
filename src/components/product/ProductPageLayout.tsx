@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Check, ArrowRight, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PricingCards } from "@/components/PricingCards";
-import { AcessarSistemaButton } from "@/components/AcessarSistemaButton";
+import { AcessarSistemaButton, FlowAdminPreviewButton } from "@/components/AcessarSistemaButton";
 import { PaymentInfoSection } from "@/components/product/PaymentInfoSection";
 import { ProductImage } from "@/components/product/ProductImage";
 import { useProductImage, useProductImageAlt, type ProductSlug } from "@/lib/product-images";
@@ -139,6 +139,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
               </Button>
             )}
             {!contactOnly && !inDevelopment && <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />}
+            {inDevelopment && app === "flow" && <FlowAdminPreviewButton />}
           </div>
         </div>
       </section>

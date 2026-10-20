@@ -253,7 +253,7 @@ function ProductCard({
         {product.cancelAtPeriodEnd ? " · cancelamento agendado" : ""}
       </p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Usuários: {product.seatsUsed ?? 0} / {product.seatsLimit ?? "—"}
+        Usuários em uso / limite: {product.seatsUsed ?? 0} / {product.seatsLimit ?? "—"}{product.seatsReportedAt ? ` (relatado em ${new Date(product.seatsReportedAt).toLocaleString("pt-BR")})` : " (sem relato)"}
         {product.seatsOverride !== null ? " (limite manual)" : ""}
       </p>
 

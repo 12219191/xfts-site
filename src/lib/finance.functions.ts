@@ -81,6 +81,7 @@ export const refundPayment = createServerFn({ method: "POST" })
       const email = emailOf(context.claims);
       const denied = await guard(context.supabase, context.userId, email);
       if (denied) return { error: denied };
+      { const m = await (await import("@/lib/mfa.server")).stepUpError(context as never, "finance.refund"); if (m) return { error: m }; }
 
       const { refundCharge } = await import("@/lib/finance.server");
       const result = await refundCharge({
