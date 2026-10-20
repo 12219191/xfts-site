@@ -9,7 +9,7 @@ interface PricingPlan {
   price: string;
   description: string;
   badge?: string;
-  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate";
+  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate" | "start" | "business";
   features: string[];
   priceId?: string;
   ctaLabel: string;
@@ -23,7 +23,7 @@ interface PricingPlan {
   trialDays?: number;
 }
 
-type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende";
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende" | "flow";
 
 interface PricingCardsProps {
   plans: PricingPlan[];

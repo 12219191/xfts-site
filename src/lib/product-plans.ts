@@ -126,12 +126,34 @@ export const casa360Plans = [
   },
 ];
 
+/** Flow: limites por contatos ativos. Valor nulo nos entitlements = ilimitado. */
+export const flowPlans = [
+  {
+    name: "Start", price: "R$ 89", description: "Para começar a automatizar", tier: "start" as const,
+    features: ["Até 500 contatos ativos", "1 canal", "5 fluxos ativos", "Caixa de entrada da equipe", "Modelos prontos", "Até 3 usuários"],
+    priceId: "flexus_flow_start_mensal", ctaLabel: "Começar Agora",
+    annualPrice: "R$ 854", annualPriceId: "flexus_flow_start_anual",
+  },
+  {
+    name: "Pro", price: "R$ 249", description: "Mais Popular: campanhas e agentes de IA", tier: "pro" as const,
+    features: ["Tudo do Start", "Até 2.500 contatos ativos", "3 canais", "Fluxos ilimitados", "Campanhas", "Agentes de IA", "Até 10 usuários"],
+    priceId: "flexus_flow_pro_mensal", ctaLabel: "Começar Agora",
+    annualPrice: "R$ 2.390", annualPriceId: "flexus_flow_pro_anual",
+  },
+  {
+    name: "Business", price: "R$ 549", description: "Para operações com integrações", tier: "business" as const,
+    features: ["Tudo do Pro", "Até 10.000 contatos ativos", "Canais ilimitados", "API pública", "Webhooks de saída", "Até 25 usuários"],
+    priceId: "flexus_flow_business_mensal", ctaLabel: "Começar Agora",
+    annualPrice: "R$ 5.270", annualPriceId: "flexus_flow_business_anual",
+  },
+];
+
 /** Tipo de um plano do catálogo. */
 export interface ProductPlan {
   name: string;
   price: string;
   description: string;
-  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate";
+  tier: "basico" | "pro" | "enterprise" | "basic" | "standard" | "corporate" | "start" | "business";
   features: string[];
   priceId?: string;
   ctaLabel: string;
@@ -154,6 +176,7 @@ export const PLANS_BY_APP: Record<string, ProductPlan[]> = {
   aba: abaPlans,
   crm: crmPlans,
   casa360: casa360Plans,
+  flow: flowPlans,
 };
 
 /** Menor preço mensal dos planos (ex.: "R$ 99"), para metadados da página. */

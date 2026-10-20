@@ -13,6 +13,7 @@ const staticRoutes = [
   { path: "/produtos/flexus-crm", priority: "0.8", changefreq: "monthly" },
   { path: "/produtos/flexus-casa360", priority: "0.8", changefreq: "monthly" },
   { path: "/produtos/flexus-atende", priority: "0.8", changefreq: "monthly" },
+  { path: "/produtos/flexus-flow", priority: "0.8", changefreq: "monthly" },
   { path: "/produtos/comparar-planos", priority: "0.7", changefreq: "monthly" },
   { path: "/blog", priority: "0.8", changefreq: "daily" },
   { path: "/contato", priority: "0.7", changefreq: "monthly" },

@@ -43,6 +43,13 @@
       "when": 1792006249030,
       "tag": "0005_form_submissions_ad_click_ids",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792513294264,
+      "tag": "0006_migration",
+      "breakpoints": true
     }
   ]
 }

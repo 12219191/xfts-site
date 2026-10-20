@@ -8,6 +8,7 @@ import heroAbaAsset from "@/assets/hero-aba.webp.asset.json";
 import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
 import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
 import heroAtende from "@/assets/hero-atende.jpg";
+import heroFlow from "@/assets/hero-flow.jpg";
 
 export type ProductSlug =
   | "clinica"
@@ -16,7 +17,8 @@ export type ProductSlug =
   | "aba"
   | "crm"
   | "casa360"
-  | "atende";
+  | "atende"
+  | "flow";
 
 export const PRODUCT_IMAGE_DEFAULTS: Record<ProductSlug, string> = {
   clinica: heroClinicAsset.url,
@@ -26,6 +28,7 @@ export const PRODUCT_IMAGE_DEFAULTS: Record<ProductSlug, string> = {
   crm: heroCrmAsset.url,
   casa360: heroCasa360Asset.url,
   atende: heroAtende,
+  flow: heroFlow,
 };
 
 export const PRODUCT_IMAGE_LABELS: { slug: ProductSlug; label: string }[] = [
@@ -36,6 +39,7 @@ export const PRODUCT_IMAGE_LABELS: { slug: ProductSlug; label: string }[] = [
   { slug: "crm", label: "FLEXUS | CRM" },
   { slug: "casa360", label: "FLEXUS | Casa360°" },
   { slug: "atende", label: "FLEXUS | Atende" },
+  { slug: "flow", label: "FLEXUS | Flow" },
 ];
 
 export const PRODUCT_IMAGE_ALT_DEFAULTS: Record<ProductSlug, string> = {
@@ -46,6 +50,7 @@ export const PRODUCT_IMAGE_ALT_DEFAULTS: Record<ProductSlug, string> = {
   crm: "FLEXUS | CRM — painel de CRM com funil de vendas e oportunidades",
   casa360: "FLEXUS | Casa360° — família na cozinha usando o painel de gestão da casa",
   atende: "FLEXUS | Atende — atendente usando a caixa de entrada com agente de IA",
+  flow: "FLEXUS | Flow — empreendedor montando um fluxo visual de conversas no WhatsApp",
 };
 
 export interface ProductImage {

@@ -12,7 +12,8 @@ export type FlexusAppKey =
   | "clinica"
   | "estetica"
   | "aba"
-  | "atende";
+  | "atende"
+  | "flow";
 
 export interface FlexusApp {
   key: FlexusAppKey;
@@ -98,6 +99,15 @@ export const FLEXUS_APPS: FlexusApp[] = [
     landing: "/produtos/flexus-atende",
     available: true,
   },
+  {
+    key: "flow",
+    name: "FLEXUS | Flow",
+    // URL do app do Flow: preencher quando o sistema for publicado (vazio = SSO e provisionamento desligados).
+    url: "",
+    pricePrefix: "flexus_flow",
+    landing: "/produtos/flexus-flow",
+    available: false,
+  },
 ];
 
 export function getFlexusApp(key: string): FlexusApp | undefined {
@@ -114,6 +124,11 @@ export function appKeyFromPriceId(priceId: string | null | undefined): FlexusApp
 /** Extrai o nível do plano a partir do lookup key (basico | pro | enterprise). */
 export function planTierFromPriceId(priceId: string | null | undefined): string {
   const lower = (priceId ?? "").toLowerCase();
+  // Flow tem tiers próprios (start/pro/business/enterprise): nunca vira "Básico".
+  if (lower.startsWith("flexus_flow_")) {
+    if (lower.includes("_start_")) return "Start";
+    if (lower.includes("_business_")) return "Business";
+  }
   if (lower.includes("enterprise")) return "Enterprise";
   if (lower.includes("pro")) return "Pro";
   return "Básico";
@@ -139,6 +154,7 @@ export const SEATS_BY_TIER: Record<string, number | null> = {
  */
 export const SEATS_BY_APP: Partial<Record<FlexusAppKey, Record<string, number | null>>> = {
   casa360: { "Básico": 1, Pro: 6, Enterprise: null },
+  flow: { Start: 3, Pro: 10, Business: 25, Enterprise: 100 },
 };
 
 /** Limite de usuários da equipe liberado pelo plano do price_id. */

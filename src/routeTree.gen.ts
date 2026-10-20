@@ -46,6 +46,7 @@ import { Route as ProdutosFlexusAbaRouteImport } from './routes/produtos.flexus-
 import { Route as ProdutosFlexusAtendeRouteImport } from './routes/produtos.flexus-atende'
 import { Route as ProdutosFlexusCasa360RouteImport } from './routes/produtos.flexus-casa360'
 import { Route as ProdutosFlexusCrmRouteImport } from './routes/produtos.flexus-crm'
+import { Route as ProdutosFlexusFlowRouteImport } from './routes/produtos.flexus-flow'
 import { Route as ProdutosGestaoBarbeariasRouteImport } from './routes/produtos.gestao-barbearias'
 import { Route as ProdutosGestaoClinicaRouteImport } from './routes/produtos.gestao-clinica'
 import { Route as ProdutosGestaoEsteticasRouteImport } from './routes/produtos.gestao-esteticas'
@@ -254,6 +255,11 @@ const ProdutosFlexusCrmRoute = ProdutosFlexusCrmRouteImport.update({
   path: '/flexus-crm',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const ProdutosFlexusFlowRoute = ProdutosFlexusFlowRouteImport.update({
+  id: '/flexus-flow',
+  path: '/flexus-flow',
+  getParentRoute: () => ProdutosRoute,
+} as any)
 const ProdutosGestaoBarbeariasRoute =
   ProdutosGestaoBarbeariasRouteImport.update({
     id: '/gestao-barbearias',
@@ -411,6 +417,7 @@ export interface FileRoutesByFullPath {
   '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
+  '/produtos/flexus-flow': typeof ProdutosFlexusFlowRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -469,6 +476,7 @@ export interface FileRoutesByTo {
   '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
+  '/produtos/flexus-flow': typeof ProdutosFlexusFlowRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -531,6 +539,7 @@ export interface FileRoutesById {
   '/produtos/flexus-atende': typeof ProdutosFlexusAtendeRoute
   '/produtos/flexus-casa360': typeof ProdutosFlexusCasa360Route
   '/produtos/flexus-crm': typeof ProdutosFlexusCrmRoute
+  '/produtos/flexus-flow': typeof ProdutosFlexusFlowRoute
   '/produtos/gestao-barbearias': typeof ProdutosGestaoBarbeariasRoute
   '/produtos/gestao-clinica': typeof ProdutosGestaoClinicaRoute
   '/produtos/gestao-esteticas': typeof ProdutosGestaoEsteticasRoute
@@ -594,6 +603,7 @@ export interface FileRouteTypes {
     | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
+    | '/produtos/flexus-flow'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -652,6 +662,7 @@ export interface FileRouteTypes {
     | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
+    | '/produtos/flexus-flow'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -713,6 +724,7 @@ export interface FileRouteTypes {
     | '/produtos/flexus-atende'
     | '/produtos/flexus-casa360'
     | '/produtos/flexus-crm'
+    | '/produtos/flexus-flow'
     | '/produtos/gestao-barbearias'
     | '/produtos/gestao-clinica'
     | '/produtos/gestao-esteticas'
@@ -1037,6 +1049,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosFlexusCrmRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/produtos/flexus-flow': {
+      id: '/produtos/flexus-flow'
+      path: '/flexus-flow'
+      fullPath: '/produtos/flexus-flow'
+      preLoaderRoute: typeof ProdutosFlexusFlowRouteImport
+      parentRoute: typeof ProdutosRoute
+    }
     '/produtos/gestao-barbearias': {
       id: '/produtos/gestao-barbearias'
       path: '/gestao-barbearias'
@@ -1260,6 +1279,7 @@ interface ProdutosRouteChildren {
   ProdutosFlexusAtendeRoute: typeof ProdutosFlexusAtendeRoute
   ProdutosFlexusCasa360Route: typeof ProdutosFlexusCasa360Route
   ProdutosFlexusCrmRoute: typeof ProdutosFlexusCrmRoute
+  ProdutosFlexusFlowRoute: typeof ProdutosFlexusFlowRoute
   ProdutosGestaoBarbeariasRoute: typeof ProdutosGestaoBarbeariasRoute
   ProdutosGestaoClinicaRoute: typeof ProdutosGestaoClinicaRoute
   ProdutosGestaoEsteticasRoute: typeof ProdutosGestaoEsteticasRoute
@@ -1272,6 +1292,7 @@ const ProdutosRouteChildren: ProdutosRouteChildren = {
   ProdutosFlexusAtendeRoute: ProdutosFlexusAtendeRoute,
   ProdutosFlexusCasa360Route: ProdutosFlexusCasa360Route,
   ProdutosFlexusCrmRoute: ProdutosFlexusCrmRoute,
+  ProdutosFlexusFlowRoute: ProdutosFlexusFlowRoute,
   ProdutosGestaoBarbeariasRoute: ProdutosGestaoBarbeariasRoute,
   ProdutosGestaoClinicaRoute: ProdutosGestaoClinicaRoute,
   ProdutosGestaoEsteticasRoute: ProdutosGestaoEsteticasRoute,

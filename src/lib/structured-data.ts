@@ -10,6 +10,7 @@ const MODULES = [
   { name: "FLEXUS | CRM", path: "/produtos/flexus-crm", description: "CRM para gestão de leads, funil de vendas e relacionamento com clientes." },
   { name: "FLEXUS | Casa360", path: "/produtos/flexus-casa360", description: "ERP doméstico: estoque da despensa, lista de compras automática, controle de validade e finanças da casa." },
   { name: "FLEXUS | Atende", path: "/produtos/flexus-atende", description: "Atendimento via API oficial do WhatsApp com agentes de IA, base de conhecimento e caixa de entrada humana." },
+  { name: "FLEXUS | Flow", path: "/produtos/flexus-flow", description: "Automação de conversas no WhatsApp, Instagram e Facebook com fluxos visuais, caixa de entrada da equipe e captura de leads." },
 ];
 
 export function softwareAppsJsonLd() {

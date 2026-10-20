@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, ArrowRight, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,8 @@ interface Props {
   contactOnly?: boolean;
   /** Aviso sempre visível abaixo da descrição (não é substituído pelo catálogo). */
   note?: string;
+  /** Seções próprias do produto, exibidas antes de "Como funciona o pagamento". */
+  children?: ReactNode;
 }
 
 /** Recursos que são só limite de assentos — ficam nos cards de plano, não na lista geral. */
@@ -56,7 +59,7 @@ function featuresFromPlans(plans: ProductPlan[]): string[] {
   return out;
 }
 
-export function ProductPageLayout({ productKey, app, product, plans, fallback, contactOnly, note }: Props) {
+export function ProductPageLayout({ productKey, app, product, plans, fallback, contactOnly, note, children }: Props) {
   const heroImage = useProductImage(productKey);
   const heroAlt = useProductImageAlt(productKey);
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
@@ -226,6 +229,8 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
           )}
         </div>
       </section>
+
+      {children}
 
       {!(contactOnly && !purchasable) && <PaymentInfoSection />}
     </>
