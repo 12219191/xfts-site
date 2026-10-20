@@ -234,9 +234,10 @@ export function validateProduct(product: ProductValidationInput): ProductValidat
 export const DEFAULT_PLAN_TIERS = ["basico", "pro", "enterprise"] as const;
 export const PRODUCT_PLAN_TIERS: Record<string, readonly string[]> = {
   atende: ["basic", "standard", "corporate"],
+  flow: ["start", "pro", "business", "enterprise"],
 };
 export type DefaultPlanTier = (typeof DEFAULT_PLAN_TIERS)[number];
-export type PlanTier = DefaultPlanTier | "basic" | "standard" | "corporate";
+export type PlanTier = DefaultPlanTier | "basic" | "standard" | "corporate" | "start" | "business";
 
 export function tiersForProduct(productKey: string): readonly string[] {
   return PRODUCT_PLAN_TIERS[productKey] ?? DEFAULT_PLAN_TIERS;

@@ -10,6 +10,7 @@ import heroAbaAsset from "@/assets/hero-aba.webp.asset.json";
 import heroCrmAsset from "@/assets/hero-crm.webp.asset.json";
 import heroCasa360Asset from "@/assets/hero-casa360.webp.asset.json";
 import heroAtende from "@/assets/hero-atende.jpg";
+import heroFlow from "@/assets/hero-flow.jpg";
 
 export interface ProductContent {
   icon: string;
@@ -66,6 +67,13 @@ export const PRODUCT_CONTENT: Record<string, ProductContent> = {
       "Atendimento pelo WhatsApp (API oficial) com agentes de IA configuráveis, base de conhecimento própria e caixa de entrada para a equipe.",
     imageUrl: heroAtende,
     imageAlt: "FLEXUS | Atende — atendente usando a caixa de entrada com agente de IA",
+  },
+  flow: {
+    icon: "Workflow",
+    shortDescription:
+      "Automação de conversas no WhatsApp, Instagram e Facebook com fluxos visuais, caixa de entrada da equipe e captura de leads.",
+    imageUrl: heroFlow,
+    imageAlt: "FLEXUS | Flow — empreendedor montando um fluxo visual de conversas no WhatsApp",
   },
 };
 

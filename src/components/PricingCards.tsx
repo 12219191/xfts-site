@@ -23,7 +23,7 @@ interface PricingPlan {
   trialDays?: number;
 }
 
-type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende";
+type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende" | "flow";
 
 interface PricingCardsProps {
   plans: PricingPlan[];
