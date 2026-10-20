@@ -41,7 +41,9 @@
 - Recursos do `flow`, além de contacts_active, channels e flows_active: campaigns, ai_agents, export_csv (Pro e Business), public_api e outbound_webhooks (só Business). Start com todos desligados.
 - Convenção documentada: valor nulo = ilimitado (canais do Business; fluxos do Pro e do Business).
 - Prefixo `flexus_flow`; tiers start/pro/business declarados só para o Flow.
-- Enterprise fora do Stripe.
+- Enterprise fora do Stripe: plano "Enterprise" do Flow só no catálogo, sem preço, não contratável e oculto no site; atribuído pela Cortesia; limites editáveis no admin: 50.000 contatos ativos, 100 usuários, canais e fluxos ilimitados (nulo), todos os recursos ligados. Na página, o card Enterprise continua "Falar com Consultor".
+- Não publicar: você confere antes a página do Flow em "Em breve" e a compra de teste.
+- Roadmap ganha: Flow no Hub (teste), Enterprise via Cortesia, contrato técnico entregue.
 - Registrar no roadmap: contrato técnico entregue; Enterprise manual depende de recurso novo (ver abaixo).
 
 ## Respostas (só leitura)
