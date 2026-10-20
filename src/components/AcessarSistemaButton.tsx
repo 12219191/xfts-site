@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { ArrowUpRight, Loader2 } from "lucide-react";
 import type { VariantProps } from "class-variance-authority";
 import { supabase } from "@/integrations/supabase/client";
-import { createSsoLink } from "@/lib/sso.functions";
+import { createSsoLink, canUseFlowAdminPreview } from "@/lib/sso.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { getFlexusApp, type FlexusAppKey } from "@/lib/flexus-apps";
 
@@ -71,4 +71,26 @@ export function AcessarSistemaButton({
       {!loading && <ArrowUpRight className="ml-2 h-4 w-4" />}
     </Button>
   );
+}
+
+/** Flow "Em breve": aparece só para administradores do Control Center (conferido no servidor). */
+export function FlowAdminPreviewButton() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      try {
+        const ok = await canUseFlowAdminPreview();
+        if (alive) setShow(ok === true);
+      } catch {
+        /* sem liberação */
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  if (!show) return null;
+  return <AcessarSistemaButton app="flow" size="lg" variant="heroOutline" label="Acessar Sistema (admin)" />;
 }
