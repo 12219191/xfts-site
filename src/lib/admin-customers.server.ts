@@ -23,6 +23,7 @@ export interface CustomerProduct {
   seatsLimit: number | null;
   seatsOverride: number | null;
   seatsUsed: number | null;
+  seatsReportedAt: string | null;
   ativo: boolean;
 }
 
@@ -41,6 +42,7 @@ function toProduct(s: {
   current_period_end: string | null;
   cancel_at_period_end: boolean | null;
   seats_used: number | null;
+  seats_reported_at?: string | null;
   seats_override: number | null;
 }): CustomerProduct {
   const appKey = appKeyFromPriceId(s.price_id) ?? "outros";
@@ -60,6 +62,7 @@ function toProduct(s: {
     seatsLimit: s.seats_override ?? seatsFromPriceId(s.price_id),
     seatsOverride: s.seats_override,
     seatsUsed: s.seats_used,
+    seatsReportedAt: s.seats_reported_at ?? null,
     ativo: periodOk && (ACTIVE_STATUSES.includes(s.status) || s.status === "canceled"),
   };
 }
@@ -72,7 +75,7 @@ export async function searchCustomers(
   const { data: subs } = await supabaseAdmin
     .from("subscriptions")
     .select(
-      "id, user_id, price_id, status, is_courtesy, current_period_end, cancel_at_period_end, seats_used, seats_override, created_at",
+      "id, user_id, price_id, status, is_courtesy, current_period_end, cancel_at_period_end, seats_used, seats_reported_at, seats_override, created_at",
     )
     .eq("environment", environment)
     .order("created_at", { ascending: false })
