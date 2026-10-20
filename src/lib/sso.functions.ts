@@ -35,7 +35,19 @@ export const createSsoLink = createServerFn({ method: "POST" })
     const { productFlagsOf } = await import("@/lib/catalog.server");
     const { canAccess } = await import("@/lib/catalog");
     const flags = await productFlagsOf(app.key);
-    if (!canAccess(flags) || !app.url)
+    let adminPreview = false;
+    if (!canAccess(flags) && app.key === "flow" && app.url) {
+      // Flow "Em breve": liberação só para administradores (flag reversível).
+      const { flowAdminPreviewAllowed } = await import("@/lib/flow-admin-preview");
+      const { flowPreviewFlagOn, isControlCenterAdmin } = await import("@/lib/flow-admin-preview.server");
+      adminPreview = flowAdminPreviewAllowed({
+        appKey: app.key,
+        productAccessible: false,
+        flagOn: await flowPreviewFlagOn(),
+        isAdmin: await isControlCenterAdmin(context.userId),
+      });
+    }
+    if ((!canAccess(flags) && !adminPreview) || !app.url)
       return deny("sistema indisponível", `${app.name} ainda não está disponível.`);
 
     const env = data.environment ?? "sandbox";
@@ -43,15 +55,20 @@ export const createSsoLink = createServerFn({ method: "POST" })
 
     const { data: subs } = await supabase
       .from("subscriptions")
-      .select("price_id, status, current_period_end, cancel_at_period_end")
+      .select("id, price_id, status, current_period_start, current_period_end, cancel_at_period_end, environment")
       .eq("user_id", userId)
       // Cortesias não pertencem a um ambiente de pagamento: valem em ambos.
-      .or(`environment.eq.${env},is_courtesy.is.true`)
+      .or(adminPreview ? "environment.eq.live,environment.eq.sandbox" : `environment.eq.${env},is_courtesy.is.true`)
       .order("created_at", { ascending: false });
 
     let sub = (subs ?? []).find(
       (s) => appKeyFromPriceId(s.price_id) === app.key,
     );
+    if (adminPreview) {
+      // Mesma seleção de entitlements: live ativa > sandbox ativa > mais recente.
+      const { pickFlowSub } = await import("@/lib/flow-sub");
+      sub = pickFlowSub(subs ?? [], (p) => appKeyFromPriceId(p) === "flow") ?? undefined;
+    }
     let atendeEnv: "live" | "sandbox" | undefined;
     if (app.key === "atende") {
       // Atende: sempre "live" (ignora ambiente vindo do navegador), mesma seleção
