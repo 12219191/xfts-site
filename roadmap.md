@@ -2,3 +2,7 @@
 - Sessão de Suporte XFTS: Hub pronto; cada produto implementa o kit (docs/integracao-hub/support-session.md) e só então a flag do app é ligada no Control Center.
 - [x] Fase 4: criar cópias menores das fotos atuais dos produtos e preservar substituições no catálogo.
 - [x] Validar fotos menores na Home, lista de produtos e páginas de produto em celular e computador, usando o serviço real de imagens.
+- [x] FLEXUS | Flow no Hub (modo teste, "Em breve"): catálogo, Stripe teste, página, comparação, formulários, SEO, termos/privacidade.
+- [x] Flow Enterprise só no catálogo (oculto, não contratável), atribuível pela Cortesia.
+- [x] Contrato técnico Hub ↔ Produto entregue.
+- Flow: compra de teste com status "à venda" aguarda conferência do usuário; publicar só após ele conferir. URL do app e FLEXUS_APP_KEY_FLOW pendentes (projeto Flow).
