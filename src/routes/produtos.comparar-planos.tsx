@@ -17,6 +17,7 @@ import {
   abaPlans,
   crmPlans,
   casa360Plans,
+  flowPlans,
 } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
@@ -24,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
-const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360", "atende"] as const;
+const PRODUCT_KEYS = ["clinica", "barbearia", "estetica", "aba", "crm", "casa360", "atende", "flow"] as const;
 type ProductKey = (typeof PRODUCT_KEYS)[number];
 
 export const Route = createFileRoute("/produtos/comparar-planos")({
@@ -227,6 +228,29 @@ products.push({
   ],
 });
 
+products.push({
+  key: "flow",
+  product: "FLEXUS | Flow",
+  slug: "/produtos/flexus-flow",
+  prices: { basico: 89, pro: 249, enterprise: 549 },
+  tiers: { basico: "start", pro: "pro", enterprise: "business" },
+  labels: { basico: "Start", pro: "Pro", enterprise: "Business" },
+  allTiersOnline: true,
+  features: [
+    { name: "Contatos ativos", tooltip: "Contato com ao menos uma interação no ciclo de cobrança", basico: "Até 500", pro: "Até 2.500", enterprise: "Até 10.000" },
+    { name: "Canais", basico: "1", pro: "3", enterprise: "Ilimitados" },
+    { name: "Fluxos ativos", basico: "5", pro: "Ilimitados", enterprise: "Ilimitados" },
+    { name: "Caixa de entrada da equipe", basico: true, pro: true, enterprise: true },
+    { name: "Modelos prontos", basico: true, pro: true, enterprise: true },
+    { name: "Campanhas", basico: false, pro: true, enterprise: true },
+    { name: "Agentes de IA", basico: false, pro: true, enterprise: true },
+    { name: "Exportação CSV", basico: false, pro: true, enterprise: true },
+    { name: "API pública", basico: false, pro: false, enterprise: true },
+    { name: "Webhooks de saída", basico: false, pro: false, enterprise: true },
+    { name: "Conversas do WhatsApp", tooltip: "Cobradas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
+  ],
+});
+
 const faqs = [
   { q: "Posso trocar de plano a qualquer momento?", a: "Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. O valor será ajustado proporcionalmente (pro-rata) no próximo ciclo de faturamento." },
   { q: "Como funciona o período de teste?", a: "Todos os planos incluem 7 dias de teste grátis. Durante esse período, você tem acesso completo a todas as funcionalidades do plano escolhido, sem compromisso." },
@@ -249,6 +273,7 @@ const PLANS_BY_PRODUCT: Record<ProductKey, typeof clinicaPlans> = {
   crm: crmPlans,
   casa360: casa360Plans,
   atende: [],
+  flow: flowPlans,
 };
 
 function CompararPlanosPage() {
