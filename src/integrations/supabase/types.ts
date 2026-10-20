@@ -107,6 +107,30 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_mfa_recovery_codes: {
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       admin_roles: {
         Row: {
           created_at: string
@@ -146,6 +170,24 @@ export type Database = {
           created_at?: string
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      api_rate_limits: {
+        Row: {
+          bucket: string
+          count: number
+          window_start: string
+        }
+        Insert: {
+          bucket: string
+          count?: number
+          window_start: string
+        }
+        Update: {
+          bucket?: string
+          count?: number
+          window_start?: string
         }
         Relationships: []
       }
@@ -1149,6 +1191,7 @@ export type Database = {
           product_id: string
           seats_override: number | null
           seats_reported_at: string | null
+          seats_reported_ts: string | null
           seats_used: number | null
           status: string
           stripe_customer_id: string
@@ -1174,6 +1217,7 @@ export type Database = {
           product_id: string
           seats_override?: number | null
           seats_reported_at?: string | null
+          seats_reported_ts?: string | null
           seats_used?: number | null
           status?: string
           stripe_customer_id: string
@@ -1199,6 +1243,7 @@ export type Database = {
           product_id?: string
           seats_override?: number | null
           seats_reported_at?: string | null
+          seats_reported_ts?: string | null
           seats_used?: number | null
           status?: string
           stripe_customer_id?: string
@@ -1322,6 +1367,10 @@ export type Database = {
     }
     Functions: {
       apply_blog_schedule: { Args: never; Returns: undefined }
+      hit_rate_limit: {
+        Args: { _bucket: string; _limit: number }
+        Returns: boolean
+      }
       verify_cron_key: {
         Args: { _name: string; _value: string }
         Returns: boolean
