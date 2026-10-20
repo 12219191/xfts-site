@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LEAD_SEGMENTS } from "@/lib/lead-segments";
-import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, MessageCircle } from "lucide-react";
+import { ArrowRight, BarChart3, Shield, Zap, Stethoscope, Scissors, Sparkles, Brain, TrendingUp, House, MessageCircle, Workflow } from "lucide-react";
 import { useState } from "react";
 import { sendToZapier, formatSentAt, type ZapierResult } from "@/lib/zapier";
 import { toast } from "sonner";
@@ -125,6 +125,13 @@ function HomePage() {
       desc: "Atendimento pelo WhatsApp (API oficial) com agentes de IA, base de conhecimento própria e caixa de entrada para a equipe.",
       slug: "atende" as const,
       link: "/produtos/flexus-atende" as const,
+    },
+    {
+      icon: Workflow,
+      title: "FLEXUS | Flow",
+      desc: "Automação de conversas no WhatsApp, Instagram e Facebook com fluxos visuais, caixa de entrada da equipe e captura de leads.",
+      slug: "flow" as const,
+      link: "/produtos/flexus-flow" as const,
     },
   ];
 

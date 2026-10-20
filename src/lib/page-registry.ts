@@ -62,6 +62,11 @@ export const PAGES: Record<string, PageInfo> = {
     name: "FLEXUS | Atende — Produto",
     group: "Produtos",
   },
+  "/produtos/flexus-flow": {
+    slug: "flow",
+    name: "FLEXUS | Flow — Produto",
+    group: "Produtos",
+  },
   "/contato": { slug: "contato", name: "Contato", group: "Institucional" },
   "/exclusao-de-dados": {
     slug: "exclusao-de-dados",
