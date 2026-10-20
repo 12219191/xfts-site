@@ -146,6 +146,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
             recursos: {},
             limites: {},
             capabilities: [],
+            ...flowExtra,
           });
         }
 
@@ -187,6 +188,7 @@ export const Route = createFileRoute("/api/public/entitlements")({
           usuarios_em_uso: sub.seats_used ?? 0,
           acesso_ate: sub.current_period_end,
           cancelamento_agendado: sub.cancel_at_period_end ?? false,
+          ...flowExtra,
         }));
 
       },

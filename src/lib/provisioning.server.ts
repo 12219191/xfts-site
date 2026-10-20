@@ -88,6 +88,23 @@ export async function provisionApp(
     currentPeriodEnd: input.accessUntil ?? null,
   });
 
+  // Flow: campos aditivos de período/teste (outros sistemas não recebem).
+  let flowExtra: Record<string, string | null> = {};
+  if (appKey === "flow") {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("subscriptions")
+      .select("status, current_period_start, current_period_end, environment, price_id")
+      .eq("user_id", input.userId)
+      .eq("price_id", input.priceId ?? "")
+      .eq("environment", input.environment)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const { flowPeriodFields } = await import("@/lib/flow-sub");
+    flowExtra = flowPeriodFields(row ?? null);
+  }
+
   let body: string;
   if (appKey === "atende") {
     const { buildAtendeProvisionBody } = await import("@/lib/atende-provision");
@@ -125,6 +142,7 @@ export async function provisionApp(
     acesso_ate: input.accessUntil ?? null,
     environment: input.environment,
     timestamp: new Date().toISOString(),
+    ...flowExtra,
   });
 
   try {
