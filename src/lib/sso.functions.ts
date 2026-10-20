@@ -133,5 +133,25 @@ export const createSsoLink = createServerFn({ method: "POST" })
       environment: env,
     });
 
+    if (adminPreview) {
+      const { recordAudit } = await import("@/lib/admin-audit.server");
+      await recordAudit({
+        actorId: userId,
+        actorEmail: (claims as { email?: string })?.email ?? "",
+        action: "flow.admin_preview_access",
+        targetType: "subscription",
+        targetId: (sub as { id?: string }).id ?? null,
+        after: { app: "flow", environment: (sub as { environment?: string }).environment ?? null, price_id: sub.price_id },
+      });
+    }
+
     return { ok: true, url: `${app.url}/sso?token=${encodeURIComponent(token)}` };
+  });
+
+/** O botão "Acessar Sistema" do Flow em breve aparece para este usuário? */
+export const canUseFlowAdminPreview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<boolean> => {
+    const { flowPreviewFlagOn, isControlCenterAdmin } = await import("@/lib/flow-admin-preview.server");
+    return (await flowPreviewFlagOn()) && (await isControlCenterAdmin(context.userId));
   });
