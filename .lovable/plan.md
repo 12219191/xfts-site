@@ -35,3 +35,60 @@
 - Migração com INSERT em `catalog_products`, `catalog_plans`, `entitlement_definitions` (contacts_active, channels, flows_active).
 - `LEAD_SEGMENTS` ganha `flow`; `FlexusAppKey` ganha `flow`.
 - Nada é publicado sem sua autorização.
+
+## Ajustes aprovados (20/10)
+- Tudo em modo de teste; Flow fica "Em breve" (venda desligada).
+- Recursos do `flow`, além de contacts_active, channels e flows_active: campaigns, ai_agents, export_csv (Pro e Business), public_api e outbound_webhooks (só Business). Start com todos desligados.
+- Convenção documentada: valor nulo = ilimitado (canais do Business; fluxos do Pro e do Business).
+- Prefixo `flexus_flow`; tiers start/pro/business declarados só para o Flow.
+- Enterprise fora do Stripe.
+- Registrar no roadmap: contrato técnico entregue; Enterprise manual depende de recurso novo (ver abaixo).
+
+## Respostas (só leitura)
+
+**Enterprise manual:** o admin já concede plano manual sem Stripe ("Cortesia", em /admin: assinatura com `is_courtesy`, plano escolhido, validade e número de usuários ajustável). Não existe recurso por cliente: os recursos vêm do plano do catálogo. Para Enterprise com recursos sob medida seria preciso criar um plano Enterprise do Flow só no catálogo (sem preço) ou um campo de recursos personalizados por assinatura — fora deste plano até você decidir.
+
+**Contrato técnico Hub ↔ Produto**
+
+(a) Provisionamento
+- URL: `provisionUrl` do produto (padrão `https://<app>/api/provision`). POST, `Content-Type: application/json`, timeout 10 s.
+- Cabeçalho `x-flexus-signature: base64url(HMAC-SHA256(FLEXUS_APP_KEY_<APP>, corpo cru))`. Não há cabeçalho de horário: o produto deve rejeitar `timestamp` do corpo com mais de 5 min e comparar em tempo constante.
+- Eventos: `created`, `updated`, `canceled`, `payment_failed`. Corpo (exemplo `created`):
+```text
+{"event":"created","user_id":"<uuid>","produto":"flow","plano":"Pro",
+ "limite_usuarios":10,"recursos":{"campaigns":true,...},
+ "limites":{"contacts_active":2500,"channels":3,"flows_active":null},
+ "price_id":"flexus_flow_pro_mensal","status":"trialing",
+ "acesso_ate":"2026-11-20T00:00:00Z","environment":"sandbox",
+ "timestamp":"2026-10-20T16:00:00.000Z"}
+```
+  `updated`/`payment_failed`: mesmo formato com status novo. `canceled`: `limite_usuarios:0`, `recursos:{}`, `limites:{}`.
+- Resposta: qualquer 2xx com `Content-Type: application/json` (HTML conta como falha).
+- Novas tentativas: fila com intervalos 1, 5, 15, 60 e 360 min; após 6 tentativas fica "falhou" no admin (reenvio manual).
+
+(b) `GET /api/public/entitlements?app=flow&user_id=<uuid>` (opcional `support_session_id`), cabeçalho `x-flexus-app-key`. Resposta:
+```text
+{"ativo":true,"status":"trialing","plano":"Pro","papel":"owner",
+ "limite_usuarios":10,"usuarios_em_uso":3,"recursos":{...},"limites":{...},
+ "capabilities":[...],"acesso_ate":"...","cancelamento_agendado":false}
+```
+  Status: none, trialing, active, past_due, canceled, incomplete, unpaid. `ativo` = trialing/active/past_due ou canceled ainda no período. Hoje não há campos separados de fim do teste e início do período: só `acesso_ate` (fim do período atual, que no teste é o fim do teste). Erros: 400 app/user_id inválido, 401 chave.
+
+(c) SSO
+- "Acessar Sistema" → Hub confere assinatura ativa e cria token HS256 (`FLEXUS_SSO_SECRET`), uso único, 2 min, e manda para `https://<app>/sso?token=<jwt>`.
+- O produto chama `POST /api/public/sso/verify` com `x-flexus-app-key` e `{"token":"..."}`.
+- Devolve `user_id`, `email`, `produto`, `plano`, `papel` ("owner"), `limite_usuarios`, `recursos`, `limites`, `status`, `ativo`, `acesso_ate`, `cancelamento_agendado`. Não devolve nome nem "é admin XFTS": a equipe XFTS entra só pela Sessão de Suporte, que tem identidade própria.
+- Erros: 400 corpo inválido; 401 chave/token inválido, expirado ou já usado; 403 sem assinatura ou tipo de acesso proibido; 409 assinatura ambígua (Atende).
+
+(d) Usuários adicionais: o Hub só informa `limite_usuarios` e recebe `usuarios_em_uso`; o convite e o login das pessoas da equipe ficam no próprio produto. O SSO do Hub só funciona para o titular com assinatura; convidados sem assinatura não passam pelo Hub.
+
+(e) Secrets do produto: `FLEXUS_APP_KEY_FLOW` (a mesma chave nos dois lados; serve para provisionamento, entitlements e SSO) e, se adotar suporte, `XFTS_SUPPORT_SESSION_SECRET`. No Hub, entra também a URL do app do Flow.
+
+(f) Ambientes: cada assinatura tem `environment` (sandbox ou live) e o provisionamento envia esse campo; o produto deve separar ou ignorar sandbox. Não há URL ou chave separada por ambiente do lado do produto. O `?env=` existe só no webhook do Stripe → Hub.
+
+(g) Passo a passo, produto novo sem URL:
+1. Hub: produto no catálogo, preços no Stripe, chave `FLEXUS_APP_KEY_FLOW`.
+2. Enquanto não há URL: compra funciona, assinatura é gravada, mas provisionamento fica "app indisponível" e "Acessar Sistema" não abre.
+3. Produto publicado: preencher URL e provisionUrl, mesma chave nos dois lados.
+4. Reenviar provisionamentos pendentes pelo admin.
+5. Cliente clica "Acessar Sistema" → `/sso?token` → produto valida, cria workspace pelo `user_id` e passa a consultar entitlements.
