@@ -34,7 +34,7 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
-  const hasAnnual = plans.some((p) => p.annualPriceId);
+  const hasAnnual = plans.some((p) => p.annualPriceId && p.annualPrice);
   const [annual, setAnnual] = useState(false);
 
   return (
@@ -60,7 +60,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
             >
               Anual
               <span className="ml-2 rounded-full bg-cta px-2 py-0.5 text-[10px] font-bold text-cta-foreground">
-                -20%
+                Anual
               </span>
             </button>
           </div>
@@ -111,7 +111,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                   <span className="text-base text-muted-foreground">{shownPeriod}</span>
                 </div>
                 {useAnnual && (
-                  <p className="mt-1 text-xs font-medium text-cta">Equivale a 12 meses com 20% de desconto</p>
+                  <p className="mt-1 text-xs font-medium text-cta">Valor total cobrado a cada 12 meses</p>
                 )}
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
                 {(plan.seats || plan.trialDays) && (
@@ -196,7 +196,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
       <div className="mt-8 flex flex-col items-center gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Shield className="h-4 w-4 text-primary" />
-          <span>7 dias grátis • Sem compromisso • Cancele quando quiser</span>
+          <span>{plans.every((p) => (p.trialDays ?? 0) > 0) && new Set(plans.map((p) => p.trialDays)).size === 1 ? `${plans[0].trialDays} dias de teste para novos clientes elegíveis • Cancele quando quiser` : "Consulte as condições de cada plano • Cancele quando quiser"}</span>
         </div>
         <Link
           to="/produtos/comparar-planos"
