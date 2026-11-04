@@ -12,11 +12,11 @@ describe("P1-01B e P1-01C: promessas comerciais no comparador", () => {
     expect(faq?.a).toContain("sem crédito ou reembolso proporcional");
   });
 
-  it("P1-01D: não anuncia PIX, boleto ou Google Pay como disponíveis", () => {
+  it("P1-01D: indica carteiras elegíveis e não anuncia PIX ou boleto como disponíveis", () => {
     const faq = answer("Quais formas de pagamento são aceitas?");
     expect(faq?.a).toContain("pagamento por cartão");
-    expect(faq?.a).toContain("Apple Pay e Link podem aparecer");
-    expect(faq?.a).toContain("PIX, boleto e Google Pay não estão habilitados");
+    expect(faq?.a).toContain("Apple Pay, Google Pay e Link podem aparecer");
+    expect(faq?.a).toContain("PIX e boleto não estão habilitados");
     expect(faq?.a).not.toContain("Aceitamos cartão de crédito (Visa");
   });
 
