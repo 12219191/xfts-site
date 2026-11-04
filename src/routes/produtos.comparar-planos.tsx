@@ -15,6 +15,7 @@ import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { getTrialMessage } from "@/lib/trial-messaging";
 import { planComparisonFaqs } from "@/lib/commercial-faq";
+import { catalogComparisonFeatures } from "@/lib/catalog-comparison";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
@@ -64,8 +65,6 @@ interface ProductPlan {
   key: ProductKey;
   product: string;
   slug: string;
-  prices: { basico: number; pro: number; enterprise: number };
-  features: PlanFeature[];
   /** Tiers do catálogo por coluna (padrão basico/pro/enterprise). */
   tiers?: { basico: string; pro: string; enterprise: string };
   labels?: { basico: string; pro: string; enterprise: string };
@@ -80,122 +79,31 @@ const products: ProductPlan[] = [
     key: "clinica",
     product: "FLEXUS | Clínica",
     slug: "/produtos/gestao-clinica",
-    prices: { basico: 99, pro: 199, enterprise: 399 },
-    features: [
-      { name: "Agendamento online", basico: true, pro: true, enterprise: true },
-      { name: "Prontuário eletrônico", basico: true, pro: true, enterprise: true },
-      { name: "Controle financeiro", basico: true, pro: true, enterprise: true },
-      { name: "Emissão de recibos", basico: true, pro: true, enterprise: true },
-      { name: "Notificações automáticas", tooltip: "Lembretes via email e WhatsApp para pacientes", basico: false, pro: true, enterprise: true },
-      { name: "Relatórios analíticos", tooltip: "Dashboards de faturamento, ocupação e performance", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "Gestão de equipe", basico: false, pro: true, enterprise: true },
-      { name: "Integração com convênios", tooltip: "Integre com os principais convênios de saúde", basico: false, pro: false, enterprise: true },
-      { name: "Multi-unidades", basico: false, pro: false, enterprise: true },
-      { name: "Profissionais inclusos", basico: "1", pro: "Até 10", enterprise: "Ilimitado" },
-      { name: "API e integrações", tooltip: "REST API completa para integrar com outros sistemas", basico: false, pro: false, enterprise: true },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
   {
     key: "barbearia",
     product: "FLEXUS | Barbearia",
     slug: "/produtos/gestao-barbearias",
-    prices: { basico: 99, pro: 199, enterprise: 349 },
-    features: [
-      { name: "PDV integrado", basico: true, pro: true, enterprise: true },
-      { name: "Controle de estoque", basico: true, pro: true, enterprise: true },
-      { name: "Agendamento online", basico: true, pro: true, enterprise: true },
-      { name: "CRM de clientes", basico: true, pro: true, enterprise: true },
-      { name: "Gestão de comissões", tooltip: "Comissões automáticas por profissional e serviço", basico: false, pro: true, enterprise: true },
-      { name: "Relatórios de performance", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "Controle de caixa", basico: true, pro: true, enterprise: true },
-      { name: "Notificações por WhatsApp", basico: false, pro: true, enterprise: true },
-      { name: "Fidelização de clientes", tooltip: "Programa de pontos e recompensas automático", basico: false, pro: true, enterprise: true },
-      { name: "Multi-unidades", basico: false, pro: false, enterprise: true },
-      { name: "Profissionais inclusos", basico: "2", pro: "Até 5", enterprise: "Ilimitado" },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
   {
     key: "estetica",
     product: "FLEXUS | Estética",
     slug: "/produtos/gestao-esteticas",
-    prices: { basico: 99, pro: 199, enterprise: 379 },
-    features: [
-      { name: "Gestão de vendas e PDV", basico: true, pro: true, enterprise: true },
-      { name: "Controle de estoque", basico: true, pro: true, enterprise: true },
-      { name: "Agendamento online", basico: true, pro: true, enterprise: true },
-      { name: "CRM de clientes", basico: true, pro: true, enterprise: true },
-      { name: "Controle de pacotes e sessões", tooltip: "Gerencie pacotes de sessões com controle automático", basico: false, pro: true, enterprise: true },
-      { name: "Ficha de anamnese e evolução", basico: true, pro: true, enterprise: true },
-      { name: "Gestão de comissões", basico: false, pro: true, enterprise: true },
-      { name: "Relatórios analíticos", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "Notificações automáticas", basico: false, pro: true, enterprise: true },
-      { name: "Multi-unidades", basico: false, pro: false, enterprise: true },
-      { name: "Profissionais inclusos", basico: "1", pro: "Até 10", enterprise: "Ilimitado" },
-      { name: "API e integrações", basico: false, pro: false, enterprise: true },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
   {
     key: "aba",
     product: "FLEXUS | ABA",
     slug: "/produtos/flexus-aba",
-    prices: { basico: 99, pro: 199, enterprise: 399 },
-    features: [
-      { name: "Registro de tentativas (DTT)", basico: true, pro: true, enterprise: true },
-      { name: "Agenda de sessões", basico: true, pro: true, enterprise: true },
-      { name: "Prontuário multidisciplinar", basico: true, pro: true, enterprise: true },
-      { name: "Relatórios para responsáveis", basico: true, pro: true, enterprise: true },
-      { name: "Gráficos de evolução", tooltip: "Visualize a evolução por objetivo terapêutico ao longo do tempo", basico: false, pro: true, enterprise: true },
-      { name: "Plano terapêutico individualizado", basico: false, pro: true, enterprise: true },
-      { name: "Controle de horas autorizadas", tooltip: "Acompanhe horas autorizadas por convênio e responsável", basico: false, pro: true, enterprise: true },
-      { name: "Integração com convênios", basico: false, pro: false, enterprise: true },
-      { name: "Multi-unidades", basico: false, pro: false, enterprise: true },
-      { name: "Profissionais inclusos", basico: "1", pro: "Até 10", enterprise: "Ilimitado" },
-      { name: "API e integrações", basico: false, pro: false, enterprise: true },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
   {
     key: "crm",
     product: "FLEXUS | CRM",
     slug: "/produtos/flexus-crm",
-    prices: { basico: 99, pro: 199, enterprise: 399 },
-    features: [
-      { name: "Pipeline kanban", basico: true, pro: true, enterprise: true },
-      { name: "Gestão de leads e oportunidades", basico: true, pro: true, enterprise: true },
-      { name: "Importação de contatos", basico: true, pro: true, enterprise: true },
-      { name: "Relatórios de conversão", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "Automações de follow-up", tooltip: "Sequências automáticas de e-mail e tarefas", basico: false, pro: true, enterprise: true },
-      { name: "WhatsApp integrado", basico: false, pro: true, enterprise: true },
-      { name: "Funil customizável", basico: false, pro: true, enterprise: true },
-      { name: "App mobile", basico: true, pro: true, enterprise: true },
-      { name: "Múltiplas equipes", basico: false, pro: false, enterprise: true },
-      { name: "Usuários inclusos", basico: "Até 3", pro: "Até 15", enterprise: "Ilimitado" },
-      { name: "API e integrações", basico: false, pro: false, enterprise: true },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
   {
     key: "casa360",
     product: "FLEXUS | Casa360°",
     slug: "/produtos/flexus-casa360",
-    prices: { basico: 99, pro: 199, enterprise: 399 },
-    features: [
-      { name: "Estoque da casa", tooltip: "Despensa, geladeira e armário sempre atualizados", basico: true, pro: true, enterprise: true },
-      { name: "Lista de compras automática", tooltip: "Itens com estoque baixo entram sozinhos na lista", basico: true, pro: true, enterprise: true },
-      { name: "Controle de validade", basico: true, pro: true, enterprise: true },
-      { name: "Finanças da casa", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "Painel Visão da Casa", basico: true, pro: true, enterprise: true },
-      { name: "Contas recorrentes e lembretes", basico: false, pro: true, enterprise: true },
-      { name: "Histórico e comparação de preços", basico: false, pro: true, enterprise: true },
-      { name: "Relatórios mensais", basico: "Básico", pro: "Avançado", enterprise: "Completo" },
-      { name: "App mobile", basico: true, pro: true, enterprise: true },
-      { name: "Múltiplas residências", basico: false, pro: false, enterprise: true },
-      { name: "Moradores inclusos", basico: "1", pro: "Até 6", enterprise: "Ilimitado" },
-      { name: "Suporte", basico: "Email", pro: "Prioritário", enterprise: "Dedicado 24/7" },
-    ],
   },
 ];
 
@@ -203,45 +111,18 @@ products.push({
   key: "atende",
   product: "FLEXUS | Atende",
   slug: "/produtos/flexus-atende",
-  prices: { basico: 129, pro: 429, enterprise: 869 },
   tiers: { basico: "basic", pro: "standard", enterprise: "corporate" },
   labels: { basico: "Basic", pro: "Standard", enterprise: "Corporate" },
   allTiersOnline: true,
-  features: [
-    { name: "Agentes de IA (em desenvolvimento)", basico: "Até 2", pro: "Até 10", enterprise: "Até 20" },
-    { name: "Créditos de IA por mês", tooltip: "Renovam todo mês no aniversário da assinatura, também no plano anual", basico: "2.500", pro: "11.500", enterprise: "30.000" },
-    { name: "Números de WhatsApp oficial", basico: "1", pro: "1", enterprise: "Ilimitados" },
-    { name: "Departamentos", basico: "Até 2", pro: "Até 5", enterprise: "Ilimitados" },
-    { name: "Agenda Nativa", basico: true, pro: true, enterprise: true },
-    { name: "Google Agenda e Agenda Externa", basico: false, pro: true, enterprise: true },
-    { name: "Relatórios", basico: "Básicos (7 dias)", pro: "Completos (7, 30 e 90 dias)", enterprise: "Completos + exportação" },
-    { name: "Campanhas (disparo ativo)", basico: false, pro: true, enterprise: true },
-    { name: "API pública para integrações", basico: false, pro: false, enterprise: true },
-    { name: "Conversas do WhatsApp", tooltip: "As mensagens e conversas do WhatsApp oficial são faturadas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
-  ],
 });
 
 products.push({
   key: "flow",
   product: "FLEXUS | Flow",
   slug: "/produtos/flexus-flow",
-  prices: { basico: 89, pro: 249, enterprise: 549 },
   tiers: { basico: "start", pro: "pro", enterprise: "business" },
   labels: { basico: "Start", pro: "Pro", enterprise: "Business" },
   allTiersOnline: true,
-  features: [
-    { name: "Contatos ativos", tooltip: "Contato com ao menos uma interação no ciclo de cobrança", basico: "Até 500", pro: "Até 2.500", enterprise: "Até 10.000" },
-    { name: "Canais WhatsApp, Instagram e Facebook (em desenvolvimento)", basico: "1", pro: "3", enterprise: "Ilimitados" },
-    { name: "Fluxos ativos", basico: "5", pro: "Ilimitados", enterprise: "Ilimitados" },
-    { name: "Caixa de entrada da equipe", basico: true, pro: true, enterprise: true },
-    { name: "Modelos prontos", basico: true, pro: true, enterprise: true },
-    { name: "Campanhas (em desenvolvimento)", basico: false, pro: true, enterprise: true },
-    { name: "Agentes de IA", basico: false, pro: true, enterprise: true },
-    { name: "Exportação CSV", basico: false, pro: true, enterprise: true },
-    { name: "API pública (em desenvolvimento)", basico: false, pro: false, enterprise: true },
-    { name: "Webhooks de saída (em desenvolvimento)", basico: false, pro: false, enterprise: true },
-    { name: "Conversas do WhatsApp", tooltip: "Cobradas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
-  ],
 });
 
 function FeatureCell({ value }: { value: FeatureValue }) {
@@ -478,7 +359,11 @@ function CompararPlanosPage() {
                         pro: seatsLabel(seatsFor(product.key, "pro")),
                         enterprise: seatsLabel(seatsFor(product.key, "enterprise")),
                       } as PlanFeature,
-                      ...product.features,
+                      ...catalogComparisonFeatures({
+                        basico: catalogPlan(product.key, "basico"),
+                        pro: catalogPlan(product.key, "pro"),
+                        enterprise: catalogPlan(product.key, "enterprise"),
+                      }),
                     ].map((feature, idx) => (
 
                       <tr key={feature.name} className={`border-b border-border/50 last:border-0 ${idx % 2 === 0 ? "" : "bg-muted/20"}`}>
