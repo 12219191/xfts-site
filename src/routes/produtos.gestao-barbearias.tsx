@@ -3,7 +3,7 @@ import { PRODUCT_IMAGE_DEFAULTS } from "@/lib/product-images";
 import { productJsonLd } from "@/lib/product-schema";
 import { barbeariasPlans as fallbackPlans, lowestMonthlyPrice } from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
-import { plansForProduct } from "@/lib/catalog";
+import { plansForProduct, canPurchase } from "@/lib/catalog";
 import { ProductPageLayout } from "@/components/product/ProductPageLayout";
 
 const heroBarbershop = PRODUCT_IMAGE_DEFAULTS.barbearia;
@@ -17,15 +17,16 @@ export const Route = createFileRoute("/produtos/gestao-barbearias")({
     };
   },
   head: ({ loaderData }) => {
-    const plans = loaderData?.plans?.length ? loaderData.plans : fallbackPlans;
-    const from = lowestMonthlyPrice(plans, "R$ 99");
-    const description = `Sistema SaaS para barbearias e salões: PDV, estoque, agendamento online, comissões e CRM. Planos a partir de ${from}/mês, no cartão, mensal ou anual.`;
+    const plans = loaderData?.plans ?? [];
+    const sellable = !!loaderData?.product && canPurchase(loaderData.product) && plans.length > 0;
+    const from = plans.length ? lowestMonthlyPrice(plans, "") : "";
+    const description = `Sistema SaaS para barbearias e salões: PDV, estoque, agendamento online, comissões e CRM. ${sellable ? `Planos a partir de ${from}/mês, no cartão, mensal ou anual.` : "Valores sob consulta."}`;
     return {
       meta: [
         { title: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
         { name: "description", content: description },
         { property: "og:title", content: "FLEXUS | Barbearia - Gestão de Barbearias e Salões" },
-        { property: "og:description", content: `PDV, estoque, agendamento, comissões e CRM para barbearias. Planos a partir de ${from}/mês.` },
+        { property: "og:description", content: `PDV, estoque, agendamento, comissões e CRM para barbearias. ${sellable ? `Planos a partir de ${from}/mês.` : "Valores sob consulta."}` },
         { property: "og:type", content: "product" },
         { property: "og:url", content: "https://xfts-flexus.com/produtos/gestao-barbearias" },
         { property: "og:image", content: heroBarbershop },
@@ -41,7 +42,7 @@ export const Route = createFileRoute("/produtos/gestao-barbearias")({
           description: "Sistema SaaS de gestão para barbearias e salões masculinos.",
           path: "/produtos/gestao-barbearias",
           image: heroBarbershop,
-          plans,
+          plans: sellable ? plans : [],
         }),
       ],
     };
