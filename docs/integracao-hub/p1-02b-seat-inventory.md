@@ -73,3 +73,35 @@ Verifique no schema real os nomes de colunas e o ambiente antes da execução; n
 ## Segurança
 
 Não modificar preço, cobrança, plano, assinatura, tenant, direitos efetivos, Stripe nem RLS nesta fase. O classificador `auditSeatLimits` é puro e permite analisar snapshots sem acesso ao banco.
+
+
+## Execução real — 04/11/2026 (somente leitura)
+
+Fonte: banco do projeto Lovable **XFTS Launchpad**, com stack Supabase. O projeto **XFTS Website** não expôs as três tabelas no banco consultado; **XFTS Billing Hub** retornou erro de acessibilidade. Estes resultados referem-se exclusivamente ao banco XFTS Launchpad; não representam auditoria consolidada de outros bancos/SaaS.
+
+Consultas `SELECT` executadas sem modificação de dados e sem exportação de informações pessoais.
+
+### Catálogo
+
+- **8 produtos e 25 planos**, dos quais **24 ativos e 1 inativo** (Flow Enterprise).
+- **25/25 planos** têm `entitlements.usuarios` explícito.
+- **6 planos** possuem `entitlements.usuarios = null` explícito e `seats = null`: Enterprise de ABA, Barbearia, Casa360, Clínica, CRM e Estética.
+- **0 divergências** entre `seats` numérico e `entitlements.usuarios` explícito nos 25 planos.
+- **0 planos** com limite `usuarios` ausente; portanto o fallback `seatsFromPriceId` não é necessário para estes registros do catálogo atualmente.
+- Atenção: os limites de profissionais, moradores e unidades não possuem definições dedicadas com as chaves literais `profissionais`, `moradores` e `unidades` nesta base. A definição `usuarios` de Casa360 tem rótulo **Usuários da equipe** no banco, enquanto o comparador usa **Moradores**. Alinhar semântica antes de declarar equivalência contratual.
+
+### Assinaturas
+
+- **20 registros:** 11 `active`, 9 `canceled`.
+- **14 registros `live`**, **6 `sandbox`**. `live` é o ambiente de cobrança, não prova de cliente externo; o gestor informou que os tenants atuais pertencem a ele.
+- **1 registro com `seats_override`**, valor **6**, associado a uma assinatura `canceled` de Barbearia Pro em `live`. Verificar antes de excluir qualquer override.
+- **0 price IDs órfãos**: todas as assinaturas encontraram plano por `price_lookup_key` ou `annual_lookup_key`.
+- Não foram coletados IDs de assinaturas, e-mails ou nomes de usuários.
+
+### Recomendação atualizada
+
+O catálogo consultado está consistente quanto a `usuarios`. O trabalho de maior valor agora é:
+1. Homologar o resultado desta coleta contra o ambiente de hospedagem efetivamente usado pelo Hub.
+2. Definir separadamente `usuarios`, `profissionais`, `moradores`, `unidades` e `canais`, quando aplicável, respeitando os consumidores de cada SaaS.
+3. Criar testes de regressão com snapshot dos 25 planos e das assinaturas de teste antes de desligar `seatsFromPriceId`.
+4. Em etapa independente, remover o fallback por tier **somente depois** de verificar efeitos sobre assinaturas sem plano e eventuais períodos de transição.
