@@ -71,7 +71,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
         {plans.map((plan) => {
           const isPro = plan.tier === "pro" || plan.tier === "standard";
           const isEnterprise = plan.tier === "enterprise" || plan.tier === "corporate";
-          const useAnnual = annual && !!plan.annualPriceId;
+          const useAnnual = annual && !!plan.annualPriceId && !!plan.annualPrice;
           const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
           const shownPeriod = useAnnual ? "/ano" : "/mês";
           const activePriceId = useAnnual ? plan.annualPriceId : plan.priceId;
@@ -142,7 +142,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
 
               {/* CTA */}
               <div className="mt-6">
-                {isEnterprise && !activePriceId ? (
+                {!activePriceId ? (
                   <Link to="/contato">
                     <Button
                       className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
@@ -155,7 +155,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                         })
                       }
                     >
-                      Falar com Consultor
+                      Consultar condições
                     </Button>
                   </Link>
                 ) : (
