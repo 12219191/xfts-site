@@ -13,6 +13,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
+import { getTrialMessage } from "@/lib/trial-messaging";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
@@ -267,6 +268,7 @@ function CompararPlanosPage() {
     products.find((p) => isBuyable(p.key)) ??
     products[0];
   const selectedBuyable = isBuyable(selected.key);
+  const selectedTrial = getTrialMessage(plansByProduct[selected.key] ?? [], selectedBuyable);
   const [annual, setAnnual] = useState(false);
   /** Preços (lookup keys) das assinaturas ativas do visitante logado. */
   const [myPriceIds, setMyPriceIds] = useState<string[]>([]);
@@ -571,8 +573,9 @@ function CompararPlanosPage() {
           <div className="mx-auto mt-16 flex max-w-md items-center gap-4 rounded-2xl border border-cta/20 bg-primary/5 p-6">
             <Shield className="h-10 w-10 shrink-0 text-primary" />
             <div>
-              <p className="font-semibold text-foreground">Condições de teste por plano</p>
-              <p className="mt-1 text-sm text-muted-foreground">Consulte a duração e elegibilidade do teste antes da contratação.</p>
+              <p className="font-semibold text-foreground">{selectedTrial?.heading ?? "Condições de contratação"}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{selectedTrial?.detail ?? "Consulte as condições de contratação de cada plano."}</p>
+              {selectedTrial && <p className="mt-2 text-xs text-muted-foreground">{selectedTrial.footnote}</p>}
             </div>
           </div>
 
