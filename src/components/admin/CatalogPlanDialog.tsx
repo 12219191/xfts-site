@@ -44,6 +44,7 @@ const emptyForm = {
   active: true,
   sortOrder: "1",
   trialDays: "7",
+  trialRequireCard: true,
 };
 
 function toCents(value: string): number {
@@ -83,6 +84,7 @@ export function CatalogPlanDialog({
         active: plan.active,
         sortOrder: plan.sortOrder.toString(),
         trialDays: String(plan.trialDays ?? 0),
+        trialRequireCard: plan.trialRequireCard !== false,
       });
     } else {
       setForm({ ...emptyForm, tier: tiersForProduct(productKey)[0] as CatalogPlan["tier"] });
@@ -141,6 +143,7 @@ export function CatalogPlanDialog({
           active: form.active,
           sortOrder: Number(form.sortOrder) || 1,
           trialDays: Number(form.trialDays) || 0,
+          trialRequireCard: form.trialRequireCard,
           entitlements: ents,
           syncStripe: syncStripe && priceChanged,
           environment,

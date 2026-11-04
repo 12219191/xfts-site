@@ -281,6 +281,8 @@ export interface CatalogPlan {
   sortOrder: number;
   /** Dias de teste grátis oferecidos na primeira contratação (0 = sem teste). */
   trialDays: number;
+  /** false = teste grátis sem cartão (Stripe payment_method_collection=if_required). */
+  trialRequireCard?: boolean;
   /** Recursos e limites liberados por este plano. */
   entitlements: EntitlementMap;
 }
