@@ -209,7 +209,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">Consulte as condições de contratação de cada plano.</p>
-        )
+        )}
         <Link
           to="/produtos/comparar-planos"
           search={{ produto: compareProduct }}
