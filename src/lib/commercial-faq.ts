@@ -10,7 +10,7 @@ export const planComparisonFaqs = [
   },
   {
     q: "Quais formas de pagamento são aceitas?",
-    a: "As assinaturas são contratadas pelo checkout seguro da Stripe, com pagamento por cartão. Apple Pay e Link podem aparecer quando elegíveis para o dispositivo e para a sessão. PIX, boleto e Google Pay não estão habilitados no momento. As opções disponíveis são sempre confirmadas na etapa de pagamento.",
+    a: "As assinaturas são contratadas pelo checkout seguro da Stripe, com pagamento por cartão. Apple Pay, Google Pay e Link podem aparecer quando elegíveis para o dispositivo e para a sessão. PIX e boleto não estão habilitados no momento. As opções disponíveis são sempre confirmadas na etapa de pagamento.",
   },
   {
     q: "Existe fidelidade ou contrato mínimo?",
