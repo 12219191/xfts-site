@@ -26,8 +26,15 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+      - name: Upgrade npm
+        run: npm install -g npm@11
       - name: Install dependencies
         run: npm ci
+      - name: Show npm diagnostics if installation fails
+        if: failure()
+        run: |
+          npm --version
+          find "$HOME/.npm/_logs" -name "*debug-0.log" -type f -print -exec tail -n 100 {} \; || true
       - name: Run P0 regression tests
         run: npm test -- src/lib/__tests__/commercial-fallback.test.ts
       - name: Run complete test suite
