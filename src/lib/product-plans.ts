@@ -163,6 +163,8 @@ export interface ProductPlan {
   seats?: number;
   /** Dias de teste grátis na primeira contratação (0 = sem teste). */
   trialDays?: number;
+  /** false somente quando o Control Center permite iniciar o trial sem cartão. */
+  trialRequireCard?: boolean;
 }
 
 /**

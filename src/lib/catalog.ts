@@ -318,6 +318,7 @@ export function toProductPlan(plan: CatalogPlan): ProductPlan {
     ...(plan.annualLookupKey ? { annualPriceId: plan.annualLookupKey } : {}),
     ...(plan.seats ? { seats: plan.seats } : {}),
     ...(plan.trialDays ? { trialDays: plan.trialDays } : {}),
+    trialRequireCard: plan.trialRequireCard ?? true,
   };
 }
 
