@@ -14,6 +14,7 @@ import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { getTrialMessage } from "@/lib/trial-messaging";
+import { planComparisonFaqs } from "@/lib/commercial-faq";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
@@ -242,14 +243,6 @@ products.push({
     { name: "Conversas do WhatsApp", tooltip: "Cobradas pela Meta diretamente na conta WABA da empresa", basico: "Cobradas pela Meta", pro: "Cobradas pela Meta", enterprise: "Cobradas pela Meta" },
   ],
 });
-
-const faqs = [
-  { q: "Posso trocar de plano a qualquer momento?", a: "Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. O valor será ajustado proporcionalmente (pro-rata) no próximo ciclo de faturamento." },
-  { q: "Como funciona o período de teste?", a: "O período de teste depende do plano contratado e da elegibilidade do cliente. Confira as condições do plano antes de contratar." },
-  { q: "Quais formas de pagamento são aceitas?", a: "Aceitamos cartão de crédito (Visa, Mastercard, Elo, Amex), boleto bancário e PIX. Pagamentos recorrentes são processados automaticamente." },
-  { q: "Existe fidelidade ou contrato mínimo?", a: "Não! Todos os planos são sem fidelidade. Você pode cancelar a qualquer momento e continuará com acesso até o final do período já pago." },
-  { q: "O que acontece com meus dados se eu cancelar?", a: "Seus dados ficam armazenados com segurança por 90 dias após o cancelamento. Você pode exportar todos os dados a qualquer momento antes disso." },
-];
 
 function FeatureCell({ value }: { value: FeatureValue }) {
   if (value === true) return <Check className="mx-auto h-5 w-5 text-primary" />;
@@ -583,14 +576,23 @@ function CompararPlanosPage() {
           <div className="mx-auto mt-20 max-w-2xl">
             <h3 className="text-center text-2xl font-bold text-foreground">Perguntas Frequentes</h3>
             <div className="mt-8 space-y-3">
-              {faqs.map((faq) => (
+              {planComparisonFaqs.map((faq) => (
                 <Collapsible key={faq.q}>
                   <CollapsibleTrigger className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-5 py-4 text-left text-sm font-medium text-foreground transition-colors hover:bg-muted/50 [&[data-state=open]>svg]:rotate-180">
                     {faq.q}
                     <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="px-5 pb-4 pt-2 text-sm text-muted-foreground leading-relaxed">
-                    {faq.a}
+                    <p>{faq.a}</p>
+                    {"links" in faq && (
+                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                        {faq.links.map((link) => (
+                          <Link key={link.href} to={link.href} className="text-primary underline underline-offset-4 hover:text-primary/80">
+                            {link.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </CollapsibleContent>
                 </Collapsible>
               ))}
