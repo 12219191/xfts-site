@@ -9,7 +9,7 @@ const methods = [
   {
     icon: CalendarClock,
     title: "Mensal ou anual",
-    desc: "Escolha a cobrança mensal ou anual. No anual você paga 12 meses com 20% de desconto.",
+    desc: "Escolha entre as opções de cobrança disponíveis. Consulte o valor total anual e as condições do seu plano antes de contratar.",
   },
   {
     icon: RefreshCw,
