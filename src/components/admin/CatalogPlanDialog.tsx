@@ -44,6 +44,7 @@ const emptyForm = {
   active: true,
   sortOrder: "1",
   trialDays: "7",
+  trialRequireCard: true,
 };
 
 function toCents(value: string): number {
@@ -83,6 +84,7 @@ export function CatalogPlanDialog({
         active: plan.active,
         sortOrder: plan.sortOrder.toString(),
         trialDays: String(plan.trialDays ?? 0),
+        trialRequireCard: plan.trialRequireCard !== false,
       });
     } else {
       setForm({ ...emptyForm, tier: tiersForProduct(productKey)[0] as CatalogPlan["tier"] });
@@ -141,6 +143,7 @@ export function CatalogPlanDialog({
           active: form.active,
           sortOrder: Number(form.sortOrder) || 1,
           trialDays: Number(form.trialDays) || 0,
+          trialRequireCard: form.trialRequireCard,
           entitlements: ents,
           syncStripe: syncStripe && priceChanged,
           environment,
@@ -243,6 +246,22 @@ export function CatalogPlanDialog({
                 Aplicado só na primeira contratação deste sistema. 0 desativa o teste.
               </p>
             </div>
+
+            <label className="flex items-start gap-3 sm:max-w-md">
+              <Switch
+                checked={form.trialRequireCard}
+                disabled={!(Number(form.trialDays) > 0)}
+                onCheckedChange={(v) => setForm({ ...form, trialRequireCard: v })}
+              />
+              <span>
+                <span className="block text-sm text-foreground">Exigir cartão no início do teste</span>
+                <span className="block text-xs text-muted-foreground">
+                  {form.trialRequireCard
+                    ? "Sim: o cliente informa o cartão e é cobrado ao fim do teste se não cancelar."
+                    : "Não: o teste começa sem cartão. Se ele não cadastrar um até o fim, a assinatura é cancelada."}
+                </span>
+              </span>
+            </label>
 
             <div className="grid gap-1.5">
               <Label>Recursos (um por linha)</Label>

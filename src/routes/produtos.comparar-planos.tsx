@@ -370,13 +370,13 @@ function CompararPlanosPage() {
                         <td className="px-6 py-3.5 text-sm text-foreground">
                           <span className="inline-flex items-center gap-1.5">
                             {feature.name}
-                            {feature.tooltip && (
+                            {"tooltip" in feature && feature.tooltip && (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent className="max-w-[220px]">
-                                  <p>{feature.tooltip}</p>
+                                  <p>{"tooltip" in feature ? feature.tooltip : null}</p>
                                 </TooltipContent>
                               </Tooltip>
                             )}

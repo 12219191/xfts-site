@@ -107,6 +107,7 @@ type PlanRow = {
   active: boolean;
   sort_order: number;
   trial_days?: number | null;
+  trial_require_card?: boolean | null;
   entitlements?: unknown;
 };
 
@@ -159,6 +160,7 @@ export function mapPlan(row: PlanRow): CatalogPlan {
     active: row.active,
     sortOrder: row.sort_order,
     trialDays: row.trial_days ?? 0,
+    trialRequireCard: row.trial_require_card ?? true,
     entitlements: parseEntitlements(row.entitlements),
   };
 }

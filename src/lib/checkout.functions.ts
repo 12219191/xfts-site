@@ -142,6 +142,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
         // Teste grátis: só na primeira contratação do sistema, se o plano oferecer.
         let trialDays = 0;
+        let trialWithoutCard = false;
         if (isRecurring) {
           const jaTeveEsteSistema = subs.some(
             (s) => appKeyFromPriceId(s.price_id) === appKey,
@@ -149,16 +150,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
           if (!jaTeveEsteSistema) {
             const { data: planRow } = await supabase
               .from("catalog_plans")
-              .select("trial_days")
+              .select("trial_days, trial_require_card")
               .or(
                 `price_lookup_key.eq.${data.priceId},annual_lookup_key.eq.${data.priceId}`,
               )
               .limit(1)
               .maybeSingle();
-            trialDays = Math.max(
-              0,
-              Math.min(90, Number((planRow as { trial_days?: number } | null)?.trial_days ?? 0)),
-            );
+            const pr = planRow as { trial_days?: number; trial_require_card?: boolean } | null;
+            trialDays = Math.max(0, Math.min(90, Number(pr?.trial_days ?? 0)));
+            trialWithoutCard = trialDays > 0 && pr?.trial_require_card === false;
           }
         }
 
@@ -175,7 +175,14 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
             subscription_data: {
               metadata: { userId, appKey: appKey ?? "", lookupKey: data.priceId },
               ...(trialDays > 0 && { trial_period_days: trialDays }),
+              ...(trialDays > 0 &&
+                trialWithoutCard && {
+                  trial_settings: { end_behavior: { missing_payment_method: "cancel" as const } },
+                }),
             },
+          }),
+          ...(isRecurring && trialDays > 0 && trialWithoutCard && {
+            payment_method_collection: "if_required" as const,
           }),
         });
 
