@@ -22,6 +22,7 @@ interface PricingPlan {
   seats?: number;
   /** Dias de teste grátis na primeira contratação. */
   trialDays?: number;
+  trialRequireCard?: boolean;
 }
 
 type CompareProduct = "clinica" | "barbearia" | "estetica" | "aba" | "crm" | "casa360" | "atende" | "flow";
