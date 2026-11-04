@@ -71,10 +71,12 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
         {plans.map((plan) => {
           const isPro = plan.tier === "pro" || plan.tier === "standard";
           const isEnterprise = plan.tier === "enterprise" || plan.tier === "corporate";
-          const useAnnual = annual && !!plan.annualPriceId && !!plan.annualPrice;
-          const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
-          const shownPeriod = useAnnual ? "/ano" : "/mês";
-          const activePriceId = useAnnual ? plan.annualPriceId : plan.priceId;
+          const hasAnnualPlan = !!plan.annualPriceId && !!plan.annualPrice;
+          const useAnnual = annual && hasAnnualPlan;
+          const availablePrice = !annual || hasAnnualPlan;
+          const shownPrice = availablePrice ? (useAnnual ? plan.annualPrice! : plan.price) : "Sob consulta";
+          const shownPeriod = availablePrice ? (useAnnual ? "/ano" : "/mês") : "";
+          const activePriceId = availablePrice ? (useAnnual ? plan.annualPriceId : plan.priceId) : undefined;
 
 
           return (
