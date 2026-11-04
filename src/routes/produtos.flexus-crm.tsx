@@ -17,10 +17,10 @@ export const Route = createFileRoute("/produtos/flexus-crm")({
     };
   },
   head: ({ loaderData }) => {
-    const plans = loaderData?.plans?.length ? loaderData.plans : fallbackPlans;
+    const plans = loaderData?.plans ?? [];
     const product = loaderData?.product ?? null;
-    const sellable = product ? canPurchase(product) : true;
-    const from = lowestMonthlyPrice(plans, "R$ 99");
+    const sellable = product ? canPurchase(product) && plans.length > 0 : false;
+    const from = plans.length ? lowestMonthlyPrice(plans, "") : "";
     const priceSentence = sellable
       ? `Planos a partir de ${from}/mês, no cartão, mensal ou anual.`
       : "Fale com o nosso time para receber valores e condições.";
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/produtos/flexus-crm")({
           description: "CRM SaaS de vendas multi-segmento com pipeline kanban e automações.",
           path: "/produtos/flexus-crm",
           image: heroCrm,
-          plans,
+          plans: sellable ? plans : [],
         }),
       ],
     };
