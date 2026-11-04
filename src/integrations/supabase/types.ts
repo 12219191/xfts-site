@@ -308,6 +308,7 @@ export type Database = {
           sort_order: number
           tier: string
           trial_days: number
+          trial_require_card: boolean
           updated_at: string
         }
         Insert: {
@@ -328,6 +329,7 @@ export type Database = {
           sort_order?: number
           tier?: string
           trial_days?: number
+          trial_require_card?: boolean
           updated_at?: string
         }
         Update: {
@@ -348,6 +350,7 @@ export type Database = {
           sort_order?: number
           tier?: string
           trial_days?: number
+          trial_require_card?: boolean
           updated_at?: string
         }
         Relationships: [

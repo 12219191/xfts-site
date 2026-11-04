@@ -1,0 +1,1 @@
+ALTER TABLE public.catalog_plans ADD COLUMN IF NOT EXISTS trial_require_card boolean NOT NULL DEFAULT true;
