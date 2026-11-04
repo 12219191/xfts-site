@@ -70,7 +70,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
     product?.subheadline?.trim() || product?.shortDescription?.trim() || fallback.subheadline;
   const description = product?.shortDescription?.trim() || fallback.description;
 
-  const purchasable = product ? canPurchase(product) : true;
+  const purchasable = product ? canPurchase(product) : false;
   const betaNote = product?.status === "beta" ? product.betaNote?.trim() : "";
   const showStatusBadge = !!product && product.status !== "active";
 
@@ -233,7 +233,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
 
       {children}
 
-      {!(contactOnly && !purchasable) && <PaymentInfoSection />}
+      {purchasable && showPricing && !contactOnly && <PaymentInfoSection />}
     </>
   );
 }

@@ -34,7 +34,7 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
-  const hasAnnual = plans.some((p) => p.annualPriceId);
+  const hasAnnual = plans.some((p) => p.annualPriceId && p.annualPrice);
   const [annual, setAnnual] = useState(false);
 
   return (
@@ -60,7 +60,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
             >
               Anual
               <span className="ml-2 rounded-full bg-cta px-2 py-0.5 text-[10px] font-bold text-cta-foreground">
-                -20%
+                Anual
               </span>
             </button>
           </div>
@@ -71,10 +71,12 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
         {plans.map((plan) => {
           const isPro = plan.tier === "pro" || plan.tier === "standard";
           const isEnterprise = plan.tier === "enterprise" || plan.tier === "corporate";
-          const useAnnual = annual && !!plan.annualPriceId;
-          const shownPrice = useAnnual ? plan.annualPrice! : plan.price;
-          const shownPeriod = useAnnual ? "/ano" : "/mês";
-          const activePriceId = useAnnual ? plan.annualPriceId : plan.priceId;
+          const hasAnnualPlan = !!plan.annualPriceId && !!plan.annualPrice;
+          const useAnnual = annual && hasAnnualPlan;
+          const availablePrice = !annual || hasAnnualPlan;
+          const shownPrice = availablePrice ? (useAnnual ? plan.annualPrice! : plan.price) : "Sob consulta";
+          const shownPeriod = availablePrice ? (useAnnual ? "/ano" : "/mês") : "";
+          const activePriceId = availablePrice ? (useAnnual ? plan.annualPriceId : plan.priceId) : undefined;
 
 
           return (
@@ -111,7 +113,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                   <span className="text-base text-muted-foreground">{shownPeriod}</span>
                 </div>
                 {useAnnual && (
-                  <p className="mt-1 text-xs font-medium text-cta">Equivale a 12 meses com 20% de desconto</p>
+                  <p className="mt-1 text-xs font-medium text-cta">Valor total cobrado a cada 12 meses</p>
                 )}
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
                 {(plan.seats || plan.trialDays) && (
@@ -142,7 +144,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
 
               {/* CTA */}
               <div className="mt-6">
-                {isEnterprise && !activePriceId ? (
+                {!activePriceId ? (
                   <Link to="/contato">
                     <Button
                       className="w-full bg-gradient-to-r from-gold to-gold-deep text-gold-foreground hover:from-gold-deep hover:to-gold-deep shadow-md shadow-gold-deep/20"
@@ -155,7 +157,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
                         })
                       }
                     >
-                      Falar com Consultor
+                      Consultar condições
                     </Button>
                   </Link>
                 ) : (
@@ -196,7 +198,7 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
       <div className="mt-8 flex flex-col items-center gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Shield className="h-4 w-4 text-primary" />
-          <span>7 dias grátis • Sem compromisso • Cancele quando quiser</span>
+          <span>{plans.every((p) => (p.trialDays ?? 0) > 0) && new Set(plans.map((p) => p.trialDays)).size === 1 ? `${plans[0].trialDays} dias de teste para novos clientes elegíveis • Cancele quando quiser` : "Consulte as condições de cada plano • Cancele quando quiser"}</span>
         </div>
         <Link
           to="/produtos/comparar-planos"

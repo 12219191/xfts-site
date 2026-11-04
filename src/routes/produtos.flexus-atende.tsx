@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { productJsonLd } from "@/lib/product-schema";
 import { getPublicCatalog } from "@/lib/catalog.functions";
-import { plansForProduct } from "@/lib/catalog";
+import { plansForProduct, canPurchase } from "@/lib/catalog";
 import { ProductPageLayout } from "@/components/product/ProductPageLayout";
 
 const TITLE = "FLEXUS | Atende - Atendimento com IA no WhatsApp";
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/produtos/flexus-atende")({
         description: "Atendimento pelo WhatsApp (API oficial) com agentes de IA e caixa de entrada.",
         path: "/produtos/flexus-atende",
         image: loaderData?.product?.imageUrl || "",
-        plans: loaderData?.plans ?? [],
+        plans: loaderData?.product && canPurchase(loaderData.product) ? (loaderData?.plans ?? []) : [],
       }),
     ],
   }),

@@ -8,15 +8,8 @@ import type {
   ProductStatus,
 } from "@/lib/catalog";
 import { FLEXUS_APPS } from "@/lib/flexus-apps";
-import { PLANS_BY_APP } from "@/lib/product-plans";
 import { parseEntitlements } from "@/lib/entitlements";
 import { productContent } from "@/lib/product-content";
-
-function parseBRL(value?: string): number {
-  if (!value) return 0;
-  const digits = value.replace(/[^\d,]/g, "").replace(",", ".");
-  return Math.round(Number(digits || 0) * 100);
-}
 
 /** Catálogo montado a partir dos arquivos de código (rede de segurança). */
 export function codeCatalog(): CatalogSnapshot {
@@ -32,7 +25,7 @@ export function codeCatalog(): CatalogSnapshot {
       sortOrder: index + 1,
       status: (app.available ? "active" : "development") as ProductStatus,
       showOnWebsite: true,
-      availableForPurchase: app.available,
+      availableForPurchase: false,
       availableInHub: app.available,
       betaNote: "",
 
@@ -49,30 +42,8 @@ export function codeCatalog(): CatalogSnapshot {
   });
 
 
+  // Em falha do catálogo oficial, não oferecer preços estáticos nem permitir compra.
   const plans: CatalogPlan[] = [];
-  for (const app of FLEXUS_APPS) {
-    (PLANS_BY_APP[app.key] ?? []).forEach((plan, index) => {
-      plans.push({
-        id: `${app.key}:${plan.name}`,
-        productKey: app.key,
-        name: plan.name,
-        tier: plan.tier,
-        description: plan.description,
-        priceMonthCents: parseBRL(plan.price),
-        priceYearCents: plan.annualPrice ? parseBRL(plan.annualPrice) : null,
-        features: plan.features,
-        seats: null,
-        ctaLabel: plan.ctaLabel,
-        priceLookupKey: plan.priceId ?? null,
-        annualLookupKey: plan.annualPriceId ?? null,
-        active: true,
-        sortOrder: index + 1,
-        trialDays: 0,
-        entitlements: {},
-      });
-    });
-  }
-
   return { products, plans, fallback: true };
 }
 

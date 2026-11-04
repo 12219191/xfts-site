@@ -10,15 +10,6 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
-import {
-  clinicaPlans,
-  barbeariasPlans,
-  esteticasPlans,
-  abaPlans,
-  crmPlans,
-  casa360Plans,
-  flowPlans,
-} from "@/lib/product-plans";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
@@ -41,8 +32,8 @@ export const Route = createFileRoute("/produtos/comparar-planos")({
       plansByProduct[key] = plansForProduct(snapshot, key);
       const entry = snapshot.products.find((p) => p.key === key);
       availability[key] = entry
-        ? { buyable: canPurchase(entry), badge: siteCta(entry).badge }
-        : { buyable: true, badge: null };
+        ? { buyable: canPurchase(entry) && plansByProduct[key].length > 0, badge: siteCta(entry).badge }
+        : { buyable: false, badge: null };
     }
     return { plansByProduct, availability };
   },
@@ -253,7 +244,7 @@ products.push({
 
 const faqs = [
   { q: "Posso trocar de plano a qualquer momento?", a: "Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. O valor será ajustado proporcionalmente (pro-rata) no próximo ciclo de faturamento." },
-  { q: "Como funciona o período de teste?", a: "Todos os planos incluem 7 dias de teste grátis. Durante esse período, você tem acesso completo a todas as funcionalidades do plano escolhido, sem compromisso." },
+  { q: "Como funciona o período de teste?", a: "O período de teste depende do plano contratado e da elegibilidade do cliente. Confira as condições do plano antes de contratar." },
   { q: "Quais formas de pagamento são aceitas?", a: "Aceitamos cartão de crédito (Visa, Mastercard, Elo, Amex), boleto bancário e PIX. Pagamentos recorrentes são processados automaticamente." },
   { q: "Existe fidelidade ou contrato mínimo?", a: "Não! Todos os planos são sem fidelidade. Você pode cancelar a qualquer momento e continuará com acesso até o final do período já pago." },
   { q: "O que acontece com meus dados se eu cancelar?", a: "Seus dados ficam armazenados com segurança por 90 dias após o cancelamento. Você pode exportar todos os dados a qualquer momento antes disso." },
@@ -265,22 +256,12 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   return <span className="text-sm font-medium text-foreground">{value}</span>;
 }
 
-const PLANS_BY_PRODUCT: Record<ProductKey, CatalogProductPlan[]> = {
-  clinica: clinicaPlans,
-  barbearia: barbeariasPlans,
-  estetica: esteticasPlans,
-  aba: abaPlans,
-  crm: crmPlans,
-  casa360: casa360Plans,
-  atende: [],
-  flow: flowPlans,
-};
 
 function CompararPlanosPage() {
   const { produto } = Route.useSearch();
   const { plansByProduct, availability } = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
-  const isBuyable = (key: ProductKey) => availability[key]?.buyable ?? true;
+  const isBuyable = (key: ProductKey) => availability[key]?.buyable ?? false;
   const selected =
     products.find((p) => p.key === produto) ??
     products.find((p) => isBuyable(p.key)) ??
@@ -305,15 +286,10 @@ function CompararPlanosPage() {
     })();
     return () => { cancelled = true; };
   }, []);
-  const discount = 0.8;
   const { openCheckout, closeCheckout, isOpen, CheckoutForm } = useStripeCheckout();
 
-  const formatPrice = (price: number) => {
-    const final = annual ? Math.round(price * discount) : price;
-    return `R$ ${final}`;
-  };
 
-  /** Valor mensal vindo do catálogo do banco, com fallback para a tabela local. */
+  /** Preços exclusivamente do catálogo oficial. */
   const tierOf = (productKey: ProductKey, col: Column) =>
     products.find((p) => p.key === productKey)?.tiers?.[col] ?? col;
   const catalogPlan = (productKey: ProductKey, col: Column) =>
@@ -329,11 +305,13 @@ function CompararPlanosPage() {
     ) : null;
   const shownPrice = (productKey: ProductKey, col: Column) => {
     const plan = catalogPlan(productKey, col);
-    if (annual && productKey === "atende" && plan?.annualPrice) {
-      const year = Number(plan.annualPrice.replace(/[^\d,]/g, "").replace(",", "."));
-      if (year > 0) return `R$ ${(year / 12).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}`;
+    if (!plan) return "Sob consulta";
+    if (annual) {
+      if (!plan.annualPrice || !plan.annualPriceId) return "Sob consulta";
+      const cents = Number(plan.annualPrice.replace(/[^\d,]/g, "").replace(",", "."));
+      return cents > 0 ? `R$ ${(cents / 12).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "Sob consulta";
     }
-    return formatPrice(priceOf(productKey, col));
+    return plan.priceId ? plan.price : "Sob consulta";
   };
 
   /** Mesma fonte que o hub: assentos do catálogo; depois limites por app e por tier. */
@@ -348,25 +326,19 @@ function CompararPlanosPage() {
     return tier in SEATS_BY_TIER ? SEATS_BY_TIER[tier] ?? null : 2;
   };
 
-  const priceOf = (productKey: ProductKey, tier: Column) => {
-    const plan = catalogPlan(productKey, tier);
-    const parsed = plan ? Number(plan.price.replace(/[^\d]/g, "")) : 0;
-    if (parsed > 0) return parsed;
-    return products.find((p) => p.key === productKey)?.prices[tier] ?? 0;
-  };
+  const priceOf = (productKey: ProductKey, tier: Column) => catalogPlan(productKey, tier)?.price ?? "Sob consulta";
 
   const priceIdFor = (productKey: ProductKey, tier: Column) => {
-    const plan =
-      catalogPlan(productKey, tier) ??
-      PLANS_BY_PRODUCT[productKey]?.find((p) => p.tier === tier);
+    if (!isBuyable(productKey)) return undefined;
+    const plan = catalogPlan(productKey, tier);
     if (!plan) return undefined;
-    return (annual && plan.annualPriceId) || plan.priceId;
+    return annual ? (plan.annualPrice && plan.annualPriceId ? plan.annualPriceId : undefined) : plan.priceId;
   };
 
   const startCheckout = (productKey: ProductKey, tier: Column, section: string, label: string) => {
-    trackCTAClick({ section, label, destination: "/checkout" });
     const priceId = priceIdFor(productKey, tier);
     if (!priceId) return;
+    trackCTAClick({ section, label, destination: "/checkout" });
     openCheckout({
       priceId,
       returnUrl: `${window.location.origin}/checkout/retorno?session_id={CHECKOUT_SESSION_ID}`,
@@ -390,7 +362,7 @@ function CompararPlanosPage() {
               Escolha o plano ideal
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Compare os planos de cada sistema FLEXUS. Todos incluem 7 dias grátis, sem compromisso.
+              Compare os planos de cada sistema FLEXUS. Consulte preços, recursos e condições de teste de cada plano.
             </p>
 
             {/* Seletor de sistema */}
@@ -432,7 +404,7 @@ function CompararPlanosPage() {
                 className={`rounded-full px-5 py-2 text-sm font-medium transition-all ${annual ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
               >
                 Anual
-                <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary">-20%</span>
+                
               </button>
             </div>
           </div>
@@ -455,7 +427,7 @@ function CompararPlanosPage() {
               {!selectedBuyable && (
                 <div role="note" className="mb-6 flex flex-col items-start gap-3 rounded-xl border border-border bg-muted/50 p-4 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between">
                   <p>
-                    {product.product} ainda não está disponível para contratação; os valores são uma prévia e podem mudar no lançamento.
+                    {product.product} ainda não está disponível para contratação; os valores estão sob consulta.
                   </p>
                   <Button asChild size="sm" className="shrink-0 bg-cta text-cta-foreground hover:bg-cta/90">
                     <Link
@@ -477,8 +449,8 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-sm font-semibold text-foreground">Funcionalidade</th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="text-sm font-semibold text-foreground">{product.labels?.basico ?? "Básico"}</div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "basico")}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "basico") === "Sob consulta" ? "" : "/mês"}</span></div>
+                        {annual && priceIdFor(product.key, "basico") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "basico")}/mês</div>}
                         <MyPlanBadge col="basico" />
                       </th>
                       <th className="sticky top-0 z-10 border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
@@ -486,8 +458,8 @@ function CompararPlanosPage() {
                           <span className="text-sm font-semibold text-foreground">{product.labels?.pro ?? "Pro"}</span>
                           <span className="rounded-full bg-cta px-2.5 py-0.5 text-[10px] font-bold text-cta-foreground uppercase tracking-wide">Mais Popular</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "pro")}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "pro") === "Sob consulta" ? "" : "/mês"}</span></div>
+                        {annual && priceIdFor(product.key, "pro") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "pro")}/mês</div>}
                         <MyPlanBadge col="pro" />
                       </th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
@@ -495,8 +467,8 @@ function CompararPlanosPage() {
                           <span className="text-sm font-semibold text-foreground">{product.labels?.enterprise ?? "Enterprise"}</span>
                           <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-gold-foreground uppercase tracking-wide">Premium</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "enterprise")}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "enterprise") === "Sob consulta" ? "" : "/mês"}</span></div>
+                        {annual && priceIdFor(product.key, "enterprise") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "enterprise")}/mês</div>}
                         <MyPlanBadge col="enterprise" />
                       </th>
                     </tr>
@@ -555,7 +527,8 @@ function CompararPlanosPage() {
                         <Button
                           variant="outline"
                           className="w-full"
-                          onClick={() => startCheckout(product.key, "basico", `planos-${product.product}`, "Começar - Básico")}
+                          disabled={!priceIdFor(product.key, "basico")}
+                           onClick={() => startCheckout(product.key, "basico", `planos-${product.product}`, "Começar - Básico")}
                         >
                           Começar
                         </Button>
@@ -563,7 +536,8 @@ function CompararPlanosPage() {
                       <td className="border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
                         <Button
                           className="w-full bg-cta text-cta-foreground hover:bg-cta/90 shadow-lg shadow-cta/20"
-                          onClick={() => startCheckout(product.key, "pro", `planos-${product.product}`, "Começar - Pro")}
+                          disabled={!priceIdFor(product.key, "pro")}
+                           onClick={() => startCheckout(product.key, "pro", `planos-${product.product}`, "Começar - Pro")}
                         >
                           Começar Agora
                         </Button>
@@ -597,8 +571,8 @@ function CompararPlanosPage() {
           <div className="mx-auto mt-16 flex max-w-md items-center gap-4 rounded-2xl border border-cta/20 bg-primary/5 p-6">
             <Shield className="h-10 w-10 shrink-0 text-primary" />
             <div>
-              <p className="font-semibold text-foreground">7 dias grátis para testar</p>
-              <p className="mt-1 text-sm text-muted-foreground">Cancele dentro do período de teste e nada é cobrado.</p>
+              <p className="font-semibold text-foreground">Condições de teste por plano</p>
+              <p className="mt-1 text-sm text-muted-foreground">Consulte a duração e elegibilidade do teste antes da contratação.</p>
             </div>
           </div>
 

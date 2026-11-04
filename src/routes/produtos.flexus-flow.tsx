@@ -22,11 +22,11 @@ export const Route = createFileRoute("/produtos/flexus-flow")({
     };
   },
   head: ({ loaderData }) => {
-    const plans = loaderData?.plans?.length ? loaderData.plans : fallbackPlans;
+    const plans = loaderData?.plans ?? [];
     const product = loaderData?.product ?? null;
-    const sellable = product ? canPurchase(product) : false;
+    const sellable = product ? canPurchase(product) && plans.length > 0 : false;
     const priceSentence = sellable
-      ? `Planos a partir de ${lowestMonthlyPrice(plans, "R$ 89")}/mês, com 7 dias grátis.`
+      ? `Planos a partir de ${lowestMonthlyPrice(plans, "")}/mês. Consulte as condições de teste do plano.`
       : "Em breve: entre na lista de espera.";
     const description = `Fluxos visuais, gatilhos por palavra-chave, comentário, anúncio e link, campanhas e leads direto no CRM. ${priceSentence}`;
     return {
@@ -48,7 +48,7 @@ export const Route = createFileRoute("/produtos/flexus-flow")({
           description:
             "Automação de conversas no WhatsApp, Instagram e Facebook com fluxos visuais, caixa de entrada da equipe e captura de leads.",
           path: PATH,
-          plans,
+          plans: sellable ? plans : [],
         }),
       ],
     };

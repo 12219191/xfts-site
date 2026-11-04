@@ -1,0 +1,43 @@
+name: P0 Commercial Validation
+on:
+  push:
+    branches:
+      - fix/p0-commercial-consistency-20261104
+  pull_request:
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
+      - "vitest.config.ts"
+      - ".github/workflows/p0-commercial-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Upgrade npm
+        run: npm install -g npm@11
+      - name: Install dependencies
+        run: npm ci
+      - name: Show npm diagnostics if installation fails
+        if: failure()
+        run: |
+          npm --version
+          find "$HOME/.npm/_logs" -name "*debug-0.log" -type f -print -exec tail -n 100 {} \; || true
+      - name: Run P0 regression tests
+        run: npm test -- src/lib/__tests__/commercial-fallback.test.ts
+      - name: Run complete test suite
+        run: npm test
+      - name: Build
+        run: npm run build
