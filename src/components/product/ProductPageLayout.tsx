@@ -11,6 +11,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { trackCTAClick } from "@/lib/tracking";
 import { canPurchase, statusLabel, type CatalogProduct } from "@/lib/catalog";
+import { getProductHeroCta } from "@/lib/product-hero-cta";
 import type { ProductPlan } from "@/lib/product-plans";
 import type { FlexusAppKey } from "@/lib/flexus-apps";
 
@@ -78,6 +79,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
   const features = planFeatures.length >= 4 ? planFeatures : fallback.features;
   const showPricing = purchasable && plans.length > 0;
   const inDevelopment = product?.status === "development";
+  const heroCta = getProductHeroCta({ status: product?.status ?? null, purchasable, contactOnly, plans });
 
   const handleCheckout = (priceId: string) => {
     openCheckout({
@@ -120,27 +122,45 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
               {betaNote}
             </p>
           )}
-          <div className="mt-8 flex flex-wrap gap-4">
-            {inDevelopment ? (
-              <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
+              {heroCta.destination === "pricing" ? (
+                <a
+                  href="#planos"
+                  onClick={() => trackCTAClick({ section: "hero", label: heroCta.label, destination: "#planos" })}
+                >
+                  {heroCta.label} <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              ) : (
                 <Link
                   to="/contato"
                   search={{ segmento: productKey }}
-                  onClick={() => trackCTAClick({ section: "hero", label: "Entrar na lista de espera", destination: "/contato" })}
+                  onClick={() => trackCTAClick({ section: "hero", label: heroCta.label, destination: "/contato" })}
                 >
-                  Entrar na lista de espera <ArrowRight className="ml-2 h-4 w-4" />
+                  {heroCta.label} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
-                <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicitar Demo" })}>
-                  Solicitar Demo <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
+              )}
+            </Button>
             {!contactOnly && !inDevelopment && <AcessarSistemaButton app={app} size="lg" variant="heroOutline" />}
             {inDevelopment && app === "flow" && <FlowAdminPreviewButton />}
           </div>
+          {heroCta.destination === "pricing" && (
+            <div className="mt-3 flex flex-col items-start gap-2">
+              {heroCta.trialDays !== null && (
+                <p className="text-sm text-primary-foreground/90">
+                  Teste gratuito nos planos elegíveis. Confira a duração e as condições em cada plano.
+                </p>
+              )}
+              <Link
+                to="/contato"
+                search={{ segmento: productKey }}
+                className="text-sm text-primary-foreground/80 underline underline-offset-4 hover:text-primary-foreground"
+                onClick={() => trackCTAClick({ section: "hero", label: "Solicitar demonstração", destination: "/contato" })}
+              >
+                Prefere conversar antes? Solicitar demonstração
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -165,7 +185,7 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
         </div>
       </section>
 
-      <section className="section-padding bg-surface">
+      <section id="planos" className="section-padding bg-surface scroll-mt-20">
         <div className="container-wide">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-foreground">Planos e Preços</h2>
