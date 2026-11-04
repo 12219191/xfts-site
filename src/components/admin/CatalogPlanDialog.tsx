@@ -19,6 +19,7 @@ import { formatBRL, tiersForProduct, type CatalogPlan } from "@/lib/catalog";
 import { saveCatalogPlan } from "@/lib/admin-catalog.functions";
 import { getEntitlementDefinitions } from "@/lib/admin-entitlements.functions";
 import type { EntitlementDefinition, EntitlementMap } from "@/lib/entitlements";
+import { limitModeOf, setLimitMode, setLimitedValue, type LimitMode } from "@/lib/entitlement-limit-mode";
 
 interface Props {
   open: boolean;
@@ -300,37 +301,46 @@ export function CatalogPlanDialog({
                         </div>
                       );
                     }
-                    const unlimited = value === null;
+                    const mode = limitModeOf(ents, def.key);
                     return (
-                      <div key={def.key} className="flex items-center justify-between gap-3">
+                      <div key={def.key} className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <p className="text-sm text-foreground">{def.label}</p>
                           <p className="text-xs text-muted-foreground">
-                            {def.key}
-                            {def.unit ? ` · ${def.unit}` : ""}
+                            {def.key}{def.unit ? ` · ${def.unit}` : ""}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            className="w-24"
-                            inputMode="numeric"
-                            disabled={unlimited}
-                            value={unlimited || value === undefined ? "" : String(value)}
-                            onChange={(e) =>
-                              setEnts({
-                                ...ents,
-                                [def.key]: e.target.value === "" ? 0 : Number(e.target.value),
-                              })
-                            }
-                            placeholder="0"
-                          />
-                          <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Switch
-                              checked={unlimited}
-                              onCheckedChange={(v) => setEnts({ ...ents, [def.key]: v ? null : 0 })}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground"
+                            aria-label={`Modalidade do limite: ${def.label}`}
+                            value={mode}
+                            onChange={(e) => setEnts(setLimitMode(ents, def.key, e.target.value as LimitMode))}
+                          >
+                            <option value="undefined">Não configurado</option>
+                            <option value="limited">Limitado</option>
+                            <option value="unlimited">Ilimitado</option>
+                          </select>
+                          {mode === "limited" && (
+                            <Input
+                              type="number"
+                              min={0}
+                              step={1}
+                              className="w-24"
+                              inputMode="numeric"
+                              aria-label={`Quantidade: ${def.label}`}
+                              value={typeof value === "number" ? String(value) : "0"}
+                              onChange={(e) => {
+                                const next = Number(e.target.value);
+                                if (Number.isSafeInteger(next) && next >= 0) {
+                                  setEnts(setLimitedValue(ents, def.key, next));
+                                }
+                              }}
                             />
-                            ilimitado
-                          </label>
+                          )}
+                          {mode === "undefined" && (
+                            <span className="text-xs text-muted-foreground">Não libera capacidade por padrão</span>
+                          )}
                         </div>
                       </div>
                     );
