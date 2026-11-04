@@ -41,7 +41,7 @@ export const barbeariasPlans = [
   },
   {
     name: "Enterprise", price: "R$ 349", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "Relatórios completos", "Suporte dedicado 24/7", "Profissionais ilimitados"],
+    features: ["Tudo do Pro", "Multi-unidades", "Relatórios completos", "Profissionais ilimitados"],
     ctaLabel: "Falar com Consultor",
   },
 ];
@@ -61,7 +61,7 @@ export const esteticasPlans = [
   },
   {
     name: "Enterprise", price: "R$ 379", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "API e integrações", "Suporte dedicado 24/7", "Profissionais ilimitados"],
+    features: ["Tudo do Pro", "Multi-unidades", "API e integrações", "Profissionais ilimitados"],
     ctaLabel: "Falar com Consultor",
   },
 ];
@@ -121,7 +121,7 @@ export const casa360Plans = [
   },
   {
     name: "Enterprise", price: "R$ 399", description: "Para famílias grandes e múltiplas residências", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Múltiplas residências", "Moradores ilimitados", "API e integrações", "Suporte dedicado"],
+    features: ["Tudo do Pro", "Múltiplas residências", "Moradores ilimitados", "API e integrações"],
     ctaLabel: "Falar com Consultor",
   },
 ];
