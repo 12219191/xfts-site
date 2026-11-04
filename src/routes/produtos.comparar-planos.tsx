@@ -15,6 +15,7 @@ import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { getTrialMessage } from "@/lib/trial-messaging";
 import { planComparisonFaqs } from "@/lib/commercial-faq";
+import { catalogComparisonFeatures } from "@/lib/catalog-comparison";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
 
 
@@ -478,7 +479,11 @@ function CompararPlanosPage() {
                         pro: seatsLabel(seatsFor(product.key, "pro")),
                         enterprise: seatsLabel(seatsFor(product.key, "enterprise")),
                       } as PlanFeature,
-                      ...product.features,
+                      ...catalogComparisonFeatures({
+                        basico: catalogPlan(product.key, "basico"),
+                        pro: catalogPlan(product.key, "pro"),
+                        enterprise: catalogPlan(product.key, "enterprise"),
+                      }),
                     ].map((feature, idx) => (
 
                       <tr key={feature.name} className={`border-b border-border/50 last:border-0 ${idx % 2 === 0 ? "" : "bg-muted/20"}`}>
