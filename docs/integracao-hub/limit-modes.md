@@ -38,3 +38,25 @@ Planejamento:
 - Quantidade 0 é distinta de ausência e é respeitada.
 - Alterar a modalidade exige ação explícita do administrador e preserva auditoria já existente do cadastro.
 - Plano de produção, pagamento e entitlements efetivos não mudam apenas por publicar este PR.
+
+
+## Segunda etapa — fase 2A: leitura pública e diagnóstico de divergência
+
+Implementação incremental, **sem migração e sem mudança de direitos**:
+- `entitlements.usuarios` explícito com número inteiro >= 0: anunciar o número.
+- `entitlements.usuarios = null` explícito: anunciar ilimitado.
+- `entitlements.usuarios` ausente, mas `seats` numérico: preservar o número legado na comunicação.
+- Ambos ausentes ou `seats = null` sem entitlement explícito: anunciar **Sob consulta**, nunca ilimitado.
+- Entitlement explicitamente inválido: não utilizar fallback comercial silencioso.
+- O editor de planos mostra aviso quando os limites divergem, sem sincronizá-los automaticamente.
+
+**Risco residual documentado:** `resolveEntitlements` continua aplicando `seatsFromPriceId` quando falta `entitlements.usuarios` e `seats` é nulo. Essa compatibilidade legada não pode ser removida sem inventário e classificação dos contratos. A comunicação pública conservadora evita anunciar capacidade ilimitada sem comprovação, mas não substitui o teste efetivo por tenant.
+
+**Separação semântica:** `usuarios` representa assentos de acesso no contrato atual (para Casa360°, moradores). Profissionais habilitados para agenda, unidades, canais, sessões e demais métricas devem ter chaves de entitlement próprias; não derivar seus limites da quantidade de assentos.
+
+### Fase 2B — antes de modificar aplicação de limites
+1. Executar inventário somente leitura em banco de teste/produção sob controle operacional; reconciliar `seats`, `entitlements.usuarios`, `seats_override` e contratos.
+2. Criar plano de migração versionado por tenant/plano, com snapshots e rollback.
+3. Distinguir no armazenamento o modo explícito do campo `seats` (e não apenas dos entitlements).
+4. Atualizar servidor de resolução e consumidores de entitlements por produto, com testes de regressão por tenant.
+5. Homologar Sandbox e produção com plano de implantação controlado.
