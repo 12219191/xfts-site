@@ -148,6 +148,8 @@ export const flowPlans = [
   },
 ];
 
+import type { PublicSeatLimit } from "@/lib/public-seat-limit";
+
 /** Tipo de um plano do catálogo. */
 export interface ProductPlan {
   name: string;
@@ -161,6 +163,8 @@ export interface ProductPlan {
   annualPriceId?: string;
   /** Usuários/profissionais incluídos no plano (quando cadastrado). */
   seats?: number;
+  /** Modo explícito da capacidade do catálogo, sem inferência de ilimitado a partir de null legado. */
+  seatLimit?: PublicSeatLimit;
   /** Dias de teste grátis na primeira contratação (0 = sem teste). */
   trialDays?: number;
   /** false somente quando o Control Center permite iniciar o trial sem cartão. */
