@@ -247,6 +247,22 @@ export function CatalogPlanDialog({
               </p>
             </div>
 
+            <label className="flex items-start gap-3 sm:max-w-md">
+              <Switch
+                checked={form.trialRequireCard}
+                disabled={!(Number(form.trialDays) > 0)}
+                onCheckedChange={(v) => setForm({ ...form, trialRequireCard: v })}
+              />
+              <span>
+                <span className="block text-sm text-foreground">Exigir cartão no início do teste</span>
+                <span className="block text-xs text-muted-foreground">
+                  {form.trialRequireCard
+                    ? "Sim: o cliente informa o cartão e é cobrado ao fim do teste se não cancelar."
+                    : "Não: o teste começa sem cartão. Se ele não cadastrar um até o fim, a assinatura é cancelada."}
+                </span>
+              </span>
+            </label>
+
             <div className="grid gap-1.5">
               <Label>Recursos (um por linha)</Label>
               <Textarea

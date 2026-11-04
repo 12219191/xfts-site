@@ -142,6 +142,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
         // Teste grátis: só na primeira contratação do sistema, se o plano oferecer.
         let trialDays = 0;
+        let trialWithoutCard = false;
         if (isRecurring) {
           const jaTeveEsteSistema = subs.some(
             (s) => appKeyFromPriceId(s.price_id) === appKey,
