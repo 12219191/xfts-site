@@ -7,11 +7,11 @@ import {
   ACTIVE_STATUSES,
   appKeyFromPriceId,
   planTierFromPriceId,
-  seatsFromPriceId,
 } from "@/lib/flexus-apps";
 // Import estático de propósito: com import dinâmico o bundler de produção
 // deduzia que buildCreditCycle só recebia sub=null e removia o ramo positivo.
 import { buildCreditCycle, intervalFromPlans } from "@/lib/atende-credit-cycle";
+import { publicSeatLimit } from "@/lib/public-seat-limit";
 import {
   parseEntitlements,
   splitEntitlements,
@@ -99,21 +99,25 @@ export async function resolveEntitlements(
   const periodOk =
     !input.currentPeriodEnd || new Date(input.currentPeriodEnd).getTime() > Date.now();
   const status = input.status ?? "none";
+  const plan = await planForPrice(input.priceId);
+  // Uma assinatura sem plano identificado não pode receber acesso por inferência de tier.
   const ativo =
     !!input.priceId &&
+    !!plan &&
     periodOk &&
     (ACTIVE_STATUSES.includes(status) || status === "canceled");
 
-  const plan = await planForPrice(input.priceId);
   const map: EntitlementMap = plan ? parseEntitlements(plan.entitlements) : {};
+  if (plan) {
+    const seats = publicSeatLimit({ seats: plan.seats, entitlements: map });
+    // Preserva null explícito (ilimitado), quantidade e campo seats legado.
+    // Ausência de ambas as fontes => 0 (fail-closed), nunca default por tier.
+    map["usuarios"] = seats.mode === "unlimited" ? null : seats.mode === "limited" ? seats.value : 0;
 
-  // Rede de segurança: sem entitlement de usuários no catálogo, usa o padrão do tier.
-  if (map["usuarios"] === undefined) {
-    map["usuarios"] = plan?.seats ?? seatsFromPriceId(input.priceId);
-  }
-  // Override manual de assentos (cortesia/negociação) sempre vence.
-  if (input.seatsOverride !== undefined && input.seatsOverride !== null) {
-    map["usuarios"] = input.seatsOverride;
+    // Override válido da assinatura vence o plano, mas nunca um plano inexistente.
+    if (input.seatsOverride !== undefined && input.seatsOverride !== null) {
+      map["usuarios"] = input.seatsOverride;
+    }
   }
 
   const { features, limites } = splitEntitlements(map, definitions);
