@@ -2,7 +2,7 @@ import { CheckoutModal } from "@/components/CheckoutModal";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, ArrowRight, HelpCircle, ChevronDown, Shield, X } from "lucide-react";
-import { SEATS_BY_TIER, SEATS_BY_APP, seatsLabel } from "@/lib/flexus-apps";
+import { includedSeatsLabel, includedSeatsHeading } from "@/lib/plan-seats-display";
 import { trackCTAClick } from "@/lib/tracking";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -196,18 +196,6 @@ function CompararPlanosPage() {
     return plan.priceId ? plan.price : "Sob consulta";
   };
 
-  /** Mesma fonte que o hub: assentos do catálogo; depois limites por app e por tier. */
-  const TIER_NAME: Record<Column, string> = { basico: "Básico", pro: "Pro", enterprise: "Enterprise" };
-  const seatsFor = (productKey: ProductKey, col: Column): number | null => {
-    const fromCatalog = catalogPlan(productKey, col)?.seats;
-    if (typeof fromCatalog === "number") return fromCatalog;
-    if (products.find((p) => p.key === productKey)?.allTiersOnline) return null;
-    const tier = TIER_NAME[col];
-    const perApp = (SEATS_BY_APP as Record<string, Record<string, number | null> | undefined>)[productKey];
-    if (perApp && tier in perApp) return perApp[tier] ?? null;
-    return tier in SEATS_BY_TIER ? SEATS_BY_TIER[tier] ?? null : 2;
-  };
-
   const priceOf = (productKey: ProductKey, tier: Column) => catalogPlan(productKey, tier)?.price ?? "Sob consulta";
 
   const priceIdFor = (productKey: ProductKey, tier: Column) => {
@@ -358,12 +346,12 @@ function CompararPlanosPage() {
                   <tbody>
                     {[
                       {
-                        name: "Usuários inclusos",
+                        name: includedSeatsHeading(product.key),
                         tooltip:
                           "Quantidade de pessoas da equipe que o titular pode convidar dentro do sistema. Clientes finais que acessam o portal por link não contam.",
-                        basico: seatsLabel(seatsFor(product.key, "basico")),
-                        pro: seatsLabel(seatsFor(product.key, "pro")),
-                        enterprise: seatsLabel(seatsFor(product.key, "enterprise")),
+                        basico: includedSeatsLabel(catalogPlan(product.key, "basico"), product.key),
+                        pro: includedSeatsLabel(catalogPlan(product.key, "pro"), product.key),
+                        enterprise: includedSeatsLabel(catalogPlan(product.key, "enterprise"), product.key),
                       } as PlanFeature,
                       ...catalogComparisonFeatures({
                         basico: catalogPlan(product.key, "basico"),
