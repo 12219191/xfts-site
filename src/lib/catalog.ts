@@ -5,6 +5,7 @@
 import type { ProductPlan } from "@/lib/product-plans";
 import type { EntitlementMap } from "@/lib/entitlements";
 import { publicPlanFeatures } from "@/lib/public-plan-features";
+import { publicSeatLimit } from "@/lib/public-seat-limit";
 
 /** Ciclo de vida do produto (independente de aparecer ou não no site). */
 export type ProductStatus =
@@ -318,6 +319,7 @@ export function toProductPlan(plan: CatalogPlan): ProductPlan {
     ...(plan.priceYearCents ? { annualPrice: formatBRL(plan.priceYearCents) } : {}),
     ...(plan.annualLookupKey ? { annualPriceId: plan.annualLookupKey } : {}),
     ...(typeof plan.seats === "number" ? { seats: plan.seats } : {}),
+    seatLimit: publicSeatLimit(plan),
     ...(plan.trialDays ? { trialDays: plan.trialDays } : {}),
     trialRequireCard: plan.trialRequireCard ?? true,
   };

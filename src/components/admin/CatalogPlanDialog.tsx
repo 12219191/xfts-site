@@ -20,6 +20,7 @@ import { saveCatalogPlan } from "@/lib/admin-catalog.functions";
 import { getEntitlementDefinitions } from "@/lib/admin-entitlements.functions";
 import type { EntitlementDefinition, EntitlementMap } from "@/lib/entitlements";
 import { limitModeOf, setLimitMode, setLimitedValue, type LimitMode } from "@/lib/entitlement-limit-mode";
+import { seatLimitConflict } from "@/lib/public-seat-limit";
 
 interface Props {
   open: boolean;
@@ -230,8 +231,17 @@ export function CatalogPlanDialog({
                   value={form.seats}
                   onChange={(e) => setForm({ ...form, seats: e.target.value })}
                   inputMode="numeric"
-                  placeholder="ilimitado"
+                  placeholder="Não informado"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Campo legado de assentos. Vazio não significa ilimitado.
+                  Quando configurado, o entitlement "usuarios" tem prioridade.
+                </p>
+                {plan && seatLimitConflict({ seats: plan.seats, entitlements: ents }) && (
+                  <p className="text-xs text-destructive" role="alert">
+                    Atenção: "Usuários inclusos" diverge do entitlement "usuarios". Verifique o contrato do plano antes de salvar.
+                  </p>
+                )}
               </div>
             </div>
 

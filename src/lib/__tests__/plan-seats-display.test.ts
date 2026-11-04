@@ -20,4 +20,14 @@ describe("P1-01E: limites de assentos no comparador", () => {
     expect(includedSeatsLabel({ seats: 6 }, "casa360")).toBe("Até 6 moradores");
     expect(includedSeatsHeading("barbearia")).toBe("Usuários inclusos");
   });
+  it("exibe ilimitado somente com entitlement explicitamente null", () => {
+    expect(includedSeatsLabel({ seatLimit: { mode: "unlimited", source: "entitlements" } }, "crm")).toBe("Usuários ilimitados");
+    expect(includedSeatsLabel({ seatLimit: { mode: "unlimited", source: "entitlements" } }, "casa360")).toBe("Moradores ilimitados");
+    expect(includedSeatsLabel({ seatLimit: { mode: "undefined", source: "none" }, seats: 6 }, "crm")).toBe("Sob consulta");
+  });
+
+  it("prioriza capacidade dos entitlements sobre seats legados", () => {
+    expect(includedSeatsLabel({ seats: 10, seatLimit: { mode: "limited", value: 3, source: "entitlements" } }, "crm")).toBe("Até 3 usuários");
+  });
+
 });
