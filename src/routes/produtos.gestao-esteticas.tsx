@@ -19,8 +19,6 @@ export const Route = createFileRoute("/produtos/gestao-esteticas")({
   head: ({ loaderData }) => {
     const plans = loaderData?.plans ?? [];
     const sellable = !!loaderData?.product && canPurchase(loaderData.product) && plans.length > 0;
-    const product = loaderData?.product ?? null;
-    const sellable = product ? canPurchase(product) && plans.length > 0 : false;
     const from = plans.length ? lowestMonthlyPrice(plans, "") : "";
     const priceSentence = sellable
       ? `Planos a partir de ${from}/mês, no cartão, mensal ou anual.`
