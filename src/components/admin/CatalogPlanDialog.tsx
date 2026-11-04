@@ -43,7 +43,7 @@ const emptyForm = {
   annualLookupKey: "",
   active: true,
   sortOrder: "1",
-  trialDays: "0",
+  trialDays: "7",
 };
 
 function toCents(value: string): number {
@@ -237,7 +237,7 @@ export function CatalogPlanDialog({
                 value={form.trialDays}
                 onChange={(e) => setForm({ ...form, trialDays: e.target.value })}
                 inputMode="numeric"
-                placeholder="0"
+                placeholder="7"
               />
               <p className="text-xs text-muted-foreground">
                 Aplicado só na primeira contratação deste sistema. 0 desativa o teste.
