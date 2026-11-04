@@ -449,7 +449,7 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-sm font-semibold text-foreground">Funcionalidade</th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="text-sm font-semibold text-foreground">{product.labels?.basico ?? "Básico"}</div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "basico") === "Sob consulta" ? "" : "/mês"}</span></div>
                         {annual && priceIdFor(product.key, "basico") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "basico")}/mês</div>}
                         <MyPlanBadge col="basico" />
                       </th>
