@@ -13,7 +13,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { plansForProduct, canPurchase, siteCta } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
-import { getTrialMessage } from "@/lib/trial-messaging";
+import { getTrialMessage, trialBadgeLabel } from "@/lib/trial-messaging";
 import { planComparisonFaqs } from "@/lib/commercial-faq";
 import { catalogComparisonFeatures } from "@/lib/catalog-comparison";
 import type { ProductPlan as CatalogProductPlan } from "@/lib/product-plans";
@@ -175,10 +175,16 @@ function CompararPlanosPage() {
     if (!plan) return false;
     return myPriceIds.some((id) => id === plan.priceId || id === plan.annualPriceId);
   };
-  const MyPlanBadge = ({ col }: { col: Column }) =>
-    isMyPlan(selected.key, col) ? (
-      <div className="mt-2"><Badge variant="secondary">Seu plano atual</Badge></div>
-    ) : null;
+  const MyPlanBadge = ({ col }: { col: Column }) => (
+    <div className="mt-2 flex flex-col items-center gap-1">
+      {isMyPlan(selected.key, col) && <Badge variant="secondary">Seu plano atual</Badge>}
+      {priceIdFor(selected.key, col) && trialBadgeLabel(catalogPlan(selected.key, col) ?? {}) && (
+        <span className="text-xs font-medium text-primary">
+          {trialBadgeLabel(catalogPlan(selected.key, col) ?? {})}
+        </span>
+      )}
+    </div>
+  );
   const shownPrice = (productKey: ProductKey, col: Column) => {
     const plan = catalogPlan(productKey, col);
     if (!plan) return "Sob consulta";
