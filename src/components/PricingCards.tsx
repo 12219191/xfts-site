@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Check, Shield, Crown } from "lucide-react";
 import { trackCTAClick, trackProductCta } from "@/lib/tracking";
+import { getTrialMessage } from "@/lib/trial-messaging";
 
 interface PricingPlan {
   name: string;
@@ -36,6 +37,7 @@ interface PricingCardsProps {
 export function PricingCards({ plans, trackingSection, onCheckout, compareProduct, productName }: PricingCardsProps) {
   const hasAnnual = plans.some((p) => p.annualPriceId && p.annualPrice);
   const [annual, setAnnual] = useState(false);
+  const trialMessage = getTrialMessage(plans);
 
   return (
     <div>
@@ -196,10 +198,18 @@ export function PricingCards({ plans, trackingSection, onCheckout, compareProduc
 
       {/* Guarantee + Compare link */}
       <div className="mt-8 flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Shield className="h-4 w-4 text-primary" />
-          <span>{plans.every((p) => (p.trialDays ?? 0) > 0) && new Set(plans.map((p) => p.trialDays)).size === 1 ? `${plans[0].trialDays} dias de teste para novos clientes elegíveis • Cancele quando quiser` : "Consulte as condições de cada plano • Cancele quando quiser"}</span>
-        </div>
+        {trialMessage ? (
+          <div className="flex max-w-2xl flex-col items-center gap-2 text-center" role="note">
+            <div className="flex items-center gap-2 font-semibold text-foreground">
+              <Shield className="h-5 w-5 text-primary" aria-hidden="true" />
+              <span>{trialMessage.heading}</span>
+            </div>
+            <p className="text-sm text-muted-foreground">{trialMessage.detail}</p>
+            <p className="text-xs text-muted-foreground">{trialMessage.footnote}</p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Consulte as condições de contratação de cada plano.</p>
+        )
         <Link
           to="/produtos/comparar-planos"
           search={{ produto: compareProduct }}
