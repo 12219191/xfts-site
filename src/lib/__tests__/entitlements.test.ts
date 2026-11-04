@@ -162,6 +162,55 @@ describe("troca de plano", () => {
     expect(ent.limites["usuarios"]).toBe(25);
   });
 
+  it("sem entitlement e com seats nulo bloqueia capacidade, sem fallback de tier", async () => {
+    setState({
+      definitions: DEFS,
+      plans: [{ ...PRO, seats: null, entitlements: { relatorios_avancados: true } }],
+      subscriptions: [],
+    });
+    const ent = await resolveEntitlements({
+      priceId: "flexus_casa360_pro", status: "active", currentPeriodEnd: future,
+    });
+    expect(ent.ativo).toBe(true);
+    expect(ent.limites.usuarios).toBe(0);
+    expect(withinLimit(ent, "usuarios", 0)).toBe(false);
+  });
+
+  it("entitlement explicitamente ilimitado preserva null mesmo com seats nulo", async () => {
+    setState({
+      definitions: DEFS,
+      plans: [{ ...PRO, seats: null, entitlements: { usuarios: null } }],
+      subscriptions: [],
+    });
+    const ent = await resolveEntitlements({
+      priceId: "flexus_casa360_pro", status: "active", currentPeriodEnd: future,
+    });
+    expect(ent.limites.usuarios).toBeNull();
+    expect(withinLimit(ent, "usuarios", 100)).toBe(true);
+  });
+
+  it("entitlement de usuários explícito prevalece sobre seats legado divergente", async () => {
+    setState({
+      definitions: DEFS,
+      plans: [{ ...PRO, seats: 10, entitlements: { usuarios: 3 } }],
+      subscriptions: [],
+    });
+    const ent = await resolveEntitlements({
+      priceId: "flexus_casa360_pro", status: "active", currentPeriodEnd: future,
+    });
+    expect(ent.limites.usuarios).toBe(3);
+  });
+
+  it("assinatura com priceId sem plano cadastrado não ganha acesso por tier nem por override", async () => {
+    setState({ definitions: DEFS, plans: [], subscriptions: [] });
+    const ent = await resolveEntitlements({
+      priceId: "flexus_casa360_pro", status: "active", currentPeriodEnd: future, seatsOverride: 99,
+    });
+    expect(ent.ativo).toBe(false);
+    expect(ent.limites.usuarios).toBe(0);
+    expect(ent.features.relatorios_avancados).toBe(false);
+  });
+
   it("sem entitlement de usuários no catálogo usa o padrão do plano", async () => {
     setState({
       definitions: DEFS,

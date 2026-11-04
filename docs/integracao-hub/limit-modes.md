@@ -60,3 +60,19 @@ Implementação incremental, **sem migração e sem mudança de direitos**:
 3. Distinguir no armazenamento o modo explícito do campo `seats` (e não apenas dos entitlements).
 4. Atualizar servidor de resolução e consumidores de entitlements por produto, com testes de regressão por tenant.
 5. Homologar Sandbox e produção com plano de implantação controlado.
+
+
+## P1-02C — Eliminação do fallback por tier no resolver (PR de homologação)
+
+Após a coleta somente leitura em XFTS Launchpad (04/11/2026), todos os 25 planos existentes tinham `entitlements.usuarios` explícito, sem divergências numéricas e sem assinatura órfã. A implementação do servidor passa a respeitar a mesma ordem da comunicação pública:
+
+1. `entitlements.usuarios` explícito `null`: ilimitado.
+2. `entitlements.usuarios` explícito inteiro: quantidade definida.
+3. Chave ausente, `catalog_plans.seats` numérico: quantidade legada.
+4. Chave ausente e `seats` nulo: zero de capacidade (fail-closed), **sem derivação por tier**.
+5. `seats_override` da assinatura: prevalece para plano encontrado.
+6. `price_id` sem plano correspondente: acesso inativo; nenhum override concede capacidade.
+
+**Sem migração de dados:** o contrato em banco e os dados dos 25 planos permanecem intactos. `seatsFromPriceId` permanece como helper legado para outros eventuais consumidores; sua invocação foi retirada apenas da resolução efetiva de entitlements.
+
+**Homologação obrigatória:** testar em Sandbox um plano de cada produto, incluindo valores ilimitados e overrides, antes de fazer merge ou publicar. O inventário não cobriu bancos independentes dos SaaS; validar seus consumidores via SSO e API pública separadamente.
