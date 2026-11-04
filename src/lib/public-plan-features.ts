@@ -1,5 +1,11 @@
-/** Promessas de suporte removidas da oferta comercial até existir contrato que as sustente.
- * Não modifica os direitos técnicos (entitlements) nem os registros do Control Center. */
+/** Condição comercial de suporte confirmada pela XFTS.
+ * Apresentação pública somente; não altera entitlements ou registros do Control Center. */
+export const PUBLIC_SUPPORT_LABEL = "Suporte via WhatsApp em horário comercial";
+
+/** Padroniza toda promessa de suporte por plano, sem anunciar 24/7,
+ * atendimento dedicado, prioritário ou por e-mail não confirmados. */
 export function publicPlanFeatures(features: string[]): string[] {
-  return features.filter((feature) => !/^suporte\s+(?:dedicado(?:\s+24\s*\/\s*7)?|24\s*\/\s*7)$/i.test(feature.trim()));
+  const result = features.filter((feature) => !/^suporte\b/i.test(feature.trim()));
+  result.push(PUBLIC_SUPPORT_LABEL);
+  return result;
 }
