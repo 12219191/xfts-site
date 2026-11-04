@@ -17,10 +17,11 @@ export const Route = createFileRoute("/produtos/gestao-esteticas")({
     };
   },
   head: ({ loaderData }) => {
-    const plans = loaderData?.plans?.length ? loaderData.plans : fallbackPlans;
+    const plans = loaderData?.plans ?? [];
+    const sellable = !!loaderData?.product && canPurchase(loaderData.product) && plans.length > 0;
     const product = loaderData?.product ?? null;
-    const sellable = product ? canPurchase(product) : true;
-    const from = lowestMonthlyPrice(plans, "R$ 99");
+    const sellable = product ? canPurchase(product) && plans.length > 0 : false;
+    const from = plans.length ? lowestMonthlyPrice(plans, "") : "";
     const priceSentence = sellable
       ? `Planos a partir de ${from}/mês, no cartão, mensal ou anual.`
       : "Valores sob consulta: fale com o nosso time para receber a proposta.";
@@ -46,7 +47,7 @@ export const Route = createFileRoute("/produtos/gestao-esteticas")({
           description: "Sistema SaaS de gestão para clínicas de estética e salões de beleza.",
           path: "/produtos/gestao-esteticas",
           image: heroAesthetics,
-          plans,
+          plans: sellable ? plans : [],
         }),
       ],
     };
