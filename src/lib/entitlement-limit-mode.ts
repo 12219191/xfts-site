@@ -18,7 +18,10 @@ export function setLimitMode(map: EntitlementMap, key: string, mode: LimitMode):
   const next = { ...map };
   if (mode === "undefined") delete next[key];
   else if (mode === "unlimited") next[key] = null;
-  else next[key] = typeof map[key] === "number" && Number.isInteger(map[key]) && map[key] >= 0 ? map[key] : 0;
+  else {
+    const value = map[key];
+    next[key] = typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : 0;
+  }
   return next;
 }
 
