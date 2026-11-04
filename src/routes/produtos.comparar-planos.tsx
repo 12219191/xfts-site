@@ -32,7 +32,7 @@ export const Route = createFileRoute("/produtos/comparar-planos")({
       plansByProduct[key] = plansForProduct(snapshot, key);
       const entry = snapshot.products.find((p) => p.key === key);
       availability[key] = entry
-        ? { buyable: canPurchase(entry), badge: siteCta(entry).badge }
+        ? { buyable: canPurchase(entry) && plansByProduct[key].length > 0, badge: siteCta(entry).badge }
         : { buyable: false, badge: null };
     }
     return { plansByProduct, availability };
@@ -450,7 +450,7 @@ function CompararPlanosPage() {
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
                         <div className="text-sm font-semibold text-foreground">{product.labels?.basico ?? "Básico"}</div>
                         <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "basico")}<span className="text-xs font-normal text-muted-foreground">/{annual ? "mês" : "mês"}</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "basico")}/mês</div>}
+                        {annual && priceIdFor(product.key, "basico") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "basico")}/mês</div>}
                         <MyPlanBadge col="basico" />
                       </th>
                       <th className="sticky top-0 z-10 border-x-2 border-cta/20 bg-cta/[0.03] px-6 py-5 text-center">
@@ -458,8 +458,8 @@ function CompararPlanosPage() {
                           <span className="text-sm font-semibold text-foreground">{product.labels?.pro ?? "Pro"}</span>
                           <span className="rounded-full bg-cta px-2.5 py-0.5 text-[10px] font-bold text-cta-foreground uppercase tracking-wide">Mais Popular</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "pro")}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "pro")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "pro") === "Sob consulta" ? "" : "/mês"}</span></div>
+                        {annual && priceIdFor(product.key, "pro") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "pro")}/mês</div>}
                         <MyPlanBadge col="pro" />
                       </th>
                       <th className="sticky top-0 z-10 bg-card px-6 py-5 text-center">
@@ -467,8 +467,8 @@ function CompararPlanosPage() {
                           <span className="text-sm font-semibold text-foreground">{product.labels?.enterprise ?? "Enterprise"}</span>
                           <span className="rounded-full bg-gradient-to-r from-gold to-gold-deep px-2.5 py-0.5 text-[10px] font-bold text-gold-foreground uppercase tracking-wide">Premium</span>
                         </div>
-                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">/mês</span></div>
-                        {annual && <div className="mt-0.5 text-xs text-muted-foreground line-through">R$ {priceOf(product.key, "enterprise")}/mês</div>}
+                        <div className="mt-1 text-2xl font-bold text-foreground">{shownPrice(product.key, "enterprise")}<span className="text-xs font-normal text-muted-foreground">{shownPrice(product.key, "enterprise") === "Sob consulta" ? "" : "/mês"}</span></div>
+                        {annual && priceIdFor(product.key, "enterprise") && <div className="mt-0.5 text-xs text-muted-foreground line-through">{priceOf(product.key, "enterprise")}/mês</div>}
                         <MyPlanBadge col="enterprise" />
                       </th>
                     </tr>
