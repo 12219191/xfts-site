@@ -64,6 +64,13 @@
       "when": 1793800326377,
       "tag": "0008_plan_trial_require_card",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794246262300,
+      "tag": "0009_estetica_entitlements_catalog",
+      "breakpoints": true
     }
   ]
 }
