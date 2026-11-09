@@ -49,19 +49,19 @@ export const barbeariasPlans = [
 export const esteticasPlans = [
   {
     name: "Básico", price: "R$ 99", description: "Para studios individuais", tier: "basico" as const,
-    features: ["Gestão de vendas e PDV", "Controle de estoque", "Agendamento online", "CRM de clientes", "1 profissional"],
+    features: ["Gestão de vendas e PDV", "Controle de estoque", "Agendamento online", "CRM de clientes", "Comissões simples", "1 profissional"],
     priceId: "gestao_esteticas_basico_mensal", ctaLabel: "Começar Agora",
     annualPrice: "R$ 950", annualPriceId: "gestao_esteticas_basico_anual",
   },
   {
     name: "Pro", price: "R$ 199", description: "Para clínicas com equipe", tier: "pro" as const,
-    features: ["Tudo do Básico", "Controle de pacotes e sessões", "Gestão de comissões", "Notificações automáticas", "Até 10 profissionais"],
+    features: ["Tudo do Básico", "Controle de pacotes e sessões", "Comissões por regra", "Notificações automáticas", "Até 10 profissionais"],
     priceId: "gestao_esteticas_pro_mensal", ctaLabel: "Começar Agora",
     annualPrice: "R$ 1.910", annualPriceId: "gestao_esteticas_pro_anual",
   },
   {
     name: "Enterprise", price: "R$ 379", description: "Para redes e grandes operações", tier: "enterprise" as const,
-    features: ["Tudo do Pro", "Multi-unidades", "API e integrações", "Profissionais ilimitados"],
+    features: ["Tudo do Pro", "Dados gerenciais 360", "Perfis de acesso personalizados", "Backup externo e auditoria exportável", "API e integrações", "Profissionais ilimitados"],
     ctaLabel: "Falar com Consultor",
   },
 ];
