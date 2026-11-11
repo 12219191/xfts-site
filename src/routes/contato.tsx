@@ -119,10 +119,9 @@ function ContatoPage() {
                     {lastStatus.success ? "Recebemos sua mensagem" : "Envio não concluído"}
                   </p>
                   <p className="mt-1 text-muted-foreground">{lastStatus.message}</p>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Status: {lastStatus.status}
-                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
-                  </p>
+                  {lastStatus.referenceId && (
+                    <p className="mt-2 text-xs text-muted-foreground">Protocolo {lastStatus.referenceId}</p>
+                  )}
                 </div>
               )}
             </form>

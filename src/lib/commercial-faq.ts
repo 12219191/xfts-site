@@ -10,7 +10,7 @@ export const planComparisonFaqs = [
   },
   {
     q: "Quais formas de pagamento são aceitas?",
-    a: "Aceitamos cartão de crédito (Visa, Mastercard, Elo, Amex), boleto bancário e PIX. Pagamentos recorrentes são processados automaticamente.",
+    a: "A contratação online é feita com cartão de crédito, e os pagamentos recorrentes são processados automaticamente. Se você precisa de outra forma de pagamento, fale com o nosso time.",
   },
   {
     q: "Existe fidelidade ou contrato mínimo?",

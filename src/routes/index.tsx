@@ -19,20 +19,24 @@ import { softwareAppsJsonLd } from "@/lib/structured-data";
 import { Badge } from "@/components/ui/badge";
 import { getPublicCatalog } from "@/lib/catalog.functions";
 import { canPurchase, siteCta, type CatalogProduct } from "@/lib/catalog";
+import { WHATSAPP_URL } from "@/components/WhatsAppButton";
 
+// Clínica e ABA ainda estão "Em breve": a descrição só cita o que já está à venda.
+const HOME_DESCRIPTION =
+  "FLEXUS | gestão para barbearias e estéticas, CRM, atendimento no WhatsApp com IA (Atende) e automação de conversas (Flow). Teste grátis nos planos elegíveis ou solicite uma demo.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "description", content: HOME_DESCRIPTION },
       { property: "og:title", content: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { property: "og:description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { property: "og:description", content: HOME_DESCRIPTION },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://xfts-flexus.com/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "XFTS Inteligência Analítica - Soluções SaaS de Gestão Inteligente" },
-      { name: "twitter:description", content: "FLEXUS | Clínica, Barbearia, Estética, ABA e CRM com Inteligência Analítica. Solicite uma demo grátis." },
+      { name: "twitter:description", content: HOME_DESCRIPTION },
     ],
     links: [{ rel: "canonical", href: "https://xfts-flexus.com/" }],
     scripts: [softwareAppsJsonLd()],
@@ -164,23 +168,57 @@ function HomePage() {
         <div className="container-wide relative z-10 flex min-h-[600px] flex-col items-center justify-center px-4 py-24 text-center">
 
           <h1 className="max-w-4xl text-4xl font-extrabold leading-tight text-primary-foreground md:text-5xl lg:text-6xl">
-            Soluções SaaS de Gestão Inteligente para Seu Negócio
+            Gestão completa para barbearias e estéticas, num só sistema
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            Tecnologia, dados e gestão em uma só direção
+            Agenda online, PDV, estoque, comissões e painéis com os seus próprios dados. 100% online, sem instalação, com suporte humano em português.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" className="bg-cta text-cta-foreground hover:bg-cta/90">
-              <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Solicite Demo Grátis" })}>
-                Solicite Demo Grátis <ArrowRight className="ml-2 h-4 w-4" />
+              <Link
+                to="/produtos/gestao-barbearias"
+                hash="planos"
+                onClick={() =>
+                  trackCTAClick({
+                    section: "hero",
+                    action: "segmento-barbearia",
+                    label: "Para barbearias",
+                    destination: "/produtos/gestao-barbearias#planos",
+                  })
+                }
+              >
+                Para barbearias <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="heroOutline">
-              <Link to="/contato" onClick={() => trackCTAClick({ section: "hero", label: "Fale Conosco" })}>
-                Fale Conosco
+              <Link
+                to="/produtos/gestao-esteticas"
+                hash="planos"
+                onClick={() =>
+                  trackCTAClick({
+                    section: "hero",
+                    action: "segmento-estetica",
+                    label: "Para estéticas e salões",
+                    destination: "/produtos/gestao-esteticas#planos",
+                  })
+                }
+              >
+                Para estéticas e salões
               </Link>
             </Button>
           </div>
+          <p className="mt-4 text-sm text-primary-foreground/80">
+            Teste grátis nos planos elegíveis.{" "}
+            <Link
+              to="/contato"
+              className="underline underline-offset-4 hover:text-primary-foreground"
+              onClick={() =>
+                trackCTAClick({ section: "hero", action: "demo", label: "Solicitar demonstração", destination: "/contato" })
+              }
+            >
+              Prefere conversar antes? Solicitar demonstração
+            </Link>
+          </p>
         </div>
       </section>
 
@@ -292,13 +330,27 @@ function HomePage() {
                   className="rounded-md border border-primary-foreground/20 bg-primary-foreground/10 p-3 text-left text-sm text-primary-foreground"
                 >
                   <p className="font-medium">
-                    {lastStatus.success ? "Solicitação recebida" : "Envio não concluído"}
+                    {lastStatus.success ? "Recebemos o seu pedido" : "Não foi possível enviar"}
                   </p>
-                  <p className="mt-1 text-primary-foreground/80">{lastStatus.message}</p>
-                  <p className="mt-2 text-xs text-primary-foreground/60">
-                    Status: {lastStatus.status}
-                    {lastStatus.referenceId ? ` · Protocolo ${lastStatus.referenceId}` : ""} · {formatSentAt(lastStatus.sentAt)} · {lastStatus.durationMs}ms
+                  <p className="mt-1 text-primary-foreground/80">
+                    {lastStatus.success
+                      ? "Nossa equipe entra em contato em até 1 dia útil. Se preferir não esperar, chame a gente no WhatsApp."
+                      : lastStatus.message}
                   </p>
+                  {lastStatus.success && (
+                    <a
+                      href={WHATSAPP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex font-medium underline underline-offset-4 hover:text-primary-foreground"
+                      onClick={() => trackCTAClick({ section: "form-confirmacao", action: "whatsapp", label: "Chamar no WhatsApp" })}
+                    >
+                      Chamar no WhatsApp
+                    </a>
+                  )}
+                  {lastStatus.referenceId && (
+                    <p className="mt-2 text-xs text-primary-foreground/60">Protocolo {lastStatus.referenceId}</p>
+                  )}
                 </div>
               )}
             </form>
