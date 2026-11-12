@@ -124,3 +124,8 @@ O Control Center usa `entitlements.usuarios` explícito (inteiro não negativo o
 1. **Casa360° — P0:** caso SQL NULL fail-open comprovado no trigger e no aceite, nenhum caso no snapshot atual. Gate de mudança requer contrato de limite e compatibilidade com legados.
 2. **Atende — P0:** precedência via mínimo e `null` forçado a zero comprovados; enforcement da quantidade de operadores no aceite ainda **não demonstrado**, pode ser problema adicional. Não inferir defeito em produção real a partir de teste estático.
 3. **Ambos:** nenhuma alteração autorizada/executada; PR #14 permanece draft, aguardando planos de correção por projeto e testes direcionados em QA, não deploy automático.
+
+
+### Acompanhamento Casa360° — 12/11/2026
+
+Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pull/4), em **draft**, com contrato de modo de limite, rollout em duas etapas e 18 cenários de homologação. **Somente documentação; nenhuma função, migration ou teste do sistema foi alterado/executado.** A remediação P0/P1 ainda não está concluída. O PR #14 continua em draft.
