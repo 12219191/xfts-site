@@ -170,3 +170,12 @@ O responsável confirmou explicitamente que a publicação do Casa360° foi real
 O responsável confirmou expressamente como concluídos os itens **(1) criação, reenvio e aceitação de convites; (2) dois convites simultâneos disputando a última vaga; e (3) primeira sincronização do limite canônico recebido do Hub**. Estes itens passam a **homologados por aceite do responsável**, sem afirmar que logs ou rastros técnicos independentes tenham sido anexados a este relatório. A publicação também havia sido confirmada pelo responsável.
 
 **Única pendência remanescente da lista de encerramento do Casa360°:** conciliar o histórico/journal da migração 0008 aplicada diretamente ao banco, evitando execução duplicada. A remediação funcional do limite de convites está confirmada; encerramento documental completo aguarda reconciliação do journal.
+
+
+### Casa360° — Migração 0008 RECONCILIADA (12/11/2026)
+
+- [PR Casa360° #7](https://github.com/12219191/flexus-casa360/pull/7) **MERGED** (commit `5d1f4e59905f79192f9be31d8be470be617c0845`). Registro técnico: `docs/manual-migrations/README.md` e script `20261112_casa360_0007_0008_registry.sql`.
+- Foram criadas **duas entradas auditáveis** no ledger `public.xfts_manual_schema_migrations`, referentes às SQL 0007 (Etapa A) e 0008 (Etapa B) aplicadas manualmente no banco do Casa360°. Cada entrada preserva caminho, Git blob SHA, data conhecida de aplicação e evidências SQL; NÃO reaplicou funções nem modificou contas/convites.
+- Controle restrito: RLS ativa, `anon` e `authenticated` sem SELECT, `service_role` com leitura. Colunas, constraints, cinco funções da 0008 e triggers foram conferidos; hashes das definições SQL registrados.
+- Journal oficial `drizzle.__drizzle_migrations` **não alterado**, permanecendo com 5 registros (0000–0004). A 0008 não pertence a esse journal; não é correto inserir um registro artificial. A trilha Supabase também não foi alterada.
+- **Pendência de reconciliação 0008 encerrada.** A remediação Casa360° desta rodada tem código, SQL, testes direcionados, publicação, aceite funcional e rastreabilidade da migration confirmados. O registro manual e a regra de pré-checagem previnem duplicação operacional por procedimento, não por bloqueio automático do deploy.
