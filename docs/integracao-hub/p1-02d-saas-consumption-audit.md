@@ -158,3 +158,8 @@ Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pul
 - A tela de membros foi ajustada para mostrar indisponibilidade do limite gerenciado (em vez de 0 usuários do plano) e traduzir o erro `seat_limit_unconfigured`; o aceite de convite também traduz o erro.
 - Publicação solicitada para `https://flexus-casa360.lovable.app`, deployment `a6e5e1e9-1328-4564-9a91-7b456982c08f`, estado inicial **pending**, sem comprovação de release live no instante da solicitação.
 - **Ainda pendente para resolução completa do P0:** evidência de publicação da versão correta, smoke autenticado de convites/reenvios/aceites e teste de concorrência com dados controlados no projeto original, além de conferência do primeiro snapshot pós-revalidação do Hub. A migration 0008 foi aplicada manualmente, sem entrada nova no journal de migrações; conciliar antes de nova execução automatizada.
+
+
+### Casa360° — confirmação de publicação pelo responsável (12/11/2026)
+
+O responsável confirmou explicitamente que a publicação do Casa360° foi realizada. Portanto, a **pendência de confirmação da publicação foi encerrada por atestado operacional do responsável**. Esta confirmação não substitui evidência independente do SHA efetivamente servido pelo endereço público. Permanecem pendentes para encerrar o P0: testes funcionais dirigidos de criação, aceite e reenvio de convites (incluindo concorrência), primeira sincronização do valor canônico do Hub e conciliação do journal da migração 0008 aplicada manualmente. Não foram executadas alterações nos SaaS nesta atualização documental.
