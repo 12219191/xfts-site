@@ -129,3 +129,13 @@ O Control Center usa `entitlements.usuarios` explícito (inteiro não negativo o
 ### Acompanhamento Casa360° — 12/11/2026
 
 Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pull/4), em **draft**, com contrato de modo de limite, rollout em duas etapas e 18 cenários de homologação. **Somente documentação; nenhuma função, migration ou teste do sistema foi alterado/executado.** A remediação P0/P1 ainda não está concluída. O PR #14 continua em draft.
+
+
+### Casa360° — Etapa A implementada no projeto original (12/11/2026)
+
+- [PR Casa360° #4](https://github.com/12219191/flexus-casa360/pull/4) **MERGED** em `main`, merge SHA `5b328ddaa9f4e3bc0314683996b947f19825dba5`.
+- Banco original: três colunas aditivas em `hub_accounts` (`seat_limit_mode`, `seat_limit_source`, `seat_limit_observed_at`), constraints e comentários aplicados com autorização. **Nenhum backfill**: três vínculos existentes continuam com modo NULL até sincronização legítima.
+- Backend: classificação de `limites.usuarios=null` explícito como unlimited; inteiro não negativo como limited; ausência/inválido como unconfigured; fallback legado numérico rotulado `hub_legacy`. Integração do registro no SSO e na revalidação diária; tipos ajustados.
+- Lovable original confirmou sincronização; commit automático posterior `cf59da07a4ed31bae32a7c9cbb266eebf06537fb`. Teste direcionado **13/13 Vitest PASS** e verificação de tipos (`tsgo -b --noEmit`) **PASS**. Nenhum teste de convite mutável executado.
+- Publicação solicitada via Lovable para `https://flexus-casa360.lovable.app`, implantação ID `58a6cda8-17e2-43a3-8c36-76bf596e09d0`; retorno `pending` no instante da solicitação, ainda sem confirmação da versão live.
+- **Risco de convites NÃO corrigido pela Etapa A**: `_tenant_seat_limit`, `_guard_invite_seats` e `accept_invite` permanecem com o comportamento anterior. Etapa B exige remediação de enforcement e homologação dirigida.
