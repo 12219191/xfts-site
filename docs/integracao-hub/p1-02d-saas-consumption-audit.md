@@ -78,3 +78,14 @@ O Control Center usa `entitlements.usuarios` explícito (inteiro não negativo o
 6. **Encerramento PR #14:** evidências de QA, classificação por produto e contrato aprovado. Merge do relatório não equivale à correção dos SaaS.
 
 **Integridade:** nenhuma função, trigger, tenant, conta, migração, plano ou assinatura foi alterada nesta inspeção. Contagens representam uma amostra instantânea.
+
+
+## Decisão de escopo — 12/11/2026 (orientação do responsável)
+
+**Clínica e ABA ainda não são produtos disponíveis. Excluídos temporariamente do escopo ativo da auditoria e da homologação do PR #14.** As observações anteriores sobre esses projetos ficam retidas apenas como histórico; não representam falhas operacionais de produtos ativos, nem impedimentos para finalizar esta rodada.
+
+**Escopo ativo:** FLEXUS | Flow, Casa360°, Atende, CRM, Barbearia e Estética; integrações respectivas com Control Center/Hub e enforcement de entitlements.
+
+**Fora de escopo / adiado:** FLEXUS | Clínica e FLEXUS | ABA. A auditoria será realizada em ocasião futura, quando os produtos estiverem disponíveis para implantação. Não exigir acesso a seus bancos ou testes de homologação para fechar o PR #14.
+
+**Precedência:** esta decisão substitui os itens antigos que classificavam Clínica/ABA como bloqueios, pendências P1 ou condições de encerramento deste PR. Os demais achados e gates permanecem inalterados.
