@@ -189,3 +189,10 @@ O responsável confirmou expressamente como concluídos os itens **(1) criação
 - Os arquivos `AGENTS.md` do Atende alertam que certos testes são executados contra banco de produção. Qualquer ensaio de inserção deve exigir escopo sintético/isolamento verificado antes de executar.
 - A mudança proposta é aplicar o contrato Hub como fonte canônica para vinculados, manter plano local para não vinculados, separar `limited`, `unlimited` e `unconfigured`, e verificar todos os caminhos de criação/convite/aceite de operadores e agentes, preservando RLS, credits e assinaturas.
 - Análise e proposta de implementação solicitadas ao agente do projeto original Lovable; **não declarar implementado/homologado antes da confirmação de edição, SQL e testes**.
+
+
+### Atende / XFTS — causa do vínculo inativo confirmada em 12/11/2026 (somente leitura)
+
+Inspeção cruzada no projeto original **FLEXUS | Atende** e no **XFTS Launchpad / Control Center** confirmou que o vínculo live da organização XFTS permanece inativo porque a assinatura de cortesia **Atende Corporate** foi cancelada em **04/11/2026**. O registro local informa status `canceled`, `ativo=false`, `acesso_ate=2026-11-04`, `limite_usuarios=0` e `limites={}`; o Control Center tem assinatura correspondente cancelada. Portanto **não se trata de mero atraso de revalidação local** e não é seguro alterar apenas `hub_org_links` para reativar.
+
+O catálogo ativo do Atende no Hub prevê Corporate com `usuarios=25`, `agentes_ia=20` e `creditos_ia_mensais=30000`. Reativar a concessão de cortesia ou criar uma nova concessão exige autorização explícita para o produto/plano e vigência; não executar alteração comercial implícita. A assinatura do Atende é independente das assinaturas de outros produtos do titular. Enforcement pendente e publicação **continuam não autorizados/não executados**. Próximo gate: decisão de concessão, regularização no Hub, revalidação canônica no Atende e só depois análise de ativação do enforcement.
