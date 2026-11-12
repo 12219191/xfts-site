@@ -232,3 +232,8 @@ Consulta somente leitura confirmou nova cortesia `atende/corporate/live` com vig
 ### Atende — aceite funcional informado pelo responsável (12/11/2026)
 
 Após a publicação solicitada e a etapa de smoke test, o responsável confirmou expressamente: **“todos os testes passaram”**. Status: **homologação funcional aprovada pelo responsável**, sem evidência direta de logs/capturas ou SHA servido coletada nesta interação. Evidências técnicas anteriores: SQL 28/28 PASS, aplicativo 4/4 PASS, tipos PASS, enforcement e trigger presentes no banco. Pendências independentes: comprovação técnica do SHA público exato (endpoint de versão estático) e encerramento da cortesia duplicada concedida a outra conta; não representam reprovação dos testes funcionais. Este registro não executou alterações no banco, no app nem publicação.
+
+
+### Atende — cortesia duplicada encerrada e assinatura XFTS preservada (12/11/2026)
+
+Verificação somente leitura no Control Center: a concessão `atende/corporate/live` criada por engano para titular divergente foi marcada `canceled` em 12/11/2026, às 18:29:45 UTC, com vigência encerrada às 18:29:42 UTC. Auditoria contém `cortesia.encerrada` no mesmo momento, com transição `active -> canceled`, motivo `cortesia encerrada manualmente no Control Center`. A concessão correta no mesmo produto, vinculada ao titular original da organização XFTS, **permanece `active`**, até 12/11/2027, com `hub_org_links.ativo=true`, Corporate, 25 usuários, 20 agentes IA e 30.000 créditos mensais. **Pendência de cortesia duplicada encerrada.** Nenhuma mutação foi feita por esta verificação. A prova do SHA público exato continua pendente separadamente.
