@@ -179,3 +179,13 @@ O responsável confirmou expressamente como concluídos os itens **(1) criação
 - Controle restrito: RLS ativa, `anon` e `authenticated` sem SELECT, `service_role` com leitura. Colunas, constraints, cinco funções da 0008 e triggers foram conferidos; hashes das definições SQL registrados.
 - Journal oficial `drizzle.__drizzle_migrations` **não alterado**, permanecendo com 5 registros (0000–0004). A 0008 não pertence a esse journal; não é correto inserir um registro artificial. A trilha Supabase também não foi alterada.
 - **Pendência de reconciliação 0008 encerrada.** A remediação Casa360° desta rodada tem código, SQL, testes direcionados, publicação, aceite funcional e rastreabilidade da migration confirmados. O registro manual e a regra de pré-checagem previnem duplicação operacional por procedimento, não por bloqueio automático do deploy.
+
+
+### Atende — Revisão dirigida da precedência do Hub e dos convites (12/11/2026)
+
+- SQL atual do Atende `limite_efetivo_org` usa `LEAST` entre `plans.max_operators/max_agents` e `hub_org_links` (legado/JSON), e transforma chave JSON `null` explícita em zero. Com o contrato do Hub, isso pode restringir direitos do plano contratado; o tipo de limite deve ser tratado explicitamente.
+- `hub_limite_agentes` impede novos INSERTs de agentes quando esgotado, mas `aceitar_convite` não verifica o limite de operadores na definição SQL examinada. A interface de agentes consulta `org.plano.max_agents`, não os entitlements canônicos.
+- Amostra somente leitura: 2 vínculos Hub (1 ativo, 1 inativo). A organização ativa tem `usuarios=2`, `agentes_ia=2`, plano local 2/2, 2 membros ativos e **3 agentes cadastrados**; nenhum dado foi alterado. A situação acima do limite não é prova de inserção recente irregular, e não deve provocar remoção automática de agentes.
+- Os arquivos `AGENTS.md` do Atende alertam que certos testes são executados contra banco de produção. Qualquer ensaio de inserção deve exigir escopo sintético/isolamento verificado antes de executar.
+- A mudança proposta é aplicar o contrato Hub como fonte canônica para vinculados, manter plano local para não vinculados, separar `limited`, `unlimited` e `unconfigured`, e verificar todos os caminhos de criação/convite/aceite de operadores e agentes, preservando RLS, credits e assinaturas.
+- Análise e proposta de implementação solicitadas ao agente do projeto original Lovable; **não declarar implementado/homologado antes da confirmação de edição, SQL e testes**.
