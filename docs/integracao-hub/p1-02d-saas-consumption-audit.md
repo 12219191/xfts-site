@@ -89,3 +89,38 @@ O Control Center usa `entitlements.usuarios` explícito (inteiro não negativo o
 **Fora de escopo / adiado:** FLEXUS | Clínica e FLEXUS | ABA. A auditoria será realizada em ocasião futura, quando os produtos estiverem disponíveis para implantação. Não exigir acesso a seus bancos ou testes de homologação para fechar o PR #14.
 
 **Precedência:** esta decisão substitui os itens antigos que classificavam Clínica/ABA como bloqueios, pendências P1 ou condições de encerramento deste PR. Os demais achados e gates permanecem inalterados.
+
+
+---
+
+## Revisão dirigida — Casa360° seguido de Atende (12/11/2026)
+
+**Modo:** somente leitura, SQL das funções e triggers nos projetos Lovable originais; sem alterações, convites de teste ou escrita no banco. Os valores agregados são instantâneos. A existência das regras atuais não equivale a teste funcional no app publicado.
+
+### Casa360° — comportamento efetivamente observado
+
+- `_tenant_seat_limit(tenant)` lê somente `hub_accounts.limite_usuarios` do owner mais recentemente atualizado. A tabela `hub_accounts` expõe limite inteiro/SQL NULL, mas não um campo que preserve explicitamente o *modo* (não configurado vs ilimitado) na função examinada.
+- `_guard_invite_seats` está conectado por trigger `BEFORE INSERT OR UPDATE` em `tenant_invites`. Quando `_tenant_seat_limit` retorna SQL NULL, a função **permite** o convite; quando numérico, bloqueia ocupação >= limite. O cálculo conta membros + convites pendentes válidos e exclui o próprio convite em atualização. Há `SELECT FOR UPDATE` em `tenants` para serializar a concorrência no caminho de limite numérico.
+- `accept_invite` também usa o limite e bloqueia novos membros quando numérico e lotado; para SQL NULL, não impõe teto. `_guard_tenant_members_direct` impede alterações diretas de membros por `authenticated` e `anon`, exigindo RPC.
+- `resend_invite` renova o convite, sujeito ao trigger de vagas; `get_seat_usage` apresenta limite, membros e uso, mas o `null` mostrado não distingue origem.
+- Amostra: 3 vínculos em `hub_accounts`, zero com `limite_usuarios` SQL NULL. **Não houve incidência observada; o comportamento permissivo quando NULL está confirmado no código**.
+- **Atenção:** o caminho `accept_invite` usa bloqueio de tenant e conferência de membros; a concorrência entre aceite e novo convite requer testes dirigidos. Não assumir que todas as condições estão cobertas apenas pela inspeção estática.
+
+**Correção proposta (NÃO APLICADA):** snapshot do Hub com `limit_mode` explícito (unlimited / limited / unconfigured) e limite, ou estrutura canônica equivalente; `unconfigured` em tenant gerenciado deve falhar de forma restritiva e rastreável; `unlimited` explícito permanece permitido. Preservar tenants legados não vinculados por política específica e validar `tenant_invites`, `accept_invite`, `get_seat_usage` sob o mesmo contrato. Testes de 0, 1, cheio, ilimitado, ausência de sincronização, aceite, reenvio e concorrência.
+
+### Atende — comportamento efetivamente observado
+
+- `hub_sincronizar_vinculo` armazena `limite_usuarios` SQL inteiro e `limites` JSONB e atualiza o plano local através de `hub_definir_plano_org` para slugs `basic`, `standard`, `corporate`. O vínculo ativo não dispensa comparação de direitos.
+- `limite_efetivo_org(org,recurso)` inicia em `plans.max_operators/max_agents`, aplica `LEAST` com limite legado `limite_usuarios` (usuarios) e depois `LEAST` para o JSON `limites.usuarios/agentes_ia`. **Chave JSON presente com `null` ou valor inválido força zero**, não ilimitado. Chave ausente mantém teto do plano local.
+- `hub_limite_agentes` está conectado por trigger `BEFORE INSERT` em `agents`, exige limite quando há vínculo e serializa pela advisory lock. Não foram observados triggers específicos de **limite de assentos** em `organization_members` ou `user_roles`; há apenas guardas `bloquear_super_admin` e timestamps nessas tabelas. Isto **não comprova** ausência de enforcement no aplicativo/RPC, que requer inspeção separada.
+- `aceitar_convite` valida autenticação, destinatário, expiração e papel; na definição SQL inspecionada não consulta `limite_efetivo_org` antes de ativar participação. Deve-se conferir possíveis guardas adicionais em backend e RLS.
+- Amostra de 2 vínculos: um ativo com plano local `max_operators=2/max_agents=2` e limites Hub de 2 usuários/2 agentes; outro inativo com `limite_usuarios=0` e plano local de teto maior. **Não há evidência de restrição indevida no vínculo ativo desta amostra**.
+- **Risco confirmado de contrato:** `LEAST` com plano local e a conversão de `null` para zero podem negar concessões ilimitadas ou superiores do Hub. O contrato comercial precisa decidir se teto local é implementação técnica legítima ou apenas legado.
+
+**Correção proposta (NÃO APLICADA):** definir precedência canônica por entitlement e separar `missing`, `zero`, `number` e `unlimited` antes da conversão para SQL inteiro; impor limite em caminhos de criação, convite e aceite de operadores no backend e não apenas interface; preservar status de assinatura, sandbox/live, idempotência e concorrência. Testar 0, positivos, ilimitado, ausente, expiração, mudança de plano, 2 convites simultâneos, plano local inferior e superior ao Hub.
+
+### Decisão e critérios de saída desta rodada
+
+1. **Casa360° — P0:** caso SQL NULL fail-open comprovado no trigger e no aceite, nenhum caso no snapshot atual. Gate de mudança requer contrato de limite e compatibilidade com legados.
+2. **Atende — P0:** precedência via mínimo e `null` forçado a zero comprovados; enforcement da quantidade de operadores no aceite ainda **não demonstrado**, pode ser problema adicional. Não inferir defeito em produção real a partir de teste estático.
+3. **Ambos:** nenhuma alteração autorizada/executada; PR #14 permanece draft, aguardando planos de correção por projeto e testes direcionados em QA, não deploy automático.
