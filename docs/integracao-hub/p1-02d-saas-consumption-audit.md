@@ -50,3 +50,31 @@ O Control Center usa `entitlements.usuarios` explícito (inteiro não negativo o
 - Overrides existentes permanecem funcionais, sem extrapolar o significado da unidade da métrica.
 - Testes com assinatura ativa, cancelada, expirada, lookup inválido, valores `0`, numéricos, `null` explícito e chave ausente.
 - Testes de acessos em servidores/bancos de cada produto, com rollback documentado.
+
+
+---
+
+## Retomada somente leitura — 12/11/2026
+
+**Fonte:** definições atuais de funções SQL (pg_get_functiondef) em projetos originais Lovable e contagens agregadas. Sem escrita, sem teste mutável em produção. **PR permanece DRAFT / NO-GO para encerramento transversal.**
+
+| Produto | Achados atualizados | Status / próximos testes |
+|---|---|---|
+| **Flow** | `resolve_entitlement` atual retorna `0` JSON quando a chave não existe em limites Hub confirmados; mantém `null` JSON explícito como ilimitado e `guard_seat_limit` usa esse resolvedor. 1 assinatura Hub confirmada ativa, nenhuma com limite de usuários ausente. | **Risco original mitigado no SQL atual**, sem prova de regressão completa. Testar convites, concorrência, 0, positivo, null, ausente, expiração e rastrear a migração/versão que alterou a função. |
+| **Casa360°** | `_tenant_seat_limit` lê `hub_accounts.limite_usuarios`; `_guard_invite_seats` libera quando retorna SQL NULL. 3 contas Hub; 0 com limite nulo. | **Risco de código confirmado**, impacto atual não observado. Distinguir ilimitado explícito de ausência/erro com snapshot versionado, QA e concorrência. |
+| **Atende** | `limite_efetivo_org` parte do plano local e aplica `least` para os limites do Hub; se a chave JSON está presente, valor nulo/inválido retorna 0. 2 vínculos Hub; 0 `limite_usuarios` nulos; 1 vínculo com chave `agentes_ia`. | **Regra potencialmente restritiva confirmada**, prejuízo real não comprovado. Aprovar precedência comercial e testar plano local divergente, null, zero, ausente, expirado. |
+| **CRM** | `enforce_tenant_seat_limit` ainda libera `exempt_internal`, `exempt_unlinked` e limite SQL NULL; `tenant_entitlement_status` considera expiração e sincronização. 0 registros em `tenant_hub_links`. | **Exceções confirmadas**, impacto não comprovado. Formalizar política não vinculado e teste de contrato gerenciado. |
+| **Barbearia / Estética** | Projetos originais acessíveis; respectivamente 138 e 164 tabelas públicas. Não inspecionados nesta retomada os gates implantados ou variáveis. | **Não comprovados**: verificar código ativo, enforcement e `XFTS_APP` real da Estética, sem expor segredos. |
+| **Clínica** | Projeto acessível, 67 tabelas públicas; sem inspeção adicional de middleware. | **Incompleto**: inspeção de backend e versão efetiva. |
+| **ABA 2.0** | Banco continuou inacessível na consulta autorizada. | **BLOCKED**: retomar acesso e evidências sem declarar aprovação. |
+
+### Ordem atualizada de remediação (sem execução nesta rodada)
+
+1. **P0 Casa360° / Atende:** especificar correções isoladas por produto, validar contratos e ensaiar em QA antes de qualquer mudança produtiva.
+2. **P0/P1 Flow:** não reaplicar correção de limite ausente às cegas; o resolvedor atual já faz fail-closed. Obter regressão dirigida e trilha de migração para marcar RESOLVED.
+3. **P1 CRM:** formalizar exceções dos não vinculados e limites nulos.
+4. **P1 Barbearia/Estética:** demonstrar implantação de Capability Gate e identidade correta do aplicativo.
+5. **P1 Clínica/ABA:** completar auditoria ou registrar bloqueio técnico documentado.
+6. **Encerramento PR #14:** evidências de QA, classificação por produto e contrato aprovado. Merge do relatório não equivale à correção dos SaaS.
+
+**Integridade:** nenhuma função, trigger, tenant, conta, migração, plano ou assinatura foi alterada nesta inspeção. Contagens representam uma amostra instantânea.
