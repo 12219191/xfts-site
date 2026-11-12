@@ -148,3 +148,13 @@ Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pul
 - Compatibilidade: vínculos legados ainda não revalidados com `limite_usuarios` numérico mantêm teto limitado, não recebem infinito. Vínculos sem limite válido, inativos ou ambíguos não ampliam assentos. Usuários antigos não são removidos.
 - Inspeção SQL pós-migration: 3 vínculos Hub, 1 tenant com política `limited`, 2 membros, 1 convite histórico, 0 convites pendentes; nenhum `seat_limit_value` revalidado (ainda aguardam nova sincronização legítima com Hub). Sem alteração desses registros.
 - Testes automatizados de classificação e typecheck solicitados ao agente Lovable, ainda pendentes de comprovação no instante desta nota. Testes transacionais reais de concorrência/convites ainda exigem homologação. **Não considerar o risco totalmente encerrado sem essa evidência.**
+
+ 
+### Casa360° — Etapa B: regressão final e solicitação de publicação (12/11/2026)
+
+- Etapa B integrada no [PR Casa360° #5](https://github.com/12219191/flexus-casa360/pull/5), merge `4ca875155a4a77648e9c51da8708fd27f6b4d675`; mensagens de erro amigáveis integradas no [PR #6](https://github.com/12219191/flexus-casa360/pull/6), merge `09c78e7c25fcbc0fe38e25aa1f74261f5f981e30`.
+- Lovable original confirmou ambos os merges e working tree limpo. Vitest de classificação **13/13 PASS** e `tsgo -b --noEmit` **PASS**. Sem convite artificial em produção e sem homologação concorrente real.
+- SQL aplicado diretamente ao banco original: coluna canônica `seat_limit_value` e funções `_tenant_seat_policy`, `_tenant_seat_limit`, `_guard_invite_seats`, `accept_invite`, `get_seat_usage`. A função SQL original preserva exceção `legacy_unlinked`, distingue `unconfigured` de `unlimited` explícito e preserva limite numérico legado até revalidação. Um tenant existente está classificado como `limited/legacy_pending_refresh`, com 2 membros, 0 convites pendentes e limite 6.
+- A tela de membros foi ajustada para mostrar indisponibilidade do limite gerenciado (em vez de 0 usuários do plano) e traduzir o erro `seat_limit_unconfigured`; o aceite de convite também traduz o erro.
+- Publicação solicitada para `https://flexus-casa360.lovable.app`, deployment `a6e5e1e9-1328-4564-9a91-7b456982c08f`, estado inicial **pending**, sem comprovação de release live no instante da solicitação.
+- **Ainda pendente para resolução completa do P0:** evidência de publicação da versão correta, smoke autenticado de convites/reenvios/aceites e teste de concorrência com dados controlados no projeto original, além de conferência do primeiro snapshot pós-revalidação do Hub. A migration 0008 foi aplicada manualmente, sem entrada nova no journal de migrações; conciliar antes de nova execução automatizada.
