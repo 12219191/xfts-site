@@ -139,3 +139,12 @@ Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pul
 - Lovable original confirmou sincronização; commit automático posterior `cf59da07a4ed31bae32a7c9cbb266eebf06537fb`. Teste direcionado **13/13 Vitest PASS** e verificação de tipos (`tsgo -b --noEmit`) **PASS**. Nenhum teste de convite mutável executado.
 - Publicação solicitada via Lovable para `https://flexus-casa360.lovable.app`, implantação ID `58a6cda8-17e2-43a3-8c36-76bf596e09d0`; retorno `pending` no instante da solicitação, ainda sem confirmação da versão live.
 - **Risco de convites NÃO corrigido pela Etapa A**: `_tenant_seat_limit`, `_guard_invite_seats` e `accept_invite` permanecem com o comportamento anterior. Etapa B exige remediação de enforcement e homologação dirigida.
+
+
+### Casa360° — Etapa B implementada no banco e código (12/11/2026)
+
+- [PR Casa360° #5](https://github.com/12219191/flexus-casa360/pull/5) **MERGED**; commit de integração `4ca875155a4a77648e9c51da8708fd27f6b4d675`.
+- No projeto original, migration `docs/pending-migrations/0008_casa360_seat_enforcement_stage_b.sql` aplicada com autorização. Nova coluna `seat_limit_value`; política `_tenant_seat_policy` consulta o modo canônico e impede tratar ausente como ilimitado; criação/aceitação de convites usa a política no backend; `get_seat_usage` informa modo e origem.
+- Compatibilidade: vínculos legados ainda não revalidados com `limite_usuarios` numérico mantêm teto limitado, não recebem infinito. Vínculos sem limite válido, inativos ou ambíguos não ampliam assentos. Usuários antigos não são removidos.
+- Inspeção SQL pós-migration: 3 vínculos Hub, 1 tenant com política `limited`, 2 membros, 1 convite histórico, 0 convites pendentes; nenhum `seat_limit_value` revalidado (ainda aguardam nova sincronização legítima com Hub). Sem alteração desses registros.
+- Testes automatizados de classificação e typecheck solicitados ao agente Lovable, ainda pendentes de comprovação no instante desta nota. Testes transacionais reais de concorrência/convites ainda exigem homologação. **Não considerar o risco totalmente encerrado sem essa evidência.**
