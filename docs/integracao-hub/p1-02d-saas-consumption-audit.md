@@ -163,3 +163,10 @@ Foi aberto o [PR #4 do Casa360°](https://github.com/12219191/flexus-casa360/pul
 ### Casa360° — confirmação de publicação pelo responsável (12/11/2026)
 
 O responsável confirmou explicitamente que a publicação do Casa360° foi realizada. Portanto, a **pendência de confirmação da publicação foi encerrada por atestado operacional do responsável**. Esta confirmação não substitui evidência independente do SHA efetivamente servido pelo endereço público. Permanecem pendentes para encerrar o P0: testes funcionais dirigidos de criação, aceite e reenvio de convites (incluindo concorrência), primeira sincronização do valor canônico do Hub e conciliação do journal da migração 0008 aplicada manualmente. Não foram executadas alterações nos SaaS nesta atualização documental.
+
+
+### Casa360° — aceite funcional adicional pelo responsável (12/11/2026)
+
+O responsável confirmou expressamente como concluídos os itens **(1) criação, reenvio e aceitação de convites; (2) dois convites simultâneos disputando a última vaga; e (3) primeira sincronização do limite canônico recebido do Hub**. Estes itens passam a **homologados por aceite do responsável**, sem afirmar que logs ou rastros técnicos independentes tenham sido anexados a este relatório. A publicação também havia sido confirmada pelo responsável.
+
+**Única pendência remanescente da lista de encerramento do Casa360°:** conciliar o histórico/journal da migração 0008 aplicada diretamente ao banco, evitando execução duplicada. A remediação funcional do limite de convites está confirmada; encerramento documental completo aguarda reconciliação do journal.
