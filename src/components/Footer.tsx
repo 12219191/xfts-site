@@ -3,12 +3,15 @@ import { Instagram, Linkedin, Facebook } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { trackCTAClick } from "@/lib/tracking";
 import { openCookiePreferences } from "@/lib/consent";
+import { DIAGNOSTICO_COPY, diagnosticoUrl, type DiagnosticoKey } from "@/lib/diagnostico";
+
+const DIAGNOSTICOS: DiagnosticoKey[] = ["estetica", "barbearia"];
 
 
 export function Footer() {
   return (
     <footer className="gradient-primary text-primary-foreground">
-      <div className="container-wide section-padding grid gap-8 md:grid-cols-4">
+      <div className="container-wide section-padding grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <Logo size={40} variant="mark" inverted />
           <h3 className="mt-3 text-lg font-bold">XFTS Inteligência Analítica</h3>
@@ -25,6 +28,26 @@ export function Footer() {
             <Link to="/produtos/comparar-planos" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Planos", destination: "/produtos/comparar-planos" })}>Planos</Link>
             <Link to="/blog" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Blog", destination: "/blog" })}>Blog</Link>
             <Link to="/contato" className="text-primary-foreground/80 hover:text-primary-foreground" onClick={() => trackCTAClick({ section: "footer-nav", label: "Contato", destination: "/contato" })}>Contato</Link>
+          </nav>
+        </div>
+        <div>
+          <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary-foreground/60">Diagnóstico gratuito</h4>
+          <nav aria-label="Diagnósticos gratuitos" className="flex flex-col gap-2 text-sm">
+            {DIAGNOSTICOS.map((key) => {
+              const href = diagnosticoUrl(key, "rodape");
+              return (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-primary-foreground/80 hover:text-primary-foreground"
+                  onClick={() => trackCTAClick({ section: "footer-diagnostico", action: `diagnostico-${key}`, label: DIAGNOSTICO_COPY[key].footerLabel, destination: href })}
+                >
+                  {DIAGNOSTICO_COPY[key].footerLabel}
+                </a>
+              );
+            })}
           </nav>
         </div>
         <div>

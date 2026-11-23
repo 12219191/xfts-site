@@ -10,6 +10,8 @@ import { useProductImage, useProductImageAlt, type ProductSlug } from "@/lib/pro
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { trackCTAClick } from "@/lib/tracking";
+import { DiagnosticoCta } from "@/components/DiagnosticoCta";
+import { isDiagnosticoKey } from "@/lib/diagnostico";
 import { canPurchase, statusLabel, type CatalogProduct } from "@/lib/catalog";
 import { getProductHeroCta } from "@/lib/product-hero-cta";
 import type { ProductPlan } from "@/lib/product-plans";
@@ -246,6 +248,12 @@ export function ProductPageLayout({ productKey, app, product, plans, fallback, c
                   </Link>
                 </Button>
               )}
+            </div>
+          )}
+
+          {isDiagnosticoKey(productKey) && (
+            <div className="mt-10">
+              <DiagnosticoCta productKey={productKey} placement="pagina" section="pricing-diagnostico" />
             </div>
           )}
         </div>

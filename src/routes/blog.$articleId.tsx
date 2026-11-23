@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share2, Calendar, User } from "lucide-react";
+import { DiagnosticoCta } from "@/components/DiagnosticoCta";
+import { DIAGNOSTICO_COPY, diagnosticoUrl } from "@/lib/diagnostico";
+import { trackCTAClick } from "@/lib/tracking";
 
 interface Article {
   id: string;
@@ -98,8 +101,8 @@ export const Route = createFileRoute("/blog/$articleId")({
 function pickProduct(text: string) {
   const t = text.toLowerCase();
   const list = [
-    { k: ["barbear"], to: "/produtos/gestao-barbearias", name: "FLEXUS | Barbearia" },
-    { k: ["estétic", "estetic", "salão", "salao"], to: "/produtos/gestao-esteticas", name: "FLEXUS | Estética" },
+    { k: ["barbear"], to: "/produtos/gestao-barbearias", name: "FLEXUS | Barbearia", diagnostico: "barbearia" },
+    { k: ["estétic", "estetic", "salão", "salao"], to: "/produtos/gestao-esteticas", name: "FLEXUS | Estética", diagnostico: "estetica" },
     { k: ["whatsapp", "atendimento"], to: "/produtos/flexus-atende", name: "FLEXUS | Atende" },
     { k: ["crm", "vendas", "funil"], to: "/produtos/flexus-crm", name: "FLEXUS | CRM" },
     { k: ["aba", "autis", "tea"], to: "/produtos/flexus-aba", name: "FLEXUS | ABA" },
@@ -219,7 +222,34 @@ function ArticlePage() {
               Email
             </a>
           </div>
-          <div className="mt-12 rounded-xl bg-primary p-8 text-center">
+          <div className="mt-12">
+            {product && "diagnostico" in product ? (
+              <DiagnosticoCta productKey={product.diagnostico} placement="blog" section="blog-diagnostico" />
+            ) : (
+              <p className="text-center text-sm text-muted-foreground">
+                Não sabe por onde começar? Faça o diagnóstico gratuito:{" "}
+                {(["estetica", "barbearia"] as const).map((key, i) => {
+                  const href = diagnosticoUrl(key, "blog");
+                  return (
+                    <span key={key}>
+                      {i > 0 && " ou "}
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener"
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                        onClick={() => trackCTAClick({ section: "blog-diagnostico", action: `diagnostico-${key}`, label: DIAGNOSTICO_COPY[key].footerLabel, destination: href })}
+                      >
+                        {key === "estetica" ? "clínicas e salões" : "barbearias"}
+                      </a>
+                    </span>
+                  );
+                })}
+                .
+              </p>
+            )}
+          </div>
+          <div className="mt-8 rounded-xl bg-primary p-8 text-center">
             <h3 className="text-xl font-bold text-primary-foreground">
               Experimente nossos sistemas SaaS
             </h3>

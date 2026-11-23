@@ -12,3 +12,4 @@
 - Usage reports arrive at /api/public/usage (app identified by its key, last-write-wins on seats_reported_ts, 60 req/min via hit_rate_limit) and are informational only — why: in-use counts must never change billing, access or entitlements.
 - Sensitive Control Center actions call requireStepUp/stepUpError (src/lib/mfa.server.ts) which reads the aal claim server-side; enforcement starts only when integration_settings mfa.enforce_after is set — why: no admin may be locked out during MFA migration.
 - Flow admin-only SSO while not accessible is gated by integration_settings flow.admin_preview_access + admin_users and audited as flow.admin_preview_access — why: reversible without publishing.
+- Diagnostic links (URLs + UTM scheme) live only in src/lib/diagnostico.ts (diagnosticoUrl) — why: one source so each site placement keeps a distinct utm_content for CRM attribution.
