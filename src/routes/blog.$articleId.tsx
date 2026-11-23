@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share2, Calendar, User } from "lucide-react";
 import { DiagnosticoCta } from "@/components/DiagnosticoCta";
+import { ArticleContent } from "@/components/blog/ArticleContent";
 import { DIAGNOSTICO_COPY, diagnosticoUrl } from "@/lib/diagnostico";
 import { trackCTAClick } from "@/lib/tracking";
 
@@ -181,26 +182,7 @@ function ArticlePage() {
             {article.title}
           </h1>
           <div className="mt-8">
-            {article.content.split("\n\n").map((block, i) => {
-              if (block.startsWith("## ")) {
-                return (
-                  <h2
-                    key={i}
-                    className="mb-3 mt-8 text-xl font-bold text-foreground"
-                  >
-                    {block.replace("## ", "")}
-                  </h2>
-                );
-              }
-              return (
-                <p
-                  key={i}
-                  className="mb-4 leading-relaxed text-muted-foreground"
-                >
-                  {block}
-                </p>
-              );
-            })}
+            <ArticleContent content={article.content} title={article.title} />
           </div>
           <div className="mt-8 flex items-center gap-4 border-t border-border pt-6">
             <Share2 className="h-4 w-4 text-muted-foreground" />

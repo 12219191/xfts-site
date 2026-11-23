@@ -11,6 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ImageUploader } from "./ImageUploader";
+import { MarkdownEditor } from "./MarkdownEditor";
 import { Loader2 } from "lucide-react";
 
 export interface ArticleForm {
@@ -148,12 +149,11 @@ export function ArticleEditorDialog({
 
             <div className="space-y-1.5">
               <Label htmlFor="content">Conteúdo</Label>
-              <Textarea
+              <MarkdownEditor
                 id="content"
-                rows={16}
-                placeholder="Use ## para subtítulos e uma linha em branco entre parágrafos"
                 value={form.content}
-                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                title={form.title}
+                onChange={(content) => setForm({ ...form, content })}
               />
             </div>
           </div>
